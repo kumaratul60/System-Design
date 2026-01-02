@@ -582,7 +582,7 @@ flowchart TD
 
 When you follow the contract, the entire internet (Browsers, CDNs, Load Balancers, API Gateways) knows how to help your application run faster and more reliably. When you break the contract, you are on your own.
 
-**Summary:** HTTP methods define actions (GET for read, POST for create), status codes indicate results (200 OK, 404 Not Found), headers add metadata, and caching optimizes performance. Always follow these semantics for scalable, secure APIs. For real-time communication, see [WebSockets](#342-websockets-in-depth).
+**Summary:** HTTP methods define actions (GET for read, POST for create), status codes indicate results (200 OK, 404 Not Found), headers add metadata, and caching optimizes performance. Always follow these semantics for scalable, secure APIs. For real-time communication, see [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API).
 
 ## 7. HTTP Request & Response
 
