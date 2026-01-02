@@ -529,29 +529,49 @@ These concepts are vital for handling network failures.
 
 ## 6.8 Common Semantic Anti-Patterns
 
-❌ **Using GET to delete data:** Browsers/crawlers may accidentally trigger deletes.
-❌ **Returning 200 for everything:** Forcing the client to parse the JSON to see if an error occurred.
-❌ **Returning 500 for validation:** 500 means the _code_ broke; 422/400 means the _user_ sent bad data.
-❌ **Actions in URLs:** `POST /deleteUser` violates REST; it should be `DELETE /users/id`.
+- ❌ **Using GET to delete data:** Browsers/crawlers may accidentally trigger deletes.
+- ❌ **Returning 200 for everything:** Forcing the client to parse the JSON to see if an error occurred.
+- ❌ **Returning 500 for validation:** 500 means the _code_ broke; 422/400 means the _user_ sent bad data.
+- ❌ **Actions in URLs:** `POST /deleteUser` violates REST; it should be `DELETE /users/id`.
 
 ---
 
 ## 6.9 HTTP Semantic Flow
 
 ```mermaid
-flowchart LR
-    Client -->|1. Method + Headers| Server
-    Server -->|2. Status Code + Body| Client
+flowchart TD
+    %% Define Nodes with consistent IDs
+    C[Client]
+    S[Server]
 
-    subgraph Optimization
-    Client -->|3. GET + ETag| Cache[Proxy/CDN Cache]
-    Cache -- Valid? -->|4. 304 Not Modified| Client
-    Cache -- Expired? --> Server
+    %% Layer 1: The Request
+    subgraph Comm [1. Standard Communication]
+        C -- "Method + Headers" --> S
+        S -- "Status Code + Body" --> C
     end
 
-    subgraph Distributed Logic
-    LB[Load Balancer] -->|Retry Idempotent Only| Server
+    %% Layer 2: The Cache
+    subgraph Optimization [2. Caching & Performance]
+        Cache[Proxy/CDN Cache]
+        C -.->|3. Conditional GET + ETag| Cache
+        Cache -.->|4. 304 Not Modified| C
+        Cache -- "Cache Miss / Expired" --> S
     end
+
+    %% Layer 3: The Infrastructure
+    subgraph Infrastructure [3. Distributed Systems Logic]
+        LB[Load Balancer]
+        LB -- "Retries only Safe/Idempotent methods" --> S
+    end
+
+    %% Styling for a professional look
+    style C fill:#f9f,stroke:#333,stroke-width:2px
+    style S fill:#bbf,stroke:#333,stroke-width:2px
+    style Cache fill:#dfd,stroke:#333,stroke-dasharray: 5 5
+    style LB fill:#ffd,stroke:#333
+    style Comm fill:none,stroke:#666,stroke-dasharray: 5 5
+    style Optimization fill:none,stroke:#666,stroke-dasharray: 5 5
+    style Infrastructure fill:none,stroke:#666,stroke-dasharray: 5 5
 ```
 
 ---
