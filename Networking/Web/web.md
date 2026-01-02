@@ -283,7 +283,7 @@ For developers, URLs are the interface of the API.
     - Query → modifiers
     - Headers → auth, metadata
     - Body → state transfer
-8.  Fragment(Anchor) never reaches server
+8.  Fragment(Anchor or **#**) **_never reaches server or send to server_**, it only used to store some extra information in url on client side to share or scroll to that particular section.
 9.  REST = URL + HTTP semantics
     > HTTP semantics = shared contract between client, server, proxies, and caches.
 
