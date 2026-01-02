@@ -8,20 +8,22 @@
   - [Table of Contents](#table-of-contents)
   - [0. Big Picture](#0-big-picture)
   - [1. Understanding Domains \& URLs](#1-understanding-domains--urls)
-    - [1.0 Key Components of URLs and Domains](#10-key-components-of-urls-and-domains)
-      - [URL Breakdown](#url-breakdown)
-      - [Full URL Example](#full-url-example)
-    - [1.1 Domain Hierarchy and Structure](#11-domain-hierarchy-and-structure)
-    - [1.2 Domain to IP Mapping](#12-domain-to-ip-mapping)
-    - [1.3 URL vs Domain vs IP Comparison](#13-url-vs-domain-vs-ip-comparison)
-    - [1.4 Visual Breakdown of a URL](#14-visual-breakdown-of-a-url)
-    - [1.0 Full Forms](#10-full-forms)
-    - [1.1 Domain hierarchy](#11-domain-hierarchy)
-    - [1.2 Domain → IP](#12-domain--ip)
+  - [1.0 URL Anatomy: The Detailed Breakdown](#10-url-anatomy-the-detailed-breakdown)
+    - [Core Components](#core-components)
+    - [Full URL Mapping Example](#full-url-mapping-example)
+  - [1.1 Domain Hierarchy and DNS Structure](#11-domain-hierarchy-and-dns-structure)
+  - [1.2 Domain to IP Mapping (DNS Resolution)](#12-domain-to-ip-mapping-dns-resolution)
+  - [1.3 URL vs Domain vs IP: Comparison](#13-url-vs-domain-vs-ip-comparison)
+  - [1.4 Visual Breakdown (Mermaid Graph)](#14-visual-breakdown-mermaid-graph)
+  - [1.5 URL vs URI vs URN](#15-url-vs-uri-vs-urn)
+    - [Formal Definitions](#formal-definitions)
+    - [The "Person" Analogy](#the-person-analogy)
+    - [Real-World URN Examples (Persistent Identity)](#real-world-urn-examples-persistent-identity)
+  - [1.6 REST \& API Perspective](#16-rest--api-perspective)
+  - [1.7 Key Takeaways](#17-key-takeaways)
   - [2. What Happens When You Hit Enter](#2-what-happens-when-you-hit-enter)
     - [2.1 Browser Pre‑Checks (Before Network)](#21-browser-prechecks-before-network)
     - [2.2 Full Request Flow (High Level)](#22-full-request-flow-high-level)
-    - [2.1 Pre‑request checks](#21-prerequest-checks)
   - [3. DNS Resolution (Name → IP)](#3-dns-resolution-name--ip)
     - [3.1 Domain → IP Mapping Authority](#31-domain--ip-mapping-authority)
     - [3.2 DNS lookup flow](#32-dns-lookup-flow)
@@ -30,61 +32,72 @@
     - [4.1 TCP 3‑Way Handshake (Guaranteed Delivery)](#41-tcp-3way-handshake-guaranteed-delivery)
   - [5. Security Layer (TLS / SSL)](#5-security-layer-tls--ssl)
     - [5.1 Encryption / Decryption Flow (HTTPS)](#51-encryption--decryption-flow-https)
-  - [6. HTTP Request \& Response](#6-http-request--response)
-    - [6.1 Client → Server Data Flow](#61-client--server-data-flow)
-    - [6.2 Browser Pre‑Request Checks](#62-browser-prerequest-checks)
-    - [6.3 HTTP request](#63-http-request)
-    - [6.4 Response streaming (important correction)](#64-response-streaming-important-correction)
-  - [7. Browser Resource Scheduling](#7-browser-resource-scheduling)
-    - [7.1 Parallel Network Requests](#71-parallel-network-requests)
-    - [7.2 Parallel requests](#72-parallel-requests)
-  - [8. HTML Parsing → DOM](#8-html-parsing--dom)
-    - [8.1 Parsing HTML](#81-parsing-html)
-  - [9. CSS Parsing → CSSOM](#9-css-parsing--cssom)
-    - [9.1 CSSOM](#91-cssom)
-    - [9.2 Blocking Rules](#92-blocking-rules)
-  - [10. JavaScript Loading \& Execution](#10-javascript-loading--execution)
-    - [10.1 Why JS blocks parsing](#101-why-js-blocks-parsing)
-    - [10.2 Script attributes](#102-script-attributes)
-  - [11. DOM + CSSOM → Render Tree](#11-dom--cssom--render-tree)
-    - [11.1 Render Tree rules](#111-render-tree-rules)
-  - [12. Layout (Reflow)](#12-layout-reflow)
-    - [12.1 What layout does](#121-what-layout-does)
-    - [12.2 What triggers reflow](#122-what-triggers-reflow)
-  - [13. Paint](#13-paint)
-  - [14. Compositing](#14-compositing)
-  - [15. Performance Milestones](#15-performance-milestones)
-  - [16. HTTP Versions Comparison](#16-http-versions-comparison)
-  - [17. Peering \& ICANN](#17-peering--icann)
-    - [17.1 Peering](#171-peering)
-    - [17.2 ICANN \& WHOIS](#172-icann--whois)
-  - [18. Complete Timeline (Condensed)](#18-complete-timeline-condensed)
-  - [19. Key Mental Models](#19-key-mental-models)
-  - [20. Tips](#20-tips)
-  - [21. One‑Sentence Summary about hit to pixel on ui](#21-onesentence-summary-about-hit-to-pixel-on-ui)
-  - [22. Big Picture Visualization](#22-big-picture-visualization)
-  - [23. Browser Pre-Checks Visualization](#23-browser-pre-checks-visualization)
-  - [24. Full Request Flow Visualization](#24-full-request-flow-visualization)
-  - [25. DNS Resolution Visualization](#25-dns-resolution-visualization)
-  - [26. TCP 3-Way Handshake Visualization](#26-tcp-3-way-handshake-visualization)
-  - [27. TLS Handshake Visualization](#27-tls-handshake-visualization)
-  - [28. 1-RTT vs Multi-RTT Visualization](#28-1-rtt-vs-multi-rtt-visualization)
-  - [29. Critical Rendering Path Visualization](#29-critical-rendering-path-visualization)
-  - [30. Web Protocol Comparison Diagram](#30-web-protocol-comparison-diagram)
-    - [Detailed Breakdown of "How It Works"](#detailed-breakdown-of-how-it-works)
-    - [Key Takeaways for Mental Model:](#key-takeaways-for-mental-model)
-  - [The 7 OSI (Open Systems Interconnection) Layers (Brief Intro)](#the-7-osi-open-systems-interconnection-layers-brief-intro)
-    - [Protocol to OSI Mapping](#protocol-to-osi-mapping)
-    - [Why this matters for "How the Web Works":](#why-this-matters-for-how-the-web-works)
-  - [31. Web Architecture Deep Dive](#31-web-architecture-deep-dive)
-    - [31.1 Client-Server Architecture](#311-client-server-architecture)
-    - [31.2 Single Page Applications (SPAs)](#312-single-page-applications-spas)
-    - [31.3 Server-Side Rendering (SSR) \& Static Site Generation (SSG)](#313-server-side-rendering-ssr--static-site-generation-ssg)
-    - [31.4 Progressive Web Apps (PWAs)](#314-progressive-web-apps-pwas)
-    - [31.5 Microservices \& APIs](#315-microservices--apis)
-    - [31.6 Content Delivery Networks (CDNs)](#316-content-delivery-networks-cdns)
-    - [31.7 Scalability Considerations](#317-scalability-considerations)
+  - [6. HTTP Semantics: The Shared Contract of the Web](#6-http-semantics-the-shared-contract-of-the-web)
+  - [6.1 HTTP Method Semantics](#61-http-method-semantics)
+    - [The Method Matrix](#the-method-matrix)
+    - [Key Semantic Rules](#key-semantic-rules)
+  - [6.2 Status Code Semantics](#62-status-code-semantics)
+    - [Success (2xx)](#success-2xx)
+    - [Client Errors (4xx)](#client-errors-4xx)
+    - [Server Errors (5xx)](#server-errors-5xx)
+  - [6.3 Header Semantics (Metadata with Meaning)](#63-header-semantics-metadata-with-meaning)
+  - [6.4 Content Negotiation](#64-content-negotiation)
+  - [6.5 Caching Semantics](#65-caching-semantics)
+    - [Cache-Control Directives](#cache-control-directives)
+    - [Conditional Requests (The 304 Flow)](#conditional-requests-the-304-flow)
+  - [6.6 Safety \& Idempotency (For Distributed Systems)](#66-safety--idempotency-for-distributed-systems)
+  - [6.7 HTTP vs. REST Semantics](#67-http-vs-rest-semantics)
+  - [6.8 Common Semantic Anti-Patterns](#68-common-semantic-anti-patterns)
+  - [6.9 HTTP Semantic Flow](#69-http-semantic-flow)
+  - [6.10 Mental Model](#610-mental-model)
+  - [7. HTTP Request \& Response](#7-http-request--response)
+    - [7.1 Client → Server Data Flow](#71-client--server-data-flow)
+    - [7.2 Browser Pre‑Request Checks](#72-browser-prerequest-checks)
+    - [7.3 HTTP request](#73-http-request)
+    - [7.4 Response streaming (important correction)](#74-response-streaming-important-correction)
+  - [8. Browser Resource Scheduling](#8-browser-resource-scheduling)
+    - [8.1 Parallel Network Requests](#81-parallel-network-requests)
+  - [9. HTML Parsing → DOM](#9-html-parsing--dom)
+    - [9.1 Parsing HTML](#91-parsing-html)
+  - [10. CSS Parsing → CSSOM](#10-css-parsing--cssom)
+    - [10.1 CSSOM](#101-cssom)
+    - [10.2 Blocking Rules](#102-blocking-rules)
+  - [11. JavaScript Loading \& Execution](#11-javascript-loading--execution)
+    - [11.1 Why JS blocks parsing](#111-why-js-blocks-parsing)
+    - [11.2 Script attributes](#112-script-attributes)
+  - [12. DOM + CSSOM → Render Tree](#12-dom--cssom--render-tree)
+    - [12.1 Render Tree rules](#121-render-tree-rules)
+  - [13. Layout (Reflow)](#13-layout-reflow)
+    - [13.1 What layout does](#131-what-layout-does)
+    - [13.2 What triggers reflow](#132-what-triggers-reflow)
+  - [14. Paint](#14-paint)
+  - [15. Compositing](#15-compositing)
+  - [16. Performance Milestones](#16-performance-milestones)
+  - [17. HTTP Versions Comparison](#17-http-versions-comparison)
+  - [18. Peering \& ICANN](#18-peering--icann)
+    - [18.1 Peering](#181-peering)
+    - [18.2 ICANN \& WHOIS](#182-icann--whois)
+  - [19. Complete Timeline (Condensed)](#19-complete-timeline-condensed)
+  - [20. Key Mental Models](#20-key-mental-models)
+  - [21. Tips](#21-tips)
+  - [22. One‑Sentence Summary about hit to pixel on ui](#22-onesentence-summary-about-hit-to-pixel-on-ui)
+  - [23. Big Picture Visualization](#23-big-picture-visualization)
+  - [24. Browser Pre-Checks Visualization](#24-browser-pre-checks-visualization)
+  - [25. Full Request Flow Visualization](#25-full-request-flow-visualization)
+  - [26. DNS Resolution Visualization](#26-dns-resolution-visualization)
+  - [27. TCP 3-Way Handshake Visualization](#27-tcp-3-way-handshake-visualization)
+  - [28. TLS Handshake Visualization](#28-tls-handshake-visualization)
+  - [29. 1-RTT vs Multi-RTT Visualization](#29-1-rtt-vs-multi-rtt-visualization)
+  - [30. Critical Rendering Path Visualization](#30-critical-rendering-path-visualization)
+  - [31. Web Protocol Comparison Diagram](#31-web-protocol-comparison-diagram)
+    - [31.1 Detailed Breakdown of "How It Works"](#311-detailed-breakdown-of-how-it-works)
+    - [31.2 Key Takeaways for Mental Model:](#312-key-takeaways-for-mental-model)
+  - [31.3 The 7 OSI (Open Systems Interconnection) Layers (Brief Intro)](#313-the-7-osi-open-systems-interconnection-layers-brief-intro)
+    - [31.4 Protocol to OSI Mapping](#314-protocol-to-osi-mapping)
+    - [31.5 Why this matters for "How the Web Works":](#315-why-this-matters-for-how-the-web-works)
+  - [32. Web Architecture Deep Dive](#32-web-architecture-deep-dive)
   - [References](#references)
+  - [Glossary](#glossary)
 
 ---
 
@@ -106,107 +119,180 @@ Keep this chain in your head.
 
 ## 1. Understanding Domains & URLs
 
-### 1.0 Key Components of URLs and Domains
-
-#### URL Breakdown
-
-- **Protocol** = Rules for data transfer between client and server.
-  - Examples: `http://` → HyperText Transfer Protocol (no encryption); `https://` → HTTP + TLS encryption (secure).
-- **Domain** = Human-readable website name (e.g., google.com).
-- **Subdomain** = Subdivision for routing/organization (e.g., www.google.com, mail.google.com, api.google.com).
-  - **www**: Originally "World Wide Web"; now a conventional subdomain. Note: `google.com` and `www.google.com` may behave differently.
-- **Path** = Specific resource location (e.g., /search).
-- **Query Parameters** = Additional data (e.g., ?q=web).
-- **IP Address** = Machine-readable server address (e.g., 142.250.198.78).
-
-#### Full URL Example
-
-`https://www.google.com/search?q=web`
-
-- `https` → Protocol
-- `www.google.com` → Domain + Subdomain
-- `/search` → Path
-- `?q=web` → Query Parameters
-
-### 1.1 Domain Hierarchy and Structure
-
-```
-. (root)
-└── TLD        → com, org, edu, gov, in, au
-    └── SLD    → google.com, microsoft.com
-        └── Subdomain → www.google.com, docs.google.com
-```
-
-- **Root (.)**: Implicit, never typed.
-- **TLD (Top-Level Domain)**: Managed by registries via ICANN (e.g., .com, .org).
-- **SLD (Second-Level Domain)**: Purchased by companies (e.g., google.com).
-- **Subdomain**: For logical routing (e.g., www, api, cdn).
-
-### 1.2 Domain to IP Mapping
-
-- **Process**: Human-readable domain → Machine-readable IP.
-- **Example**: www.google.com → 142.250.198.78 (IPv4).
-- **Governance**: Managed by ICANN, registrars, and DNS infrastructure.
-
-### 1.3 URL vs Domain vs IP Comparison
-
-| Term       | What it is                     | Human-readable | Example                               |
-| ---------- | ------------------------------ | -------------- | ------------------------------------- |
-| URL        | Complete address of a resource | ✅             | `https://www.google.com/search?q=web` |
-| Domain     | Website name                   | ✅             | `google.com`                          |
-| Subdomain  | Division of a domain           | ✅             | `www.google.com`                      |
-| IP Address | Server's network address       | ❌             | `142.250.198.78`                      |
-
-### 1.4 Visual Breakdown of a URL
-
-```mermaid
-flowchart LR
-    URL["https://www.google.com/search?q=web"]
-    URL --> P[Protocol<br/>https]
-    URL --> D[Domain<br/>google.com]
-    D --> SD[Subdomain<br/>www]
-    URL --> Path[Path<br/>/search]
-    URL --> Q[Query Params<br/>q=web]
-```
-
-**Takeaway:** URL = protocol + domain (+ subdomain) + path + query.
+A **URL (Uniform Resource Locator)** is a structured address used to identify and access resources on the internet. It combines networking, naming, and application-layer concepts into a single string.
 
 ---
 
-### 1.0 Full Forms
+## 1.0 URL Anatomy: The Detailed Breakdown
 
-- **TLD** → **Top-Level Domain** (e.g. `.com`, `.org`, `.edu`, `.in`)
-- **SLD** → **Second-Level Domain** (e.g. `google.com`, `microsoft.com`)
-- **Third-Level Domain** → Commonly called **Subdomain** (e.g. `www.google.com`, `mail.google.com`)
+A URL identifies **what** the resource is, **where** it is located, and **how** the browser should retrieve it.
 
-### 1.1 Domain hierarchy
+### Core Components
 
+| Component   | Name                  | Description                                                                                                   |
+| :---------- | :-------------------- | :------------------------------------------------------------------------------------------------------------ |
+| **https**   | **Scheme (Protocol)** | Defines the rules for data transfer. `https` is secure (TLS encrypted), while `http` is plaintext (insecure). |
+| **www**     | **Subdomain**         | A subdivision of the main domain used for routing (e.g., `api`, `mail`, `blog`).                              |
+| **google**  | **Domain (SLD)**      | The unique brand name registered to an organization (Second-Level Domain).                                    |
+| **.com**    | **TLD**               | The Top-Level Domain suffix (e.g., `.org`, `.edu`, `.in`).                                                    |
+| **/search** | **Path**              | The specific directory or resource location on the server.                                                    |
+| **?q=web**  | **Query Parameters**  | Key-value pairs used for filtering or searching. `q` is the key, `web` is the value.                          |
+| **#top**    | **Fragment**          | An internal page anchor (client-side only). The server ignores this.                                          |
+
+### Full URL Mapping Example
+
+`https://www.google.com/search?q=web#results`
+
+- **Protocol:** `https`
+- **Host:** `www.google.com` (Subdomain + Domain + TLD)
+- **Path:** `/search`
+- **Query String:** `?q=web`
+- **Fragment:** `#results`
+
+---
+
+## 1.1 Domain Hierarchy and DNS Structure
+
+Domains are organized in a tree-like hierarchy managed globally by **ICANN**.
+
+```text
+. (Root)
+└── TLD (Top-Level Domain)      → .com, .org, .edu, .gov, .in, .au
+    └── SLD (Second-Level Domain) → google.com, microsoft.com, example.org
+        └── Subdomain           → www.google.com, api.google.com, docs.google.com
 ```
 
-. (root)
-└── TLD → com, org, edu, gov, in, au
-└── SLD → google.com, microsoft.com
-└── Subdomain → www.google.com, docs.google.com
+- **Root (.)**: Implicit and absolute; it sits at the very top but is never typed by users.
+- **TLD**: Managed by registries. Can be generic (`.com`) or country-specific (`.in`).
+- **SLD**: This is what companies purchase through registrars (e.g., GoDaddy, Namecheap).
+- **Subdomain**: Fully controlled by the domain owner to isolate services (e.g., `staging.website.com`).
 
+---
+
+## 1.2 Domain to IP Mapping (DNS Resolution)
+
+Machines do not communicate via "google.com"; they use **IP Addresses**. The **DNS (Domain Name System)** acts as the phonebook of the internet.
+
+1.  **Browser Request:** User types `www.google.com`.
+2.  **DNS Lookup:** The browser queries a DNS Resolver to find the IP.
+3.  **Mapping:** `www.google.com` $\rightarrow$ `142.250.198.78` (IPv4), `IPv6: 2404:6800:4009:80b::200e`.
+4.  **Connection:** The browser initiates a TCP/TLS handshake with that specific IP.
+
+---
+
+## 1.3 URL vs Domain vs IP: Comparison
+
+| Term           | What it is                     | Human-Readable | Example                               |
+| :------------- | :----------------------------- | :------------- | :------------------------------------ |
+| **URL**        | Complete address of a resource | ✅             | `https://www.google.com/search?q=web` |
+| **Domain**     | Website's brand/identity       | ✅             | `google.com`                          |
+| **Subdomain**  | Division of a domain           | ✅             | `www.google.com`                      |
+| **IP Address** | Server's network address       | ❌             | `142.250.198.78`                      |
+
+---
+
+## 1.4 Visual Breakdown (Mermaid Graph)
+
+```mermaid
+flowchart TD
+    URL["<b>Full URL:</b> https://www.google.com/search?q=web#top"]
+
+    URL --> Proto["<b>Protocol (Scheme)</b><br/>https://"]
+
+    URL --> Host["<b>Host (Server Name)</b><br/>www.google.com"]
+    Host --> Sub["Subdomain: www"]
+    Host --> SLD["Domain: google"]
+    Host --> TLD["TLD: .com"]
+
+    URL --> Path["<b>Path (Location)</b><br/>/search"]
+
+    URL --> Query["<b>Query String (Data)</b><br/>?q=web"]
+    Query --> Key["Key: q"]
+    Query --> Val["Value: web"]
+
+    URL --> Frag["<b>Fragment (Anchor)</b><br/>#top"]
+
+    style URL fill:#01579b,stroke:#333,stroke-width:2px
+    style Host fill:#e1f5fe,stroke:#01579b
+    style Path fill:#fff3e0,stroke:#e65100
+    style Query fill:#f1f8e9,stroke:#33691e
 ```
 
-- **Root (.)**: implicit, never typed
-- **TLD**: managed by registries (via ICANN)
-- **SLD**: what companies buy
-- **Subdomain**: logical routing (www, api, cdn)
+---
 
-### 1.2 Domain → IP
+## 1.5 URL vs URI vs URN
 
-- Human‑readable → machine‑readable
-- Example:
+These terms are technically different despite being used interchangeably in daily development.
 
-```
+### Formal Definitions
 
-www.google.com → 142.250.198.78 (IPv4)
+| Term    | Full Form                       | Meaning                                                      | Usage              |
+| :------ | :------------------------------ | :----------------------------------------------------------- | :----------------- |
+| **URI** | Uniform Resource **Identifier** | The superset. Any string that identifies a resource.         | **Identification** |
+| **URL** | Uniform Resource **Locator**    | A URI that identifies **where** it is and **how** to get it. | **Location**       |
+| **URN** | Uniform Resource **Name**       | A URI that identifies a resource by a **unique name**.       | **Identity**       |
 
-```
+> **The Gold Rule:** "All URLs are URIs, and all URNs are URIs, but not all URIs are URLs."
+
+### The "Person" Analogy
+
+- **URI (Identifier):** Your **Full Identity**. Anything that points to "You" (Name, Address, or SSN).
+- **URL (Locator):** Your **Home Address**. It tells people exactly where to go to find you. If you move houses, your URL changes.
+- **URN (Name):** Your **Social Security Number**. It is a unique ID that stays with you forever, regardless of where you live.
+
+### Real-World URN Examples (Persistent Identity)
+
+- **Books:** `urn:isbn:9780132350884` (Identifies the book even if the URL to buy it changes).
+- **Software IDs:** `urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66`.
+- **Standards:** `urn:ietf:rfc:2648`.
+
+---
+
+## 1.6 REST & API Perspective
+
+For developers, URLs are the interface of the API.
+
+- **Path Identifies:** Use nouns for resources (e.g., `/users/123`).
+- **Query Modifies:** Use for filtering or sorting (e.g., `?sort=desc`).
+- **HTTPS is Mandatory:** REST APIs must use TLS for security and data integrity.
+
+---
+
+## 1.7 Key Takeaways
+
+1.  **URL $\neq$ Domain:** The domain is just one part of the URL.
+2.  **Path identifies WHAT:** (The resource on the server).
+3.  **Query modifies HOW:** (Filtering/sorting the representation).
+4.  **Fragment is Client-Only:** Browsers use it to scroll; servers never receive it.
+5.  **Memory Hook:**
+    - **URI** $\rightarrow$ Who is it? (The Concept)
+    - **URL** $\rightarrow$ Where is it? (The Address)
+    - **URN** $\rightarrow$ What is its name? (The Unique ID)
+6.  **Common Protocol(Schemes)**
+    - http → plain text (❌ insecure)
+    - https → encrypted via TLS (✅ mandatory)
+    - ws / wss → WebSockets
+    - ftp, mailto, file
+    - HTTPS ≠ authentication, only encryption
+    - TLS handshake happens before HTTP
+    - REST APIs must use HTTPS only
+7.  **API Mapping**
+    - Scheme → security
+    - Host → environment
+    - Path → resource identity
+    - Query → modifiers
+    - Headers → auth, metadata
+    - Body → state transfer
+8.  Fragment(Anchor) never reaches server
+9.  REST = URL + HTTP semantics
+    > HTTP semantics = shared contract between client, server, proxies, and caches.
 
 > Mapping governed by **ICANN**, registrars, and DNS infrastructure.
+> Governance
+
+- ICANN → policy
+- Registrars → domain sales
+- DNS providers → resolution infrastructure
 
 ---
 
@@ -237,18 +323,6 @@ Client
 ← streamed back to client
 
 ```
-
-### 2.1 Pre‑request checks
-
-Before any network call:
-
-1. **Browser cache** (memory / disk)
-2. **Service Worker cache** (if registered)
-3. **OS‑level DNS cache**
-
-If found → **network is skipped entirely**.
-
----
 
 ## 3. DNS Resolution (Name → IP)
 
@@ -327,9 +401,172 @@ After this:
 
 ---
 
-## 6. HTTP Request & Response
+## 6. HTTP Semantics: The Shared Contract of the Web
 
-### 6.1 Client → Server Data Flow
+HTTP semantics define the **meaning and expected behavior** of HTTP methods, status codes, headers, and caching rules. It is not just about how data is sent, but what the request is supposed to accomplish and how the server—and every proxy in between—should react.
+
+> **The Golden Rule:** REST APIs work because they respect HTTP semantics. Violating these rules breaks tooling, prevents caching, and kills scalability.
+
+---
+
+## 6.1 HTTP Method Semantics
+
+Methods are not just verbs; they define the "contract" of the request.
+
+### The Method Matrix
+
+| Method      | Semantic Meaning                    | Safe | Idempotent | Cacheable |
+| :---------- | :---------------------------------- | :--: | :--------: | :-------: |
+| **GET**     | Retrieve a representation           |  ✅  |     ✅     |    ✅     |
+| **POST**    | Create a resource or trigger action |  ❌  |     ❌     |    ❌     |
+| **PUT**     | Replace a resource (Upsert)         |  ❌  |     ✅     |    ❌     |
+| **PATCH**   | Partial modification                |  ❌  |     ❌     |    ❌     |
+| **DELETE**  | Remove a resource                   |  ❌  |     ✅     |    ❌     |
+| **HEAD**    | GET but without the body            |  ✅  |     ✅     |    ✅     |
+| **OPTIONS** | Discover server capabilities        |  ✅  |     ✅     |    ❌     |
+
+### Key Semantic Rules
+
+- **GET:** Must **not** change server state. It is a "read-only" operation.
+- **POST:** The "catch-all" for non-idempotent actions. Repeating a POST may create duplicate resources.
+- **PUT:** The client provides the _entire_ resource. If you call it 10 times with the same body, the result on the server is identical to calling it once (**Idempotency**).
+- **DELETE:** Deleting a resource that is already gone should still result in a successful state (usually 204 or 404), but the server state remains "deleted."
+
+---
+
+## 6.2 Status Code Semantics
+
+Status codes allow the client to understand the result of a request without parsing the body.
+
+### Success (2xx)
+
+- **200 OK:** Standard success. Example: GET /users returns user list.
+- **201 Created:** Successful creation (usually returned with a `Location` header). Example: POST /users creates new user, returns 201 with Location: /users/456.
+- **204 No Content:** Success, but there is no body to return (common for DELETE/PUT). Example: DELETE /users/123 returns 204.
+
+### Client Errors (4xx)
+
+- **400 Bad Request:** The server cannot process the request due to client error (e.g., malformed syntax). Example: Invalid JSON in POST body.
+- **401 Unauthorized:** Authentication is required and has failed or not been provided. Example: Missing API key.
+- **403 Forbidden:** The client is authenticated but does not have permission for this resource. Example: User trying to access admin endpoint.
+- **404 Not Found:** The resource does not exist. Example: GET /users/999 when user doesn't exist.
+- **409 Conflict:** State conflict (e.g., trying to create a user with an email that already exists). Example: Duplicate email registration.
+- **422 Unprocessable Entity:** Validation error (syntax is correct, but logic is wrong). Example: Password too short.
+
+### Server Errors (5xx)
+
+- **500 Internal Server Error:** Generic "something went wrong" on the server. Example: Database connection failure.
+- **502 Bad Gateway:** One server received an invalid response from another (proxy issue). Example: Upstream API down.
+- **503 Service Unavailable:** Server is overloaded or down for maintenance. Example: Server under heavy load.
+
+---
+
+## 6.3 Header Semantics (Metadata with Meaning)
+
+Headers provide the context required to process the request and response correctly.
+
+| Type         | Header          | Semantic Purpose                                                    |
+| :----------- | :-------------- | :------------------------------------------------------------------ |
+| **Request**  | `Authorization` | Identity and credentials.                                           |
+| **Request**  | `Accept`        | Tells the server: "I want the response in this format (JSON, XML)." |
+| **Response** | `Content-Type`  | Tells the client: "This body is formatted as JSON."                 |
+| **Response** | `Location`      | The URL of a newly created resource (used with 201).                |
+| **Response** | `ETag`          | A unique version identifier for caching.                            |
+
+---
+
+## 6.4 Content Negotiation
+
+Clients and servers use headers to agree on the format of the data. This is what allows an API to serve JSON to a web app and Protobuf to a mobile app using the same URL.
+
+```http
+GET /users/1
+Accept: application/json
+```
+
+_The server sees `Accept` and responds with `Content-Type: application/json`._
+
+---
+
+## 6.5 Caching Semantics
+
+Caching is the primary way the web scales. It is controlled by headers that tell intermediaries (CDNs, Browsers) how long to keep data.
+
+### Cache-Control Directives
+
+- **`public`**: Anyone can cache it (Browser, CDN, Proxy).
+- **`private`**: Only the end-user's browser can cache it.
+- **`no-store`**: Do not save this request/response anywhere. **(Security critical)**
+- **`max-age`**: How long the resource is "fresh" in seconds.
+
+### Conditional Requests (The 304 Flow)
+
+1.  Client sends `If-None-Match: "etag123"`.
+2.  If the data hasn't changed, the server sends **304 Not Modified**.
+3.  **Result:** Zero bandwidth spent on the body.
+
+---
+
+## 6.6 Safety & Idempotency (For Distributed Systems)
+
+These concepts are vital for handling network failures.
+
+- **Safe Methods:** Methods that don't change state (GET, HEAD). You can pre-fetch these or retry them infinitely.
+- **Idempotent Methods:** Methods where the side-effect of N requests is the same as 1 request (PUT, DELETE). If a network timeout occurs, a Load Balancer can safely retry a PUT request.
+- **Non-Idempotent (POST):** Cannot be safely retried automatically. If you retry a "Charge Credit Card" POST, you might charge the customer twice.
+
+---
+
+## 6.7 HTTP vs. REST Semantics
+
+| Feature     | HTTP                           | REST                                 |
+| :---------- | :----------------------------- | :----------------------------------- |
+| **Role**    | The Protocol (The "How")       | Architectural Style (The "Design")   |
+| **Focus**   | Methods, Status Codes, Headers | Resources, Statelessness, HATEOAS    |
+| **Context** | Transporting data packets      | Modeling business logic as resources |
+
+---
+
+## 6.8 Common Semantic Anti-Patterns
+
+❌ **Using GET to delete data:** Browsers/crawlers may accidentally trigger deletes.
+❌ **Returning 200 for everything:** Forcing the client to parse the JSON to see if an error occurred.
+❌ **Returning 500 for validation:** 500 means the _code_ broke; 422/400 means the _user_ sent bad data.
+❌ **Actions in URLs:** `POST /deleteUser` violates REST; it should be `DELETE /users/id`.
+
+---
+
+## 6.9 HTTP Semantic Flow
+
+```mermaid
+flowchart LR
+    Client -->|1. Method + Headers| Server
+    Server -->|2. Status Code + Body| Client
+
+    subgraph Optimization
+    Client -->|3. GET + ETag| Cache[Proxy/CDN Cache]
+    Cache -- Valid? -->|4. 304 Not Modified| Client
+    Cache -- Expired? --> Server
+    end
+
+    subgraph Distributed Logic
+    LB[Load Balancer] -->|Retry Idempotent Only| Server
+    end
+```
+
+---
+
+## 6.10 Mental Model
+
+**HTTP semantics = A shared contract.**
+
+When you follow the contract, the entire internet (Browsers, CDNs, Load Balancers, API Gateways) knows how to help your application run faster and more reliably. When you break the contract, you are on your own.
+
+**Summary:** HTTP methods define actions (GET for read, POST for create), status codes indicate results (200 OK, 404 Not Found), headers add metadata, and caching optimizes performance. Always follow these semantics for scalable, secure APIs. For real-time communication, see [WebSockets](#342-websockets-in-depth).
+
+## 7. HTTP Request & Response
+
+### 7.1 Client → Server Data Flow
 
 ```
 
@@ -343,7 +580,7 @@ Client
 
 ```
 
-### 6.2 Browser Pre‑Request Checks
+### 7.2 Browser Pre‑Request Checks
 
 Before hitting the network:
 
@@ -353,7 +590,7 @@ Before hitting the network:
 
 If found → **network call skipped**
 
-### 6.3 HTTP request
+### 7.3 HTTP request
 
 ```
 
@@ -362,7 +599,7 @@ Host: example.com
 
 ```
 
-### 6.4 Response streaming (important correction)
+### 7.4 Response streaming (important correction)
 
 - Data is **not fixed to 14kb / 28kb / 56kb**
 - Chunking depends on:
@@ -378,9 +615,9 @@ Correct mental model:
 
 ---
 
-## 7. Browser Resource Scheduling
+## 8. Browser Resource Scheduling
 
-### 7.1 Parallel Network Requests
+### 8.1 Parallel Network Requests
 
 - Browsers allow **~6–8 parallel connections per origin**
 - Extra requests are **queued**
@@ -395,24 +632,11 @@ DevTools → Network → Timing → Queueing
 
 This delay appears as **Resource Scheduling Queueing**
 
-### 7.2 Parallel requests
-
-- Browsers allow ~**6–8 parallel connections per origin**
-- Excess requests are **queued**
-
-You can see this in:
-
-```
-
-DevTools → Network → Timing → Queueing
-
-```
-
 ---
 
-## 8. HTML Parsing → DOM
+## 9. HTML Parsing → DOM
 
-### 8.1 Parsing HTML
+### 9.1 Parsing HTML
 
 - HTML is parsed **top‑down**
 - Tokens → Nodes → **DOM Tree**
@@ -431,14 +655,14 @@ html
 
 ---
 
-## 9. CSS Parsing → CSSOM
+## 10. CSS Parsing → CSSOM
 
-### 9.1 CSSOM
+### 10.1 CSSOM
 
 - CSS is parsed into **CSSOM**
 - Represents computed styles
 
-### 9.2 Blocking Rules
+### 10.2 Blocking Rules
 
 - **CSS is Render‑Blocking**
 
@@ -460,14 +684,14 @@ html
 
 ---
 
-## 10. JavaScript Loading & Execution
+## 11. JavaScript Loading & Execution
 
-### 10.1 Why JS blocks parsing
+### 11.1 Why JS blocks parsing
 
 - JS can mutate DOM
 - Browser must pause parsing to execute
 
-### 10.2 Script attributes
+### 11.2 Script attributes
 
 | Type   | Parser       | Execution        |
 | ------ | ------------ | ---------------- |
@@ -481,9 +705,9 @@ Golden rule:
 
 ---
 
-## 11. DOM + CSSOM → Render Tree
+## 12. DOM + CSSOM → Render Tree
 
-### 11.1 Render Tree rules
+### 12.1 Render Tree rules
 
 Included:
 
@@ -499,9 +723,9 @@ Excluded:
 
 ---
 
-## 12. Layout (Reflow)
+## 13. Layout (Reflow)
 
-### 12.1 What layout does
+### 13.1 What layout does
 
 - Calculates:
 
@@ -509,7 +733,7 @@ Excluded:
   - position
   - box model
 
-### 12.2 What triggers reflow
+### 13.2 What triggers reflow
 
 - Changing:
 
@@ -521,7 +745,7 @@ Reflow is **expensive**.
 
 ---
 
-## 13. Paint
+## 14. Paint
 
 - Converts boxes → pixels
 - Text, colors, borders, shadows
@@ -534,7 +758,7 @@ Changing these triggers **repaint only**:
 
 ---
 
-## 14. Compositing
+## 15. Compositing
 
 - Layers sent to GPU
 - Transforms & opacity handled here
@@ -550,7 +774,7 @@ opacity
 
 ---
 
-## 15. Performance Milestones
+## 16. Performance Milestones
 
 | Metric | Meaning               |
 | ------ | --------------------- |
@@ -562,11 +786,11 @@ opacity
 **Note:**
 
 1. These are key points in loading a webpage. FCP is when you first see something on screen.
-2. Use Chrome DevTools or Web Vitals to measure these. Aim for LCP under 2.5s for good UX.
+2. Use Chrome DevTools or Web Vitals to measure these. Aim for LCP under 2.5s for good UX. See [Debugging Tools](#35-debugging-tools) for more on using DevTools.
 
 ---
 
-## 16. HTTP Versions Comparison
+## 17. HTTP Versions Comparison
 
 | Feature               | HTTP/1.1 | HTTP/2               | HTTP/3     |
 | --------------------- | -------- | -------------------- | ---------- |
@@ -588,15 +812,15 @@ opacity
 
 ---
 
-## 17. Peering & ICANN
+## 18. Peering & ICANN
 
-### 17.1 Peering
+### 18.1 Peering
 
 - Direct ISP ↔ provider connections
 - Fewer hops = lower latency
 - Google, Cloudflare excel at peering
 
-### 17.2 ICANN & WHOIS
+### 18.2 ICANN & WHOIS
 
 - **ICANN** governs domain ↔ IP mapping rules
 - WHOIS privacy hides owner details
@@ -604,7 +828,7 @@ opacity
 
 ---
 
-## 18. Complete Timeline (Condensed)
+## 19. Complete Timeline (Condensed)
 
 ```
 
@@ -626,7 +850,7 @@ Request page
 
 ---
 
-## 19. Key Mental Models
+## 20. Key Mental Models
 
 - **HTML builds DOM**
 - **CSS builds CSSOM**
@@ -639,7 +863,7 @@ Request page
 
 ---
 
-## 20. Tips
+## 21. Tips
 
 - Inline critical CSS
 - Defer non‑critical JS
@@ -647,10 +871,16 @@ Request page
 - Avoid layout thrashing
 - Use HTTP/2 or HTTP/3
 - Prefer CDN + peering
+- Optimize images for mobile with responsive attributes (srcset, sizes) to reduce bandwidth
+- Implement lazy loading for images and iframes to defer off-screen content
+- Minimize render-blocking resources; use async/defer for scripts where possible
+- Test mobile performance using Chrome DevTools device emulation and network throttling (see [Debugging Tools](#35-debugging-tools))
+- Use code splitting and tree shaking to reduce JavaScript bundle sizes
+- Implement service workers for caching and offline functionality in PWAs
 
 ---
 
-## 21. One‑Sentence Summary about hit to pixel on ui
+## 22. One‑Sentence Summary about hit to pixel on ui
 
 > The web is a carefully staged pipeline where **networking latency, parsing order, and rendering cost** decide how fast users see pixels.
 
@@ -658,7 +888,7 @@ Request page
 
 ---
 
-## 22. Big Picture Visualization
+## 23. Big Picture Visualization
 
 ```mermaid
 flowchart LR
@@ -678,7 +908,7 @@ flowchart LR
 
 ---
 
-## 23. Browser Pre-Checks Visualization
+## 24. Browser Pre-Checks Visualization
 
 ```mermaid
 graph LR
@@ -695,7 +925,7 @@ graph LR
 
 ---
 
-## 24. Full Request Flow Visualization
+## 25. Full Request Flow Visualization
 
 ```mermaid
 flowchart LR
@@ -708,7 +938,7 @@ flowchart LR
 
 ---
 
-## 25. DNS Resolution Visualization
+## 26. DNS Resolution Visualization
 
 ```mermaid
 sequenceDiagram
@@ -729,7 +959,7 @@ sequenceDiagram
 
 ---
 
-## 26. TCP 3-Way Handshake Visualization
+## 27. TCP 3-Way Handshake Visualization
 
 ```mermaid
 sequenceDiagram
@@ -746,7 +976,7 @@ sequenceDiagram
 
 ---
 
-## 27. TLS Handshake Visualization
+## 28. TLS Handshake Visualization
 
 ```mermaid
 sequenceDiagram
@@ -761,7 +991,7 @@ sequenceDiagram
 
 ---
 
-## 28. 1-RTT vs Multi-RTT Visualization
+## 29. 1-RTT vs Multi-RTT Visualization
 
 ```mermaid
 graph LR
@@ -784,7 +1014,7 @@ graph LR
 
 ---
 
-## 29. Critical Rendering Path Visualization
+## 30. Critical Rendering Path Visualization
 
 ```mermaid
 graph LR
@@ -812,7 +1042,7 @@ graph LR
 
 ---
 
-## 30. Web Protocol Comparison Diagram
+## 31. Web Protocol Comparison Diagram
 
 ```mermaid
 classDiagram
@@ -900,7 +1130,7 @@ classDiagram
 
 ---
 
-### Detailed Breakdown of "How It Works"
+### 31.1 Detailed Breakdown of "How It Works"
 
 | Protocol      | How It Works (Step-by-Step)                     | Technical Detail                                                                    |
 | :------------ | :---------------------------------------------- | :---------------------------------------------------------------------------------- |
@@ -913,13 +1143,13 @@ classDiagram
 | **SMTP**      | `HELO/EHLO` ➔ `MAIL FROM` ➔ `RCPT TO`           | **Relay:** Designed to jump between servers until it reaches the destination.       |
 | **FTP**       | `Auth on Port 21` ➔ `Transfer on Port 20`       | **Active vs Passive:** Can be blocked by firewalls depending on the mode.           |
 
-### Key Takeaways for Mental Model:
+### 31.2 Key Takeaways for Mental Model:
 
 1.  **Transport is the Foundation:** All "Application" protocols (HTTP, SMTP, FTP) must choose between **TCP** (Reliable/Slow) or **UDP** (Fast/Unreliable).
 2.  **The "Nonce" connection:** In HTTPS (and Web security like CSP), **Nonces** are random numbers used to ensure that a cryptographic session or a script tag is unique and cannot be replayed by a hacker.
 3.  **HTTP/3 is the Future:** By moving to UDP (QUIC), it fixes the "Head-of-Line Blocking" problem where one slow packet used to freeze the entire website load.
 
-## The 7 OSI (Open Systems Interconnection) Layers (Brief Intro)
+## 31.3 The 7 OSI (Open Systems Interconnection) Layers (Brief Intro)
 
 - **Layer 7: Application** – The "Interface" (What you see: HTTP, WebSocket, SMTP).
 - **Layer 6: Presentation** – The "Translator" (Encryption/SSL, Compression).
@@ -931,7 +1161,7 @@ classDiagram
 
 ---
 
-### Protocol to OSI Mapping
+### 31.4 Protocol to OSI Mapping
 
 ```mermaid
 %%{init: {'flowchart': {'nodeSpacing': 90, 'rankSpacing': 90, 'padding': 30}}}%%
@@ -975,7 +1205,7 @@ flowchart TD
     L7 ==> L6 ==> L5 ==> L4 ==> L3 ==> L2 ==> L1
 ```
 
-### Why this matters for "How the Web Works":
+### 31.5 Why this matters for "How the Web Works":
 
 1.  **Top-Down Execution:** When you type a URL, the data starts at **L7 (HTTP)**, gets encrypted at **L6 (TLS)**, and is broken into segments at **L4 (TCP)** before traveling down the physical wire.
 2.  **Troubleshooting:** If your "Internet is down," it's usually **L1 or L2** (cable unplugged). If the "Website is slow," it's usually **L4 (TCP Congestion)** or **L7 (Heavy JS code)**.
@@ -983,49 +1213,29 @@ flowchart TD
 
 ---
 
-## 31. Web Architecture Deep Dive
+## 32. Web Architecture Deep Dive
 
 **Note:** This section bridges the technical pipeline with high-level web architectures, catering to architects and engineers designing scalable systems.
 
-### 31.1 Client-Server Architecture
+Web architecture has evolved from simple client-server models to complex, scalable systems. Traditional client-server setups involve browsers requesting HTML/CSS/JS from servers, evolving into dynamic apps via REST or GraphQL APIs. Rendering strategies include Single Page Applications (SPAs), which load a shell and update the DOM via JavaScript for fast interactions but face SEO and load time challenges—mitigated by Server-Side Rendering (SSR) for per-request rendering or Static Site Generation (SSG) for build-time pre-rendering, both improving SEO and perceived speed.
 
-- **Traditional Model:** Browser (client) requests resources from server. Server responds with HTML/CSS/JS.
-- **Evolution:** From static sites to dynamic apps using APIs (REST, GraphQL).
+Progressive Web Apps (PWAs) enhance experiences with offline support, installability, and push notifications through Service Workers. For backend scalability, microservices decouple services via APIs, enabling faster deployments despite added networking complexity like API gateways. Content Delivery Networks (CDNs) distribute content globally, reducing latency by caching assets and using edge computing.
 
-### 31.2 Single Page Applications (SPAs)
-
-- **How It Works:** Initial load fetches a shell; subsequent navigation updates DOM via JS (e.g., React, Vue).
-- **Pros:** Fast interactions, rich UX.
-- **Cons:** SEO challenges, initial load time. Mitigate with SSR/SSG.
-
-### 31.3 Server-Side Rendering (SSR) & Static Site Generation (SSG)
-
-- **SSR:** Server renders HTML on each request (e.g., Next.js, Nuxt).
-- **SSG:** Pre-renders at build time for static hosting (e.g., Gatsby).
-- **Benefits:** Better SEO, faster perceived load.
-
-### 31.4 Progressive Web Apps (PWAs)
-
-- **Features:** Offline support via Service Workers, installable, push notifications.
-- **Architecture:** Combines web standards with app-like experiences.
-
-### 31.5 Microservices & APIs
-
-- **Decoupled Services:** Backend split into independent services communicating via APIs.
-- **Web Impact:** Faster deployments, but adds complexity in networking (e.g., API gateways, load balancers).
-
-### 31.6 Content Delivery Networks (CDNs)
-
-- **Role:** Distribute content globally to reduce latency (e.g., Cloudflare, Akamai).
-- **Integration:** Cache static assets, edge computing for dynamic content.
-
-### 31.7 Scalability Considerations
-
-- **Horizontal Scaling:** Load balancers distribute traffic.
-- **Caching Layers:** Browser → CDN → Server → Database.
-- **Monitoring:** Use tools like Web Vitals for performance metrics.
+Scalability considerations include horizontal scaling with load balancers, multi-tier caching (browser to database), and monitoring via Web Vitals. Architects must align choices with the web pipeline: prioritize CDNs and HTTP/3 for global reach, optimize Critical Rendering Path and JavaScript bundles for interactivity.
 
 **Key Takeaway for Architects:** The web's pipeline (DNS → TCP → HTTP → Render) must align with architecture choices. For global apps, prioritize CDNs and HTTP/3; for interactive apps, optimize CRP and JS bundles.
+
+```mermaid
+flowchart TD
+    CS[Client-Server] --> SPAs[Single Page Apps<br/>SPAs]
+    CS --> SSR[Server-Side Rendering<br/>SSR]
+    CS --> SSG[Static Site Generation<br/>SSG]
+    CS --> PWAs[Progressive Web Apps<br/>PWAs]
+    CS --> MS[Microservices<br/>& APIs]
+    CS --> CDNs[Content Delivery Networks<br/>CDNs]
+
+    style CS fill:#e1f5fe,stroke:#01579b
+```
 
 ---
 
@@ -1050,3 +1260,31 @@ flowchart TD
   - Martin Fowler: [Microservices](https://martinfowler.com/microservices/)
   - "Designing Data-Intensive Applications" by Martin Kleppmann
   - Web.dev: [Progressive Web Apps](https://web.dev/progressive-web-apps/)
+
+---
+
+## Glossary
+
+- **API (Application Programming Interface):** A set of rules for interacting with software.
+- **Cache:** Temporary storage for quick data access.
+- **CDN (Content Delivery Network):** Network of servers distributing content globally.
+- **CORS (Cross-Origin Resource Sharing):** Mechanism for handling cross-origin requests.
+- **CSP (Content Security Policy):** Security standard to prevent XSS attacks.
+- **DNS (Domain Name System):** Translates domain names to IP addresses.
+- **DOM (Document Object Model):** Tree representation of HTML.
+- **Fetch API:** Modern web API for HTTP requests.
+- **HTTP (Hypertext Transfer Protocol):** Protocol for web data transfer.
+- **HTTPS:** Secure version of HTTP using TLS.
+- **ICANN:** Organization managing domain names.
+- **IP Address:** Unique identifier for devices on a network.
+- **OSI Model:** Framework for network communication layers.
+- **PWA (Progressive Web App):** Web app with app-like features.
+- **Render Tree:** Combination of DOM and CSSOM for rendering.
+- **REST:** Architectural style for APIs.
+- **SPDY:** Predecessor to HTTP/2.
+- **SSL/TLS:** Protocols for secure communication.
+- **TCP (Transmission Control Protocol):** Reliable transport protocol.
+- **UDP (User Datagram Protocol):** Fast, unreliable transport protocol.
+- **URL (Uniform Resource Locator):** Address for web resources.
+- **WebAssembly:** Binary format for high-performance web apps.
+- **WebSocket:** Protocol for real-time communication.
