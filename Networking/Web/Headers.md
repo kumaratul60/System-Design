@@ -460,6 +460,11 @@ _The action was successfully received, understood, and accepted._
 - **Meaning:** Success, but there is no body to return.
 - **Use Case:** Most common for `DELETE` operations or `PUT` updates where the client doesn't need to see the object again.
 
+### 206 Partial Content
+
+- **Meaning:** The server is delivering only part of the resource due to a range header sent by the client.
+- **Use Case:** Used for resumable downloads or streaming large files (e.g., video playback).
+
 ---
 
 ## 300s: Redirection & Caching
@@ -480,6 +485,16 @@ _Further action needs to be taken to complete the request._
 
 - **Meaning:** The resource has not changed since the last request.
 - **Context:** Used in **Conditional GETs**. The client sends an `If-None-Match` (ETag) or `If-Modified-Since` header. If the server sees the file is the same, it returns 304 with no body, saving massive amounts of bandwidth.
+
+### 307 Temporary Redirect
+
+- **Meaning:** Similar to 302, but the client must use the same HTTP method in the redirected request.
+- **Use Case:** Ensures POST requests remain POST after redirect; useful for API redirects.
+
+### 308 Permanent Redirect
+
+- **Meaning:** Similar to 301, but the client must use the same HTTP method in the redirected request.
+- **Use Case:** Permanent redirects that preserve method; rare but strict for APIs.
 
 ---
 
@@ -505,6 +520,16 @@ _The request contains bad syntax or cannot be fulfilled._
 - **Meaning:** The request could not be processed because of a conflict in the current state of the resource.
 - **Use Case:** Preventing duplicate signups (email already exists) or handling "Lost Updates" in database versioning.
 
+### 410 Gone
+
+- **Meaning:** The resource is permanently gone and will not be available again.
+- **Use Case:** For resources that have been deleted and won't return (stricter than 404).
+
+### 415 Unsupported Media Type
+
+- **Meaning:** The server refuses to accept the request because the payload format is unsupported.
+- **Use Case:** Client sends XML but server expects JSON.
+
 ### 422 Unprocessable Entity
 
 - **Meaning:** The syntax is correct (valid JSON), but the semantic content is wrong.
@@ -524,6 +549,11 @@ _The server failed to fulfill an apparently valid request._
 
 - **Meaning:** A generic "catch-all" error. Usually means the code crashed or an unhandled exception occurred.
 
+### 501 Not Implemented
+
+- **Meaning:** The server does not support the functionality required to fulfill the request.
+- **Use Case:** For unimplemented HTTP methods or features.
+
 ### 502 Bad Gateway vs. 504 Gateway Timeout
 
 - **502 Bad Gateway:** An intermediary server (like Nginx or a Load Balancer) received an invalid response from the actual application server.
@@ -533,6 +563,11 @@ _The server failed to fulfill an apparently valid request._
 
 - **Meaning:** The server is currently unable to handle the request.
 - **Use Case:** Usually temporary—server is down for maintenance or is overloaded.
+
+### 507 Insufficient Storage
+
+- **Meaning:** The server is unable to store the representation needed to complete the request.
+- **Use Case:** Common in WebDAV or when storage quota is exceeded (e.g., disk full on server).
 
 ---
 
