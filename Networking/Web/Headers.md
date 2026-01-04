@@ -619,7 +619,6 @@ _The server failed to fulfill an apparently valid request._
 2.  **Avoid 500s:** A 500 error is a failure of the developer to catch an exception. Always try to return a meaningful 4xx error instead.
 3.  **Use Headers:** When using 201, include `Location`. When using 429, include `Retry-After`.
 4.  **Consistency:** Ensure your entire API follows the same status code patterns to improve the Developer Experience (DX).
-5.
 
 ## Summary: Headers and Status Codes Quick Reference
 
