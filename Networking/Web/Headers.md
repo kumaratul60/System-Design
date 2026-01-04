@@ -620,6 +620,8 @@ _The server failed to fulfill an apparently valid request._
 3.  **Use Headers:** When using 201, include `Location`. When using 429, include `Retry-After`.
 4.  **Consistency:** Ensure your entire API follows the same status code patterns to improve the Developer Experience (DX).
 
+---
+
 ## Summary: Headers and Status Codes Quick Reference
 
 | Scenario             | Recommended Headers                                                                                             | Recommended Status Code            |
