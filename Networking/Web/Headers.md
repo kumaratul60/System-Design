@@ -1,6 +1,17 @@
-# HTTP Headers
+# HTTP Headers and Status Codes
 
-A comprehensive guide to HTTP headers: from beginner basics to advanced techniques, including how they work, use cases, and real-world examples.
+A comprehensive guide to HTTP headers and status codes: from beginner basics to advanced techniques, including how they work, use cases, and real-world examples.
+
+## Table of Contents
+
+- [Introduction to HTTP Headers](#introduction-to-http-headers)
+- [Beginner Level: Understanding Headers](#beginner-level-understanding-headers)
+- [Intermediate Level: Common Headers and Their Use Cases](#intermediate-level-common-headers-and-their-use-cases)
+- [Advanced Level: Optimization, Compression, and Security](#advanced-level-optimization-compression-and-security)
+- [Quick Comparison: Request vs. Response Headers](#quick-comparison-request-vs-response-headers)
+- [Key Distinctions](#key-distinctions)
+- [HTTP Status Codes](#http-status-codes)
+- [Summary: Headers and Status Codes Quick Reference](#summary-headers-and-status-codes-quick-reference)
 
 ---
 
@@ -397,14 +408,201 @@ fetch('/api/protected', {
 3. **ETag vs. If-Modified-Since:** ETag uses a unique hash; If-Modified-Since uses timestamps.
 4. **Cookie vs. Set-Cookie:** Set-Cookie instructs storage; Cookie sends stored data.
 
-## Summary Checklist
+---
 
-- Routing? Use **Host**.
-- Authentication? Use **Authorization**.
-- Sessions? Use **Set-Cookie** and **Cookie**.
-- Content format? Set **Content-Type**.
-- Caching? Implement **Cache-Control**, **ETag**, **If-None-Match**.
-- Compression? Enable **Accept-Encoding** and **Content-Encoding**.
-- Security? Use CORS, HSTS, and CSP headers.
+## HTTP Status Codes
+
+While headers provide metadata, status codes communicate the outcome of the HTTP request. This section covers essential status codes, their meanings, and practical use cases for building robust APIs.
+
+---
+
+HTTP status codes are the "language of the web," allowing servers to communicate the result of a request to the client. Choosing the correct code is essential for API usability, debugging, and search engine optimization.
+
+---
+
+## 100s: Informational
+
+_Request received, continuing process._
+
+### 100 Continue
+
+- **Meaning:** The server has received the request headers and the client should proceed to send the body.
+- **Practical Use:** Used in large file uploads where the client sends `Expect: 100-continue`. This allows the server to check headers (like authentication or file size) before the client wastes bandwidth sending a massive payload.
+
+### 101 Switching Protocols
+
+- **Meaning:** The server is switching to the protocol requested by the client.
+- **Practical Use:** This is the standard response when upgrading an HTTP connection to a **WebSocket** connection.
+
+---
+
+## 200s: Success
+
+_The action was successfully received, understood, and accepted._
+
+### 200 OK
+
+- **Meaning:** Standard success.
+- **Best Practice:** Use for `GET` requests returning data, or `PUT`/`PATCH` requests that return the updated resource.
+
+### 201 Created
+
+- **Meaning:** Request fulfilled and a new resource was created.
+- **Best Practice:** Always use for `POST` requests. The response should ideally include a `Location` header pointing to the new resource URL.
+
+### 202 Accepted
+
+- **Meaning:** The request has been accepted for processing, but processing is not yet complete.
+- **Use Case:** Ideal for **Asynchronous tasks**. If an API starts a long-running background job (like generating a report), return 202 immediately so the client isn't left hanging.
+
+### 204 No Content
+
+- **Meaning:** Success, but there is no body to return.
+- **Use Case:** Most common for `DELETE` operations or `PUT` updates where the client doesn't need to see the object again.
+
+---
+
+## 300s: Redirection & Caching
+
+_Further action needs to be taken to complete the request._
+
+### 301 Moved Permanently
+
+- **Meaning:** The resource is at a new permanent URL.
+- **Impact:** Browsers and SEO crawlers will update their links. Use this for migrating from `http` to `https`.
+
+### 302 Found (Temporary Redirect)
+
+- **Meaning:** The resource is temporarily elsewhere.
+- **Impact:** Unlike 301, SEO crawlers will not update their links to the new URL. Use this for localized redirects or maintenance pages.
+
+### 304 Not Modified
+
+- **Meaning:** The resource has not changed since the last request.
+- **Context:** Used in **Conditional GETs**. The client sends an `If-None-Match` (ETag) or `If-Modified-Since` header. If the server sees the file is the same, it returns 304 with no body, saving massive amounts of bandwidth.
+
+---
+
+## 400s: Client Errors
+
+_The request contains bad syntax or cannot be fulfilled._
+
+### 400 Bad Request
+
+- **Meaning:** The server cannot process the request due to something perceived as a client error (e.g., malformed JSON syntax).
+
+### 401 Unauthorized vs. 403 Forbidden
+
+- **401 Unauthorized:** The user is not authenticated. They need to log in or provide a valid token.
+- **403 Forbidden:** The user is authenticated but does not have the necessary permissions (roles) to access this specific resource.
+
+### 404 Not Found
+
+- **Meaning:** The server cannot find the requested resource.
+
+### 409 Conflict
+
+- **Meaning:** The request could not be processed because of a conflict in the current state of the resource.
+- **Use Case:** Preventing duplicate signups (email already exists) or handling "Lost Updates" in database versioning.
+
+### 422 Unprocessable Entity
+
+- **Meaning:** The syntax is correct (valid JSON), but the semantic content is wrong.
+- **Use Case:** Standard for **Form Validation errors**. For example, an age field containing a negative number.
+
+### 429 Too Many Requests
+
+- **Meaning:** The user has sent too many requests in a given amount of time ("Rate Limiting").
+
+---
+
+## 500s: Server Errors
+
+_The server failed to fulfill an apparently valid request._
+
+### 500 Internal Server Error
+
+- **Meaning:** A generic "catch-all" error. Usually means the code crashed or an unhandled exception occurred.
+
+### 502 Bad Gateway vs. 504 Gateway Timeout
+
+- **502 Bad Gateway:** An intermediary server (like Nginx or a Load Balancer) received an invalid response from the actual application server.
+- **504 Gateway Timeout:** The intermediary server waited too long for the application server to respond.
+
+### 503 Service Unavailable
+
+- **Meaning:** The server is currently unable to handle the request.
+- **Use Case:** Usually temporary—server is down for maintenance or is overloaded.
+
+---
+
+## Status Code Decision Logic
+
+| Request Intent  | Expected Result                              | Recommended Status       |
+| :-------------- | :------------------------------------------- | :----------------------- |
+| Read data       | Data found                                   | 200 OK                   |
+| Create resource | Resource created                             | 201 Created              |
+| Update/Delete   | Success, no body returned                    | 204 No Content           |
+| Any request     | Resource hasn't changed (Cache hit)          | 304 Not Modified         |
+| Any request     | Malformed syntax / Bad JSON                  | 400 Bad Request          |
+| Any request     | Missing Auth Token                           | 401 Unauthorized         |
+| Any request     | Authenticated, but no permission             | 403 Forbidden            |
+| Any request     | Resource missing                             | 404 Not Found            |
+| Submit Form     | Logic validation failed (e.g. weak password) | 422 Unprocessable Entity |
+| Submit Form     | Duplicate entry in DB                        | 409 Conflict             |
+| Heavy traffic   | Rate limit hit                               | 429 Too Many Requests    |
+
+---
+
+## Advanced Interview Distinctions
+
+### 401 vs. 403
+
+- **401 (Identity):** "I don't know who you are."
+- **403 (Permission):** "I know who you are, but you aren't allowed here."
+
+### 400 vs. 422
+
+- **400 (Format):** The server couldn't even read the request (e.g., a missing closing bracket in JSON).
+- **422 (Logic):** The server read the request perfectly, but the data violates business rules (e.g., "End Date" is before "Start Date").
+
+### 502 vs. 504
+
+- **502 (Invalid Response):** The upstream server sent back garbage or disconnected.
+- **504 (No Response):** The upstream server took too long and the proxy gave up.
+
+### 200 vs. 204
+
+- **200:** "Action done, here is the result."
+- **204:** "Action done, nothing more to say."
+
+---
+
+## Developer Best Practices
+
+1.  **Be Specific:** Never use 400 if 422 is more accurate.
+2.  **Avoid 500s:** A 500 error is a failure of the developer to catch an exception. Always try to return a meaningful 4xx error instead.
+3.  **Use Headers:** When using 201, include `Location`. When using 429, include `Retry-After`.
+4.  **Consistency:** Ensure your entire API follows the same status code patterns to improve the Developer Experience (DX).
+5.
+
+## Summary: Headers and Status Codes Quick Reference
+
+| Scenario             | Recommended Headers                                                                                             | Recommended Status Code            |
+| -------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Routing traffic      | **Host** (target domain)                                                                                        | N/A                                |
+| Authentication       | **Authorization** (tokens/JWT)                                                                                  | 401 Unauthorized (missing auth)    |
+| Sessions             | **Set-Cookie** (server → client), **Cookie** (client → server)                                                  | N/A                                |
+| Content format       | **Content-Type** (request/response body)                                                                        | N/A                                |
+| Caching              | **Cache-Control**, **ETag**, **If-None-Match**                                                                  | 304 Not Modified (cache hit)       |
+| Compression          | **Accept-Encoding** (request), **Content-Encoding** (response)                                                  | N/A                                |
+| Security             | **Access-Control-Allow-Origin** (CORS), **Strict-Transport-Security** (HSTS), **Content-Security-Policy** (CSP) | 403 Forbidden (insufficient perms) |
+| Successful GET       | N/A                                                                                                             | 200 OK                             |
+| Resource created     | N/A                                                                                                             | 201 Created                        |
+| No content to return | N/A                                                                                                             | 204 No Content                     |
+| Bad request syntax   | N/A                                                                                                             | 400 Bad Request                    |
+| Resource not found   | N/A                                                                                                             | 404 Not Found                      |
+| Server error         | N/A                                                                                                             | 500 Internal Server Error          |
+| Rate limit exceeded  | N/A                                                                                                             | 429 Too Many Requests              |
 
 ---
