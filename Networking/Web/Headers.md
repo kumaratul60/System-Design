@@ -15,6 +15,90 @@ Headers are divided into:
 
 This guide progresses from beginner concepts to advanced implementations, ensuring a clear understanding of how headers power the web.
 
+### Graphical Representation: HTTP Request-Response Flow
+
+```mermaid
+flowchart TD
+    Client[Client/Browser] -->|Sends Request with Headers| Server[Server/CDN]
+    Server -->|Processes Request| Logic[Business Logic]
+    Logic -->|Generates Response with Headers| Client
+    Client -->|Renders/Processes Response| End[End]
+
+    subgraph Request Headers
+        RH1[Host]
+        RH2[User-Agent]
+        RH3[Accept]
+        RH4[Authorization]
+    end
+
+    subgraph Response Headers
+        SH1[Content-Type]
+        SH2[Cache-Control]
+        SH3[Set-Cookie]
+        SH4[ETag]
+    end
+
+    Client -.-> RH1
+    Server -.-> SH1
+```
+
+This diagram illustrates the flow of headers in an HTTP transaction.
+
+#### Detailed HTTP Flow Diagram
+
+```mermaid
+sequenceDiagram
+    participant B as Browser / Client
+    participant S as Server / CDN
+
+    Note over B,S: 1️⃣ HTTP Request
+    B->>S: GET /api (Host, Origin, Accept, Authorization, Cookie, If-None-Match)
+    Note over S: Auth Check
+    Note over S: Cache Lookup
+    Note over S: Business Logic
+    Note over B,S: 2️⃣ HTTP Response
+    S-->>B: 200 OK (Content-Type, Content-Encoding, Cache-Control, ETag, Set-Cookie)
+```
+
+---
+
+```mermaid
+flowchart LR
+    B[Browser / Client]
+
+    subgraph Request["1️⃣ HTTP Request"]
+        R1[Host]
+        R2[Origin]
+        R3[Accept]
+        R4[Authorization]
+        R5[Cookie]
+        R6[If-None-Match / If-Modified-Since]
+    end
+
+    subgraph Server["CDN / Cache / Server"]
+        S1[Auth Check]
+        S2[Cache Lookup]
+        S3[Business Logic]
+    end
+
+    subgraph Response["2️⃣ HTTP Response"]
+        P1[Status: 200 / 304 / 401]
+        P2[Content-Type]
+        P3[Content-Encoding]
+        P4[Cache-Control]
+        P5[ETag / Last-Modified]
+        P6[Set-Cookie]
+    end
+
+    B -->|Request| R1
+    R1 --> Server
+    Server -->|Processing| S1
+    S1 --> S2 --> S3
+    S3 -->|Response| P1
+    P1 --> B
+
+```
+
 ---
 
 ## Beginner Level: Understanding Headers
@@ -175,6 +259,55 @@ Content-Type: text/css
 - **Cache Busting**: Append version to URLs to force updates.
 - **CDN Integration**: Headers like `X-Cache` indicate hit/miss.
 
+### Key Response Headers
+
+Response headers provide metadata from the server back to the client, controlling caching, security, content delivery, and more.
+
+#### Content-Type (Response)
+
+- **Purpose**: Specifies the media type of the response body.
+- **Example**: `Content-Type: application/json`
+- **Use Case**: Ensures client parses data correctly.
+
+#### Content-Length (Response)
+
+- **Purpose**: Size of the response body in bytes.
+- **Example**: `Content-Length: 1024`
+- **Use Case**: Helps clients know when data transfer is complete.
+
+#### Content-Encoding (Response)
+
+- **Purpose**: Indicates compression applied (matches client's Accept-Encoding).
+- **Example**: `Content-Encoding: gzip`
+- **Use Case**: Enables decompression for faster transfers.
+
+#### Cache-Control (Response)
+
+- **Purpose**: Defines caching directives for browsers/CDNs.
+- **Example**: `Cache-Control: no-cache, no-store`
+- **Use Case**: Optimizes performance by controlling what gets cached.
+
+#### ETag (Response)
+
+- **Purpose**: Unique identifier for resource version.
+- **Example**: `ETag: "abc123"`
+- **Use Case**: Efficient caching with conditional requests.
+
+#### Set-Cookie (Response)
+
+- **Purpose**: Instructs browser to store cookies.
+- **Example**: `Set-Cookie: sessionId=xyz; HttpOnly; Secure`
+- **Use Case**: Maintains state across requests.
+
+#### Other Important Response Headers
+
+- **Last-Modified**: Timestamp of last resource change (works with If-Modified-Since).
+- **Expires**: Absolute cache expiry time (legacy).
+- **Server**: Identifies server software (often omitted for security).
+- **Date**: Response generation time in UTC.
+- **Strict-Transport-Security (HSTS)**: Forces HTTPS.
+- **Access-Control-Allow-Origin**: Enables CORS.
+
 ### Security Headers
 
 - **CORS Headers**: `Access-Control-Allow-Origin` for cross-origin requests.
@@ -244,7 +377,7 @@ fetch('/api/protected', {
 3. **ETag vs. If-Modified-Since:** ETag uses a unique hash; If-Modified-Since uses timestamps.
 4. **Cookie vs. Set-Cookie:** Set-Cookie instructs storage; Cookie sends stored data.
 
-## Summary
+## Summary Checklist
 
 - Routing? Use **Host**.
 - Authentication? Use **Authorization**.
@@ -252,10 +385,23 @@ fetch('/api/protected', {
 - Content format? Set **Content-Type**.
 - Caching? Implement **Cache-Control**, **ETag**, **If-None-Match**.
 - Compression? Enable **Accept-Encoding** and **Content-Encoding**.
+- Security? Use CORS, HSTS, and CSP headers.
 
-- Need to route to a server? Use **Host**.
-- Need to block a malicious site? Check **Origin**.
-- Need to send a Token? Use **Authorization**.
-- Need to handle JSON? Set **Content-Type**.
-- Need better caching? Use **ETag** and **If-None-Match**.
-- Need session persistence? Use **Set-Cookie** and **Cookie**.
+---
+
+### Response Header Mental Model
+
+| Header           | Think of it as          |
+| ---------------- | ----------------------- |
+| Date             | When was this made?     |
+| Server           | Who made this?          |
+| Content-Type     | What is this?           |
+| Content-Length   | How big is it?          |
+| Set-Cookie       | Remember this           |
+| Content-Encoding | How is it packed?       |
+| Cache-Control    | How long can I save it? |
+| Last-Modified    | When did it change?     |
+| ETag             | Version fingerprint     |
+| Expires          | Hard expiry time        |
+
+---
