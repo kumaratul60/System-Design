@@ -352,21 +352,41 @@ fetch('/api/protected', {
 
 ---
 
-## Quick Reference Table
+## Request headers express intent and capability, response headers express facts and policy.
 
-| Header            | Think of it as...      | Direction        | Purpose                                    |
-| :---------------- | :--------------------- | :--------------- | :----------------------------------------- |
-| **Host**          | "Where am I going?"    | Client to Server | Routing to the correct domain or CDN.      |
-| **Origin**        | "Where did I start?"   | Client to Server | Security and CORS (Domain only).           |
-| **Referer**       | "Which page sent me?"  | Client to Server | Analytics and Tracking (Full URL).         |
-| **User-Agent**    | "Who/What am I?"       | Client to Server | Browser, OS, and Bot detection.            |
-| **Authorization** | "Here is my ID."       | Client to Server | Passing JWTs or API keys.                  |
-| **Cookie**        | "Remember me?"         | Client to Server | Sending saved session data back to server. |
-| **Set-Cookie**    | "Store this for me."   | Server to Client | Instructing the browser to save a session. |
-| **Accept**        | "What format I want"   | Client to Server | Content negotiation (e.g., JSON).          |
-| **Content-Type**  | "What format this IS"  | Both Ways        | Describing the data in the current body.   |
-| **Cache-Control** | "Save this for later." | Server to Client | Managing browser caching policies.         |
-| **ETag**          | "File fingerprint."    | Server to Client | Version tracking for optimized caching.    |
+## Quick Comparison: Request vs. Response Headers
+
+### Request Headers (Client → Server)
+
+| Header              | Think of it as...     | Purpose                                    |
+| :------------------ | :-------------------- | :----------------------------------------- |
+| **Host**            | "Where am I going?"   | Routing to the correct domain or CDN.      |
+| **Origin**          | "Where did I start?"  | Security and CORS (Domain only).           |
+| **Referer**         | "Which page sent me?" | Analytics and Tracking (Full URL).         |
+| **User-Agent**      | "Who/What am I?"      | Browser, OS, and Bot detection.            |
+| **Authorization**   | "Here is my ID."      | Passing JWTs or API keys.                  |
+| **Cookie**          | "Remember me?"        | Sending saved session data back to server. |
+| **Accept**          | "What format I want?" | Content negotiation (e.g., JSON).          |
+| **Accept-Encoding** | "How compressed?"     | Supported compression algorithms.          |
+| **If-None-Match**   | "Has it changed?"     | Conditional requests for caching.          |
+
+### Response Headers (Server → Client)
+
+| Header                        | Think of it as...      | Purpose                                    |
+| :---------------------------- | :--------------------- | :----------------------------------------- |
+| **Set-Cookie**                | "Store this for me."   | Instructing the browser to save a session. |
+| **Content-Type**              | "What format this IS"  | Describing the data in the current body.   |
+| **Content-Encoding**          | "How packed?"          | Compression applied to response.           |
+| **Cache-Control**             | "Save this for later." | Managing browser caching policies.         |
+| **ETag**                      | "File fingerprint."    | Version tracking for optimized caching.    |
+| **Last-Modified**             | "When did it change?"  | Timestamp for conditional requests.        |
+| **Expires**                   | "Hard expiry time."    | Absolute cache expiration.                 |
+| **Strict-Transport-Security** | "Force HTTPS."         | Enforces secure connections.               |
+
+### Mental Model for Quick Recall
+
+- **Request Headers Express Intent**: "Where? Who? What do I want? What can I handle?"
+- **Response Headers Express Facts**: "What is this? How big? How packed? Can I cache it? Remember user?"
 
 ---
 
@@ -386,22 +406,5 @@ fetch('/api/protected', {
 - Caching? Implement **Cache-Control**, **ETag**, **If-None-Match**.
 - Compression? Enable **Accept-Encoding** and **Content-Encoding**.
 - Security? Use CORS, HSTS, and CSP headers.
-
----
-
-### Response Header Mental Model
-
-| Header           | Think of it as          |
-| ---------------- | ----------------------- |
-| Date             | When was this made?     |
-| Server           | Who made this?          |
-| Content-Type     | What is this?           |
-| Content-Length   | How big is it?          |
-| Set-Cookie       | Remember this           |
-| Content-Encoding | How is it packed?       |
-| Cache-Control    | How long can I save it? |
-| Last-Modified    | When did it change?     |
-| ETag             | Version fingerprint     |
-| Expires          | Hard expiry time        |
 
 ---
