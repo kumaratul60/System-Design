@@ -3,43 +3,12 @@ import { ApolloServer } from '@apollo/server';
 
 // Helper that boots an HTTP server (no Express setup needed here)
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { resolvers } from './resolvers.js';
+import { typeDefs } from './types.js';
 /**
  * @apollo/server → GraphQL engine only
  * @apollo/server/standalone → opinionated HTTP bootstrap
  */
-
-/**
- * GraphQL schema
- * Defines what data can be queried
- */
-const typeDefs = `#graphql
-  type Book {
-    title: String
-    author: String
-  }
-
-  type Query {
-    books: [Book]
-  }
-`;
-
-/**
- * Mock data source
- */
-const books = [
-  { title: 'The Awakening', author: 'Kate Chopin' },
-  { title: 'City of Glass', author: 'Paul Auster' },
-];
-
-/**
- * Resolvers
- * Map schema fields → actual data/functions
- */
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
-};
 
 /**
  * Create Apollo Server instance
