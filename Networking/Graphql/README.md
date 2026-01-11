@@ -2,8 +2,6 @@
 
 ## GraphQL: Graph Query Language
 
-## Introduction
-
 ### What is GraphQL?
 
 GraphQL is a query language for APIs and a runtime for executing those queries by using your existing data. It allows clients to request exactly the data they need, making data fetching more efficient and flexible than traditional REST APIs.
@@ -67,7 +65,7 @@ GraphQL has two main parts:
 
 ---
 
-## Core Concepts (Beginner Level)
+## Core Concepts
 
 ### Schema Definition Language (SDL)
 
