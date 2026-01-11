@@ -11,10 +11,11 @@ A comprehensive guide to Git for developers at all levels. VCS(version control s
 - **Security**: SSH keys, GPG signing.
 
 **Prerequisites**:
-Install Git (`brew install git` on macOS, `sudo apt install git` on Ubuntu).
-Configure globally: `git config --global user.name "Your Name"` and `git config --global user.email "your.email@example.com"`.
 
-## Curiosity Knowledge: What is VCS?
+- Install Git (`brew install git` on macOS, `sudo apt install git` on Ubuntu).
+- Configure globally: `git config --global user.name "Your Name"` and `git config --global user.email "your.email@example.com"`.
+
+## What is VCS?
 
 **VCS = Version Control System**
 A system that tracks changes to code/files over time so you can collaborate, rollback, branch, and audit history.
