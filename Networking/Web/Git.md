@@ -22,20 +22,22 @@ A system that tracks changes to code/files over time so you can collaborate, rol
 ### Types of VCS
 
 1. **Local VCS**
-   Tracks versions only on your machine.
-   ❌ No collaboration.
-   Example: RCS (old, rare).
+
+   - Tracks versions only on your machine.
+   - No collaboration.
+   - Example: RCS (old, rare).
 
 2. **Centralized VCS (CVCS)**
-   One central server; everyone commits to it.
-   Examples: SVN, Perforce.
-   Pros: Simple.
-   Cons: Single point of failure.
+
+   - One central server; everyone commits to it.
+   - Examples: SVN, Perforce.
+   - Pros: Simple.
+   - Cons: Single point of failure.
 
 3. **Distributed VCS (DVCS)** ✅ (Modern Standard)
-   Every developer has a full copy of history.
-   Offline work + fast branching.
-   Examples: Git ⭐, Mercurial.
+   - Every developer has a full copy of history.
+   - Offline work + fast branching.
+   - Examples: Git ⭐, Mercurial.
 
 ---
 
