@@ -1,0 +1,20 @@
+{
+  "name": "grpc",
+  "version": "1.0.0",
+  "description": "// grpc: remote procedure call",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client": "node client/index.js",
+    "server": "node server/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.3",
+    "@grpc/proto-loader": "^0.8.0",
+    "express": "^5.2.1"
+  }
+}

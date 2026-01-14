@@ -9,7 +9,7 @@ const app = express();
 // app.use(express.urlencoded({ extended: true })); // urlencoded = forms or Forms + API both
 app.use(express.json()); // JSON = APIs or API only
 
-const PORT = 5123;
+const PORT = 72262;
 
 const todos = [
   { id: 1, title: 'todo1', completed: false },

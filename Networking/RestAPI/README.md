@@ -1,6 +1,5 @@
 # REST API:
 
-
 ## Table of Contents
 
 1. [Introduction to REST APIs](#introduction-to-rest-apis)
@@ -34,13 +33,32 @@
 A REST API allows different applications to communicate over the internet using standard HTTP methods. It's like a universal language for software systems.
 
 Key characteristics:
+
 - **Stateless**: Each request is independent
 - **Client-Server**: Separation between user interface and data storage
 - **Cacheable**: Responses can be cached for better performance
 - **Uniform Interface**: Consistent way to access resources
 
 ### Why REST APIs Matter
+
 REST APIs power modern web and mobile applications, enabling microservices, cloud computing, and seamless integration between systems.
+
+### Basic building block
+
+```js
+import express from 'express';
+
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Sever created');
+});
+
+const PORT = 44986;
+app.listen(PORT, () => {
+  console.log(`Server is listening ${PORT}`);
+});
+```
 
 ---
 
@@ -49,6 +67,7 @@ REST APIs power modern web and mobile applications, enabling microservices, clou
 Before diving into REST, let's understand how applications are structured.
 
 ### 1-Tier (Monolithic) Architecture
+
 ```
 ┌─────────────────────────────┐
 │        Application          │
@@ -58,6 +77,7 @@ Before diving into REST, let's understand how applications are structured.
 │  └─────────┘ └────────────┘ │
 └─────────────────────────────┘
 ```
+
 Everything in one place: frontend, backend, and database.
 
 **Example**: A simple PHP website with HTML, CSS, and database queries in the same files.
@@ -66,6 +86,7 @@ Everything in one place: frontend, backend, and database.
 **Cons**: Hard to scale, maintain, or update
 
 ### 2-Tier Architecture
+
 ```
 ┌─────────────┐     ┌─────────────┐
 │   Frontend  │◄────►│   Backend  │
@@ -75,6 +96,7 @@ Everything in one place: frontend, backend, and database.
 │             │     │ └─────────┘ │
 └─────────────┘     └─────────────┘
 ```
+
 Frontend and backend separated, communicating via HTTP.
 
 **Example**: A React frontend calling a Node.js backend.
@@ -83,6 +105,7 @@ Frontend and backend separated, communicating via HTTP.
 **Cons**: Network latency, more infrastructure management
 
 ### 3-Tier Architecture (Recommended for REST APIs)
+
 ```
 ┌─────────────┐
 │ Presentation│
@@ -104,6 +127,7 @@ Frontend and backend separated, communicating via HTTP.
 │  Storage)   │
 └─────────────┘
 ```
+
 Presentation → Application → Data layers.
 
 1. **Presentation Tier**: User interfaces (web/mobile apps)
@@ -120,6 +144,7 @@ Presentation → Application → Data layers.
 HTTP (HyperText Transfer Protocol) is the foundation of REST APIs. It's the "language" computers use to communicate over the web.
 
 ### HTTP Request Structure
+
 ```
 Method URL HTTP/Version
 Headers
@@ -127,6 +152,7 @@ Body (optional)
 ```
 
 **Example**:
+
 ```
 GET /users HTTP/1.1
 Host: api.example.com
@@ -134,6 +160,7 @@ Authorization: Bearer token123
 ```
 
 ### HTTP Response Structure
+
 ```
 HTTP/Version Status-Code Reason-Phrase
 Headers
@@ -141,6 +168,7 @@ Body
 ```
 
 **Example**:
+
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -157,24 +185,29 @@ REST isn't just about using HTTP; it follows specific principles to ensure scala
 ### The 6 Core Constraints
 
 1. **Client-Server Separation**
+
    - UI and data logic are independent
    - Allows different teams to work on frontend/backend
 
 2. **Statelessness**
+
    - Server doesn't store client state between requests
    - Each request contains all necessary information
    - Enables horizontal scaling and better fault tolerance
 
 3. **Cacheability**
+
    - Responses must indicate if they can be cached
    - Improves performance and reduces server load
 
 4. **Uniform Interface**
+
    - Consistent resource identification (URLs)
    - Consistent operations on resources
    - Makes APIs predictable and easy to use
 
 5. **Layered System**
+
    - Client doesn't know if it's talking to the actual server or intermediaries (proxies, load balancers)
    - Enables scalability and security layers
 
@@ -187,36 +220,40 @@ REST isn't just about using HTTP; it follows specific principles to ensure scala
 
 ### HTTP Methods (CRUD Operations)
 
-| Method | Purpose | Idempotent | Safe | Example |
-|--------|---------|------------|------|---------|
-| GET | Retrieve data | Yes | Yes | `GET /users` |
-| POST | Create new resource | No | No | `POST /users` |
-| PUT | Replace entire resource | Yes | No | `PUT /users/123` |
-| PATCH | Partial update | No | No | `PATCH /users/123` |
-| DELETE | Remove resource | Yes | No | `DELETE /users/123` |
-| HEAD | Get headers only | Yes | Yes | `HEAD /users` |
-| OPTIONS | Describe available methods | Yes | Yes | `OPTIONS /users` |
+| Method  | Purpose                    | Idempotent | Safe | Example             |
+| ------- | -------------------------- | ---------- | ---- | ------------------- |
+| GET     | Retrieve data              | Yes        | Yes  | `GET /users`        |
+| POST    | Create new resource        | No         | No   | `POST /users`       |
+| PUT     | Replace entire resource    | Yes        | No   | `PUT /users/123`    |
+| PATCH   | Partial update             | No         | No   | `PATCH /users/123`  |
+| DELETE  | Remove resource            | Yes        | No   | `DELETE /users/123` |
+| HEAD    | Get headers only           | Yes        | Yes  | `HEAD /users`       |
+| OPTIONS | Describe available methods | Yes        | Yes  | `OPTIONS /users`    |
 
 **Idempotent**: Multiple identical requests have the same effect as one.
 **Safe**: Request doesn't modify server state.
 
 **Notes**:
+
 - **HEAD**: Useful for checking resource existence or metadata without transferring the body (e.g., checking file size before download).
 - **OPTIONS**: Used for CORS preflight requests and API discovery, showing supported methods for a resource.
 
 ### HTTP Status Codes
 
 #### 2xx Success
+
 - **200 OK**: Request succeeded
 - **201 Created**: Resource created successfully
 - **204 No Content**: Success but no response body
 
 #### 3xx Redirection
+
 - **301 Moved Permanently**: Resource moved to new URL
 - **302 Found**: Temporary redirect
 - **304 Not Modified**: Resource not changed (caching)
 
 #### 4xx Client Errors
+
 - **400 Bad Request**: Invalid request syntax
 - **401 Unauthorized**: Authentication required
 - **403 Forbidden**: Access denied
@@ -226,6 +263,7 @@ REST isn't just about using HTTP; it follows specific principles to ensure scala
 - **429 Too Many Requests**: Rate limit exceeded
 
 #### 5xx Server Errors
+
 - **500 Internal Server Error**: Unexpected server error
 - **502 Bad Gateway**: Invalid response from upstream server
 - **503 Service Unavailable**: Server temporarily down
@@ -238,12 +276,14 @@ REST isn't just about using HTTP; it follows specific principles to ensure scala
 Resources are the "nouns" of your API. Good resource design makes APIs intuitive.
 
 ### Naming Conventions
+
 - **Use nouns, not verbs**: `/users` not `/getUsers`
 - **Use plural names**: `/users` not `/user`
 - **Use lowercase and hyphens**: `/user-profiles` not `/user_profiles`
 - **Be consistent**: Don't mix `/users` and `/Customers`
 
 ### Resource Examples
+
 ```
 /users              # Collection of users
 /users/123          # Specific user
@@ -252,11 +292,14 @@ Resources are the "nouns" of your API. Good resource design makes APIs intuitive
 ```
 
 ### Sub-resources and Relationships
+
 - Use nesting for strong relationships: `/users/123/orders`
 - Use query parameters for weak relationships: `/orders?user_id=123`
 
 ### Actions on Resources
+
 For non-CRUD operations, use:
+
 - Custom methods: `POST /users/123/activate`
 - Sub-resources: `PUT /users/123/status` with body `{"active": true}`
 
@@ -267,6 +310,7 @@ For non-CRUD operations, use:
 ### Common Data Formats
 
 #### JSON (JavaScript Object Notation) - Most Popular
+
 Lightweight, human-readable, widely supported.
 
 ```json
@@ -280,6 +324,7 @@ Lightweight, human-readable, widely supported.
 ```
 
 #### XML - Legacy Support
+
 Verbose but structured.
 
 ```xml
@@ -291,6 +336,7 @@ Verbose but structured.
 ```
 
 #### Other Formats
+
 - **YAML**: Human-readable configuration
 - **CSV**: For tabular data
 - **Protocol Buffers**: High performance, but less readable
@@ -302,6 +348,7 @@ Content negotiation allows clients and servers to agree on data formats. This is
 #### Key HTTP Headers
 
 **Accept Header** (Request):
+
 - Used by clients to specify preferred response format
 - Server responds in the best matching format it supports
 - Multiple formats can be listed with quality values
@@ -312,6 +359,7 @@ Accept: application/vnd.myapi.v1+json  # Version-specific media type
 ```
 
 **Content-Type Header** (Request/Response):
+
 - Indicates the format of the message body
 - Required for requests with bodies (POST, PUT, PATCH)
 - Server sets this in responses to indicate actual format
@@ -325,19 +373,20 @@ Content-Type: multipart/form-data  # File uploads
 
 #### When to Use Different Content Types
 
-| Content-Type | When to Use | Example Use Case |
-|-------------|-------------|------------------|
-| `application/json` | Most common - sending/receiving JSON data | Standard API requests/responses |
-| `application/xml` | Legacy systems or specific XML requirements | Enterprise integrations |
-| `application/x-www-form-urlencoded` | HTML form submissions | Traditional web forms |
-| `multipart/form-data` | File uploads with additional fields | Image/file uploads |
-| `text/plain` | Plain text data | Simple string responses |
-| `application/vnd.api+json` | JSON API specification | Structured JSON responses |
-| `application/hal+json` | HAL (Hypertext Application Language) | HATEOAS-compliant responses |
+| Content-Type                        | When to Use                                 | Example Use Case                |
+| ----------------------------------- | ------------------------------------------- | ------------------------------- |
+| `application/json`                  | Most common - sending/receiving JSON data   | Standard API requests/responses |
+| `application/xml`                   | Legacy systems or specific XML requirements | Enterprise integrations         |
+| `application/x-www-form-urlencoded` | HTML form submissions                       | Traditional web forms           |
+| `multipart/form-data`               | File uploads with additional fields         | Image/file uploads              |
+| `text/plain`                        | Plain text data                             | Simple string responses         |
+| `application/vnd.api+json`          | JSON API specification                      | Structured JSON responses       |
+| `application/hal+json`              | HAL (Hypertext Application Language)        | HATEOAS-compliant responses     |
 
 #### Content Negotiation Flow
 
 1. **Client Request**:
+
    ```
    POST /users
    Accept: application/json
@@ -347,6 +396,7 @@ Content-Type: multipart/form-data  # File uploads
    ```
 
 2. **Server Response**:
+
    ```
    201 Created
    Content-Type: application/json
@@ -371,6 +421,7 @@ Versioning prevents breaking changes for existing clients.
 ### Versioning Strategies
 
 #### URI Versioning (Most Common)
+
 Include version in URL path.
 
 ```
@@ -382,6 +433,7 @@ Include version in URL path.
 **Cons**: URL pollution
 
 #### Header Versioning
+
 Use custom headers.
 
 ```
@@ -392,6 +444,7 @@ Accept: application/vnd.myapi.v1+json
 **Cons**: Less visible
 
 #### Query Parameter Versioning
+
 ```
 /users?version=1
 ```
@@ -400,11 +453,13 @@ Accept: application/vnd.myapi.v1+json
 **Cons**: Caching issues
 
 #### Media Type Versioning
+
 ```
 Accept: application/vnd.myapi.v1+json
 ```
 
 ### Best Practices
+
 - Start with v1
 - Deprecate old versions gradually
 - Document version differences
@@ -415,12 +470,14 @@ Accept: application/vnd.myapi.v1+json
 ## Authentication and Authorization
 
 ### Authentication vs Authorization
+
 - **Authentication**: Who are you? (Identity verification)
 - **Authorization**: What can you do? (Permissions)
 
 ### Common Authentication Methods
 
 #### API Keys
+
 Simple shared secret.
 
 ```
@@ -431,6 +488,7 @@ X-API-Key: abc123def456
 **Cons**: Less secure, hard to revoke per user
 
 #### Basic Authentication
+
 Username:password encoded in base64.
 
 ```
@@ -441,6 +499,7 @@ Authorization: Basic dXNlcjpwYXNz
 **Cons**: Credentials sent with every request
 
 #### JWT (JSON Web Tokens) - Most Popular
+
 Stateless, self-contained tokens.
 
 ```
@@ -448,6 +507,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Structure**:
+
 - **Header**: Algorithm and token type
 - **Payload**: User info and claims
 - **Signature**: Verifies token integrity
@@ -456,9 +516,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **Cons**: Token size, harder to revoke immediately
 
 #### OAuth 2.0
+
 Delegated access framework.
 
 **Flow Types**:
+
 - Authorization Code (Web apps)
 - Implicit (Single-page apps)
 - Client Credentials (Service-to-service)
@@ -467,6 +529,7 @@ Delegated access framework.
 ### Authorization Patterns
 
 #### Role-Based Access Control (RBAC)
+
 Users have roles with permissions.
 
 ```json
@@ -478,9 +541,11 @@ Users have roles with permissions.
 ```
 
 #### Attribute-Based Access Control (ABAC)
+
 Fine-grained permissions based on attributes.
 
 #### API Gateway Pattern
+
 Central authorization point for microservices.
 
 ---
@@ -490,24 +555,29 @@ Central authorization point for microservices.
 API security is critical. Follow the [OWASP API Security Top 10](https://owasp.org/www-project-api-security/) guidelines to protect against common vulnerabilities like injection, authentication failures, and excessive data exposure.
 
 ### Transport Security
+
 - **Always use HTTPS**: Encrypt all traffic
 - **Certificate pinning**: Prevent MITM attacks
 - **HSTS**: Force HTTPS connections
 
 ### Input Validation
+
 - Validate all inputs on server side
 - Use schema validation (JSON Schema, OpenAPI)
 - Sanitize inputs to prevent injection attacks
 
 ### Rate Limiting
+
 Protect against abuse and DoS attacks.
 
 **Strategies**:
+
 - Fixed window: 1000 requests per hour
 - Sliding window: More granular
 - Token bucket: Smooth rate limiting
 
 **Implementation**:
+
 ```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 750
@@ -515,6 +585,7 @@ X-RateLimit-Reset: 1640995200
 ```
 
 ### CORS (Cross-Origin Resource Sharing)
+
 Control which domains can access your API.
 
 ```javascript
@@ -525,6 +596,7 @@ Access-Control-Allow-Headers: Authorization, Content-Type
 ```
 
 ### Security Headers
+
 ```
 Content-Security-Policy: default-src 'self'
 X-Content-Type-Options: nosniff
@@ -534,6 +606,7 @@ Strict-Transport-Security: max-age=31536000
 ```
 
 ### Data Protection
+
 - Encrypt sensitive data at rest
 - Use secure random generators for tokens
 - Implement proper session management
@@ -546,6 +619,7 @@ Strict-Transport-Security: max-age=31536000
 Consistent, informative error responses.
 
 ### Error Response Format
+
 ```json
 {
   "error": {
@@ -559,19 +633,19 @@ Consistent, informative error responses.
     "timestamp": "2023-01-15T10:30:00Z",
     "request_id": "abc-123-def",
     "path": "/users",
-    "suggestions": [
-      "Use format: user@example.com"
-    ]
+    "suggestions": ["Use format: user@example.com"]
   }
 }
 ```
 
 ### Error Code Standards
+
 - Use consistent error codes across your API
 - Document all possible errors
 - Include actionable suggestions
 
 ### HTTP Status Code Mapping
+
 - 400: Validation errors
 - 401: Authentication required
 - 403: Insufficient permissions
@@ -587,6 +661,7 @@ Consistent, informative error responses.
 ### Caching Strategies
 
 #### HTTP Caching
+
 Use standard HTTP headers.
 
 ```
@@ -596,11 +671,13 @@ Last-Modified: Mon, 15 Jan 2023 10:30:00 GMT
 ```
 
 #### Application-Level Caching
+
 - Redis for session data
 - CDN for static assets
 - In-memory caches for frequently accessed data
 
 ### Compression
+
 Reduce payload size.
 
 ```
@@ -609,25 +686,30 @@ Content-Encoding: gzip
 ```
 
 ### Database Optimization
+
 - Use indexes appropriately
 - Implement connection pooling
 - Use read replicas for scaling reads
 - Consider NoSQL for specific use cases
 
 ### Load Balancing
+
 Distribute traffic across multiple servers.
 
 **Algorithms**:
+
 - Round Robin
 - Least Connections
 - IP Hash (for session affinity)
 
 ### Horizontal Scaling
+
 - Stateless design enables easy scaling
 - Use container orchestration (Kubernetes)
 - Implement auto-scaling based on metrics
 
 ### Monitoring and Metrics
+
 - Response times
 - Error rates
 - Throughput
@@ -662,11 +744,13 @@ Instead of hardcoded URLs, include links in responses.
 ```
 
 **Benefits**:
+
 - API evolution without breaking clients
 - Self-documenting APIs
 - Enables API exploration
 
 **Implementation**:
+
 - Use link relations (rel attribute)
 - Follow standards like HAL or JSON API
 
@@ -677,11 +761,13 @@ Instead of hardcoded URLs, include links in responses.
 **Idempotency** means multiple identical requests have the same effect as one.
 
 **Important for**:
+
 - Network retries
 - Duplicate submissions
 - Distributed systems
 
 ### Implementing Idempotency
+
 Use idempotency keys.
 
 ```
@@ -691,6 +777,7 @@ Idempotency-Key: abc-123-def
 Server stores key and result, returns cached result for duplicate keys.
 
 **Idempotent Methods**:
+
 - GET, PUT, DELETE (by design)
 - POST (requires implementation)
 
@@ -699,7 +786,9 @@ Server stores key and result, returns cached result for duplicate keys.
 ## Testing REST APIs
 
 ### Testing Pyramid
+
 A balanced testing strategy follows the testing pyramid:
+
 1. **Unit Tests**: Test individual functions and modules
 2. **Integration Tests**: Test API endpoints and interactions
 3. **Contract Tests**: Ensure API contracts are met between services
@@ -708,10 +797,12 @@ A balanced testing strategy follows the testing pyramid:
 ### Manual Testing
 
 #### GUI Tools
+
 - **Postman**: Feature-rich API testing and collaboration
 - **Insomnia**: Lightweight alternative with similar features
 
 **Example Request in Postman**:
+
 ```
 GET https://api.example.com/users
 Authorization: Bearer token123
@@ -719,6 +810,7 @@ Content-Type: application/json
 ```
 
 #### Command-Line Testing
+
 **curl** for quick testing:
 
 ```bash
@@ -730,6 +822,7 @@ curl -X GET https://api.example.com/users \
 ### Automated Testing
 
 #### JavaScript/Node.js
+
 ```javascript
 // Using Jest and Supertest
 const request = require('supertest');
@@ -737,9 +830,7 @@ const app = require('../app');
 
 describe('GET /users', () => {
   it('should return all users', async () => {
-    const response = await request(app)
-      .get('/users')
-      .expect(200);
+    const response = await request(app).get('/users').expect(200);
 
     expect(response.body.success).toBe(true);
     expect(Array.isArray(response.body.data)).toBe(true);
@@ -748,6 +839,7 @@ describe('GET /users', () => {
 ```
 
 #### Python
+
 ```python
 # Using pytest and requests
 import requests
@@ -762,6 +854,7 @@ def test_get_users():
 ```
 
 #### Java
+
 ```java
 // Using RestAssured
 import static io.restassured.RestAssured.*;
@@ -782,16 +875,19 @@ public void testGetUsers() {
 ### Test Categories
 
 #### Positive Tests
+
 - Valid requests return expected responses
 - All HTTP status codes work correctly
 - Data is properly formatted and validated
 
 #### Negative Tests
+
 - Invalid inputs return appropriate error responses
 - Authentication/authorization failures are handled
 - Rate limiting and security measures work
 
 #### Edge Cases
+
 - Empty result sets
 - Large payloads and pagination
 - Special characters in data
@@ -804,6 +900,7 @@ public void testGetUsers() {
 Good documentation is crucial for API adoption.
 
 ### OpenAPI Specification (Swagger)
+
 Standard for describing REST APIs.
 
 ```yaml
@@ -827,6 +924,7 @@ paths:
 ```
 
 ### Documentation Best Practices
+
 - Keep docs up-to-date with code
 - Include examples for every endpoint
 - Document error responses
@@ -834,6 +932,7 @@ paths:
 - Use interactive documentation (Swagger UI)
 
 ### Tools
+
 - **Swagger/OpenAPI**: Specification and tools
 - **Redoc**: Beautiful documentation renderer
 - **Stoplight**: Design and documentation platform
@@ -845,31 +944,37 @@ paths:
 ### Backend Frameworks
 
 #### Node.js
+
 - **Express.js**: Minimalist, flexible
 - **Fastify**: High performance, built-in validation
 - **NestJS**: Enterprise-grade, TypeScript-first
 
 #### Python
+
 - **Flask**: Simple and extensible, great for small APIs
 - **Django REST Framework**: Feature-rich, built-in admin and serialization
 - **FastAPI**: Modern, async-first, automatic OpenAPI docs
 
 #### Java
+
 - **Spring Boot**: Enterprise standard with extensive ecosystem
 - **Jersey**: JAX-RS implementation for RESTful services
 - **Micronaut**: Modern, cloud-native framework
 
 #### Go
+
 - **Gin**: High performance, middleware support
 - **Echo**: Minimalist, inspired by Express.js
 - **Fiber**: Fast, Express.js-style framework
 
 ### API Gateways
+
 - **Kong**: Open-source, plugin-based
 - **Apigee**: Enterprise-grade
 - **AWS API Gateway**: Cloud-native
 
 ### Development Tools
+
 - **Postman**: API testing and documentation
 - **Insomnia**: Alternative to Postman
 - **Hoppscotch**: Web-based API testing
@@ -881,6 +986,7 @@ paths:
 Let's build a simple REST API server using Node.js and Express.js. This example creates a basic user management API with CRUD operations.
 
 ### Prerequisites
+
 - Node.js installed (version 14 or higher)
 - npm (comes with Node.js)
 
@@ -910,7 +1016,7 @@ npm install express body-parser
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"  // For development, consider nodemon
+    "dev": "node server.js" // For development, consider nodemon
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -929,13 +1035,13 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
-app.use(bodyParser.json());  // Parse JSON bodies
-app.use(express.json());     // Alternative to body-parser (Express 4.16+)
+app.use(bodyParser.json()); // Parse JSON bodies
+app.use(express.json()); // Alternative to body-parser (Express 4.16+)
 
 // In-memory data store (for demo purposes)
 let users = [
   { id: 1, name: 'John Doe', email: 'john@example.com' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
 ];
 
 // Helper function to get next ID
@@ -948,25 +1054,25 @@ app.get('/users', (req, res) => {
   res.json({
     success: true,
     data: users,
-    count: users.length
+    count: users.length,
   });
 });
 
 // GET /users/:id - Get a specific user
 app.get('/users/:id', (req, res) => {
   const userId = parseInt(req.params.id);
-  const user = users.find(u => u.id === userId);
+  const user = users.find((u) => u.id === userId);
 
   if (!user) {
     return res.status(404).json({
       success: false,
-      error: 'User not found'
+      error: 'User not found',
     });
   }
 
   res.json({
     success: true,
-    data: user
+    data: user,
   });
 });
 
@@ -978,21 +1084,21 @@ app.post('/users', (req, res) => {
   if (!name || !email) {
     return res.status(400).json({
       success: false,
-      error: 'Name and email are required'
+      error: 'Name and email are required',
     });
   }
 
   const newUser = {
     id: nextId++,
     name,
-    email
+    email,
   };
 
   users.push(newUser);
 
   res.status(201).json({
     success: true,
-    data: newUser
+    data: newUser,
   });
 });
 
@@ -1001,12 +1107,12 @@ app.put('/users/:id', (req, res) => {
   const userId = parseInt(req.params.id);
   const { name, email } = req.body;
 
-  const userIndex = users.findIndex(u => u.id === userId);
+  const userIndex = users.findIndex((u) => u.id === userId);
 
   if (userIndex === -1) {
     return res.status(404).json({
       success: false,
-      error: 'User not found'
+      error: 'User not found',
     });
   }
 
@@ -1014,7 +1120,7 @@ app.put('/users/:id', (req, res) => {
   if (!name || !email) {
     return res.status(400).json({
       success: false,
-      error: 'Name and email are required'
+      error: 'Name and email are required',
     });
   }
 
@@ -1022,7 +1128,7 @@ app.put('/users/:id', (req, res) => {
 
   res.json({
     success: true,
-    data: users[userIndex]
+    data: users[userIndex],
   });
 });
 
@@ -1031,12 +1137,12 @@ app.patch('/users/:id', (req, res) => {
   const userId = parseInt(req.params.id);
   const updates = req.body;
 
-  const userIndex = users.findIndex(u => u.id === userId);
+  const userIndex = users.findIndex((u) => u.id === userId);
 
   if (userIndex === -1) {
     return res.status(404).json({
       success: false,
-      error: 'User not found'
+      error: 'User not found',
     });
   }
 
@@ -1045,19 +1151,19 @@ app.patch('/users/:id', (req, res) => {
 
   res.json({
     success: true,
-    data: users[userIndex]
+    data: users[userIndex],
   });
 });
 
 // DELETE /users/:id - Delete a user
 app.delete('/users/:id', (req, res) => {
   const userId = parseInt(req.params.id);
-  const userIndex = users.findIndex(u => u.id === userId);
+  const userIndex = users.findIndex((u) => u.id === userId);
 
   if (userIndex === -1) {
     return res.status(404).json({
       success: false,
-      error: 'User not found'
+      error: 'User not found',
     });
   }
 
@@ -1065,7 +1171,7 @@ app.delete('/users/:id', (req, res) => {
 
   res.json({
     success: true,
-    data: deletedUser
+    data: deletedUser,
   });
 });
 
@@ -1074,7 +1180,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
@@ -1083,7 +1189,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    error: 'Something went wrong!'
+    error: 'Something went wrong!',
   });
 });
 
@@ -1091,7 +1197,7 @@ app.use((err, req, res, next) => {
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    error: 'Endpoint not found'
+    error: 'Endpoint not found',
   });
 });
 
@@ -1140,6 +1246,7 @@ curl http://localhost:3000/health
 ### Explanation
 
 This basic server demonstrates:
+
 - **Routes**: Different endpoints for CRUD operations
 - **HTTP Methods**: GET, POST, PUT, PATCH, DELETE
 - **Status Codes**: 200, 201, 400, 404, 500
@@ -1149,6 +1256,7 @@ This basic server demonstrates:
 - **In-memory Storage**: Simple data persistence (replace with database for production)
 
 ### Next Steps
+
 - Add a database (MongoDB, PostgreSQL)
 - Implement authentication (JWT)
 - Add input validation (Joi, express-validator)
@@ -1163,6 +1271,7 @@ This example provides a solid foundation for building more complex REST APIs.
 ## Common Pitfalls and Best Practices
 
 ### Common Mistakes
+
 - Inconsistent resource naming
 - Ignoring HTTP semantics
 - Poor error handling
@@ -1171,6 +1280,7 @@ This example provides a solid foundation for building more complex REST APIs.
 - Ignoring performance optimization
 
 ### Best Practices Checklist
+
 - [ ] Use consistent naming conventions
 - [ ] Implement proper HTTP status codes
 - [ ] Provide comprehensive error responses
@@ -1189,6 +1299,7 @@ This example provides a solid foundation for building more complex REST APIs.
 - [ ] Handle CORS properly
 
 ### Design Principles
+
 - **Keep it Simple**: Start with basic functionality
 - **Be Consistent**: Follow patterns throughout
 - **Think About Clients**: Design for ease of use
@@ -1204,6 +1315,7 @@ Building great REST APIs requires understanding both the technical details and t
 Remember: A good API is like a good waiter - attentive, reliable, and invisible when everything works perfectly.
 
 ### Further Reading
+
 - [RESTful Web APIs](https://www.amazon.com/RESTful-Web-APIs-Leonard-Richardson/dp/1449358063) - Comprehensive guide to REST design
 - [API Design Patterns](https://www.amazon.com/API-Design-Patterns-JJ-Geewax/dp/161729585X) - Practical patterns for API development
 - [Designing APIs with Swagger and OpenAPI](https://www.manning.com/books/designing-apis-with-swagger-and-openapi) - API documentation best practices
