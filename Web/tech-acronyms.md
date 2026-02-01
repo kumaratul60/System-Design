@@ -155,6 +155,7 @@ _High-level patterns and concepts for designing robust and scalable systems._
 _Reusable code that helps developers build applications faster._
 
 ### Frontend
+
 - **React** — JavaScript library for building user interfaces
 - **Angular** — Application design framework and development platform for building SPAs
 - **Vue.js** — A progressive JavaScript framework for building UIs
@@ -165,6 +166,7 @@ _Reusable code that helps developers build applications faster._
 - **JSX / TSX** — JavaScript/TypeScript XML (Syntax extension for embedding HTML in JS/TS)
 
 #### Backend
+
 - **Node.js** — A JavaScript runtime built on Chrome's V8 engine
 - **Express.js** — A minimalist web framework for Node.js
 - **NestJS** — A progressive Node.js framework for building efficient, scalable server-side applications
