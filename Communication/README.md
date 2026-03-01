@@ -23,7 +23,7 @@ Before diving into protocols, understand the flow of data:
 
 The frontend (Browser/Mobile) interacts with the backend using these primary techniques:
 
-1.  **REST (Representational State Transfer):** The standard. Uses HTTP methods (GET, POST, etc.). Statless and cacheable.
+1.  **REST (Representational State Transfer):** The standard. Uses HTTP methods (GET, POST, etc.). Stateless and cacheable.
 2.  **GraphQL:** Allows the frontend to ask for exactly what it needs. Reduces over-fetching.
 3.  **WebSockets:** For real-time updates (Chat, Stock tickers).
 

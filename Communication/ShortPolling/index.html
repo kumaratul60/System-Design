@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Short-Polling</title>
+  </head>
+  <body>
+    <h2>Short Polling Demo</h2>
+    <pre id="output">Waiting...</pre>
+
+    <script>
+      const output = document.getElementById('output');
+      let pollIntervalId = null;
+
+      async function poll() {
+        try {
+          const res = await fetch('http://localhost:3000/api/status');
+          const data = await res.json();
+          console.log({ data });
+
+          // output.textContent = JSON.stringify(data, null, 2);
+          output.innerHTML = JSON.stringify(data, null, 2);
+        } catch (e) {
+          output.textContent = 'Error fetching data';
+          stopPolling(); // stop on error
+        }
+      }
+
+      function startPolling() {
+        if (pollIntervalId) return; // prevent duplicates
+        poll();
+        pollIntervalId = setInterval(poll, 3000);
+      }
+
+      function stopPolling() {
+        clearInterval(pollIntervalId);
+        pollIntervalId = null;
+      }
+
+      startPolling();
+
+      // cleanup when tab is closed / refreshed
+      window.addEventListener('beforeunload', stopPolling);
+    </script>
+
+    <!-- Better pattern (NO setInterval)
+    Recursive setTimeout → no overlap, no leak
+    <script>
+      const output = document.getElementById('output');
+      let stopped = false;
+
+      async function poll() {
+        if (stopped) return;
+
+        try {
+          const res = await fetch('http://localhost:3000/api/status');
+          const data = await res.json();
+          output.textContent = JSON.stringify(data, null, 2);
+        } catch (e) {
+          output.textContent = 'Error fetching data';
+          return; // stop polling on error
+        }
+
+        setTimeout(poll, 3000);
+      }
+
+      poll();
+
+      window.addEventListener('beforeunload', () => {
+        stopped = true;
+      });
+    </script> -->
+  </body>
+</html>
