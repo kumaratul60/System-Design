@@ -1,0 +1,17 @@
+{
+  "name": "longpolling",
+  "version": "1.0.0",
+  "description": "Long Polling Long polling = client sends a request → server waits until data changes (or timeout) → responds → client immediately sends next request.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

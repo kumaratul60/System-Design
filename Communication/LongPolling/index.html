@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <h2>Long Polling Demo</h2>
+
+    <div>
+      <input id="input" placeholder="New data" />
+      <button onclick="updateData()">Update</button>
+    </div>
+
+    <pre id="output">Waiting...</pre>
+
+    <script>
+      let lastData = '';
+      const output = document.getElementById('output');
+
+      async function longPoll() {
+        try {
+          const res = await fetch(`/getData?lastData=${encodeURIComponent(lastData)}`);
+          const result = await res.json();
+
+          lastData = result.data;
+          output.textContent = result.data;
+        } catch (e) {
+          console.error(e);
+        }
+
+        // immediately reconnect
+        longPoll();
+      }
+
+      async function updateData() {
+        const value = document.getElementById('input').value;
+        await fetch(`/updateData?data=${encodeURIComponent(value)}`);
+      }
+
+      longPoll();
+    </script>
+  </body>
+</html>

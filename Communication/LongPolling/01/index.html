@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+    <h2>Long Polling Demo</h2>
+    <pre id="output">Waiting...</pre>
+
+    <script>
+      const output = document.getElementById('output');
+      let stopped = false;
+
+      async function longPoll() {
+        if (stopped) return;
+
+        try {
+          const res = await fetch('http://localhost:3000/api/long-poll');
+          const data = await res.json();
+          output.textContent = JSON.stringify(data, null, 2);
+        } catch (e) {
+          output.textContent = 'Error';
+          await new Promise(r => setTimeout(r, 3000)); // backoff
+        }
+
+        longPoll(); // immediately re-connect
+      }
+
+      longPoll();
+      window.addEventListener('beforeunload', () => (stopped = true));
+    </script>
+</html>
