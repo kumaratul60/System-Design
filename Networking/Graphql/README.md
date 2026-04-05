@@ -166,7 +166,6 @@ const resolvers = {
   (e.g., `{ id: "1", name: "English" }`).
 - **`context`**: Shared object across all resolvers in a request (e.g., authentication info, DB connections).
 - **`info`**: Metadata about the query's execution state, including field paths and schema details.
-
   - **parent**: previous resolver’s return
   - **args**: query arguments
   - **context**: request-scoped shared state

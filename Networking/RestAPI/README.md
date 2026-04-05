@@ -185,29 +185,24 @@ REST isn't just about using HTTP; it follows specific principles to ensure scala
 ### The 6 Core Constraints
 
 1. **Client-Server Separation**
-
    - UI and data logic are independent
    - Allows different teams to work on frontend/backend
 
 2. **Statelessness**
-
    - Server doesn't store client state between requests
    - Each request contains all necessary information
    - Enables horizontal scaling and better fault tolerance
 
 3. **Cacheability**
-
    - Responses must indicate if they can be cached
    - Improves performance and reduces server load
 
 4. **Uniform Interface**
-
    - Consistent resource identification (URLs)
    - Consistent operations on resources
    - Makes APIs predictable and easy to use
 
 5. **Layered System**
-
    - Client doesn't know if it's talking to the actual server or intermediaries (proxies, load balancers)
    - Enables scalability and security layers
 

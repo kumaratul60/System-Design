@@ -83,7 +83,6 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
 ### gRPC
 
 - **Pitfalls**:
-
   - Binary protocol makes debugging difficult (can't read messages easily).
   - Requires .proto files and code generation, increasing setup complexity.
   - Poor native browser support (needs grpc-web or proxies).
@@ -91,7 +90,6 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
   - Error handling can be less intuitive.
 
 - **Benefits**:
-
   - High performance: Binary serialization and HTTP/2 multiplexing reduce latency and bandwidth.
   - Strongly typed: Code generation ensures type safety across languages.
   - Efficient streaming: Native support for unary, server, client, and bidirectional streaming.
@@ -111,7 +109,6 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
 ### REST
 
 - **Pitfalls**:
-
   - Over-fetching or under-fetching data (fixed endpoints).
   - Multiple round-trips for complex data needs.
   - Weak typing (JSON can be inconsistent without schemas).
@@ -119,7 +116,6 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
   - No built-in streaming support.
 
 - **Benefits**:
-
   - Simple and intuitive: Uses standard HTTP methods (GET, POST, etc.).
   - Widely supported: Works with any HTTP client, including browsers.
   - Stateless: Easier caching and scalability.
@@ -136,7 +132,6 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
 ### GraphQL
 
 - **Pitfalls**:
-
   - N+1 query problem (multiple database hits for nested queries).
   - Complex query optimization and resolvers.
   - Potential for abusive queries (DoS via deep nesting).
@@ -144,7 +139,6 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
   - Learning the query language adds complexity.
 
 - **Benefits**:
-
   - Flexible data fetching: Clients request exactly what they need.
   - Single endpoint: Reduces API surface and versioning issues.
   - Strongly typed schema: Introspection and validation.

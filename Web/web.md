@@ -685,16 +685,13 @@ html
 ### 10.2 Blocking Rules
 
 - **CSS is Render‑Blocking**
-
   - Browser cannot paint pixels without final styles
   - Render tree waits for CSSOM
 
 - **JavaScript is Parser‑Blocking**
-
   - JS can modify DOM/CSSOM
   - HTML parsing pauses until JS executes
   - Exceptions:
-
     - `defer` → runs after DOM is parsed
     - `async` → runs as soon as downloaded (race)
 
@@ -748,7 +745,6 @@ Excluded:
 ### 13.1 What layout does
 
 - Calculates:
-
   - width / height
   - position
   - box model
@@ -756,7 +752,6 @@ Excluded:
 ### 13.2 What triggers reflow
 
 - Changing:
-
   - width / height
   - position / float
   - font size

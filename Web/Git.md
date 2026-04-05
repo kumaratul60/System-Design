@@ -23,13 +23,11 @@ A system that tracks changes to code/files over time so you can collaborate, rol
 ### Types of VCS
 
 1. **Local VCS**
-
    - Tracks versions only on your machine.
    - No collaboration.
    - Example: RCS (old, rare).
 
 2. **Centralized VCS (CVCS)**
-
    - One central server; everyone commits to it.
    - Examples: SVN, Perforce.
    - Pros: Simple.
@@ -250,7 +248,6 @@ Usage: `git co feature` instead of `git checkout feature`.
    ```
 
 3. **Add Public Key to GitHub/GitLab**:
-
    - Copy `cat ~/.ssh/id_ed25519.pub`
    - Paste in repo settings > SSH Keys.
 
@@ -265,7 +262,6 @@ Usage: `git co feature` instead of `git checkout feature`.
 ### GPG Key Setup (For Signed Commits)
 
 1. **Install GPG**:
-
    - macOS: `brew install gnupg`
    - Linux: `sudo apt install gnupg`
 

@@ -12,20 +12,39 @@ Optimized for fast lookup, daily workflows, and production debugging.
   - [Quick Start](#quick-start)
   - [1. Navigation \& Filesystem](#1-navigation--filesystem)
   - [2. File Operations \& Symlinks](#2-file-operations--symlinks)
+    - [Create \& Delete](#create--delete)
+    - [Copy \& Move](#copy--move)
+    - [Symlinks (Shortcuts)](#symlinks-shortcuts)
   - [3. Streams, Redirection \& Piping](#3-streams-redirection--piping)
+    - [Redirection (`>` and `>>`)](#redirection--and-)
+    - [Piping (`|`)](#piping-)
+    - [Debugging \& Control Flow](#debugging--control-flow)
   - [4. Viewing \& Editing Files](#4-viewing--editing-files)
   - [5. Permissions \& Ownership](#5-permissions--ownership)
+    - [Understanding `ls -l`](#understanding-ls--l)
+    - [Commands](#commands)
   - [6. Search \& Discovery](#6-search--discovery)
+    - [Search INSIDE files (`grep`)](#search-inside-files-grep)
+    - [Search FOR files (`find`)](#search-for-files-find)
   - [7. SSH \& Remote Access](#7-ssh--remote-access)
-  - [8. Processes & Jobs](#8-processes--jobs)
-  - [9. Networking & Ports](#9-networking--ports)
+  - [8. Processes \& Jobs](#8-processes--jobs)
+  - [9. Networking \& Ports](#9-networking--ports)
   - [10. Disk \& System Health](#10-disk--system-health)
   - [11. Archives (Zip/Tar)](#11-archives-ziptar)
-  - [12. Git & Packages](#12-git--packages)
+  - [12. Git \& Packages](#12-git--packages)
   - [13. macOS Specific](#13-macos-specific)
   - [14. Shortcuts \& Chaining](#14-shortcuts--chaining)
+    - [Command Chaining](#command-chaining)
+    - [Keyboard Shortcuts](#keyboard-shortcuts)
   - [15. Environment Variables](#15-environment-variables)
-  - [16. macOS: System Cleanup & Analysis](#16-macos-system-cleanup--analysis)
+  - [16. macOS: System Cleanup \& Analysis](#16-macos-system-cleanup--analysis)
+    - [Safety First: macOS vs. Linux](#safety-first-macos-vs-linux)
+    - [1. Viewing Installed Packages (Read-Only \& Safe)](#1-viewing-installed-packages-read-only--safe)
+    - [2. Analyzing System Health \& Disk Usage (Read-Only \& Safe)](#2-analyzing-system-health--disk-usage-read-only--safe)
+    - [3. Finding Hidden Files \& Folders (Read-Only \& Safe)](#3-finding-hidden-files--folders-read-only--safe)
+    - [4. Inspecting Startup \& Background Services (Read-Only \& Safe)](#4-inspecting-startup--background-services-read-only--safe)
+    - [5. Safe Cleanup Operations](#5-safe-cleanup-operations)
+    - [6. 🚫 What NOT to Delete (CRITICAL) 🚫](#6--what-not-to-delete-critical-)
 
 ---
 
@@ -66,6 +85,7 @@ ls -a               # List ALL files (including hidden, e.g., .env, .git)
 ls -la              # Detailed list (permissions, size, owner, date)
 ls -lt              # Sort by last modified time (newest first)
 ```
+
 > **Pro Tip:** Modern alternatives like `exa` or `lsd` offer better defaults, colors, and features.
 
 ---
@@ -151,6 +171,7 @@ tail -f app.log     # Watch file changes in real-time (Live logs)
 code .              # Open current folder in VS Code
 nano file.txt       # Basic in-terminal editor (Ctrl+O Save, Ctrl+X Exit)
 ```
+
 > **Pro Tip:** `bat` is a modern alternative to `cat` with syntax highlighting and Git integration.
 
 ---
@@ -162,6 +183,7 @@ nano file.txt       # Basic in-terminal editor (Ctrl+O Save, Ctrl+X Exit)
 ### Understanding `ls -l`
 
 Output example: `-rwxr-xr--`
+
 1.  **`-`**: File type (d: directory, l: link)
 2.  **`rwx`**: Owner permissions (Read, Write, Execute)
 3.  **`r-x`**: Group permissions
@@ -191,6 +213,7 @@ grep -i "error" app.log     # Case-insensitive search
 grep -v "DEBUG" app.log     # Invert match: show lines that DO NOT contain "DEBUG"
 grep -n "fail" app.log      # Show line numbers with matches
 ```
+
 > **Pro Tip:** `ripgrep` (`rg`) is a modern, faster, and more developer-friendly alternative to `grep`.
 
 ### Search FOR files (`find`)
@@ -201,6 +224,7 @@ find . -name ".env"      # Find all .env files
 find /var/log -mtime -7  # Find files in /var/log modified in the last 7 days
 find . -name node_modules -type d -prune # Search excluding node_modules
 ```
+
 > **Pro Tip:** `fd` is a simpler, faster, and more intuitive alternative to `find`.
 
 ---
@@ -431,7 +455,7 @@ ls /System/Library/LaunchDaemons
 
 ### 5. Safe Cleanup Operations
 
-The `-n` or `--dry-run` flag is crucial. It shows you what *would* be removed without actually deleting anything. **Always dry run first.**
+The `-n` or `--dry-run` flag is crucial. It shows you what _would_ be removed without actually deleting anything. **Always dry run first.**
 
 ```bash
 # See what cleanup would remove (dry run)
@@ -454,12 +478,12 @@ open ~/Downloads
 
 Deleting files from these locations will likely break macOS and require a reinstall. **HANDS OFF!**
 
--   `/System`
--   `/private`
--   `/usr`
--   `/bin`
--   `/sbin`
--   Any file or folder protected by SIP (System Integrity Protection).
+- `/System`
+- `/private`
+- `/usr`
+- `/bin`
+- `/sbin`
+- Any file or folder protected by SIP (System Integrity Protection).
 
 **✅ Golden Rule for macOS:**
 If you didn't put it there yourself, or it's not inside your home folder (`~`), **don't delete it.** When in doubt, leave it alone.

@@ -74,6 +74,6 @@ sequenceDiagram
 
 If Short Polling doesn't fit your scale or latency requirements, consider:
 
-- **Long Polling** – Client requests data, and the server holds the connection open until new data is available (fewer wasted requests).
-- **Server-Sent Events (SSE)** – Persistent one-way (server-to-client) real-time stream.
-- **WebSockets** – Persistent full-duplex (two-way) real-time communication
+- **Long Polling** - Client requests data, and the server holds the connection open until new data is available (fewer wasted requests).
+- **Server-Sent Events (SSE)** - Persistent one-way (server-to-client) real-time stream.
+- **WebSockets** - Persistent full-duplex (two-way) real-time communication

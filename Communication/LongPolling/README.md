@@ -103,5 +103,5 @@ graph TD
 
 If Long Polling creates too much server load or doesn't meet latency needs, consider:
 
-- **Server-Sent Events (SSE)** – Persistent one-way (server-to-client) real-time stream. Much more efficient for one-way updates.
-- **WebSockets** – Persistent full-duplex (two-way) real-time communication for high-frequency, low-latency apps.
+- **Server-Sent Events (SSE)** - Persistent one-way (server-to-client) real-time stream. Much more efficient for one-way updates.
+- **WebSockets** - Persistent full-duplex (two-way) real-time communication for high-frequency, low-latency apps.

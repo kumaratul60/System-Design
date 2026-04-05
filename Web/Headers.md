@@ -121,7 +121,6 @@ Headers are like envelopes on a letter: they contain instructions and metadata a
 #### Request vs. Response Headers
 
 - **Request Headers**: Information the client sends to the server.
-
   - Example: Telling the server what format you want back (`Accept: application/json`).
 
 - **Response Headers**: Information the server sends back.
@@ -182,7 +181,6 @@ Content-Type: application/json
 #### Cookies: Set-Cookie (Response) and Cookie (Request)
 
 - **Set-Cookie**: Server tells browser to store data.
-
   - **Use Case**: Session management.
   - **Example**: `Set-Cookie: sessionId=abc123; HttpOnly; Secure`
 
@@ -215,7 +213,6 @@ Content-Type: application/json
 #### ETag and If-None-Match
 
 - **ETag**: Server sends a fingerprint of the resource.
-
   - **Example**: `ETag: "abc123"`
 
 - **If-None-Match**: Client sends ETag to check if resource changed.
