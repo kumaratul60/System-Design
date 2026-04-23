@@ -1,0 +1,105 @@
+# React High-Level Fundamentals
+
+This guide covers core React concepts in detail, designed to provide deep understanding and prevent interviewers from "grinding" on these topics.
+
+---
+
+## 1. What is `useRef` and its deeper role in React?
+
+**Question:** Beyond simple autofocus, what is the core purpose of `useRef` and how does it relate to the component lifecycle?
+
+**Answer:**
+`useRef` returns a mutable ref object whose `.current` property is initialized to the passed argument. The returned object will persist for the full lifetime of the component.
+
+**Key Use Cases:**
+1.  **Persisting values across re-renders without triggering a re-render:** Unlike `useState`, updating a ref doesn't trigger a component update. This is ideal for storing IDs (like timers), previous props/state, or any value that is needed for logic but not for rendering.
+2.  **Accessing the DOM directly:** For managing focus, text selection, or integrating with third-party DOM libraries (e.g., D3.js, Google Maps).
+3.  **Storing "Instance Variables" in Functional Components:** In class components, we used `this.myVar`. In functional components, `useRef` is the equivalent.
+
+**Explain Me (The "Deep Dive"):**
+The fundamental difference between `const x = { current: 0 }` inside a component and `const x = useRef(0)` is **referential identity**. If you declare a plain object inside the component, it is recreated on every render. `useRef` guarantees that you get the *same* object instance on every render. This makes it a "sync" mechanism for state that is external to the React render-loop (reconciliation).
+
+---
+
+## 2. React Virtual DOM & Reconciliation
+
+**Question:** How does React manage the Virtual DOM, and what is the Reconciliation process?
+
+**Answer:**
+The **Virtual DOM (VDOM)** is a lightweight, in-memory representation of the real DOM elements. 
+
+**Reconciliation** is the algorithm React uses to "diff" one tree with another to determine which parts need to be changed.
+
+**The Process:**
+1.  **Render:** When state or props change, React creates a new VDOM tree.
+2.  **Diffing:** React compares the new tree with the previous one.
+3.  **Commit:** React applies only the necessary changes to the real DOM (patching).
+
+**Diffing Heuristics (O(n)):**
+*   **Different Types:** If the element type changes (e.g., `<div>` to `<span>`), React tears down the old tree and builds the new one from scratch.
+*   **Same Type:** React updates only the changed attributes/props.
+*   **Keys:** React uses `key` props to match children in the original tree with children in the subsequent tree. This is crucial for performance in lists.
+
+---
+
+## 3. What is React Fiber Architecture?
+
+**Question:** What is the significance of React Fiber, and how does it differ from the old stack reconciler?
+
+**Answer:**
+**Fiber** is the reimplementation of React's core algorithm (introduced in React 16). Its main goal is to increase its suitability for areas like animation, layout, and gestures.
+
+**Key Features:**
+*   **Incremental Rendering:** The ability to split rendering work into chunks and spread it out over multiple frames.
+*   **Concurrency:** It can pause, abort, or reuse work as new updates come in.
+*   **Prioritization:** It can assign priority to different types of updates (e.g., user input is high priority, data fetching is low priority).
+
+**Explain Me:**
+Before Fiber, React used a "Stack Reconciler" which was synchronous and recursive. Once it started rendering, it couldn't stop until it finished, which could lead to "jank" (dropped frames) if the component tree was large. Fiber turns the tree into a linked list of "fibers" (units of work), allowing React to use `requestIdleCallback` (or its own scheduler) to perform work only when the main thread is free.
+
+---
+
+## 4. Controlled vs Uncontrolled Components
+
+**Question:** Explain the difference between controlled and uncontrolled components. When would you use each?
+
+**Answer:**
+*   **Controlled Components:** React is the "single source of truth" for the form data. The component's state handles the value, and an `onChange` handler updates it.
+    *   *Pros:* Instant validation, conditional disabling, dynamic inputs.
+*   **Uncontrolled Components:** The DOM handles the form data. You use a `ref` to pull the value from the DOM when needed.
+    *   *Pros:* Easier integration with non-React code, potentially slightly better performance for very large forms (avoiding re-renders on every keystroke).
+
+**Explain Me:**
+Controlled components follow the "Declarative" pattern of React. Uncontrolled components are more "Imperative." For 90% of use cases, Controlled is preferred as it aligns with React's data-driven philosophy.
+
+---
+
+## 5. React Strict Mode
+
+**Question:** What is the purpose of `<React.StrictMode>` and how does it affect development?
+
+**Answer:**
+`StrictMode` is a tool for highlighting potential problems in an application. It does not render any visible UI.
+
+**Impact:**
+1.  **Double Invocation:** In development, React intentionally double-invokes certain functions (constructor, render, functional component body, `useState` updaters, etc.) to help find side effects that shouldn't be there (i.e., making sure functions are pure).
+2.  **Warning about Legacy APIs:** Warns about `string refs`, `findDOMNode`, and legacy context.
+3.  **Detecting Unexpected Side Effects:** Helps identify code that might cause issues in future Concurrent Mode features.
+
+---
+
+## 7. `useSyncExternalStore`: Deep Dive
+
+**Question:** What is the purpose of `useSyncExternalStore` and when would you use it instead of `useState` or `useEffect`?
+
+**Answer:**
+`useSyncExternalStore` is a hook introduced in React 18 for subscribing to external data sources (like window APIs, browser history, or an external state store like Redux or Zustand).
+
+**Key Benefit:**
+It prevents "tearing" (inconsistent UI where different parts of the screen show different versions of the same state) during **Concurrent Rendering**. 
+
+**Use Cases:**
+1.  **Browser APIs:** Subscribing to `window.navigator.onLine` or `window.matchMedia`.
+2.  **External Libraries:** If you're building a library that manages state outside the React render cycle but needs to stay in sync with it.
+
+**Explain Me:** Before this hook, many developers used `useEffect` + `useState` to sync external data. However, in concurrent mode, React can pause and resume rendering, and the external data might change *during* that pause, leading to an inconsistent UI state. `useSyncExternalStore` guarantees that React will always see a consistent snapshot of the data.
