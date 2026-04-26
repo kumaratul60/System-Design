@@ -1,6 +1,6 @@
 # Long Polling
 
-Long Polling is a client–server communication technique where the client sends an HTTP request, and the server **holds the connection open** until new data becomes available (or until a timeout occurs). Once the client receives the response, it immediately sends a new request to start the process over.
+Long Polling is a client-server communication technique where the client sends an HTTP request, and the server **holds the connection open** until new data becomes available (or until a timeout occurs). Once the client receives the response, it immediately sends a new request to start the process over.
 
 > Long polling = client sends a request → server waits until data changes (or timeout) → responds → client immediately sends next request.
 

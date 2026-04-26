@@ -1,8 +1,8 @@
 # Short Polling
 
-- Short polling = client hits server every N seconds to ask “any update?”.
+- Short polling = client hits server every N seconds to ask "any update?".
 
-Short polling is a client–server communication technique where the client repeatedly sends HTTP requests to the server at fixed intervals to check for new updates ("any updates?").
+Short polling is a client-server communication technique where the client repeatedly sends HTTP requests to the server at fixed intervals to check for new updates ("any updates?").
 
 ## Sequence Diagram
 
