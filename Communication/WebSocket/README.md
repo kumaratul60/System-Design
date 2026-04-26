@@ -10,6 +10,7 @@ A persistent, full-duplex communication protocol over a single TCP connection fo
   - **Full-Duplex:** Both sides send/receive simultaneously (WebSocket).
   - **Half-Duplex:** One side at a time (e.g., HTTP request/response or Walkie-Talkie).
 - **TCP Connection:**
+  - connection oriented
   - Reliable, ordered, error-checked byte stream.
   - **The Catch:** TCP has no message boundaries; WebSocket adds **Framing** on top.
 - **Bi-directional:** Client ↔ Server can push anytime without a request/response lock.
