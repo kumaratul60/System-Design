@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.io Chatbot</title>
+    <!-- External Socket.io Library -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="chat-container">
+        <div id="header">
+            <strong>Chatbot Studio</strong>
+            <span id="count">Users: 0</span>
+        </div>
+        <div id="messages"></div>
+        <div id="typing"></div>
+        <div id="input-area">
+            <input type="text" id="input" placeholder="Type a message..." autocomplete="off">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <!-- Custom Client Logic -->
+    <script src="script.js"></script>
+</body>
+</html>

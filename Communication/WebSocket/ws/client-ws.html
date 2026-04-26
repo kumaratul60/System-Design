@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>WS Chatbot</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #messages { border: 1px solid #ccc; height: 200px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
+        .bot { color: blue; }
+        .user { color: green; }
+    </style>
+</head>
+<body>
+    <h2>Chatbot (Raw WS)</h2>
+    <div id="messages"></div>
+    <input type="text" id="input" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:3001');
+        const messagesDiv = document.getElementById('messages');
+        const input = document.getElementById('input');
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            // If the user is 'Bot', color it differently
+            const type = data.user.includes('Bot') ? 'bot' : 'user';
+            appendMessage(data.user, data.text, type);
+        };
+
+        function sendMessage() {
+            const text = input.value;
+            if (!text) return;
+            const payload = { user: 'Client ' + Math.floor(Math.random() * 100), text: text };
+
+            socket.send(JSON.stringify(payload));
+            input.value = '';
+        }
+
+        function appendMessage(user, text, className) {
+            const msg = document.createElement('div');
+            msg.className = className;
+            msg.innerHTML = `<strong>${user}:</strong> ${text}`;
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>
