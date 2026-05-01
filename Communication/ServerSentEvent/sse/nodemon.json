@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/nodemon.json",
+  "watch": ["server.js", "index.html"],
+  "ext": "js,html",
+  "ignore": ["node_modules"]
+}

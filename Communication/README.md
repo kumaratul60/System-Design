@@ -8,12 +8,12 @@ Effective communication is the backbone of any distributed system. This guide co
 
 Before diving into protocols, understand the flow of data:
 
-| Feature        | Unidirectional                               | Bidirectional (Full-Duplex)                |
-| :------------- | :------------------------------------------- | :----------------------------------------- |
-| **Data Flow**  | One way at a time (usually Client → Server). | Both directions simultaneously.            |
-| **Initiation** | Client always starts the request.            | Either party can send data once connected. |
-| **Examples**   | Standard HTTP, SSE (Server-Sent Events).     | WebSockets, gRPC (Bi-di streaming).        |
-| **Efficiency** | High overhead for frequent updates.          | Low overhead; persistent connection.       |
+| Feature        | Unidirectional                                 | Bidirectional (Full-Duplex)                |
+| :------------- | :--------------------------------------------- | :----------------------------------------- |
+| **Data Flow**  | One way at a time (usually Client → Server).   | Both directions simultaneously.            |
+| **Initiation** | Client always starts the request.              | Either party can send data once connected. |
+| **Examples**   | Standard HTTP, [SSE](#server-sent-events-sse). | [WebSockets](#websockets), gRPC.           |
+| **Efficiency** | High overhead for frequent updates.            | Low overhead; persistent connection.       |
 
 ---
 
@@ -25,58 +25,46 @@ The frontend (Browser/Mobile) interacts with the backend using these primary tec
 
 1.  **REST (Representational State Transfer):** The standard. Uses HTTP methods (GET, POST, etc.). Stateless and cacheable.
 2.  **GraphQL:** Allows the frontend to ask for exactly what it needs. Reduces over-fetching.
-3.  **WebSockets:** For real-time updates (Chat, Stock tickers).
-
-### B. Backend to Backend (Service-to-Service)
-
-Communication within the data center often requires higher performance:
-
-1.  **gRPC:** High-performance, binary protocol using Protocol Buffers. Ideal for internal microservices.
-2.  **Message Queues (Asynchronous):** Using Kafka or RabbitMQ. The "Fire and Forget" model.
-3.  **Service Mesh:** Tools like Istio manage communication, retries, and security between services.
-
-### C. Backend to Database
-
-1.  **TCP/IP Connections:** Most DBs (Postgres, MySQL) use persistent TCP connections.
-2.  **Connection Pooling:** Backends maintain a "pool" of open connections to avoid the high cost of creating a new connection for every query.
+3.  **[SSE (Server-Sent Events)](#server-sent-events-sse):** Efficient server-to-client streaming.
+4.  **[WebSockets](#websockets):** For highly interactive, two-way communication.
 
 ---
 
-## 3. Deep Dive: Polling, Webhooks, SSE, and WebSockets
+## 3. Deep Dive: Techniques & Documentation
 
-### Short Polling
+### [Short Polling](./ShortPolling/README.md)
 
 Client sends requests at regular intervals (e.g., every 5 seconds) to check for updates.
 
 - **When to use:** Small-scale apps where real-time isn't critical.
-- **Pitfall:** High server load and network waste if data hasn't changed.
+- **Detailed Guide:** [Short Polling README](./ShortPolling/README.md)
 
-### Long Polling
+### [Long Polling](./LongPolling/README.md)
 
-The client requests data, and the server **holds the request open** until new data is available or a timeout occurs.
+The client requests data, and the server **holds the request open** until new data is available.
 
 - **When to use:** When you need "near" real-time but cannot use WebSockets.
-- **Example:** Early versions of Uber (checking driver location).
+- **Detailed Guide:** [Long Polling README](./LongPolling/README.md)
+
+### [Server-Sent Events (SSE)](./ServerSentEvent/README.md)
+
+A unidirectional persistent connection where the server pushes updates to the client.
+
+- **Advantage:** Uses standard HTTP; automatic reconnection.
+- **Detailed Guide:** [SSE README](./ServerSentEvent/README.md)
+
+### [WebSockets](./WebSocket/README.md)
+
+A persistent, full-duplex connection over a single TCP socket.
+
+- **The Protocol:** Handshake starts as HTTP and "upgrades" to WS.
+- **Detailed Guide:** [WebSocket README](./WebSocket/README.md)
 
 ### Webhooks (Reverse APIs)
 
 The server pushes data to a predefined URL on the client when an event happens.
 
-- **When to use:** Server-to-Server notifications.
-- **Example:** Stripe notifying your backend that a payment was successful.
-
-### Server-Sent Events (SSE)
-
-A unidirectional persistent connection where the server pushes updates to the client.
-
-- **When to use:** News feeds, stock tickers, or social media notifications.
-- **Advantage:** Uses standard HTTP; automatic reconnection.
-
-### WebSockets
-
-A persistent, full-duplex connection over a single TCP socket.
-
-- **The Protocol:** Starts as an HTTP request with an `Upgrade` header. Once the "handshake" is done, it switches to the binary WebSocket protocol.
+- **When to use:** Server-to-Server notifications (e.g., Stripe, GitHub).
 
 ---
 
@@ -96,55 +84,31 @@ A persistent, full-duplex connection over a single TCP socket.
 
 ### ✅ Do's
 
-- **Use WebSockets** for highly interactive apps like whiteboards or multiplayer games.
-- **Use SSE** if you only need the server to push data (it’s lighter than WebSockets).
-- **Use Webhooks** for third-party integrations (GitHub, PayPal).
-- **Implement Heartbeats:** Send "ping/pong" messages in WebSockets to ensure the connection is still alive.
+- **Use WebSockets** for highly interactive apps like whiteboards or games.
+- **Use SSE** if you only need the server to push data (news feeds, tickers).
+- **Implement Heartbeats:** Keep persistent connections (WS/SSE) alive.
 
 ### ❌ Don'ts
 
-- **Don't use Short Polling** for mobile apps; it kills the battery.
-- **Don't use WebSockets** if you need to cache responses (HTTP is better for caching).
-- **Don't forget Load Balancing:** WebSockets are stateful; your load balancer needs "Sticky Sessions" or a shared state (like Redis) to work correctly.
+- **Don't use Short Polling** for mobile; it drains battery life.
+- **Don't forget Sticky Sessions:** Stateful connections (WS/SSE) require session affinity.
 
 ### ⚠️ Pitfalls
 
-- **Zombie Connections:** WebSockets can stay open on the server even if the client has crashed, leading to memory leaks.
-- **Firewall Blocking:** Some strict corporate firewalls block non-HTTP traffic (though WS usually bypasses this via port 80/443).
+- **HTTP/1.1 Connection Limits:** Browsers limit to ~6 per domain. Use **HTTP/2** to multiplex.
+- **Proxy Buffering:** Nginx may buffer streams. Use `X-Accel-Buffering: no`.
 
 ---
 
-## 6. Security & Headers
+## 6. Real-World Examples
 
-Communication security relies on more than just encryption:
+### Example 1: Food Delivery App (DoorDash)
 
-1.  **TLS/SSL (HTTPS/WSS):** Always encrypt data in transit. Use `wss://` instead of `ws://`.
-2.  **Authentication Headers:**
-    - `Authorization: Bearer <token>`: Standard for REST/gRPC.
-    - **WebSocket Auth:** Since the handshake is HTTP, use tokens in the URL or a cookie during the initial request.
-3.  **CORS (Cross-Origin Resource Sharing):**
-    - `Access-Control-Allow-Origin`: Prevents unauthorized websites from making requests to your API.
-4.  **Important Headers:**
-    - `Upgrade: websocket`: Essential for initiating WS.
-    - `Connection: Upgrade`: Tells the server to switch protocols.
-    - `Strict-Transport-Security (HSTS)`: Forces the browser to use HTTPS.
+- **REST:** Place the order.
+- **WebSockets:** Track driver GPS in real-time.
+- **Webhooks:** Payment confirmation from Stripe.
 
----
+### Example 2: Financial Platform
 
-## 7. Real-World Examples
-
-### Example 1: Food Delivery App (DoorDash/UberEats)
-
-- **Frontend to Backend:** REST to place the order.
-- **Backend to Driver:** **WebSockets** to track the driver's GPS in real-time on the map.
-- **Payment:** **Webhooks** from Stripe to confirm the user paid.
-
-### Example 2: Financial Trading Platform
-
-- **Price Updates:** **SSE** (Server-Sent Events) to push the latest stock prices to thousands of users simultaneously.
-- **Trade Execution:** **gRPC** for ultra-fast communication between the frontend server and the matching engine.
-
-### Example 3: Chat Application (WhatsApp/Slack)
-
-- **Message Delivery:** **WebSockets** for instant, two-way messaging.
-- **Offline Messages:** **Push Notifications** (unidirectional) when the app is closed.
+- **SSE:** Push latest stock prices to users.
+- **gRPC:** Internal communication between backend services.

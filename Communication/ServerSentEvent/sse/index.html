@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Minimal SSE</title>
+</head>
+<body>
+  <h1>SSE Minimal Example</h1>
+  <div>Status: <b id="status">Connecting...</b></div>
+  <hr>
+  <div id="log"></div>
+
+  <script>
+    const log = document.getElementById('log');
+    const status = document.getElementById('status');
+
+    /**
+     * Open this page via http://localhost:3000
+     * Do NOT use "Live Server" (port 5500) as it will 404 on /events
+     * WHY PORT 3000 vs 5500?
+     *
+     * 1. Port 3000 (Node.js/Express):
+     *    This is a "Dynamic Server". It runs your 'server.js' code which has a
+     *    specific route (app.get('/events')) to handle the data stream.
+     *
+     * 2. Port 5500 (Live Server):
+     *    This is a "Static Server". It only looks for physical files. When it
+     *    sees '/events', it looks for a file named 'events' on your disk.
+     *    Since that file doesn't exist, it returns a 404 error.
+     *
+     * MANDATORY: Run 'node server.js' and visit http://localhost:3000
+     */
+    const es = new EventSource('/events');
+
+    es.onopen = () => {
+      status.innerText = 'Connected';
+      status.style.color = 'green';
+    };
+
+    es.onmessage = (e) => {
+      const div = document.createElement("div");
+      div.innerText = "Received: " + e.data;
+      log.prepend(div); // Show newest at the top
+    };
+
+    es.onerror = () => {
+      status.innerText = 'Disconnected';
+      status.style.color = 'red';
+    };
+  </script>
+</body>
+</html>

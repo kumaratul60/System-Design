@@ -1,0 +1,23 @@
+{
+  "name": "sse-example",
+  "version": "1.0.0",
+  "description": "A simple Server-Sent Events example",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "sse",
+    "server-sent-events",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
