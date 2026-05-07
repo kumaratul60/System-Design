@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mitigation: Output Encoding</title>
+</head>
+<body>
+    <h1>Output Encoding (Text vs. HTML)</h1>
+    <p>This is the #1 defense against XSS. Treating data as text prevents the browser from executing it.</p>
+
+    <div style="border: 1px solid red; padding: 10px; margin-bottom: 10px;">
+        <strong>Vulnerable (innerHTML):</strong> <span id="bad-output"></span>
+    </div>
+
+    <div style="border: 1px solid green; padding: 10px;">
+        <strong>Secure (textContent):</strong> <span id="good-output"></span>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name') || "Guest";
+
+        // VULNERABLE: Interprets <script> or <img> tags
+        document.getElementById('bad-output').innerHTML = name;
+
+        // SECURE: Converts < to &lt; and > to &gt; automatically
+        document.getElementById('good-output').textContent = name;
+    </script>
+
+    <div style="margin-top: 30px; padding: 15px; background: #eee;">
+        <h3>Why this works:</h3>
+        <p><code>textContent</code> tells the browser: "This is just a string of words, don't look for tags." Even if the user sends <code>&lt;script&gt;</code>, the browser will just draw the letters on the screen instead of running the code.</p>
+
+        <p><strong>Try this:</strong> Append <code>?name=&lt;img src=x onerror=alert(1)&gt;</code> to the URL. The red box will trigger an alert, but the green box will safely show the text.</p>
+    </div>
+</body>
+</html>

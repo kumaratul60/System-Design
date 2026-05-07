@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!--
+        SECURE: This Content Security Policy header:
+        1. Only allows scripts from 'self' (this domain).
+        2. Blocks ALL inline scripts (like <script>alert(1)</script>).
+        3. Blocks ALL inline event handlers (like onerror="...").
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; object-src 'none';" />
+    <title>Mitigation: Content Security Policy</title>
+  </head>
+  <body>
+    <h1>Content Security Policy (CSP)</h1>
+    <p>CSP is your safety net. Even if you have an XSS bug, the browser will refuse to run the injected script.</p>
+
+    <div id="vulnerable-spot"></div>
+
+    <script>
+      // Note: This script is ALLOWED because it's a legitimate part of the page
+      // (In a real CSP, we would move this to a separate .js file or use a Nonce)
+      const params = new URLSearchParams(window.location.search);
+      const inject = params.get('q');
+      if (inject) {
+        document.getElementById('vulnerable-spot').innerHTML = inject;
+      }
+    </script>
+
+    <div style="margin-top: 30px; padding: 15px; background: #eee">
+      <h3>Why this works:</h3>
+      <p>
+        The browser reads the CSP meta tag (or header) and becomes very strict. If an attacker tries to inject
+        <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>, the browser will say: "This script is not from a trusted
+        source" and block it.
+      </p>
+
+      <p>
+        <strong>Check the Console:</strong> Append <code>?q=&lt;img src=x onerror=alert(1)&gt;</code>. You will see a
+        "Refused to execute script" or "Refused to run the JavaScript URL" error in the console. The alert will NOT
+        fire.
+      </p>
+    </div>
+  </body>
+</html>

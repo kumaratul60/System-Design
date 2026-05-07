@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mitigation: Attribute & Protocol Validation</title>
+  </head>
+  <body>
+    <h1>Attribute & Protocol Validation</h1>
+    <p>Don't just escape characters—ensure the data makes sense (e.g., a link should start with http).</p>
+
+    <div style="border: 1px solid green; padding: 10px">
+      <a id="secure-link" href="#">Visit User Link (Validated)</a>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const userUrl = params.get('url');
+
+      function isSafeUrl(url) {
+        if (!url) return false;
+        // Only allow http and https protocols
+        return url.startsWith('http://') || url.startsWith('https://');
+      }
+
+      const linkElement = document.getElementById('secure-link');
+      if (userUrl && isSafeUrl(userUrl)) {
+        linkElement.href = userUrl;
+        linkElement.textContent = 'Visit: ' + userUrl;
+      } else if (userUrl) {
+        linkElement.style.color = 'red';
+        linkElement.textContent = 'BLOCKED: Malicious protocol detected!';
+        console.error('Blocked dangerous URL:', userUrl);
+      }
+    </script>
+
+    <div style="margin-top: 30px; padding: 15px; background: #eee">
+      <h3>Why this works:</h3>
+      <p>
+        Attackers often use the <code>javascript:</code> protocol to run code when a user clicks a link. By checking the
+        beginning of the string for <code>http://</code>, we block those scripts entirely.
+      </p>
+
+      <p>
+        <strong>Try this:</strong> Append <code>?url=javascript:alert('evil')</code> to the URL. The application will
+        detect the dangerous protocol and refuse to update the link.
+      </p>
+    </div>
+  </body>
+</html>

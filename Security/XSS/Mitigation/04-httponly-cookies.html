@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mitigation: HttpOnly Cookies</title>
+  </head>
+  <body>
+    <h1>HttpOnly Cookies (The Session Guard)</h1>
+    <p>Even if an attacker can run a script, they can't steal your session if your cookies are protected.</p>
+
+    <div id="cookie-display" style="padding: 10px; background: #f0f0f0; border: 1px solid #ccc">
+      Cookies visible to JavaScript: <strong id="js-cookies"></strong>
+    </div>
+
+    <script>
+      // 1. Regular cookie (VULNERABLE)
+      document.cookie = 'username=JohnDoe; path=/';
+
+      // 2. HttpOnly cookie (SECURE)
+      // Note: You can't actually set HttpOnly via JavaScript!
+      // It MUST be set by the SERVER like this:
+      // Set-Cookie: session_id=secret123; HttpOnly; Secure; SameSite=Strict
+
+      console.log('JavaScript is looking for cookies...');
+      document.getElementById('js-cookies').textContent = document.cookie || '(None)';
+    </script>
+
+    <div style="margin-top: 30px; padding: 15px; background: #eee">
+      <h3>Why this works:</h3>
+      <p>
+        When a cookie is marked as <code>HttpOnly</code>, the browser hides it from <code>document.cookie</code>. Only
+        the browser can "see" and "send" it to the server. An attacker's script will find nothing to steal.
+      </p>
+
+      <p>
+        <strong>Observe:</strong> In this demo, <code>document.cookie</code> will only show the 'username'. If this were
+        a real server, your 'session_id' would be completely hidden from this page's JavaScript.
+      </p>
+    </div>
+  </body>
+</html>

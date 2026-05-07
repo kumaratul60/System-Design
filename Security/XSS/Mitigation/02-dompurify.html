@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mitigation: DOMPurify Sanitization</title>
+    <!-- In a real app, you would install this via npm or host it yourself -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+  </head>
+  <body>
+    <h1>HTML Sanitization with DOMPurify</h1>
+    <p>Sometimes you NEED to show HTML (like a rich-text editor). Use a sanitizer to strip the "poison" out.</p>
+
+    <div style="border: 1px solid green; padding: 10px">
+      <strong>Safe HTML Output:</strong>
+      <div id="sanitized-output"></div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const dirtyHtml = params.get('html') || '<b>Welcome!</b>';
+
+      // SECURE: DOMPurify removes <script>, onerror, etc. but keeps <b>, <i>, <ul>
+      const cleanHtml = DOMPurify.sanitize(dirtyHtml);
+
+      document.getElementById('sanitized-output').innerHTML = cleanHtml;
+
+      console.log('Original:', dirtyHtml);
+      console.log('Sanitized:', cleanHtml);
+    </script>
+
+    <div style="margin-top: 30px; padding: 15px; background: #eee">
+      <h3>Why this works:</h3>
+      <p>
+        DOMPurify understands the HTML spec. It allows "safe" tags like <code>&lt;b&gt;</code> but instantly deletes
+        dangerous ones like <code>&lt;script&gt;</code> or attributes like <code>onerror</code>.
+      </p>
+
+      <p>
+        <strong>Try this:</strong> Append
+        <code>?html=&lt;b&gt;Hello&lt;/b&gt;&lt;script&gt;alert('evil')&lt;/script&gt;</code> to the URL. You will see
+        "Hello" in bold, but the script will be gone.
+      </p>
+    </div>
+  </body>
+</html>
