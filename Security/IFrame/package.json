@@ -1,0 +1,21 @@
+{
+  "name": "iframe",
+  "version": "1.0.0",
+  "description": "Iframe Protection Vulnerability click-hijacking data theft vs js Seesion && Coockie theft",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "start:parent": "nodemon ParentServer/index.js",
+    "start:child": "nodemon ChildServer/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
