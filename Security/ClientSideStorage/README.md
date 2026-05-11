@@ -17,13 +17,13 @@ In modern web applications, storing data on the client side is essential for per
 
 ## 📋 Default Quota Cheat Sheet (Chrome/Chromium)
 
-| Storage Type       | Limit Type  | Default Size          | Behavior                                        |
-| :----------------- | :---------- | :-------------------- | :---------------------------------------------- |
-| **LocalStorage**   | **Fixed**   | **~5MB - 10MB**       | Synchronous. Fails with `QuotaExceededError`.   |
-| **SessionStorage** | **Fixed**   | **~5MB**              | Per tab. Lost when tab closes.                  |
-| **Cookies**        | **Fixed**   | **4KB**               | Per cookie. Total ~20 cookies per domain.       |
-| **IndexedDB**      | **Dynamic** | **~10GB** (Default)\* | Asynchronous. Can store GBs if disk allows.     |
-| **Cache API**      | **Dynamic** | **~10GB** (Default)\* | Used by Service Workers. Part of the same pool. |
+| Storage Type       | Limit Type  | Default Size               | Behavior                                                 |
+| :----------------- | :---------- | :------------------------- | :------------------------------------------------------- |
+| **LocalStorage**   | **Fixed**   | **~5MB - 10MB**            | Synchronous. Fails with `QuotaExceededError`.            |
+| **SessionStorage** | **Fixed**   | **~5MB**                   | Per tab. Lost when tab closes.                           |
+| **Cookies**        | **Fixed**   | **4KB per cookie**         | Total ~20KB - 80KB per domain.                           |
+| **IndexedDB**      | **Dynamic** | **50MB - 100MB (Initial)** | Can scale up to GBs (80/60 rule) after user interaction. |
+| **Cache API**      | **Dynamic** | **~100MB (Initial)**       | Part of the same pool as IndexedDB.                      |
 
 _\*Note: 10GB (10,737,418,240 bytes) is a common default reported by modern Chrome, but the actual limit scales via the 80/60 rule._
 
@@ -31,15 +31,19 @@ _\*Note: 10GB (10,737,418,240 bytes) is a common default reported by modern Chro
 
 ## 🛡️ Security Mechanisms & Best Practices
 
-Based on the core principles of Frontend System Design, here are the "Safe Points" for client storage:
+> **🔥 Pro-Tip (Interview Gold):** While you might see snippets like `document.cookie = "...; HttpOnly"`, the **HttpOnly** flag **CANNOT** be set via client-side JavaScript. It is a server-side instruction. If you try to set it via `document.cookie`, the browser will ignore the flag for security reasons. It must be sent via the `Set-Cookie` HTTP header from the server.
+
+## 🛡️ Security Mechanisms & Best Practices
+
+Following the **Namaste Frontend System Design** framework, client storage security is divided into five critical pillars:
 
 ### 1. Storing Sensitive Data
 
 - **Server-First:** Always prefer storing truly sensitive data (PII, financial info) on the server. The client should only hold a reference (e.g., a token).
-- **Encryption:** If you MUST store sensitive data (like a cached email), use the **Web Crypto API** to encrypt it before saving.
+- **Encryption:** If you MUST store sensitive data (like a cached email), use the **Web Crypto API (AES-GCM)** to encrypt it before saving.
 - **Token Expiry:** Ensure any stored tokens have a short TTL (Time To Live) to minimize the window of opportunity for an attacker.
 
-### 2. Authentication Security
+### 2. Authentication
 
 - **JWT/OAuth:** Store tokens securely. Avoid LocalStorage for high-risk tokens.
 - **HttpOnly Cookies:** The gold standard for session tokens. `HttpOnly` prevents JavaScript from accessing the cookie, mitigating **XSS** theft.
@@ -47,13 +51,24 @@ Based on the core principles of Frontend System Design, here are the "Safe Point
 
 ### 3. Data Integrity
 
-- **Checksums:** When storing critical configuration or data, store a **checksum (HMAC)** alongside it. Verify the checksum on read to ensure the data hasn't been tampered with by a malicious script or user.
+- **Checksums (HMAC):** When storing critical configuration or data, store a **checksum (HMAC)** alongside it. Verify the checksum on read to ensure the data hasn't been tampered with by a malicious script or user.
+
+### 4. Storage Limit
+
+- **Quota Management:** Use `navigator.storage.estimate()` to proactively manage space and avoid `QuotaExceededError`.
+- **Persistence:** Request `navigator.storage.persist()` for critical app data to prevent the browser from automatically clearing data under disk pressure (LRU eviction).
+
+### 5. Session Management
+
+- **Isolation:** Use `SessionStorage` for data that must not leak across tabs or windows.
+- **Cleanup:** Explicitly clear session data on logout (`localStorage.clear()` or `sessionStorage.clear()`) to prevent session fixation.
+- **State Sync:** For `LocalStorage`, use the `storage` event listener to sync session state changes across multiple open tabs securely.
 
 ---
 
 ## ⚠️ Common Pitfalls
 
-1.  **XSS (Cross-Site Scripting):** If an attacker injects a script, they can call `localStorage.getItem()` and steal everything.
+1.  **[XSS (Cross-Site Scripting)](../XSS/README.md):** If an attacker injects a script, they can call `localStorage.getItem()` and steal everything.
 2.  **CSRF (Cross-Site Request Forgery):** If using cookies without `SameSite=Strict/Lax`, attackers can perform actions on behalf of the user.
 3.  **No Expiry in LocalStorage:** Data stays forever, increasing the risk of "Leaked Data" if the device is shared or stolen.
 4.  **Storing Secrets:** Never store API Keys, Secrets, or Plain-text Passwords in any client storage.
