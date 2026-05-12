@@ -223,6 +223,40 @@ async function encryptData(text, password) {
 
 ---
 
+## 🔐 Secure Communication (HTTPS)
+
+In Frontend System Design, client-side security is only as strong as the "pipe" through which data travels. HTTPS is the foundational layer for all secure web interactions.
+
+### 🛡️ Core Pillars of HTTPS
+
+1.  **Data Encryption:** Protects the privacy of data being exchanged between the client and server (prevents eavesdropping).
+2.  **Authentication:** Uses **SSL/TLS** certificates to verify that the server is who it claims to be.
+    - _Note:_ **SSL** (Secure Sockets Layer) is the deprecated predecessor; **TLS** (Transport Layer Security) is the modern, secure standard (e.g., TLS 1.2, 1.3).
+3.  **Data Integrity:** Uses **MAC (Message Authentication Code)** to ensure that the data is not modified or corrupted during transit. A MAC is a cryptographic checksum that verifies both the data's integrity and its authenticity.
+
+### 🚀 Beyond Security: The Benefits
+
+- **Search Engine Ranking:** Google and other search engines give an SEO boost to HTTPS-enabled sites.
+- **Trust and Reputation:** Eliminates "Not Secure" browser warnings that drive users away.
+- **Performance (HTTP/2 & HTTP/3):** Modern web protocols that significantly speed up loading times **require** HTTPS.
+- **Compliance:** Essential for meeting standards like PCI-DSS (for payments) and GDPR (for privacy).
+
+### 💡 Use Cases & Examples
+
+- **E-commerce:** Protecting credit card info and user addresses during checkout.
+- **HSTS (HTTP Strict Transport Security):** A header that tells the browser to _only_ communicate with the server over HTTPS, even if the user types `http://`.
+  ```http
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  ```
+
+### ⚠️ Pitfalls
+
+- **Mixed Content:** Loading images or scripts over `http://` on an `https://` page creates a security hole and causes browser warnings.
+- **Expired Certificates:** If the SSL certificate is not renewed, the site becomes inaccessible with a "Connection is not private" error.
+- **SSL Stripping:** An attack where a hacker downgrades a connection from HTTPS to HTTP. Mitigated by using HSTS.
+
+---
+
 ## 🔍 Quick Deep Dive Q&A
 
 **Q: Can I use `localStorage` safely?**
