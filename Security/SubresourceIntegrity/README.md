@@ -2,21 +2,40 @@
 
 Subresource Integrity (SRI) is a security feature that enables browsers to verify that resources they fetch (for example, from a CDN) are delivered without unexpected manipulation.
 
-## The Problem: Compromised CDNs
+## How it Works (The Flow)
 
-Many websites load common libraries like jQuery, Bootstrap, or FontAwesome from public CDNs. If an attacker gains access to the CDN, they can inject malicious code into those libraries, leading to a massive XSS attack on all websites using that CDN.
+When a browser encounters a resource with an `integrity` attribute, it follows these steps:
 
-## The Solution: SRI
+1.  **Download**: The browser downloads the resource (e.g., from `cdn.b.com`).
+2.  **Generate Hash**: The browser generates a cryptographic hash of the downloaded content using the specified algorithm (e.g., `sha256`, `sha384`, or `sha512`).
+3.  **Compare**: The browser compares the locally generated hash with the value provided in the `integrity` attribute.
+4.  **Execute or Block**: If the hashes match exactly, the browser executes the script or applies the stylesheet. If they do not match, the browser blocks the resource to protect the user.
 
-With SRI, you provide a cryptographic hash of the file you expect. The browser fetches the file, calculates its hash, and compares it to the hash you provided. If they don't match, the browser refuses to execute the script or apply the stylesheet.
+---
+
+## Key Benefits
+
+- **Protection against Compromised CDNs**: If a 3rd party resource provider (like a CDN) is hacked and the file is replaced with malicious code, the hash will change and the browser will block the attack.
+- **Version Consistency**: Prevents accidental updates. If a CDN updates a resource to a new version at the same URL (Eg: version change) without your knowledge, the hash will mismatch, alerting you to the change.
 
 ---
 
 ## How to Implement SRI
 
-You add the `integrity` attribute to your `<script>` or `<link>` tags.
+You add the `integrity` and `crossorigin` attributes to your `<script>` or `<link>` tags.
 
-### Example with `<script>` tag:
+### Example with `<link>` (CSS):
+
+```html
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-T3c6Coli6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+  crossorigin="anonymous"
+/>
+```
+
+### Example with `<script>` (JS):
 
 ```html
 <script
@@ -28,8 +47,8 @@ You add the `integrity` attribute to your `<script>` or `<link>` tags.
 
 ### Key Attributes:
 
-1.  **`integrity`**: Contains the hash algorithm (e.g., `sha256`, `sha384`, `sha512`) followed by the base64-encoded hash value.
-2.  **`crossorigin="anonymous"`**: Required for SRI to work on cross-origin requests. It tells the browser to fetch the resource without sending user credentials (cookies).
+1.  **`integrity`**: Contains the hash algorithm followed by the base64-encoded hash value.
+2.  **`crossorigin="anonymous"`**: **Mandatory** for cross-origin SRI. It ensures the request is made without sending cookies or authentication, which is required for the browser to perform the integrity check.
 
 ---
 
@@ -37,7 +56,7 @@ You add the `integrity` attribute to your `<script>` or `<link>` tags.
 
 ### 1. Online Tools
 
-- [srihash.org](https://www.srihash.org/): Paste a URL to generate the SRI tag.
+- [srihash.org](https://www.srihash.org/): Paste a URL to generate the complete tag.
 
 ### 2. Command Line (OpenSSL)
 
@@ -55,9 +74,11 @@ Many build tools (Webpack, Rollup) have plugins that automatically generate SRI 
 
 SRI is supported by all modern browsers. If a browser doesn't support SRI, it simply ignores the `integrity` attribute and loads the script normally, so it is a **progressive enhancement** with no downside for older browsers.
 
+---
+
 ## Summary Checklist
 
 - [ ] Use SRI for all third-party scripts and styles (CDNs).
-- [ ] Use `crossorigin="anonymous"` attribute.
-- [ ] Ensure your server/CDN sends the correct CORS headers (`Access-Control-Allow-Origin`).
-- [ ] Prefer `sha384` or `sha512` for stronger security.
+- [ ] Always include the `crossorigin="anonymous"` attribute.
+- [ ] Ensure the CDN provider supports CORS (sends `Access-Control-Allow-Origin`).
+- [ ] Prefer `sha384` or `sha512` for higher security.

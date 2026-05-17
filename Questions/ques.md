@@ -35,37 +35,38 @@ Shared insightful ideas on structuring repositories for better scalability and a
 
 - 𝗣𝗼𝗽𝘂𝗹𝗮𝗿 𝗗𝗲𝘀𝗶𝗴𝗻 𝗣𝗮𝘁𝘁𝗲𝗿𝗻 𝗤𝘂𝗲𝘀𝘁𝗶𝗼𝗻𝘀:
 
-1. Higher-Order Components (HOC): What they are and when to use them
-2. Module Pattern: How it helps with encapsulation and code organization
-3. Render Props Pattern: Use cases and how it compares to HOC
-4. Error Boundaries: How to catch and handle UI crashes in React
-5. What are the limitations of React in building large-scale applications?
-6. How does React manage the Virtual DOM, and what are the benefits?
-7. Can React Hooks fully replace Redux for state management? Explain why or why not.
-8. What are the best practices for managing state in large React applications?
-9. How would you optimize performance in a React app with large component trees?
-10. Explain React's Strict Mode and its impact on development.
-11. How can you prevent unnecessary re-renders in React functional components?
-12. Describe the key differences between functional and class components in React.
-13. What is the significance of the React Fiber architecture?
-14. How does React handle side effects, and how can you manage them effectively?
-15. Explain the differences between useMemo() and useCallback() in React.
-16. How would you implement dynamic form handling and validation in React?
-17. What is lazy loading in React, and how does it improve application performance?
-18. How would you handle errors in a React app, and what is the role of error boundaries?
-19. What are the benefits of server-side rendering (SSR) in React applications?
-20. How do you handle styling in React components? Discuss different approaches.
-21. How would you pass data between sibling components in React without using Redux?
-22. Explain the use case of useEffect() for fetching data from an API.
-23. How do you handle asynchronous operations in React using async/await or Promises?
-24. How would you re-render a component when the window is resized?
-25. Describe how React Context API can be used for state management in an app.
-26. What is the role of React Router, and how does it work with dynamic routing?
-27. Explain the concept of controlled and uncontrolled components in React.
-28. How would you optimize React app performance when handling large lists or grids?
-29. Explain the difference between shallow and deep comparison in React's shouldComponentUpdate.
-30. How do you handle asynchronous code execution and state updates in React?
-31. How would you implement custom hooks to abstract logic in React?
-32. What are higher-order components (HOCs) in React, and how are they used?
-33. How would you implement a search feature with debouncing in React?
-34. Explain React's reconciliation process and how it updates the DOM efficiently.
+1. [Security Architect Interview Grill (Staff/Architect Level)](./Detailed/Security_Architect.md)
+2. Higher-Order Components (HOC): What they are and when to use them
+3. Module Pattern: How it helps with encapsulation and code organization
+4. Render Props Pattern: Use cases and how it compares to HOC
+5. Error Boundaries: How to catch and handle UI crashes in React
+6. What are the limitations of React in building large-scale applications?
+7. How does React manage the Virtual DOM, and what are the benefits?
+8. Can React Hooks fully replace Redux for state management? Explain why or why not.
+9. What are the best practices for managing state in large React applications?
+10. How would you optimize performance in a React app with large component trees?
+11. Explain React's Strict Mode and its impact on development.
+12. How can you prevent unnecessary re-renders in React functional components?
+13. Describe the key differences between functional and class components in React.
+14. What is the significance of the React Fiber architecture?
+15. How does React handle side effects, and how can you manage them effectively?
+16. Explain the differences between useMemo() and useCallback() in React.
+17. How would you implement dynamic form handling and validation in React?
+18. What is lazy loading in React, and how does it improve application performance?
+19. How would you handle errors in a React app, and what is the role of error boundaries?
+20. What are the benefits of server-side rendering (SSR) in React applications?
+21. How do you handle styling in React components? Discuss different approaches.
+22. How would you pass data between sibling components in React without using Redux?
+23. Explain the use case of useEffect() for fetching data from an API.
+24. How do you handle asynchronous operations in React using async/await or Promises?
+25. How would you re-render a component when the window is resized?
+26. Describe how React Context API can be used for state management in an app.
+27. What is the role of React Router, and how does it work with dynamic routing?
+28. Explain the concept of controlled and uncontrolled components in React.
+29. How would you optimize React app performance when handling large lists or grids?
+30. Explain the difference between shallow and deep comparison in React's shouldComponentUpdate.
+31. How do you handle asynchronous code execution and state updates in React?
+32. How would you implement custom hooks to abstract logic in React?
+33. What are higher-order components (HOCs) in React, and how are they used?
+34. How would you implement a search feature with debouncing in React?
+35. Explain React's reconciliation process and how it updates the DOM efficiently.
