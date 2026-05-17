@@ -17,7 +17,7 @@ popular hot topics:
 - Iframe Protection
 - Dependency Injection
 - Client Storage Security
-- Compliance and regulations: it help in govern/owned,(gdpr, hepabase )
+- [Compliance and Regulations](./Compliance&Regulations.md): Governing standards (GDPR, HIPAA, SOC 2, etc.)
 - SSRF (server side response forge)
 - SSJI (server side javascript injection)
 - Feature flag
