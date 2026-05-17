@@ -5,8 +5,7 @@ popular hot topics:
 
 - CORS
 - PII
-- Input sanitization
-- Validation
+- [Input Sanitization & Validation](./Validation/InputValidation&Sanitization.md)
 - Web storage, when,which to use
 - Authorization/Authentication
 - TTL
