@@ -21,15 +21,33 @@ Compliance and regulations are critical for ensuring data privacy, security, and
 
 ## Real-World Examples of Non-Compliance (Fines)
 
-| Company             | Regulation | Fine Amount              | Reason for Fine                                                                            |
-| :------------------ | :--------- | :----------------------- | :----------------------------------------------------------------------------------------- |
-| **Meta (Facebook)** | GDPR       | **€1.2 Billion** (2023)  | Unlawful transfer of EU user data to the U.S. without adequate protection.                 |
-| **Amazon**          | GDPR       | **€746 Million** (2021)  | Non-compliance with data processing principles regarding targeted advertising.             |
-| **TikTok**          | COPPA/GDPR | **$370 Million** (2023)  | Failing to protect children's privacy and making child accounts "public" by default.       |
-| **Anthem, Inc.**    | HIPAA      | **$16 Million** (2018)   | Massive data breach exposing PHI of 79 million people due to inadequate security controls. |
-| **Sephora**         | CCPA       | **$1.2 Million** (2022)  | Failed to disclose "sale" of personal data and did not honor Global Privacy Control (GPC). |
-| **Target**          | PCI DSS    | **~$118 Million** (2013) | Failed to secure Point-of-Sale (POS) systems, leading to 40 million stolen credit cards.   |
-| **Equifax**         | Multi-Reg  | **$425 Million** (2017)  | Failure to patch a known vulnerability, leading to a breach of 147 million records.        |
+| Company             | Regulation | Fine Amount               | Reason for Fine                                                                                            |
+| :------------------ | :--------- | :------------------------ | :--------------------------------------------------------------------------------------------------------- |
+| **Meta (Facebook)** | GDPR       | **€1.2 Billion** (2023)   | Unlawful transfer of EU user data to the U.S. without adequate protection.                                 |
+| **Amazon**          | GDPR       | **€746 Million** (2021)   | Non-compliance with data processing principles regarding targeted advertising.                             |
+| **Google**          | GDPR/COPPA | **$560 Million+** (Total) | Fined **$170M** (COPPA) for YouTube child data and **€390M+** (GDPR) for cookie/ad transparency.           |
+| **Microsoft**       | GDPR/COPPA | **$350 Million+** (Total) | **€310M** (LinkedIn) for illegal ad processing and **$20M** (Xbox) for COPPA violations.                   |
+| **Epic Games**      | COPPA/FTC  | **$520 Million** (2022)   | **$275M** for child privacy (COPPA) and **$245M** for using "dark patterns" to trick users into purchases. |
+| **TikTok**          | COPPA/GDPR | **$370 Million** (2023)   | Failing to protect children's privacy and making child accounts "public" by default.                       |
+| **Anthem, Inc.**    | HIPAA      | **$16 Million** (2018)    | Massive data breach exposing PHI of 79 million people due to inadequate security controls.                 |
+| **Sephora**         | CCPA       | **$1.2 Million** (2022)   | Failed to disclose "sale" of personal data and did not honor Global Privacy Control (GPC).                 |
+| **Target**          | PCI DSS    | **~$118 Million** (2013)  | Failed to secure Point-of-Sale (POS) systems, leading to 40 million stolen credit cards.                   |
+| **Equifax**         | Multi-Reg  | **$425 Million** (2017)   | Failure to patch a known vulnerability, leading to a breach of 147 million records.                        |
+
+## The "Cookie Banner" & Consent Era
+
+If you've noticed that every website now asks for permission via pop-ups, it's a direct result of **GDPR** and the **ePrivacy Directive (Cookie Law)**.
+
+### Why do these pop-ups exist?
+
+- **Active Consent:** Under GDPR, "silence is not consent." You cannot set non-essential cookies (for tracking or ads) _before_ the user clicks "Accept."
+- **Granular Choice:** Users must be able to choose which _types_ of cookies they allow (e.g., Functional vs. Analytics vs. Marketing).
+- **The "Reject All" Requirement:** Regulators (like France's CNIL) now mandate that **"Rejecting cookies should be as easy as accepting them."** This is why you now see a prominent "Reject All" button next to "Accept All."
+- **No Dark Patterns:** Websites can no longer use deceptive design (like a tiny, hidden "Reject" link or pre-checked boxes) to trick users into consenting.
+
+### Consent Management Platforms (CMPs)
+
+Most companies don't build these themselves. They use specialized tools like **OneTrust**, **Cookiebot**, or **Ketch** to manage user consent and block scripts automatically until permission is granted.
 
 ## Data Classification & PII
 
@@ -41,6 +59,32 @@ Most regulations center around the protection of **Personally Identifiable Infor
 | **Private (PII)**    | Data that can identify a specific person.    | Names, Email addresses, IP addresses.                 | Encryption at rest/transit.                     |
 | **Sensitive (SPII)** | High-risk PII; could cause significant harm. | Social Security Numbers, Medical records, Biometrics. | Strict access control + Field-level encryption. |
 | **Restricted**       | Critical business/legal data.                | Trade secrets, Financial reports, Legal documents.    | "Need-to-know" access only.                     |
+
+## Emerging Compliance (AI & Supply Chain)
+
+As of 2026, new regulations have shifted focus toward **Artificial Intelligence** and the **Software Supply Chain**.
+
+### 1. EU AI Act (Regulation 2024/1689)
+
+The world's first comprehensive AI law. It uses a **risk-based approach** with massive penalties for non-compliance.
+
+| Risk Level       | Examples                              | Requirements                            | Non-Compliance Fine                  |
+| :--------------- | :------------------------------------ | :-------------------------------------- | :----------------------------------- |
+| **Unacceptable** | Social scoring, manipulative AI.      | **PROHIBITED** since 2025.              | Up to **€35M or 7%** of turnover.    |
+| **High-Risk**    | Recruitment, Credit scoring, MedTech. | Strict documentation & human oversight. | Up to **€15M or 3%** of turnover.    |
+| **Limited Risk** | Chatbots, Deepfakes, AI content.      | Transparency (Users must know it's AI). | Up to **€7.5M or 1.5%** of turnover. |
+
+> **Key Deadline:** Most High-Risk AI systems must be fully compliant by **August 2, 2026**.
+
+### 2. SBOM (Software Bill of Materials)
+
+A mandatory requirement for security transparency, especially under **US Executive Order 14028** for government vendors.
+
+- **What it is:** A machine-readable "ingredient list" of every open-source library and dependency in your software.
+- **Standards:**
+  - **CycloneDX (OWASP):** Best for security and vulnerability management (VEX).
+  - **SPDX (Linux Foundation):** Best for legal/license compliance.
+- **Requirement:** Must be generated automatically for every build to identify vulnerabilities like Log4Shell instantly.
 
 ## Safe Practices & Mitigation Strategies ("The Safe Way")
 
@@ -82,3 +126,6 @@ A common pitfall in system design is equating compliance with security.
 - [PCI Security Standards Council](https://www.pcisecuritystandards.org/)
 - [WCAG 2.1 Guidelines](https://www.w3.org/TR/WCAG21/)
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
+- [EU AI Act Explorer](https://artificialintelligenceact.eu/)
+- [NTIA SBOM Minimum Elements](https://www.ntia.gov/page/software-bill-materials)
+- [CycloneDX Project](https://cyclonedx.org/)
