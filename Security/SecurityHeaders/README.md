@@ -83,6 +83,16 @@ app.use(redirectToHttps);
 
 ---
 
+## 6. Permissions-Policy (Formerly Feature-Policy)
+
+Allows you to control which browser features (camera, microphone, geolocation) can be used.
+
+- **Problem:** If your site is compromised via XSS, an attacker could try to use the user's camera or geolocation.
+- **Solution:** Explicitly disable features you don't use.
+- **Implementation:** `res.setHeader('Permissions-Policy', 'geolocation=(), camera=()')`
+
+---
+
 ## Implementation Summary
 
 ```javascript

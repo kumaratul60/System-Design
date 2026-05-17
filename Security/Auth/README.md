@@ -1,0 +1,89 @@
+# Authentication and Authorization
+
+In web security, "Auth" usually refers to two distinct but related processes: **Authentication (Who are you?)** and **Authorization (What are you allowed to do?)**.
+
+---
+
+## 1. Authentication (AuthN)
+
+The process of verifying the identity of a user or service.
+
+### Common Methods:
+
+- **Passwords:** The most common (and often weakest) method. Use hashing (like `bcrypt`) and salting.
+- **Multi-Factor Authentication (MFA):** Adds an extra layer (SMS, Authenticator App, Hardware Key).
+- **OAuth 2.0 / OpenID Connect (OIDC):** Delegated authentication (e.g., "Login with Google").
+- **Biometrics:** Fingerprint, Face ID.
+- **Tokens/JWT:** Stateless authentication for APIs.
+
+### Security Best Practices:
+
+- **Password Hashing:** Never store passwords in plain text. Use `Argon2` or `bcrypt`.
+- **Session Management:** Use secure, `HttpOnly` cookies for session IDs.
+- **Rate Limiting:** Prevent brute-force attacks on login endpoints.
+- **Secure Token Storage:** Don't store JWTs in `localStorage` if they contain sensitive data or have long TTLs.
+
+---
+
+## 2. Authorization (AuthZ)
+
+The process of determining whether an authenticated user has permission to perform a specific action or access a resource.
+
+### Common Models:
+
+- **RBAC (Role-Based Access Control):** Permissions are assigned to roles (e.g., `admin`, `editor`, `viewer`).
+- **ABAC (Attribute-Based Access Control):** Decisions are based on attributes (e.g., "Users in department X can access resource Y during business hours").
+- **ACL (Access Control Lists):** A list of permissions attached to a specific object.
+
+---
+
+## Implementation Example: JWT with Express.js
+
+```javascript
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const app = express();
+
+const SECRET_KEY = 'your-very-secret-key';
+
+// Middleware for Authentication
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401); // Unauthorized
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403); // Forbidden (Invalid token)
+    req.user = user;
+    next();
+  });
+};
+
+// Middleware for Authorization (RBAC)
+const authorizeRole = (role) => {
+  return (req, res, next) => {
+    if (req.user.role !== role) {
+      return res.status(403).json({ message: 'Insufficient permissions' });
+    }
+    next();
+  };
+};
+
+app.get('/admin', authenticateToken, authorizeRole('admin'), (req, res) => {
+  res.send('Welcome, Admin!');
+});
+
+app.listen(3000);
+```
+
+---
+
+## Authentication vs. Authorization Summary
+
+| Feature      | Authentication (AuthN)        | Authorization (AuthZ)              |
+| :----------- | :---------------------------- | :--------------------------------- |
+| **Question** | Who are you?                  | What can you do?                   |
+| **Check**    | Identity verification.        | Permissions check.                 |
+| **Example**  | Entering a username/password. | Checking if you can delete a post. |
+| **Order**    | Occurs first.                 | Occurs second (after AuthN).       |

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permissions Policy Demo</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #f5f7f9;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --success-bg: #d4edda;
+            --error-bg: #f8d7da;
+            --header-bg: #dcdcdc;
+            --code-bg: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            background-color: var(--header-bg);
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { margin: 0 0 15px 0; font-size: 24px; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        .tab:hover { background: #f0f0f0; }
+        .tab.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+        }
+
+        main {
+            width: 90%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 50px;
+        }
+
+        .demo-card {
+            background-color: #cde0c4;
+            padding: 20px;
+            border-radius: 4px;
+            border: 1px solid #b2c9a9;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .run-btn {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .run-btn:hover { background: #fafafa; }
+
+        .explanation {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .explanation h2 { margin-top: 0; font-size: 20px; }
+
+        .code-title {
+            display: block;
+            margin-top: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #444;
+        }
+
+        .code-block {
+            margin-top: 10px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: var(--code-bg);
+            color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .status-box {
+            margin-left: auto;
+            font-weight: bold;
+        }
+
+        iframe {
+            width: 100%;
+            height: 150px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Permissions Policy Demo</h1>
+    <div class="tabs">
+        <a href="/" class="tab" id="tab-default">Home</a>
+        <a href="/all-allowed" class="tab" id="tab-all">All Allowed</a>
+        <a href="/some-allowed" class="tab" id="tab-some">Some Allowed</a>
+        <a href="/same-origin-allowed" class="tab" id="tab-self">Same-Origin Allowed</a>
+        <a href="/none-allowed" class="tab" id="tab-none">None Allowed</a>
+        <a href="/iframe-demo" class="tab" id="tab-iframe">Iframe Navigation Allowed</a>
+    </div>
+</header>
+
+<main>
+    <div class="demo-card">
+        <button class="run-btn" onclick="runDemo()">RUN DEMO</button>
+        <div id="demo-status" class="status-box">Ready to test...</div>
+    </div>
+
+    <div class="explanation">
+        <h2 id="exp-title">Default Policy</h2>
+        <p id="exp-text">Select a tab to see how different <code>Permissions-Policy</code> headers behave.</p>
+        
+        <div id="iframe-test" style="display:none;">
+            <h3>Iframe with <code>allow="geolocation"</code></h3>
+            <p>Parent policy is <code>geolocation=(self)</code>. Since the iframe is same-origin, it should work if we explicitly allow it.</p>
+            <iframe src="/child" allow="geolocation" title="Geolocation Iframe Demo"></iframe>
+        </div>
+
+        <span class="code-title">Response Header</span>
+        <div class="code-block" id="header-val">
+            Permissions-Policy:<br>
+            &nbsp;&nbsp;geolocation=(self)
+        </div>
+
+        <div id="iframe-details" style="display:none;">
+            <span class="code-title">Trusted iframe tag</span>
+            <div class="code-block" id="trusted-iframe-code"></div>
+
+            <span class="code-title">Untrusted iframe tag</span>
+            <div class="code-block" id="untrusted-iframe-code"></div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const path = window.location.pathname;
+    const headerEl = document.getElementById('header-val');
+    const titleEl = document.getElementById('exp-title');
+    const textEl = document.getElementById('exp-text');
+    const iframeTest = document.getElementById('iframe-test');
+    const iframeDetails = document.getElementById('iframe-details');
+    const trustedCode = document.getElementById('trusted-iframe-code');
+    const untrustedCode = document.getElementById('untrusted-iframe-code');
+
+    function updateUI() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        iframeTest.style.display = 'none';
+        iframeDetails.style.display = 'none';
+
+        if (path === '/all-allowed') {
+            document.getElementById('tab-all').classList.add('active');
+            headerEl.innerHTML = 'Permissions-Policy:<br>&nbsp;&nbsp;geolocation=*';
+            titleEl.innerText = 'Feature allowed for all origins';
+            textEl.innerHTML = 'When the allowlist is set to the <code>*</code> token, the feature is allowed for all origins present on the page, including itself and all iframes.';
+            
+            iframeDetails.style.display = 'block';
+            trustedCode.innerText = '<iframe src="https://pp-demo-trusted-site.glitch.me" allow="geolocation"></iframe>';
+            untrustedCode.innerText = '<iframe src="https://pp-demo-trusted-iframe-nav.glitch.me" allow="geolocation"></iframe>';
+
+        } else if (path === '/some-allowed') {
+            document.getElementById('tab-some').classList.add('active');
+            headerEl.innerHTML = 'Permissions-Policy:<br>&nbsp;&nbsp;geolocation=(self "https://pp-demo-trusted-site.glitch.me")';
+            titleEl.innerText = 'Feature allowed for specific origins';
+            textEl.innerHTML = 'The feature is allowed for the <code>self</code> origin and explicitly for <code>https://pp-demo-trusted-site.glitch.me</code>. All other origins are blocked.';
+            
+            iframeDetails.style.display = 'block';
+            trustedCode.innerText = '<iframe src="https://pp-demo-trusted-site.glitch.me" allow="geolocation"></iframe>';
+            untrustedCode.innerText = '<iframe src="https://pp-demo-trusted-iframe-nav.glitch.me" allow="geolocation"></iframe>';
+
+        } else if (path === '/same-origin-allowed') {
+            document.getElementById('tab-self').classList.add('active');
+            headerEl.innerHTML = 'Permissions-Policy:<br>&nbsp;&nbsp;geolocation=(self)';
+            titleEl.innerText = 'Feature allowed for same-origin only';
+            textEl.innerHTML = 'The feature is allowed for the same-origin (<code>self</code>) but restricted for all cross-origin iframes unless they have an <code>allow</code> attribute.';
+            
+            iframeDetails.style.display = 'block';
+            trustedCode.innerText = '<iframe src="https://pp-demo-trusted-site.glitch.me" allow="geolocation"></iframe>';
+            untrustedCode.innerText = '<iframe src="https://pp-demo-trusted-iframe-nav.glitch.me" allow="geolocation"></iframe>';
+
+        } else if (path === '/none-allowed') {
+            document.getElementById('tab-none').classList.add('active');
+            headerEl.innerHTML = 'Permissions-Policy:<br>&nbsp;&nbsp;geolocation=()';
+            titleEl.innerText = 'Feature disabled for all origins';
+            textEl.innerHTML = 'When the allowlist is empty <code>()</code>, the feature is disabled for the top-level page and all nested browsing contexts.';
+
+            iframeDetails.style.display = 'block';
+            trustedCode.innerText = '<iframe src="https://pp-demo-trusted-site.glitch.me" allow="geolocation"></iframe>';
+            untrustedCode.innerText = '<iframe src="https://pp-demo-trusted-iframe-nav.glitch.me" allow="geolocation"></iframe>';
+
+        } else if (path === '/iframe-demo') {
+            document.getElementById('tab-iframe').classList.add('active');
+            headerEl.innerHTML = 'Permissions-Policy:<br>&nbsp;&nbsp;geolocation=(self)';
+            titleEl.innerText = 'Iframe Navigation Allowed';
+            textEl.innerHTML = 'Testing how the <code>allow</code> attribute on an iframe interacts with the header policy.';
+            iframeTest.style.display = 'block';
+        } else {
+            document.getElementById('tab-default').classList.add('active');
+        }
+    }
+
+    function runDemo() {
+        const status = document.getElementById('demo-status');
+        status.innerText = 'Requesting Geolocation...';
+        
+        if (!navigator.geolocation) {
+            status.innerText = '❌ Not supported in this browser';
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                status.innerText = `✅ Success! Lat: ${position.coords.latitude.toFixed(2)}`;
+                status.style.color = 'green';
+            },
+            (error) => {
+                status.innerText = `❌ Error: ${error.message}`;
+                status.style.color = 'red';
+                console.error(error);
+            }
+        );
+    }
+
+    updateUI();
+</script>
+
+</body>
+</html>
