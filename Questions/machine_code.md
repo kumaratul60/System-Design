@@ -5,7 +5,8 @@ This guide is categorized into practical coding challenges (Machine Code) and co
 ---
 
 ## 🟢 Section 1: Common UI Components (Junior - Mid)
-*Focus: State management, props, and basic event handling.*
+
+_Focus: State management, props, and basic event handling._
 
 1.  **Todo List:** Basic CRUD, filtering (all/active/completed).
 2.  **Tabs Component:** Dynamic content switching based on active tab.
@@ -19,10 +20,11 @@ This guide is categorized into practical coding challenges (Machine Code) and co
 ---
 
 ## 🟡 Section 2: Advanced Interactivity & Games (Mid - Senior)
-*Focus: Complex state, recursion, performance, and logic.*
 
-1.  **Autocomplete / Typeahead:** 
-    *   Features: Debouncing, caching API results, keyboard navigation (arrow keys + enter).
+_Focus: Complex state, recursion, performance, and logic._
+
+1.  **Autocomplete / Typeahead:**
+    - Features: Debouncing, caching API results, keyboard navigation (arrow keys + enter).
 2.  **Infinite Scroll:** Using `IntersectionObserver` or scroll listeners (with throttling).
 3.  **Nested Comment Section:** Recursive rendering of comments with "Reply," "Edit," and "Delete."
 4.  **Tree View with Checkboxes:** Parent-child relationship (checking parent checks all children, indeterminate states).
@@ -35,7 +37,8 @@ This guide is categorized into practical coding challenges (Machine Code) and co
 ---
 
 ## 🟠 Section 3: Frontend System Design & Config-Driven UI
-*Focus: Modularity, scalability, and reusability.*
+
+_Focus: Modularity, scalability, and reusability._
 
 1.  **Configurable Dropdown:** Dynamically add/delete values, multi-select support, search inside dropdown.
 2.  **Config-Driven Form:** Render complex forms (inputs, selects, checkboxes) from a JSON schema with validation logic.
@@ -48,7 +51,8 @@ This guide is categorized into practical coding challenges (Machine Code) and co
 ---
 
 ## 🔵 Section 4: Performance & Advanced Concepts
-*Focus: Deep React internals and optimization.*
+
+_Focus: Deep React internals and optimization._
 
 1.  **Virtualization:** Rendering 10k+ items efficiently (Windowing).
 2.  **Debouncing & Throttling:** Manual implementation and use cases (search vs. resize).
@@ -62,26 +66,30 @@ This guide is categorized into practical coding challenges (Machine Code) and co
 ## 🟣 Section 5: Conceptual Questions (Quick Reference)
 
 ### **React Internals**
-*   **Virtual DOM & Reconciliation:** How React updates the DOM efficiently (Diffing $O(n)$).
-*   **Fiber Architecture:** Incremental rendering and concurrency.
-*   **useRef:** Persistent values across renders vs. DOM access.
-*   **Memoization:** When to use `React.memo`, `useMemo`, and `useCallback` (and the memory trade-offs).
+
+- **Virtual DOM & Reconciliation:** How React updates the DOM efficiently (Diffing $O(n)$).
+- **Fiber Architecture:** Incremental rendering and concurrency.
+- **useRef:** Persistent values across renders vs. DOM access.
+- **Memoization:** When to use `React.memo`, `useMemo`, and `useCallback` (and the memory trade-offs).
 
 ### **Architecture & Scaling**
-*   **SSR vs CSR vs ISR:** In-depth trade-offs and Next.js `"use client"` nuances.
-*   **State Management:** Context API vs. Redux/Zustand vs. `useSyncExternalStore`.
-*   **Micro-frontends:** Module Federation and team collaboration at scale.
-*   **Scaling CSR:** CDN, Edge Computing, and repository structuring (Monorepos).
+
+- **SSR vs CSR vs ISR:** In-depth trade-offs and Next.js `"use client"` nuances.
+- **State Management:** Context API vs. Redux/Zustand vs. `useSyncExternalStore`.
+- **Micro-frontends:** Module Federation and team collaboration at scale.
+- **Scaling CSR:** CDN, Edge Computing, and repository structuring (Monorepos).
 
 ### **Best Practices**
-*   **Utility Functions:** When to extract logic outside components to maintain stable references.
-*   **Error Boundaries:** Catching UI crashes and limitations (async/event handler errors).
-*   **Accessibility (A11y):** Semantic HTML, ARIA, and keyboard navigation.
-*   **Testing:** The Testing Trophy (Unit, Integration, E2E).
+
+- **Utility Functions:** When to extract logic outside components to maintain stable references.
+- **Error Boundaries:** Catching UI crashes and limitations (async/event handler errors).
+- **Accessibility (A11y):** Semantic HTML, ARIA, and keyboard navigation.
+- **Testing:** The Testing Trophy (Unit, Integration, E2E).
 
 ---
 
 ## 🔴 Section 6: Debugging & Problem Solving
-*   **Debugging Slowness:** Performance tab, React DevTools, and Network analysis.
-*   **Build Optimization:** Webpack/Vite config, tree shaking, and dependency management (`devDeps` vs `deps`).
-*   **Scaling Challenges:** Handling large component trees and avoiding prop drilling.
+
+- **Debugging Slowness:** Performance tab, React DevTools, and Network analysis.
+- **Build Optimization:** Webpack/Vite config, tree shaking, and dependency management (`devDeps` vs `deps`).
+- **Scaling Challenges:** Handling large component trees and avoiding prop drilling.

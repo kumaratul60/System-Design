@@ -15,6 +15,12 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── RestAPI/                 # Standard REST implementation
 │   ├── Graphql/                 # Schema-driven query language
 │   └── gRPC/                    # High-performance RPC (Protocol Buffers)
+├── Security/                    # End-to-End Security Architecture
+│   ├── Auth/                    # Identity & Session Management
+│   ├── XSS/                     # Cross-Site Scripting & CSP
+│   ├── CSRF.md                  # Detailed CSRF Mitigations
+│   ├── SSRF&JI.md               # SSRF, Injection & XXE
+│   └── Compliance&Regulations.md # GDPR, HIPAA, SOC 2
 ├── Questions/                   # Interview Prep & Deep Dives
 │   ├── Detailed/                # Scaling, Performance, Design Patterns
 │   ├── machine_code.md          # Machine coding round preparation
@@ -45,11 +51,20 @@ Practical implementations of the three most common API styles:
 - **GraphQL:** Client-specified data fetching to prevent over-fetching.
 - **gRPC:** Binary protocol using Protocol Buffers for high-efficiency microservices communication.
 
-### 3. [Interview & Concept Deep Dives](./Questions/Interviewer_Reference.md)
+### 3. [Security Engineering](./Security/README.md)
+
+Comprehensive coverage of web and architectural security:
+
+- **Browser Security:** CORS, HSTS, SameSite Cookies, and CSP.
+- **Attack Mitigations:** In-depth guides on XSS, CSRF (vulnerabilities and tokens), SSRF, and SQLi.
+- **Architecture:** Zero Trust, OAuth2/OIDC, and secure JWT management.
+- **Compliance:** Practical insights into GDPR, SOC 2, and HIPAA.
+
+### 4. [Interview & Concept Deep Dives](./Questions/Detailed/Security_Architect.md)
 
 A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles.
 
-### 4. [Web Fundamentals](./Web/web.md)
+### 5. [Web Fundamentals](./Web/web.md)
 
 Exhaustive documentation on the building blocks of the web:
 

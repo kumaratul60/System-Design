@@ -1,4 +1,4 @@
-What is useRef?
+<!-- What is useRef?
 He provided a couple of use cases, such as autofocus, but I was expecting a deeper understanding, especially regarding its role in persisting values across re-renders.
 Q. Should we memoize all UI components?
 He correctly stated that memoizing all components would be counterproductive but struggled to articulate the impact on memory consumption.
@@ -69,4 +69,4 @@ Shared insightful ideas on structuring repositories for better scalability and a
 32. How would you implement custom hooks to abstract logic in React?
 33. What are higher-order components (HOCs) in React, and how are they used?
 34. How would you implement a search feature with debouncing in React?
-35. Explain React's reconciliation process and how it updates the DOM efficiently.
+35. Explain React's reconciliation process and how it updates the DOM efficiently. -->
