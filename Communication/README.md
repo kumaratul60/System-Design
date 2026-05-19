@@ -145,11 +145,11 @@ Full-duplex, bidirectional communication over a single TCP connection.
 
 ## 📁 Directory Structure
 
-- `ShortPolling/`: Basic interval-based polling example.
-- `LongPolling/`: Hanging-request implementation.
-- `Webhooks/`: Server-to-server POST notification with security.
-- `ServerSentEvent/`: Streaming updates to the browser.
-- `WebSocket/`: Bi-directional communication using `ws` and `Socket.io`.
+- **[ShortPolling/](./ShortPolling/)**: Basic interval-based polling example.
+- **[LongPolling/](./LongPolling/)**: Hanging-request implementation.
+- **[Webhooks/](./Webhooks/)**: Server-to-server POST notification with security.
+- **[ServerSentEvent/](./ServerSentEvent/)**: Streaming updates to the browser.
+- **[WebSocket/](./WebSocket/)**: Bi-directional communication using `ws` and `Socket.io`.
 
 ---
 
