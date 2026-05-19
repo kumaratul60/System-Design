@@ -215,6 +215,31 @@ The "Source of Truth" capturing how actual users experience the site in the wild
 
 ---
 
+## 🏗️ The RAIL Model: A User-Centric Framework
+
+RAIL is a model created by Google to help engineers break down performance into four key areas of the user lifecycle.
+
+| Letter | Action        | Goal                                     | Metric           |
+| :----- | :------------ | :--------------------------------------- | :--------------- |
+| **R**  | **Response**  | Process events in < 50ms.                | INP / FID        |
+| **A**  | **Animation** | Produce a frame in < 10ms.               | CLS / Smoothness |
+| **I**  | **Idle**      | Maximize idle time for background tasks. | TBT              |
+| **L**  | **Load**      | Deliver interactive content in < 5s.     | LCP / FCP        |
+
+> **Staff Tip:** Users have different expectations for each phase. A 1-second delay in "Response" feels like a broken UI, but a 1-second delay in "Load" is often acceptable.
+
+---
+
+## 🧪 Next-Gen Metrics: LoAF (Long Animation Frames)
+
+While **INP** tells you _that_ a page was slow, **LoAF** tells you _why_.
+
+- **The Problem:** Long Tasks only tell you a script ran for > 50ms.
+- **The Solution:** LoAF provides the "attribution"—it points to the specific script, event listener, or microtask that caused the frame to drop.
+- **Usage:** Essential for identifying "Third-party bloat" (e.g., a chat widget or analytics script) that is killing your interactivity.
+
+---
+
 ## 🧠 Interview Deep Dive: Core Web Vitals
 
 ### 🟢 Basic (Junior / Mid Level)
@@ -274,3 +299,12 @@ The "Source of Truth" capturing how actual users experience the site in the wild
 > 2. **Resource Load Delay:** The gap between TTFB and when the browser _starts_ downloading the LCP resource. (Often caused by the image being hidden in a script or CSS).
 > 3. **Resource Load Duration:** The actual time spent downloading the LCP resource (Image/Video).
 > 4. **Resource Render Delay:** The time between the resource finishing download and the browser actually painting it. (Often caused by a busy main thread or render-blocking styles).
+
+**Q: In a large organization with 100+ developers, how do you prevent performance regressions?**
+
+> **Answer:** You implement **Performance Budgets** and "Gatekeeping":
+>
+> 1. **Set the Budget:** Define limits for specific metrics (e.g., "LCP must be < 2.5s" or "JS Bundle must be < 200KB").
+> 2. **CI/CD Integration:** Use tools like **Lighthouse CI** to run audits on every Pull Request.
+> 3. **Blocking Builds:** Configure the CI to fail the build if the new code exceeds the budget.
+> 4. **Transparency:** Use a dashboard (Grafana/Datadog) to track performance trends over time so teams can see the impact of their changes in real-time.
