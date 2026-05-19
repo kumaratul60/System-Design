@@ -4,6 +4,35 @@ Use this guide as a structured bank of questions to assess candidates across dif
 
 ---
 
+## 🗺️ The Interview Pillars
+
+```mermaid
+mindmap
+  root((Candidate Assessment))
+    React & JS Internals
+      Reconciliation (Fiber)
+      Hook Lifecycles
+      Strict Mode & Side Effects
+    Performance
+      Web Vitals (LCP/INP)
+      Layout Thrashing
+      Memoization Trade-offs
+    Architecture
+      Micro-frontends
+      State Management Strategy
+      Hybrid Rendering (SSR/CSR)
+    Machine Coding
+      Config-Driven UI
+      Recursive Components
+      Data Virtualization
+    Quality & Culture
+      Testing Trophy
+      Visual Regression
+      Error Boundaries
+```
+
+---
+
 ## ⚛️ 1. React Core & Internals (Depth Assessment)
 
 1.  **Reconciliation:** "How does React decide what to update in the real DOM? Can you explain the heuristics it uses to keep the process O(n)?"
