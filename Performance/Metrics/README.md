@@ -74,13 +74,39 @@ Performance data comes from two distinct environments. Understanding the differe
 
 ## 🛠️ The Tooling Ecosystem
 
-| Tool                   | Usage            | Best For...                                        |
-| :--------------------- | :--------------- | :------------------------------------------------- |
-| **Lighthouse**         | Browser DevTools | Quick audits during development.                   |
-| **PageSpeed Insights** | Web-based        | Seeing both Lab and CrUX Field data in one view.   |
-| **Search Console**     | Google Admin     | Tracking site-wide Core Web Vitals for SEO.        |
-| **WebPageTest**        | Advanced Web     | Deep waterfall analysis and connection throttling. |
-| **Vercel/Sentry RUM**  | SaaS Integration | Real-time monitoring of live user metrics.         |
+Performance monitoring is divided into three primary categories depending on the environment and the data source.
+
+### 1. Developer Mode (Local Audits)
+
+Used by engineers during active development to identify immediate regressions.
+
+- **Lighthouse:** Automated audits for performance, accessibility, and SEO.
+- **Network Tab:**
+  - **Priority Column:** Right-click the header to enable "Priority" to see how the browser ranks resources (Highest, High, Medium, Low).
+  - **Fetch Priority:** Inspecting how `fetchpriority="high"` or `loading="lazy"` changes the resource waterfall.
+  - **Throttling:** Simulating "Fast 3G" or "Slow 3G" to see the impact of latency.
+- **Performance Tab:**
+  - **Screenshots:** Enable this to see a visual "filmstrip" of the page loading over time (useful for debugging CLS and LCP).
+  - **Memory:** Enable to track the **Heap Size**, **DOM Nodes**, and **Listeners** to identify memory leaks.
+  - **GPU:** View GPU activity to debug expensive "Composite" tasks and layer shifts.
+  - **Bottom-Up / Call Tree:** Analyze function-level JavaScript execution to find specific "Heavy" functions causing long tasks.
+
+### 2. Simulated Data (Synthetic Testing)
+
+Reproducible environments that simulate specific devices and network conditions.
+
+- **[webpagetest.org](https://www.webpagetest.org/):** The gold standard for deep waterfall analysis and connection throttling.
+- **Lighthouse CI:** Running automated audits in the deployment pipeline.
+
+### 3. Real User Data (RUM - Real User Monitoring)
+
+The "Source of Truth" capturing how actual users experience the site in the wild.
+
+- **CRUX (Chrome User Experience Report):** Public dataset of real user performance.
+- **[PageSpeed Insights](https://pagespeed.web.dev/):** Combines Lab and Field data in a single view.
+- **[requestMetrics.com](https://requestmetrics.com/):** Simplified RUM for monitoring web performance.
+- **[clarity.microsoft.com](https://clarity.microsoft.com/):** Session replays and heatmaps to see where users struggle.
+- **NewRelic / Sentry / Google Analytics:** Enterprise-grade observability and custom performance tracking.
 
 ---
 
