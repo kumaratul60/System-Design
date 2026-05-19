@@ -10,6 +10,41 @@ Welcome to the central security knowledge base. This directory covers end-to-end
 
 ---
 
+## 🗺️ Security Landscape
+
+```mermaid
+mindmap
+  root((Security Architecture))
+    Auth & Identity
+      MFA & 2FA
+      OAuth2 & OIDC
+      JWT & Sessions
+      PII Data Privacy
+    Web Browser Security
+      CORS & SOP
+      CSP (Content Security Policy)
+      Security Headers
+      IFrame Sandboxing
+      Client-Side Storage
+    Attack Vectors
+      XSS (Cross-Site Scripting)
+      CSRF (Request Forgery)
+      SSRF (Server-Side Forgery)
+      Injection (SQL, SSJI)
+    Defense Layers
+      Input Validation
+      Sanitization
+      SRI (Subresource Integrity)
+      Rate Limiting
+    Architectural Patterns
+      Zero Trust
+      Dependency Injection
+      Feature Flag Security
+      Compliance (GDPR, SOC2)
+```
+
+---
+
 ## 📂 Knowledge Modules
 
 ### 🔐 Authentication & Identity

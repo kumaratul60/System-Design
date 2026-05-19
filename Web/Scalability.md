@@ -109,9 +109,47 @@ It's not just about speed; it's about promises.
 
 1.  **R**ate (Number of requests).
 2.  **E**rrors (Number of failed requests).
-3.  **D**uration (Latency/Response time).
 
-#### Latency Thresholds
+- **Duration** (Latency/Response time).
+
+---
+
+## 🗺️ Scalability & Performance Landscape
+
+```mermaid
+mindmap
+  root((Scalability & Performance))
+    Metrics
+      Throughput (Volume)
+      Latency (Speed)
+      Bandwidth (Pipe)
+      Percentiles (p50, p95, p99)
+    Scaling Strategies
+      Vertical (Scale Up)
+      Horizontal (Scale Out)
+      Load Balancers
+      API Gateways
+    Database Scaling
+      Replication (Read)
+      Sharding (Write)
+      CAP Theorem
+    Optimization
+      Caching (CDN, Redis)
+      Compression (Gzip, Brotli)
+      Async (Queues/Kafka)
+    Reliability
+      SLA / SLO / SLI
+      Availability (Nines)
+      Backpressure
+    Resilience
+      Circuit Breakers
+      Rate Limiting
+      Retries & Backoff
+```
+
+---
+
+### Latency Thresholds
 
 - **< 100ms:** ⚡ Instant
 - **300-800ms:** 😐 Noticeable

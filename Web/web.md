@@ -7,6 +7,7 @@
 - [How the Web Works: From URL to Pixels](#how-the-web-works-from-url-to-pixels)
   - [Table of Contents](#table-of-contents)
   - [0. Big Picture](#0-big-picture)
+  - [0.1 🗺️ Web Touchpoints](#01-️-web-touchpoints)
   - [1. Understanding Domains \& URLs](#1-understanding-domains--urls)
   - [1.0 URL Anatomy: The Detailed Breakdown](#10-url-anatomy-the-detailed-breakdown)
     - [Core Components](#core-components)
@@ -114,6 +115,39 @@
 **URL → DNS → TCP → TLS → HTTP → HTML/CSS/JS → DOM/CSSOM → Render Tree → Layout → Paint → Composite**
 
 Keep this chain in your head.
+
+---
+
+## 0.1 🗺️ Web Touchpoints
+
+```mermaid
+mindmap
+  root((How the Web Works))
+    The Request
+      URL Anatomy
+      DNS Resolution
+      TCP 3-Way Handshake
+      TLS Handshake (HTTPS)
+    The Transfer
+      HTTP Methods (Semantics)
+      Status Codes
+      HTTP Headers
+      Caching & CDNs
+    The Browser Pipeline
+      HTML Parsing (DOM)
+      CSS Parsing (CSSOM)
+      JavaScript Execution
+      Critical Rendering Path
+    The Render Engine
+      Render Tree
+      Layout (Reflow)
+      Paint (Repaint)
+      Compositing (GPU)
+    Infrastructure
+      IP Addresses (v4/v6)
+      Peering & ISPs
+      ICANN & Registrars
+```
 
 ---
 

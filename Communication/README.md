@@ -4,6 +4,35 @@ Effective communication is the backbone of any distributed system. This director
 
 ---
 
+## 🗺️ Communication Landscape
+
+```mermaid
+mindmap
+  root((Communication Patterns))
+    Pull Patterns
+      Short Polling
+      Long Polling (Hanging Request)
+    Push Patterns
+      Webhooks (Server-to-Server)
+      SSE (Unidirectional)
+      WebSockets (Bi-directional)
+    Protocols
+      HTTP/1.1
+      HTTP/2 (Multiplexing)
+      HTTP/3 (QUIC)
+      WSS (Secure WebSockets)
+    Reliability
+      Retries & Backoff
+      Idempotency
+      Acknowledgements (ACKs)
+    Scalability
+      Sticky Sessions
+      Pub/Sub Backplane (Redis)
+      Connection Managers
+```
+
+---
+
 ## 🚀 The Decision Tree: Which One to Use?
 
 Use this quick guide to determine the best strategy for your requirements:

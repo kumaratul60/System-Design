@@ -15,6 +15,35 @@ A comprehensive guide to HTTP headers and status codes: from beginner basics to 
 
 ---
 
+## 🗺️ Headers & Status Landscape
+
+```mermaid
+mindmap
+  root((Headers & Status))
+    Request Headers
+      Identification (Host, User-Agent)
+      Security (Authorization, Cookie)
+      Content Negotiation (Accept)
+      Conditions (If-None-Match)
+    Response Headers
+      Payload (Content-Type, Encoding)
+      Caching (Cache-Control, ETag)
+      Security (HSTS, CSP, CORS)
+      State (Set-Cookie)
+    Status Codes
+      1xx Informational (Switching)
+      2xx Success (OK, Created, No Content)
+      3xx Redirects (Moved, Not Modified)
+      4xx Client Errors (Bad Req, Unauth, Not Found)
+      5xx Server Errors (Internal, Gateway)
+    Optimization
+      Gzip & Brotli
+      Conditional Requests
+      Range Requests
+```
+
+---
+
 ## Introduction to HTTP Headers
 
 HTTP headers are metadata sent in HTTP requests and responses between clients (like browsers) and servers. They consist of key-value pairs that provide essential information for routing, security, content negotiation, caching, and performance optimization.

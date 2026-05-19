@@ -10,10 +10,43 @@ A comprehensive guide to Git for developers at all levels. VCS(version control s
 - **Productivity**: Aliases, workflows, tools.
 - **Security**: SSH keys, GPG signing.
 
-**Prerequisites**:
+---
 
-- Install Git (`brew install git` on macOS, `sudo apt install git` on Ubuntu).
-- Configure globally: `git config --global user.name "Your Name"` and `git config --global user.email "your.email@example.com"`.
+## 🗺️ Git Touchpoints
+
+```mermaid
+mindmap
+  root((Git Productivity))
+    VCS Types
+      Local VCS
+      Centralized (SVN)
+      Distributed (Git)
+    Daily Workflow
+      Init & Clone
+      Add & Commit
+      Push & Pull
+      Staging (Hunks)
+    Branching
+      Merging (FF vs No-FF)
+      Rebasing (Interactive)
+      Cherry-Picking
+      Stashing
+    History
+      Log & Graph
+      Reflog (Recovery)
+      Blame & Show
+      Diff (Staged/HEAD)
+    Security
+      SSH Key Setup
+      GPG Signed Commits
+      Personal Access Tokens
+    Productivity
+      Aliases
+      GitHub CLI (gh)
+      LazyGit
+```
+
+---
 
 ## What is VCS?
 
