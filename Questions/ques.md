@@ -31,11 +31,12 @@ Shared insightful ideas on structuring repositories for better scalability and a
 3. What are Web Vitals and how to improve them
 4. Virtualisation techniques for rendering large lists efficiently
 5. Code splitting: How to implement it and its impact on load time
-6. Accessibility: Why it’s not optional and how to ensure it
+6. Accessibility: Why it's not optional and how to ensure it
 
 - 𝗣𝗼𝗽𝘂𝗹𝗮𝗿 𝗗𝗲𝘀𝗶𝗴𝗻 𝗣𝗮𝘁𝘁𝗲𝗿𝗻 𝗤𝘂𝗲𝘀𝘁𝗶𝗼𝗻𝘀:
 
-1. [Security Architect Interview Grill (Staff/Architect Level)](./Detailed/Security_Architect.md)
+1. [Communication Strategies & Patterns: Interview Deep Dive](../Communication/README.md#-interview-deep-dive-from-basic-to-staff-level)
+2. [Security Architect Interview Grill (Staff/Architect Level)](./Detailed/Security_Architect.md)
 2. Higher-Order Components (HOC): What they are and when to use them
 3. Module Pattern: How it helps with encapsulation and code organization
 4. Render Props Pattern: Use cases and how it compares to HOC

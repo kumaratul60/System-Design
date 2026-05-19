@@ -121,3 +121,104 @@ Full-duplex, bidirectional communication over a single TCP connection.
 - `Webhooks/`: Server-to-server POST notification with security.
 - `ServerSentEvent/`: Streaming updates to the browser.
 - `WebSocket/`: Bi-directional communication using `ws` and `Socket.io`.
+
+---
+
+## 🧠 Interview Deep Dive: From Basic to Staff Level
+
+### 🟢 Basic (Junior / Mid Level)
+
+**Q: What is the main difference between Short Polling and Long Polling?**
+
+> **Answer:** In **Short Polling**, the client sends requests at fixed intervals (e.g., every 5s), regardless of whether data is ready. In **Long Polling**, the server holds the request open until it has new data or a timeout occurs. Long Polling is more efficient because it reduces empty responses and latency.
+
+**Q: Is SSE bi-directional?**
+
+> **Answer:** No. **Server-Sent Events (SSE)** is strictly unidirectional (Server-to-Client). If the client needs to send data back, it must use a separate HTTP request (REST/GraphQL).
+
+**Q: When would you prefer WebSockets over a standard REST API?**
+
+> **Answer:** When you need **low-latency, bi-directional, high-frequency** updates, such as in a chat application, multiplayer game, or a real-time stock trading dashboard.
+
+---
+
+### 🟡 Advanced (Senior Level)
+
+**Q: How do you scale WebSockets to multiple server instances?**
+
+> **Answer:** WebSockets are stateful (the connection stays with one server). To scale:
+>
+> 1.  **Sticky Sessions:** Ensure the initial handshake and subsequent frames go to the same server.
+> 2.  **Pub/Sub Backplane:** Use Redis or RabbitMQ. When Server A receives a message for a user connected to Server B, it publishes to Redis, and Server B picks it up to push to the client.
+
+**Q: How do you secure a Webhook endpoint from spoofing?**
+
+> **Answer:** Use **HMAC (Hash-based Message Authentication Code)**. The sender signs the payload with a shared secret, and the receiver re-calculates the hash to verify it. Additionally, use **Timestamps** in the header to prevent replay attacks.
+
+**Q: Why does SSE benefit significantly from HTTP/2?**
+
+> **Answer:** In HTTP/1.1, browsers limit the number of concurrent connections to the same domain (usually ~6). Since SSE keeps a connection open, it quickly "exhausts" this limit. **HTTP/2 Multiplexing** allows multiple streams over a single TCP connection, bypassing this limit.
+
+**Q: What is "Idempotency" and why is it critical in Webhooks/Polling?**
+
+> **Answer:** Idempotency ensures that performing an operation multiple times has the same effect as doing it once. In Webhooks, a network glitch might cause the sender to retry a "Payment Succeeded" event. The receiver must use a unique `event_id` to ensure they don't process the same payment twice.
+
+---
+
+### 🔴 Staff / Architect Level
+
+**Q: Design a notification system that scales to 10 million concurrent users. How do you handle delivery?**
+
+> **Answer:** A hybrid approach is best:
+>
+> 1.  **High-Priority (Push):** Use WebSockets/SSE for active users to show "New Message" alerts instantly.
+> 2.  **Low-Priority (Pull):** For non-critical updates (e.g., "someone liked your post"), have the client fetch them on next load or via occasional polling to save server resources and mobile battery.
+> 3.  **Fan-out:** Use a distributed message queue (Kafka) to handle the massive volume of events before they are pushed to connection managers.
+
+**Q: Discuss the trade-offs of using WebSockets vs. SSE for a mobile-first application.**
+
+> **Answer:**
+>
+> - **Battery:** SSE is often better for battery as it uses standard HTTP and has better native power management in some mobile OSs. WebSockets require keeping a raw TCP socket alive, which can be more taxing.
+> - **Reconnection:** SSE has built-in automatic reconnection logic. WebSockets require custom implementation (though libraries like Socket.io handle this).
+> - **Complexity:** SSE is easier to load balance and proxy as it's just "hanging" HTTP. WebSockets require `Upgrade` header support and persistence.
+
+**Q: How would you handle "Backpressure" in a high-volume WebSocket stream?**
+
+> **Answer:** If the server is pushing data faster than the client can consume (common in data-heavy dashboards):
+>
+> 1.  **Server-side Buffering/Dropping:** Buffer the latest state and drop "intermediate" updates (e.g., only send the latest stock price if 5 updates arrived in 100ms).
+> 2.  **Client Signaling:** Allow the client to send "Pause/Resume" signals to the server.
+> 3.  **Adaptive Throttling:** Detect client lag (via ping/pong RTT) and automatically reduce the frequency of non-critical updates.
+
+**Q: You are building a collaborative editor (like Google Docs). How do you handle the communication layer?**
+
+> **Answer:** Use **WebSockets** for the transport layer due to the need for bi-directional, near-instant synchronization. However, the communication layer is only half the battle; you must use **Operational Transformation (OT)** or **Conflict-free Replicated Data Types (CRDTs)** to merge concurrent edits without conflicts.
+
+**Q: How do WebSockets and SSE behave in a Serverless environment (e.g., AWS Lambda, Vercel Functions)?**
+
+> **Answer:** Traditional serverless functions are execution-limited and stateless, making them a poor fit for persistent connections.
+>
+> - **WebSockets:** Require a "Stateful Gateway" (like AWS API Gateway WebSocket API) to manage the connection, while the Lambda only wakes up to process specific events/frames.
+> - **SSE:** Generally not supported by standard serverless functions because they expect a quick request-response cycle and will timeout or kill the execution context.
+
+**Q: How do you implement "Observability" for 100k+ concurrent WebSocket connections?**
+
+> **Answer:** Traditional HTTP metrics are insufficient. You must track:
+>
+> 1.  **Connection Duration Distribution:** Identifying "leaky" clients.
+> 2.  **Message Throughput (Ingress/Egress):** To detect spikes or "chatty" clients.
+> 3.  **Backpressure Events:** Tracking when server-side buffers fill up.
+> 4.  **Zombie Connections:** Monitoring heartbeat (Ping/Pong) failures to prune dead sockets.
+
+**Q: In a high-security environment, why might you be forced to use Long Polling over WebSockets?**
+
+> **Answer:** **Deep Packet Inspection (DPI)**. Some strict corporate firewalls only allow standard HTTP traffic and view the `Upgrade: websocket` header as a security risk because it bypasses traditional HTTP inspection once the tunnel is established. Long Polling is the "fallback of last resort" for maximum compatibility.
+
+**Q: When and why would you switch from JSON to a Binary protocol (like Protobuf or MessagePack) over WebSockets?**
+
+> **Answer:**
+>
+> 1. **Payload Size:** Binary formats are significantly smaller than JSON because they don't repeat keys in every message and use efficient encoding for numbers/dates. This reduces bandwidth and improves latency on slow networks.
+> 2. **Parsing Overhead:** JSON parsing is CPU-intensive as it involves string manipulation. Binary protocols are "pre-compiled" or use fixed offsets, making serialization/deserialization orders of magnitude faster.
+> 3. **Type Safety:** Protobuf enforces a strict schema. This prevents "runtime surprises" where a client expects a string but the server sends an object, which is a common failure point in large, distributed WebSocket systems.
