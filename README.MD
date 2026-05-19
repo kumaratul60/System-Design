@@ -21,6 +21,10 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── CSRF.md                  # Detailed CSRF Mitigations
 │   ├── SSRF&JI.md               # SSRF, Injection & XXE
 │   └── Compliance&Regulations.md # GDPR, HIPAA, SOC 2
+├── Performance/                 # Web Performance Optimization
+│   ├── README.md                # Comprehensive performance overview
+│   ├── Metrics/                 # Web Vitals & measurement
+│   └── Assets/                  # Image & code optimization
 ├── Questions/                   # Interview Prep & Deep Dives
 │   ├── Detailed/                # Scaling, Performance, Design Patterns
 │   ├── machine_code.md          # Machine coding round preparation
@@ -60,11 +64,19 @@ Comprehensive coverage of web and architectural security:
 - **Architecture:** Zero Trust, OAuth2/OIDC, and secure JWT management.
 - **Compliance:** Practical insights into GDPR, SOC 2, and HIPAA.
 
-### 4. [Interview & Concept Deep Dives](./Questions/Detailed/Security_Architect.md)
+### 4. [Performance Optimization](./Performance/README.md)
+
+A deep dive into the 8 pillars of web performance:
+
+- **Metrics:** Core Web Vitals (LCP, FID, CLS).
+- **Optimization:** Network, Asset, Build, and Framework-specific (React) techniques.
+- **Patterns:** SSR, CSR, SSG, and ISR trade-offs.
+
+### 5. [Interview & Concept Deep Dives](./Questions/Detailed/Security_Architect.md)
 
 A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles.
 
-### 5. [Web Fundamentals](./Web/web.md)
+### 6. [Web Fundamentals](./Web/web.md)
 
 Exhaustive documentation on the building blocks of the web:
 
