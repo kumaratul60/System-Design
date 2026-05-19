@@ -35,8 +35,10 @@ Shared insightful ideas on structuring repositories for better scalability and a
 
 - 𝗣𝗼𝗽𝘂𝗹𝗮𝗿 𝗗𝗲𝘀𝗶𝗴𝗻 𝗣𝗮𝘁𝘁𝗲𝗿𝗻 𝗤𝘂𝗲𝘀𝘁𝗶𝗼𝗻𝘀:
 
-1. [Communication Strategies & Patterns: Interview Deep Dive](../Communication/README.md#-interview-deep-dive-from-basic-to-staff-level)
-2. [Security Architect Interview Grill (Staff/Architect Level)](./Detailed/Security_Architect.md)
+1. [Communication Strategies: Interview Deep Dive](../Communication/README.md#-interview-deep-dive-from-basic-to-staff-level)
+2. [Performance Metrics: Interview Deep Dive](../Performance/Metrics/README.md#-interview-deep-dive-core-web-vitals)
+3. [Networking Styles: Technical Comparison](../Networking/README.md#-technical-comparison)
+4. [Security Architect Interview Grill (Staff/Architect Level)](./Detailed/Security_Architect.md)
 2. Higher-Order Components (HOC): What they are and when to use them
 3. Module Pattern: How it helps with encapsulation and code organization
 4. Render Props Pattern: Use cases and how it compares to HOC

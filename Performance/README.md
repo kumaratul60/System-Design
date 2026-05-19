@@ -92,6 +92,17 @@ JavaScript is the most expensive asset we send to users. It's not just about the
 
 ---
 
+## ⚖️ Performance vs. Security (The Architect's Trade-off)
+
+A critical role of a Staff Engineer is balancing performance with security. These two often pull in opposite directions.
+
+- **Content Security Policy (CSP):** While vital for security, a strict CSP can block certain performance optimizations like inline scripts or styles.
+- **Strict Transport Security (HSTS):** Adds a slight overhead to the initial connection but ensures a secure transport.
+- **Resource Hints vs. Privacy:** Tools like `dns-prefetch` can slightly leak user browsing patterns to third parties.
+- **JSON vs. Binary:** Binary protocols (gRPC) are faster but harder to inspect with traditional security firewalls compared to text-based JSON.
+
+---
+
 ## 🏗️ The Browser-Server Loop
 
 Performance is fundamentally about optimizing the data exchange and processing between the **Browser** and the **Server**.
