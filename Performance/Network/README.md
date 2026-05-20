@@ -29,8 +29,11 @@ Optimizing the delivery and size of resources to minimize latency and bandwidth.
     - [2. HTTP/1.1 vs HTTP/2 vs HTTP/3 Comparison](#2-http11-vs-http2-vs-http3-comparison)
       - [🛠️ Core Protocol Definitions](#️-core-protocol-definitions)
       - [🚀 Implementing HTTP/2 with `spdy`](#-implementing-http2-with-spdy)
-    - [3. HTTP/2 (Multiplexing)](#3-http2-multiplexing)
-    - [3. HTTP/3 (QUIC - UDP based)](#3-http3-quic---udp-based)
+      - [🔐 Generating SSL Certificates with OpenSSL](#-generating-ssl-certificates-with-openssl)
+      - [🌐 Browser Behavior: HTTP/1.1 vs. HTTP/2](#-browser-behavior-http11-vs-http2)
+    - [3. Real-world Protocol Usage](#3-real-world-protocol-usage)
+    - [4. HTTP/2 (Multiplexing)](#4-http2-multiplexing)
+    - [5. HTTP/3 (QUIC - UDP based)](#5-http3-quic---udp-based)
   - [💡 Resource Hints: Guiding the Browser](#-resource-hints-guiding-the-browser)
     - [🚀 Advanced Fetch Priority Patterns](#-advanced-fetch-priority-patterns)
       - [1. Prioritizing the LCP Image](#1-prioritizing-the-lcp-image)
@@ -310,7 +313,29 @@ spdy
   .listen(3000);
 ```
 
-### 3. HTTP/2 (Multiplexing)
+#### 🔐 Generating SSL Certificates with OpenSSL
+
+To test HTTP/2 locally, you need self-signed certificates:
+
+```bash
+openssl req -x509 -newkey rsa:2048 -nodes -sha256 -keyout server.key -out server.cert
+```
+
+#### 🌐 Browser Behavior: HTTP/1.1 vs. HTTP/2
+
+- **HTTP/1.1 (Queuing):** The browser limits parallel connections to ~6 per domain. If you have 50 images, only 6 start downloading; the rest are "Queued". This creates a "staircase" pattern in the network waterfall.
+- **HTTP/2 (Multiplexing):** Using `spdy` and SSL, all 50 images are sent over a **single TCP connection** at once. They all download in parallel, drastically reducing UI render time.
+
+### 3. Real-world Protocol Usage
+
+| Version            | Main Use Case                               | Examples                                         |
+| :----------------- | :------------------------------------------ | :----------------------------------------------- |
+| **HTTP/0.9 - 1.0** | Legacy systems & simple IoT devices.        | Industrial sensors, legacy mainframe interfaces. |
+| **HTTP/1.1**       | Simple APIs, local development without SSL. | Basic internal tools, simple REST endpoints.     |
+| **HTTP/2**         | Modern websites with many small assets.     | Google Search, Amazon, Facebook, Twitter.        |
+| **HTTP/3**         | Video streaming & unstable mobile networks. | YouTube, Instagram, WhatsApp, Netflix.           |
+
+### 4. HTTP/2 (Multiplexing)
 
 H/2 solved the "Head-of-Line Blocking" at the HTTP level by allowing multiple requests over a single TCP connection.
 
@@ -318,7 +343,7 @@ H/2 solved the "Head-of-Line Blocking" at the HTTP level by allowing multiple re
 - **Multiplexing:** Multiple requests and responses can be in flight simultaneously over a single connection.
 - **Server Push:** Allows the server to send resources to the client before they are requested (Now largely deprecated in favor of `103 Early Hints`).
 
-### 3. HTTP/3 (QUIC - UDP based)
+### 5. HTTP/3 (QUIC - UDP based)
 
 H/3 solves "Head-of-Line Blocking" at the **TCP level** by using the QUIC protocol.
 
