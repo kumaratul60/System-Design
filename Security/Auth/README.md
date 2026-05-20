@@ -79,6 +79,38 @@ app.listen(3000);
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: OAuth 2.0 vs. OpenID Connect (OIDC): Why do we need both?
+
+> **Answer:**
+>
+> - **OAuth 2.0:** Is an **Authorization** framework. It gives you an `Access Token` to use a resource (e.g., "I have permission to post to your Twitter"). It doesn't tell you _who_ the user is.
+> - **OIDC:** Is an **Identity** layer on top of OAuth 2.0. It adds an `ID Token` (a JWT) that contains user profile information (name, email, etc.).
+> - **The "Staff" Take:** Never use an OAuth 2.0 `Access Token` for authentication. If you need to know who the user is, use OIDC.
+
+### Q2: What is "Refresh Token Rotation" and why is it mandatory for SPAs?
+
+> **Answer:** In Single Page Apps (SPAs), tokens are stored in the browser, making them vulnerable to theft via XSS.
+>
+> - **The Solution:** Every time you use a `Refresh Token` to get a new `Access Token`, the server issues a **new** Refresh Token and invalidates the old one.
+> - **Breach Detection:** If an attacker steals a Refresh Token and uses it, and then the legitimate user tries to use the _same_ (now old) token, the server detects the reuse and immediately invalidates the entire session for that user.
+
+### Q3: Is it a security risk to store PII (email, role) inside a JWT?
+
+> **Answer:** JWTs are **Signed**, not **Encrypted** (by default). Anyone who can see the token can decode it and read the payload.
+>
+> - **The Risk:** If you store sensitive data (like a user's home address) in a JWT, that data is leaked to the browser and any proxy in between.
+> - **The Strategy:** Only store non-sensitive identifiers (UID, roles, scopes). If you _must_ store PII, you must use **JWE (JSON Web Encryption)**, which encrypts the payload.
+
+### Q4: Explain the "Stateless Session" myth.
+
+> **Answer:** Many claim JWTs are "stateless," but for any production-grade system, you need the ability to revoke tokens (e.g., if a phone is stolen).
+>
+> - **The Reality:** The moment you add a "Revocation List" or "Blacklist" in Redis to check token validity, your system is no longer stateless. It is **Stateful at the Edge**.
+
+---
+
 ## Authentication vs. Authorization Summary
 
 | Feature      | Authentication (AuthN)        | Authorization (AuthZ)              |

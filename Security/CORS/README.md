@@ -103,6 +103,37 @@ The following headers are sent by the server to control how the browser handles 
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: How does CORS affect the "Double Round-Trip" problem and Web Performance?
+
+> **Answer:** For every non-simple request (like a JSON POST), the browser must send an `OPTIONS` request first.
+>
+> - **The Impact:** This doubling of round-trips can significantly increase **TTFB** and **LCP**, especially on high-latency mobile networks.
+> - **The "Staff" Solution:** Use the **`Access-Control-Max-Age`** header to cache the preflight for up to 24 hours. Alternatively, use an **API Gateway** to handle CORS at the Edge or move the API and Frontend to the same origin using a **Reverse Proxy** to eliminate CORS entirely.
+
+### Q2: Explain the "Reflected Origin" vulnerability.
+
+> **Answer:** Since `Access-Control-Allow-Origin: *` doesn't work with credentials, many developers write code that reads the incoming `Origin` header and simply echoes it back in the response.
+>
+> - **The Risk:** This effectively disables CORS protection. An attacker can host a malicious site, and your server will "reflect" their origin, allowing them to make authenticated requests on behalf of your users.
+> - **The Correct Way:** Always validate the `Origin` against a strict **Whitelist** of trusted domains.
+
+### Q3: What is "Private Network Access" (PNA) and why was it introduced?
+
+> **Answer:** PNA is a security layer that prevents public websites from making requests to your internal network (e.g., your router at `192.168.1.1` or your local development server at `localhost`).
+>
+> - **The Attack:** An attacker could host a website that, when visited, tries to "guess" the IP of your smart home devices or local databases to exfiltrate data.
+> - **The Defense:** Browsers now require an explicit `Access-Control-Allow-Private-Network: true` header and a preflight check for any request moving from a "Public" context to a "Private/Local" context.
+
+### Q4: Can CORS protect your API from a `curl` request?
+
+> **Answer:** No. **CORS is a browser-side security feature.** It only protects users from malicious scripts running _inside_ their browser. A command-line tool like `curl`, or a server-side script, can bypass CORS completely by simply not honoring the protocol.
+>
+> - **The Takeaway:** CORS is for **Cross-Site protection**, not **API protection**. For API security, you must use Authentication (API Keys/JWT) and Rate Limiting.
+
+---
+
 ## Express.js Example
 
 Using the popular `cors` middleware:

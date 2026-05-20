@@ -9,6 +9,11 @@ Optimized for fast lookup, daily workflows, and production debugging.
 
 - [Terminal Guide (Linux \& macOS)](#terminal-guide-linux--macos)
   - [Index](#index)
+  - [🔥 Senior/Staff Level "Grill" Questions](#-seniorstaff-level-grill-questions)
+    - [Q1: SIGTERM (15) vs SIGKILL (9) - When should you NEVER use `-9`?](#q1-sigterm-15-vs-sigkill-9---when-should-you-never-use--9)
+    - [Q2: What is the "Zombie Process" and how do you "kill" it if `kill -9` fails?](#q2-what-is-the-zombie-process-and-how-do-you-kill-it-if-kill--9-fails)
+    - [Q3: Explain the `2>&1` syntax and why it's critical for logging.](#q3-explain-the-21-syntax-and-why-its-critical-for-logging)
+    - [Q4: How do you debug a "Connection Refused" error between two local Docker containers?](#q4-how-do-you-debug-a-connection-refused-error-between-two-local-docker-containers)
   - [Quick Start](#quick-start)
   - [1. Navigation \& Filesystem](#1-navigation--filesystem)
   - [2. File Operations \& Symlinks](#2-file-operations--symlinks)
@@ -45,6 +50,42 @@ Optimized for fast lookup, daily workflows, and production debugging.
     - [4. Inspecting Startup \& Background Services (Read-Only \& Safe)](#4-inspecting-startup--background-services-read-only--safe)
     - [5. Safe Cleanup Operations](#5-safe-cleanup-operations)
     - [6. 🚫 What NOT to Delete (CRITICAL) 🚫](#6--what-not-to-delete-critical-)
+
+---
+
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: SIGTERM (15) vs SIGKILL (9) - When should you NEVER use `-9`?
+
+> **Answer:**
+>
+> - **SIGTERM:** Politely asks the process to shut down. This allows it to finish its current database write, close open file handles, and delete temporary files.
+> - **SIGKILL:** Instantly kills the process.
+> - **Staff Take:** Never use `-9` as a first resort. It can lead to **Data Corruption** (half-written files) and **Leaked Resources** (locks that never get released). Always start with `kill PID` (SIGTERM).
+
+### Q2: What is the "Zombie Process" and how do you "kill" it if `kill -9` fails?
+
+> **Answer:** A Zombie is a process that has finished execution but still has an entry in the process table because its parent hasn't "waited" for its exit status.
+>
+> - **The Trick:** You cannot kill a Zombie (it's already dead). To remove it, you must **kill the parent process** or send `SIGHUP` to the parent to force it to clean up its children.
+
+### Q3: Explain the `2>&1` syntax and why it's critical for logging.
+
+> **Answer:**
+>
+> - `1` is the file descriptor for `stdout` (normal output).
+> - `2` is for `stderr` (errors).
+> - `2>&1` means "Redirect stderr to the same place as stdout."
+> - **Why:** If you run `node app.js > log.txt`, your error logs will still show up in the terminal and NOT in the file. To capture everything, use `node app.js > log.txt 2>&1`.
+
+### Q4: How do you debug a "Connection Refused" error between two local Docker containers?
+
+> **Answer:**
+>
+> 1. **`lsof -i :PORT`**: Check if the service is actually listening on the port.
+> 2. **`nc -zv IP PORT` (Netcat)**: Test if the port is reachable from the _other_ container.
+> 3. **`dig` or `nslookup`**: Verify the DNS resolution of the container name is correct.
+> 4. **`curl -v`**: Check the verbose output for "Connection Refused" (Service down) vs "Timeout" (Firewall/Network issue).
 
 ---
 

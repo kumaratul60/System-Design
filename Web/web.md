@@ -96,6 +96,11 @@
   - [31.3 The 7 OSI (Open Systems Interconnection) Layers (Brief Intro)](#313-the-7-osi-open-systems-interconnection-layers-brief-intro)
     - [31.4 Protocol to OSI Mapping](#314-protocol-to-osi-mapping)
     - [31.5 Why this matters for "How the Web Works":](#315-why-this-matters-for-how-the-web-works)
+  - [🔥 Senior/Staff Level "Grill" Questions](#-seniorstaff-level-grill-questions)
+    - [Q1: How does "Resource Prioritization" work in HTTP/2 vs. HTTP/3?](#q1-how-does-resource-prioritization-work-in-http2-vs-http3)
+    - [Q2: Explain the "Preload Scanner" and why it's the browser's most important performance optimization.](#q2-explain-the-preload-scanner-and-why-its-the-browsers-most-important-performance-optimization)
+    - [Q3: What is "Layout Thrashing" and how do you detect it in a large-scale React app?](#q3-what-is-layout-thrashing-and-how-do-you-detect-it-in-a-large-scale-react-app)
+    - [Q4: How does QUIC handle "IP Migration" and why is it a game-changer for mobile?](#q4-how-does-quic-handle-ip-migration-and-why-is-it-a-game-changer-for-mobile)
   - [32. Web Architecture Deep Dive](#32-web-architecture-deep-dive)
   - [References](#references)
   - [Glossary](#glossary)
@@ -1259,6 +1264,39 @@ flowchart TD
 1.  **Top-Down Execution:** When you type a URL, the data starts at **L7 (HTTP)**, gets encrypted at **L6 (TLS)**, and is broken into segments at **L4 (TCP)** before traveling down the physical wire.
 2.  **Troubleshooting:** If your "Internet is down," it's usually **L1 or L2** (cable unplugged). If the "Website is slow," it's usually **L4 (TCP Congestion)** or **L7 (Heavy JS code)**.
 3.  **Encapsulation:** Every layer adds its own "header" (metadata) to the data packet as it moves down. When it reaches the server, the server peels these headers off one by one (Decapsulation) to see the original request.
+
+---
+
+---
+
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: How does "Resource Prioritization" work in HTTP/2 vs. HTTP/3?
+
+> **Answer:**
+>
+> - **HTTP/2:** Uses **Dependency Trees** and **Weights**. The browser builds a complex graph of resources (e.g., CSS depends on HTML). The server tries to follow this graph, but it's complex and often implemented poorly by servers.
+> - **HTTP/3 (QUIC):** Moves to **Extensible Priorities**. It uses a simpler scheme where the client sends a `priority` header with each stream. It focuses on **Sequential vs. Concurrent** loading, which is much easier for servers to implement correctly and prevents "Bufferbloat."
+
+### Q2: Explain the "Preload Scanner" and why it's the browser's most important performance optimization.
+
+> **Answer:** The primary HTML parser can be blocked by synchronous scripts. If the browser waited for each script to finish, it wouldn't "see" the images and CSS further down the page until minutes later.
+>
+> - **The Solution:** The **Preload Scanner** is a secondary, lightweight parser that runs ahead of the main parser. It "scans" the HTML for `src` and `href` attributes and starts downloading them in the background while the main thread is blocked.
+> - **Architect's Nuance:** This is why "Hidden" resources (e.g., images loaded via JS or `background-image` in CSS) are slow—the Preload Scanner can't see them!
+
+### Q3: What is "Layout Thrashing" and how do you detect it in a large-scale React app?
+
+> **Answer:** Layout Thrashing (also called Forced Synchronous Layout) occurs when you write to the DOM and then immediately read a geometric property (like `offsetHeight`) in a loop.
+>
+> - **The Problem:** React's virtual DOM usually batches updates to the end of the frame. But if you "read" geometry, the browser is forced to perform a **Layout** _right now_ to give you the correct value.
+> - **Detection:** Use the **Chrome DevTools Performance Tab**. Look for "Recalculate Style" or "Layout" events that are triggered multiple times within a single frame (marked with a red triangle).
+
+### Q4: How does QUIC handle "IP Migration" and why is it a game-changer for mobile?
+
+> **Answer:** TCP connections are tied to a 4-tuple (Source IP, Source Port, Dest IP, Dest Port). If you move from WiFi to 4G, your IP changes, the TCP connection breaks, and you must perform a full Handshake again.
+>
+> - **The QUIC Solution:** QUIC uses a **Connection ID (CID)** that is independent of the IP address. If your IP changes, the client sends a "Probe" with the same CID. The server recognizes the CID and continues the session without a new handshake.
 
 ---
 

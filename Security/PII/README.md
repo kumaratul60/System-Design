@@ -70,6 +70,39 @@ app.use((req, res, next) => {
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: How do you handle the "Right to be Forgotten" (GDPR) in immutable database backups?
+
+> **Answer:** This is a classic distributed systems problem. You cannot "delete" a single row from a compressed, encrypted backup file sitting on S3.
+>
+> - **The "Staff" Solution:** **Cryptographic Erasure (Crypto-shredding).** Each user's PII is encrypted with a unique "User Key." When the user asks to be forgotten, you delete their _User Key_ from your active key management system. The data remains in the backups, but it is now mathematically impossible to decrypt.
+
+### Q2: What is "Searchable Encryption" and why do we need it for PII?
+
+> **Answer:** If you encrypt a user's `email` field with AES-256, you can no longer run a SQL query like `SELECT * FROM users WHERE email = 'test@test.com'`.
+>
+> - **The Trade-off:**
+>   1. **Deterministic Encryption:** The same input always produces the same ciphertext. (Allows searching but is less secure).
+>   2. **Blind Indexing:** Store a hashed version of the email in a separate column. You search against the hash, but display the encrypted value.
+
+### Q3: Explain "Differential Privacy" in the context of data analytics.
+
+> **Answer:** If you want to release a dataset of "average salaries" without revealing individual PII, an attacker can sometimes "triangulate" an individual if the dataset is small.
+>
+> - **The Solution:** **Differential Privacy** adds a mathematically calculated amount of "noise" to the results. It ensures that the presence or absence of a single individual in the dataset doesn't significantly change the output of the query, protecting their anonymity while maintaining statistical accuracy.
+
+### Q4: Data Sovereignty: How do you architect a system that must keep EU data in the EU and US data in the US?
+
+> **Answer:** You cannot use a single global database.
+>
+> - **The Architecture:**
+>   1. **Sharding by Region:** Partition your database clusters geographically.
+>   2. **Regional Routing:** Use an **API Gateway** or **Global Load Balancer** (like AWS Route53 Geolocation) to route requests to the correct regional cluster based on the user's origin.
+>   3. **Global Metadata:** Store only non-PII identifiers in a global "discovery" service to help route users if they travel between regions.
+
+---
+
 ## Compliance Reference
 
 | Regulation | Scope                | Key Requirement                                          |

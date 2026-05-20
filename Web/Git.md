@@ -48,6 +48,38 @@ mindmap
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: What are the 3 core "Objects" in Git's internal architecture?
+
+> **Answer:** Git is a content-addressable filesystem. Everything is an object in `.git/objects`:
+>
+> 1. **Blob:** Stores file content (no filename).
+> 2. **Tree:** Acts like a directory; maps filenames to Blobs or other Trees.
+> 3. **Commit:** Points to a specific Tree and includes metadata (author, message, parent commit).
+>
+> - **Insight:** This is why Git is so fast at branching—a branch is just a 40-character file pointing to a Commit hash.
+
+### Q2: `git reset --hard` deleted my uncommitted work. How do I get it back?
+
+> **Answer:** If it was **never committed**, it's likely gone forever unless your IDE (VS Code/WebStorm) has a local history. However, if it was **ever committed** (even if you later deleted the branch), you can find it using **`git reflog`**. It shows a history of where `HEAD` has been. Find the hash before the reset and run `git reset --hard <hash>`.
+
+### Q3: Explain the difference between "Merge" and "Rebase" in terms of Project Governance.
+
+> **Answer:**
+>
+> - **Merge:** Preserves the true chronological history and the context of when a feature was integrated. (Better for public/shared branches).
+> - **Rebase:** Creates a "clean," linear history by re-writing commits. (Better for local feature branches before they are shared).
+> - **Staff Take:** Never rebase a branch that others are working on, as it changes the hashes and causes "History Divergence" for everyone else.
+
+### Q4: What are "Git Worktrees" and how do they solve the "I need to fix a bug on another branch" problem?
+
+> **Answer:** Normally, you'd use `git stash`. But stashing is messy for large changes. **Worktrees** allow you to have multiple branches checked out in **different folders** simultaneously, sharing the same `.git` database.
+>
+> - **Usage:** `git worktree add ../bugfix-branch branch-name`. Now you can work on two branches without switching or stashing.
+
+---
+
 ## What is VCS?
 
 **VCS = Version Control System**

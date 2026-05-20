@@ -262,6 +262,40 @@ The `eval()` function is one of the most dangerous features in JavaScript. It ev
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: How do you prevent SSRF when your server _must_ fetch external URLs (e.g., a Link Preview service)?
+
+> **Answer:** Whitelisting isn't enough because an attacker can use **DNS Rebinding**.
+>
+> - **The Attack:** The attacker maps `evil.com` to a safe IP. Your server validates it. Then, the attacker quickly changes the DNS record of `evil.com` to `127.0.0.1`. When your server actually fetches the data, it hits its own internal network.
+> - **The "Staff" Solution:**
+>   1. **Resolution Pinning:** Resolve the DNS once and use the resulting IP for the fetch.
+>   2. **IP Blacklisting:** After resolution, check if the IP is in a "Private Range" (RFC 1918).
+>   3. **Isolated Egress:** Run the "fetcher" service in a locked-down VPC with NO access to internal services.
+
+### Q2: Is "Prototype Pollution" still relevant in modern Node.js?
+
+> **Answer:** Yes, especially in large systems using shared utility libraries (like `lodash` or `extend`).
+>
+> - **The Attack:** If an attacker can inject a property into `Object.prototype`, it affects _every_ object in the runtime.
+> - **The Fix:**
+>   1. **Object.create(null):** Create objects without a prototype.
+>   2. **Map:** Use the `Map` data structure instead of plain objects for dynamic keys.
+>   3. **Schema Validation:** Use a library like **Zod** or **Joi** to strip out `__proto__` and `constructor` before processing data.
+
+### Q3: Explain the "Billion Laughs" attack and how it relates to XXE.
+
+> **Answer:** It's an **XML Entity Expansion** attack (a form of DoS). The attacker defines an entity `lol1` as ten `lol`s, `lol2` as ten `lol1`s, and so on. By the time it reaches `lol9`, it expands to **1 billion** strings in memory, crashing the server.
+>
+> - **The Fix:** Disable DTD (Document Type Definition) processing entirely in your XML parser.
+
+### Q4: How can a PDF Generation service be used for SSRF?
+
+> **Answer:** Many PDF libraries use an internal headless browser to render HTML/CSS. If you allow a user to provide HTML, they can include an `<iframe src="http://169.254.169.254/latest/meta-data/">` or a `<link rel="stylesheet" href="...">`. The PDF generator will try to fetch these internal URLs and "print" the results into the PDF, leaking your cloud secrets.
+
+---
+
 ## 3. Insecure Deserialization
 
 Insecure deserialization occurs when untrusted data is used to abuse the logic of an application, inflict a Denial of Service (DoS) attack, or even execute arbitrary code.

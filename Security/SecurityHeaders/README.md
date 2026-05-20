@@ -93,6 +93,35 @@ Allows you to control which browser features (camera, microphone, geolocation) c
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Can "too many" security headers hurt performance?
+
+> **Answer:** Yes, but marginally. Every header adds bytes to the HTTP response. While a few KB won't kill a fiber connection, on a 3G mobile network with high latency, every extra byte in the initial TCP congestion window (CWND) matters.
+>
+> - **The "Staff" Take:** Use a CDN to inject these headers at the Edge. This keeps your origin response small while ensuring the user still gets the full protection.
+
+### Q2: What is the `Clear-Site-Data` header and when should you use it?
+
+> **Answer:** It's a powerful "Nuclear Option" header. It tells the browser to immediately wipe all local data for your origin (Cookies, LocalStorage, Cache).
+>
+> - **Use Case:** **Logout.** Instead of manually clearing every cookie, sending `Clear-Site-Data: "cookies", "storage", "cache"` ensures the browser is completely clean, preventing "Session Leakage" if another person uses the same computer.
+
+### Q3: Why is `X-Frame-Options: DENY` being replaced by CSP `frame-ancestors 'none'`?
+
+> **Answer:** `X-Frame-Options` is a simple binary choice (DENY/SAMEORIGIN). CSP `frame-ancestors` is much more granular—it allows you to whitelist specific domains that are allowed to frame your site.
+>
+> - **Note:** Browsers prioritize `frame-ancestors`. If both are present, `X-Frame-Options` is ignored.
+
+### Q4: Explain the risk of "Header Stripping" by intermediaries.
+
+> **Answer:** Some poorly configured proxies or "Performance Optimization" tools (like certain mobile carrier proxies) might strip out headers they don't recognize to save bytes.
+>
+> - **Impact:** If your `Strict-Transport-Security` or `Content-Security-Policy` header is stripped, your site's defense-in-depth is gone.
+> - **Mitigation:** Use **HTTPS everywhere** (to prevent tampering with headers in transit) and monitor your **CSP Report-To** endpoint to see if headers are missing for certain user segments.
+
+---
+
 ## Implementation Summary
 
 ```javascript
