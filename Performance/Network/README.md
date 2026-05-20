@@ -2,6 +2,53 @@
 
 Optimizing the delivery and size of resources to minimize latency and bandwidth.
 
+## 📌 Table of Contents
+
+- [Network \& Asset Optimization](#network--asset-optimization)
+  - [📌 Table of Contents](#-table-of-contents)
+  - [Network Optimization Mental Model](#network-optimization-mental-model)
+  - [Network \& Assets Mindmap](#network--assets-mindmap)
+  - [🚀 Core Optimization Strategies](#-core-optimization-strategies)
+    - [1. Critical Rendering Path (CRP)](#1-critical-rendering-path-crp)
+      - [⚡ Script Loading: Async vs. Defer](#-script-loading-async-vs-defer)
+    - [🔍 Deep Dive \& Examples](#-deep-dive--examples)
+      - [1. Normal Script (`<script src="...">`)](#1-normal-script-script-src)
+      - [2. Async Script (`<script async src="...">`)](#2-async-script-script-async-src)
+      - [3. Defer Script (`<script defer src="...">`)](#3-defer-script-script-defer-src)
+    - [💡 Summary: Which one should I use?](#-summary-which-one-should-i-use)
+    - [📦 The 14KB Rule: The First Round-Trip](#-the-14kb-rule-the-first-round-trip)
+      - [⚠️ Reflow vs. Repaint vs. Composite](#️-reflow-vs-repaint-vs-composite)
+  - [🏛️ Browser Object Model (BOM)](#️-browser-object-model-bom)
+    - [2. Minimize HTTP Requests](#2-minimize-http-requests)
+      - [⚠️ Challenges](#️-challenges)
+      - [✅ Solutions](#-solutions)
+    - [3. Avoid Redirection](#3-avoid-redirection)
+    - [4. Fetch Priority](#4-fetch-priority)
+  - [🌐 Modern Networking Protocols](#-modern-networking-protocols)
+    - [1. HTTP/1.1 vs HTTP/2 vs HTTP/3](#1-http11-vs-http2-vs-http3)
+    - [2. HTTP/2 (Multiplexing)](#2-http2-multiplexing)
+    - [3. HTTP/3 (QUIC - UDP based)](#3-http3-quic---udp-based)
+  - [💡 Resource Hints: Guiding the Browser](#-resource-hints-guiding-the-browser)
+    - [🚀 Advanced Fetch Priority Patterns](#-advanced-fetch-priority-patterns)
+      - [1. Prioritizing the LCP Image](#1-prioritizing-the-lcp-image)
+      - [2. Deprioritizing Non-Critical Scripts](#2-deprioritizing-non-critical-scripts)
+      - [3. Non-Blocking CSS Preload](#3-non-blocking-css-preload)
+      - [4. Fetch API Integration](#4-fetch-api-integration)
+  - [Compression \& Delivery](#compression--delivery)
+    - [1. Gzip vs. Brotli](#1-gzip-vs-brotli)
+    - [2. Implementation \& Delivery](#2-implementation--delivery)
+  - [Caching Strategies](#caching-strategies)
+    - [1. HTTP Caching (Cache-Control)](#1-http-caching-cache-control)
+    - [2. Service Worker Caching](#2-service-worker-caching)
+  - [Key Topics Summary](#key-topics-summary)
+  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+    - [Q1: What is "TCP Slow Start" and how does it affect initial page load?](#q1-what-is-tcp-slow-start-and-how-does-it-affect-initial-page-load)
+    - [Q2: Explain "Domain Sharding" and why it's an anti-pattern in HTTP/2+.](#q2-explain-domain-sharding-and-why-its-an-anti-pattern-in-http2)
+    - [Q3: How do "103 Early Hints" differ from "HTTP/2 Server Push"?](#q3-how-do-103-early-hints-differ-from-http2-server-push)
+    - [Q4: When would `preconnect` be "harmful" to performance?](#q4-when-would-preconnect-be-harmful-to-performance)
+
+---
+
 ## Network Optimization Mental Model
 
 This model illustrates how different optimization techniques apply at various stages of the network lifecycle.
@@ -226,13 +273,55 @@ H/3 solves "Head-of-Line Blocking" at the **TCP level** by using the QUIC protoc
 
 ## 💡 Resource Hints: Guiding the Browser
 
-| Hint                | Purpose                                        | When to use?                                          |
-| :------------------ | :--------------------------------------------- | :---------------------------------------------------- |
-| **`dns-prefetch`**  | Resolves domain name early.                    | For third-party domains used later.                   |
-| **`preconnect`**    | DNS + TCP + TLS handshake.                     | For high-priority third-party origins (CDN, API).     |
-| **`preload`**       | Fetches high-priority resource _now_.          | For critical LCP images, fonts, and early CSS.        |
-| **`prefetch`**      | Fetches low-priority resource for _next_ page. | For predicting the user's next navigation.            |
-| **`fetchpriority`** | Adjusts relative priority of a resource.       | Prioritize LCP image; Deprioritize off-screen images. |
+| Hint                | Purpose                                                       | When to use?                                      |
+| :------------------ | :------------------------------------------------------------ | :------------------------------------------------ |
+| **`dns-prefetch`**  | Resolves domain name early.                                   | For third-party domains used later.               |
+| **`preconnect`**    | DNS + TCP + TLS handshake.                                    | For high-priority third-party origins (CDN, API). |
+| **`preload`**       | Fetches high-priority resource _now_.                         | For critical LCP images, fonts, and early CSS.    |
+| **`prefetch`**      | Fetches low-priority resource for _next_ page.                | For predicting the user's next navigation.        |
+| **`fetchpriority`** | Hints at the relative priority of a resource (high/low/auto). | `<img src="lcp.jpg" fetchpriority="high">`        |
+
+### 🚀 Advanced Fetch Priority Patterns
+
+`fetchpriority` allows you to fine-tune how the browser allocates bandwidth among resources of the same type.
+
+#### 1. Prioritizing the LCP Image
+
+The most common use case is to ensure the Largest Contentful Paint (LCP) image starts downloading as soon as possible.
+
+```html
+<img src="hero.jpg" fetchpriority="high" alt="LCP Image" />
+```
+
+#### 2. Deprioritizing Non-Critical Scripts
+
+You can preload scripts that are needed later but shouldn't compete with more critical resources (like CSS or the LCP image).
+
+```html
+<!-- High priority preload for critical script -->
+<link rel="preload" as="script" href="critical-script.js" />
+
+<!-- Lower priority preload for non-critical script -->
+<link rel="preload" href="/js/script.js" as="script" fetchpriority="low" />
+```
+
+#### 3. Non-Blocking CSS Preload
+
+A powerful pattern to load non-critical CSS without blocking the render of the page.
+
+```html
+<link rel="preload" as="style" href="theme.css" fetchpriority="low" onload="this.rel='stylesheet'" />
+```
+
+#### 4. Fetch API Integration
+
+You can also use it with the `fetch()` API to deprioritize background API calls.
+
+```javascript
+fetch('/api/data', { priority: 'low' });
+```
+
+> **Further Reading:** [Optimizing resource priority with Fetch Priority (web.dev)](https://web.dev/articles/fetch-priority)
 
 ---
 
