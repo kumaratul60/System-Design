@@ -63,8 +63,78 @@ mindmap
 
 The sequence of steps the browser goes through to convert HTML, CSS, and JavaScript into pixels on the screen.
 
-- **Optimization:** Prioritize critical CSS and JS to unblock the first paint.
-- **Goal:** Minimize the number of "render-blocking" resources.
+```mermaid
+graph TD
+    HTML[HTML] --> DOM[DOM Tree]
+    CSS[CSS] --> CSSOM[CSSOM Tree]
+
+    DOM <--> JS[JavaScript]
+    CSSOM <--> JS
+
+    DOM --> RT[Render Tree]
+    CSSOM --> RT
+
+    RT --> Style[Style]
+    Style --> Layout[Layout / Reflow]
+    Layout --> Paint[Paint]
+    Paint --> Composite[Composite]
+    Composite --> Display[Display]
+```
+
+- **DOM (Document Object Model):** The browser parses HTML bytes into tokens, which are then converted into a tree of nodes representing the page structure.
+- **CSSOM (CSS Object Model):** The browser parses CSS rules to build a map of styles. **CSS is Render-Blocking:** The browser will not render any processed content until the CSSOM is constructed.
+- **JavaScript:** **JS is Parser-Blocking:** The HTML parser is blocked when it encounters a `<script>` tag (unless `async` or `defer` is used), as JS can modify both the DOM and CSSOM.
+
+#### ⚡ Script Loading: Async vs. Defer
+
+Using the correct attribute is essential for unblocking the HTML parser and improving the Critical Rendering Path.
+
+| Attribute             | HTML Parsing                         | Script Execution                                                   | Order Guaranteed?                 |
+| :-------------------- | :----------------------------------- | :----------------------------------------------------------------- | :-------------------------------- |
+| **None** (`<script>`) | **Paused** during fetch & execution. | Immediately after fetch.                                           | Yes (as defined in HTML).         |
+| **`async`**           | **Paused only** during execution.    | Immediately after fetch (concurrent with parsing).                 | **No** (whichever loads first).   |
+| **`defer`**           | **Not Paused** (Non-blocking).       | **After** HTML parsing is complete, but before `DOMContentLoaded`. | **Yes** (follows document order). |
+
+- **Use `async` for:** Independent third-party scripts (analytics, ads) that don't depend on other scripts or the DOM structure.
+- **Use `defer` for:** Scripts that need the full DOM or have dependencies on other scripts (e.g., your main application logic).
+- **Render Tree:** The combination of DOM and CSSOM, containing only the visible elements (e.g., it excludes `<head>` and `display: none`).
+- **Layout (Reflow):** The browser calculates the exact geometry (position and size) of each visible element on the viewport.
+- **Paint:** The process of converting the render tree into actual pixels on the screen, including colors, text, and images.
+- **Composite:** Different parts of the page are drawn in layers (often on the GPU) and flattened into the final image shown to the user.
+
+### 📦 The 14KB Rule: The First Round-Trip
+
+The first packet sent from the server to the client (after the handshake) is typically limited to **~14KB** due to the TCP Slow Start algorithm (initial congestion window).
+
+- **Strategy:** Aim to fit the "above-the-fold" content—the bare minimum HTML, critical CSS, and essential JS—within this first 14KB.
+- **Impact:** Fitting everything in the first packet allows the browser to start rendering immediately after the first round-trip, significantly improving the **First Contentful Paint (FCP)**.
+
+#### ⚠️ Reflow vs. Repaint vs. Composite
+
+Understanding the cost of each step is crucial for smooth animations and interactions.
+
+| Stage         | Triggered By                                                      | Cost                                                                     | Optimization                            |
+| :------------ | :---------------------------------------------------------------- | :----------------------------------------------------------------------- | :-------------------------------------- |
+| **Reflow**    | Changes to geometry (`width`, `height`, `top`, `left`, `margin`)  | **High:** Triggers a chain reaction recalculating all affected elements. | Avoid animating these; use `transform`. |
+| **Repaint**   | Changes to appearance (`color`, `visibility`, `background-color`) | **Medium:** Redraws affected elements but skips layout.                  | Use sparingly.                          |
+| **Composite** | Changes to GPU-handled properties (`transform`, `opacity`)        | **Low:** Handled by the GPU, bypassing Layout and Paint.                 | **Preferred** for animations.           |
+
+- **Why Reflow is Expensive:** It is a blocking, synchronous operation that can trigger a "Global Reflow" (entire tree) or "Local Reflow" (subtree). A single change can force the browser to recalculate the entire layout of the page.
+- **What to use instead:** Favor "Composite-only" properties like `transform` (for translation, scaling, rotation) and `opacity`. These are offloaded to the GPU, ensuring 60fps animations.
+
+---
+
+## 🏛️ Browser Object Model (BOM)
+
+The BOM provides objects that expose browser functionality beyond the document (DOM).
+
+- **`window`:** The global object in the browser. It represents the browser window and contains all other BOM/DOM objects.
+- **`navigator`:** Contains information about the browser (e.g., user agent, language, online status, and Geolocation).
+- **`location`:** Provides details about the current URL and methods to navigate (e.g., `location.href`, `location.reload()`).
+- **`history`:** Allows manipulation of the browser session history (e.g., `back()`, `forward()`, `pushState()`).
+- **`screen`:** Contains information about the user's screen (e.g., width, height, color depth).
+
+---
 
 ### 2. Minimize HTTP Requests
 
