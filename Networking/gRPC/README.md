@@ -72,6 +72,38 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
 | **Pros**                                | Efficient, scalable, strongly typed, streaming           | Simple, stateless, cacheable, universal                | Precise data fetching, single endpoint, flexible  |
 | **Cons**                                | Complex setup, binary debugging hard, browser issues     | Over/under-fetching, multiple round-trips, weak typing | Query complexity, N+1 problem, schema maintenance |
 
+---
+
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why is Load Balancing "harder" with gRPC than REST?
+
+> **Answer:** Traditional L4 Load Balancers (like standard AWS NLB) work at the connection level. Since gRPC uses **HTTP/2 with long-lived TCP connections**, all requests from a single client will go to the **same backend server**, creating "hot spots."
+>
+> - **The Solution:** You must use an **L7 (Application Layer) Load Balancer** (like Envoy, NGINX, or AWS ALB) that can parse the HTTP/2 frames and distribute individual _calls_ across backends, even over a single TCP connection.
+
+### Q2: How do you handle "Breaking Changes" in Protocol Buffers without incrementing a version?
+
+> **Answer:** Protobuf is designed for evolution.
+>
+> - **The Golden Rules:**
+>   1. Never change the **Tag Number** (the `= 1` part) of an existing field.
+>   2. Never change the **Data Type** of an existing tag.
+>   3. If you want to delete a field, mark it as `reserved` so the tag number is never reused.
+> - **The Outcome:** New code can read old data (it sees the field as default/missing), and old code can read new data (it simply ignores tags it doesn't recognize).
+
+### Q3: gRPC uses Binary—how do you debug it in production without `curl`?
+
+> **Answer:** Since you can't just "read" the binary stream, you use tools like **`grpcurl`** or **`grpc-ui`**.
+>
+> - **Reflection:** Enable the **gRPC Reflection Service** on your server. This allows tools to "ask" the server for its schema, enabling you to make calls without having the `.proto` file locally.
+
+### Q4: When is the "Binary Overhead" of Protobuf actually _worse_ than JSON?
+
+> **Answer:** For very small messages (e.g., `{ "id": 1 }`), the overhead of the gRPC header (5 bytes for the framing + HTTP/2 headers) can actually be larger than the raw JSON string. gRPC's performance gains only "kick in" at scale, with complex objects, or when using bidirectional streaming.
+
+---
+
 ### When to Use Each
 
 - **gRPC**: For internal microservices needing high performance, streaming, or strong typing.

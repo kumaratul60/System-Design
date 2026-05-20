@@ -84,6 +84,44 @@ Enterprise-level security strategies.
 
 ---
 
+## 🏛️ Architect's Decision Matrix: Security Trade-offs
+
+Security is the art of "Informed Friction." You are choosing where to place the burden: on the attacker, the developer, or the user.
+
+| Trade-off           | Option A: Client-Side (Easy)                              | Option B: Server-Side (Secure)                                | The "Staff" Decision                                                                                      |
+| :------------------ | :-------------------------------------------------------- | :------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- |
+| **Session Storage** | **LocalStorage:** Accessible by JS, persists after close. | **HTTP-only Cookies:** Shielded from XSS, automatic delivery. | Use **HTTP-only, Secure, SameSite=Lax** cookies for critical sessions.                                    |
+| **Auth Token**      | **JWT (Stateless):** Scalable, no DB lookup.              | **Opaque Tokens (Stateful):** Revocable, simple.              | Use **JWTs** for performance, but implement **Short-lived Access Tokens** + **Rotatable Refresh Tokens**. |
+| **XSS Defense**     | **Sanitization Libraries:** (DOMPurify).                  | **CSP (Policy-based):** Global browser enforcement.           | Use **Both**. Sanitization is the "Filter," CSP is the "Containment Field."                               |
+
+---
+
+## 🔥 The Unified Security "Grill"
+
+### Q1: If you have a 100% secure CSP, do you still need to sanitize user input?
+
+> **Answer:** Yes. CSP is a **Defense-in-Depth** mechanism (Containment). It stops the _execution_ of malicious scripts, but it doesn't stop the _content_ from being defaced, or data from being exfiltrated via "Non-script" vectors like CSS `background-image` or `meta` redirects.
+
+### Q2: JWTs are "Stateless"—so how do you handle a "Force Logout All Devices" requirement?
+
+> **Answer:** This is the "Stateless Paradox." To revoke a JWT before it expires, you **MUST** introduce state.
+>
+> - **The Hybrid Solution:** Maintain a "Blacklist" or "Version Number" in Redis. When a user logs out, store the `jti` (JWT ID) in Redis. Every request checks this cache.
+> - **Optimization:** To keep it fast, check the blacklist at the **API Gateway** level, not in every microservice.
+
+### Q3: Why is `SameSite=Strict` often a bad idea for UX, and why is `Lax` the new standard?
+
+> **Answer:**
+>
+> - **Strict:** Cookies are NOT sent on any cross-site request. If a user clicks a link from their Email to your app, they will arrive "Logged Out."
+> - **Lax:** Cookies are sent on "Safe" top-level navigations (GET requests). This preserves the "Login state" when arriving from an external site while still blocking CSRF on sensitive POST/PUT actions.
+
+### Q4: Explain the "Confused Deputy" problem in the context of SSRF.
+
+> **Answer:** In an SSRF attack, the attacker "tricks" the server (the Deputy) into using its internal privileges to access resources it shouldn't (like `localhost:8080/admin` or AWS metadata endpoints). The server is "confused" because it thinks it's performing a legitimate internal task (like fetching an image) but is actually acting on behalf of an attacker.
+
+---
+
 ## 🚀 Interview & Assessment
 
 Ready to test your knowledge or preparing for a Staff/Architect role?

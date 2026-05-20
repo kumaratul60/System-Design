@@ -157,6 +157,35 @@ Content-Security-Policy: frame-ancestors 'self'; script-src 'self' https://trust
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: If `SameSite=Lax` is now the browser default, is CSRF "Dead"?
+
+> **Answer:** No. While `Lax` provides significant protection, it has two major "gotchas":
+>
+> 1. **The "2-minute" Window:** Some browsers (like Chrome) allow `SameSite=None` behavior for the first 2 minutes of a cookie's life to support certain SSO flows.
+> 2. **GET-based actions:** `Lax` allows cookies on top-level GET navigations. If your app has "State-changing GETs" (e.g., `<img src="/logout">`), it is still fully vulnerable.
+> 3. **Legacy Browsers:** Older browsers don't understand `SameSite` and will ignore it, defaulting to the old "send everything" behavior.
+
+### Q2: How do you implement "Stateless CSRF Protection" for a massive microservices architecture?
+
+> **Answer:** Storing tokens in a server-side session (Synchronizer Token Pattern) doesn't scale well across thousands of services.
+>
+> - **The Solution:** **Encrypted/Signed CSRF Tokens.** The server generates a token containing a timestamp and a user ID, signs it with a secret key, and sends it to the client. The client sends it back in a custom header. The server verifies the signature without needing a database/session lookup.
+> - **Alternative:** **Double Submit Cookie** (Stateless by nature).
+
+### Q3: How can a "CORS Misconfiguration" turn into a CSRF vulnerability?
+
+> **Answer:** Normally, CSRF is "blind"—the attacker sends a request but can't read the response due to the Same-Origin Policy.
+>
+> - **The Vulnerability:** If you set `Access-Control-Allow-Origin: *` and `Access-Control-Allow-Credentials: true` (which is actually an invalid combination in modern browsers, but often misconfigured as a specific reflected origin), the attacker can use JS to make a request **AND** read the response (e.g., read a user's private info or the Anti-CSRF token).
+
+### Q4: Why is a "Custom Header" (like `X-Requested-With`) a valid CSRF defense for APIs?
+
+> **Answer:** Because browsers only allow custom headers on "Simple Requests" (GET/POST/HEAD with specific content-types). Adding a custom header triggers a **CORS Preflight (OPTIONS)**. Unless your server's CORS policy explicitly allows that header from the attacker's origin, the browser will block the actual request before it ever reaches your business logic.
+
+---
+
 ## 4. Advanced Considerations
 
 ### A. Login CSRF

@@ -316,7 +316,39 @@ test('user query', async () => {
 
 ---
 
-## Real-World Use Cases & Examples
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Does "DataLoader" actually solve the N+1 problem, or just hide it?
+
+> **Answer:** DataLoader solves it at the **Application Layer** by batching requests (turning N queries into 1). However, if your database doesn't support efficient `WHERE id IN (...)` queries, or if you are batching across different microservices, the "N" cost might just be moved elsewhere.
+>
+> - **Staff Tip:** For extremely large datasets, batching can lead to **Large Payload Latency**. Sometimes, multiple parallel "indexed" fetches are faster than one massive batch query.
+
+### Q2: How do you prevent a "Malicious Query" from taking down your GraphQL server?
+
+> **Answer:** Since GraphQL lets clients define the query, they can send a "Query of Death" with 100 levels of nesting.
+>
+> - **Mitigation:**
+>   1. **Query Depth Limiting:** Reject queries deeper than X levels.
+>   2. **Query Cost Analysis:** Assign a "score" to each field. If the total score exceeds a budget (e.g., 1000), reject it before execution.
+>   3. **Persisted Queries:** In production, only allow queries that have been "pre-approved" (hashed) and stored on the server.
+
+### Q3: Why is "Edge Caching" (CDN) so difficult with GraphQL compared to REST?
+
+> **Answer:**
+>
+> 1. **HTTP Method:** Most GraphQL queries use `POST`, which CDNs don't cache by default.
+> 2. **Single Endpoint:** Since all queries go to `/graphql`, the URL is the same for every request, making it impossible to use as a cache key.
+>
+> - **The Solution:** Use **Automatic Persisted Queries (APQ)**. The client sends a `GET` request with a hash of the query. The CDN can then cache the result based on that unique URL hash.
+
+### Q4: GraphQL Subscriptions: WebSockets vs. Server-Sent Events (SSE)?
+
+> **Answer:** Most libraries default to **WebSockets** (bidirectional). However, for many read-only "updates" (like a news feed), **SSE** is more efficient because it works over standard HTTP, is easier to load balance, and handles reconnections automatically.
+
+---
+
+## 📈 Decision Matrix: When to use GraphQL?
 
 ### E-commerce Platform
 

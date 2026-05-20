@@ -48,6 +48,37 @@ _Build a "Defense in Depth" fortress._
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: What is "Trusted Types" and why is it the "Final Boss" of DOM XSS defense?
+
+> **Answer:** Even with sanitization, a developer can still accidentally use a dangerous sink like `element.innerHTML = data`.
+>
+> - **The Solution:** **Trusted Types** is a browser primitive that _disables_ dangerous sinks. If you try to pass a raw string to `innerHTML`, the browser throws an error.
+> - **Mechanism:** You must create a **Policy** that produces a "TrustedHTML" object. Only these objects can be passed to sinks. This moves security from "Remembering to sanitize" to "Enforced by the browser."
+
+### Q2: Nonce-based CSP vs. Hash-based CSP: Which one do you choose for a large-scale SPA?
+
+> **Answer:**
+>
+> - **Hash-based:** Great for static sites (SSG). You hash the script content and put it in the header.
+> - **Nonce-based:** Best for dynamic apps (SSR/CSR). You generate a cryptographically strong random number (nonce) on every request, add it to the CSP header, and to the `<script nonce="...">` tag.
+> - **Staff Tip:** For SPAs, use **`strict-dynamic`** with a nonce. This allows a "trusted" root script to dynamically load other scripts without needing a giant whitelist of domains.
+
+### Q3: Explain "Mutation XSS" (mXSS) and why standard regex filters fail.
+
+> **Answer:** mXSS occurs when an attacker provides "Malformed HTML" that looks safe to a filter (like `<div><noscript><p title="</noscript><img src=x onerror=alert(1)>">`) but is "mutated" by the browser's parser into executable code when assigned to `innerHTML`.
+>
+> - **The Defense:** Never use regex for HTML security. Only use **DOM-aware sanitizers** like **DOMPurify** which understand how the browser's parser behaves.
+
+### Q4: If you use `HttpOnly` cookies, is your site "Safe" from XSS?
+
+> **Answer:** No. `HttpOnly` only stops the attacker from _stealing_ the session token. They can still perform **Session Riding**: while the victim is on your site, the malicious script can use `fetch()` to perform actions on the victim's behalf (e.g., delete an account, change an email) because the browser automatically attaches those `HttpOnly` cookies to the requests.
+>
+> - **The Takeaway:** `HttpOnly` limits the _damage_ of XSS, but it doesn't _prevent_ the attack.
+
+---
+
 ## 🏗️ Project Structure
 
 ```text
