@@ -87,16 +87,47 @@ graph TD
 
 #### ⚡ Script Loading: Async vs. Defer
 
-Using the correct attribute is essential for unblocking the HTML parser and improving the Critical Rendering Path.
+Understanding the lifecycle of a script (Download vs. Execution) is critical for minimizing parser pauses.
 
-| Attribute             | HTML Parsing                         | Script Execution                                                   | Order Guaranteed?                 |
-| :-------------------- | :----------------------------------- | :----------------------------------------------------------------- | :-------------------------------- |
-| **None** (`<script>`) | **Paused** during fetch & execution. | Immediately after fetch.                                           | Yes (as defined in HTML).         |
-| **`async`**           | **Paused only** during execution.    | Immediately after fetch (concurrent with parsing).                 | **No** (whichever loads first).   |
-| **`defer`**           | **Not Paused** (Non-blocking).       | **After** HTML parsing is complete, but before `DOMContentLoaded`. | **Yes** (follows document order). |
+| Attribute               | HTML Parsing                    | Script Download | Script Execution          | Order Guaranteed? |
+| :---------------------- | :------------------------------ | :-------------- | :------------------------ | :---------------- |
+| **Normal** (`<script>`) | **Paused** during fetch & exec. | Blocks parsing  | Immediately after fetch   | **Yes**           |
+| **`async`**             | **Paused only** during exec.    | Concurrent      | Immediately after fetch   | **No**            |
+| **`defer`**             | **Not Paused** (Non-blocking).  | Concurrent      | **After** parsing is done | **Yes**           |
 
-- **Use `async` for:** Independent third-party scripts (analytics, ads) that don't depend on other scripts or the DOM structure.
-- **Use `defer` for:** Scripts that need the full DOM or have dependencies on other scripts (e.g., your main application logic).
+---
+
+### 🔍 Deep Dive & Examples
+
+#### 1. Normal Script (`<script src="...">`)
+
+- **Behavior:** The browser stops parsing HTML, fetches the script, executes it, and then resumes parsing.
+- **Example:** `<script src="critical-lib.js"></script>`
+- **When to use:** Rarely for external scripts. Only if the script **must** run before any subsequent HTML is parsed (e.g., a critical polyfill).
+
+#### 2. Async Script (`<script async src="...">`)
+
+- **Behavior:** The script is downloaded in the background. As soon as it's ready, **HTML parsing pauses** to execute the script.
+- **Example:** `<script async src="https://google-analytics.com/ga.js"></script>`
+- **Key Difference:** Execution happens "asynchronously" as soon as the download finishes, potentially interrupting the parser at any point.
+- **When to use:** Independent third-party scripts (analytics, ads) that don't depend on other scripts or the DOM structure.
+
+#### 3. Defer Script (`<script defer src="...">`)
+
+- **Behavior:** The script is downloaded in the background, but **execution is delayed** until the HTML parser has completely finished.
+- **Example:** `<script defer src="app-logic.js"></script>`
+- **Key Difference:** Never interrupts the parser. It guarantees execution in the order they appear in the document, right before `DOMContentLoaded`.
+- **When to use:** Scripts that need the full DOM or have dependencies on other scripts (e.g., your main application logic).
+
+---
+
+### 💡 Summary: Which one should I use?
+
+1. **Does the script depend on other scripts?** Use `defer`.
+2. **Is the script critical for the initial render?** Inline it or use a normal script in the `<head>` (sparingly).
+3. **Is it an independent third-party tool?** Use `async`.
+4. **General Rule of Thumb:** Default to **`defer`** for your own application code to ensure a smooth, non-blocking UI experience.
+
 - **Render Tree:** The combination of DOM and CSSOM, containing only the visible elements (e.g., it excludes `<head>` and `display: none`).
 - **Layout (Reflow):** The browser calculates the exact geometry (position and size) of each visible element on the viewport.
 - **Paint:** The process of converting the render tree into actual pixels on the screen, including colors, text, and images.
@@ -140,7 +171,17 @@ The BOM provides objects that expose browser functionality beyond the document (
 
 Reducing the overhead of multiple requests, especially in high-latency environments.
 
-- **Strategies:** Image sprites, code splitting (balancing chunk size vs. count), and utilizing HTTP/2+ multiplexing.
+#### ⚠️ Challenges
+
+- **Connection Overhead:** Each new connection requires time for DNS resolution, TCP handshake, and SSL negotiation.
+- **Browser Limits:** Browsers typically limit parallel connections to **6-10 per domain**. Once this limit is reached, subsequent requests are queued (Head-of-Line Blocking).
+
+#### ✅ Solutions
+
+- **Inline CSS & JS:** Small, critical styles and scripts can be inlined directly in the HTML to avoid extra round-trips (ideally within the first 14KB).
+- **Base64 for Images:** Converting small images (like icons) to Base64 strings in CSS/HTML removes the need for a separate image request.
+- **SVG for Images:** Use SVGs for icons and simple graphics; they are text-based, scalable, and can be inlined directly in the HTML.
+- **Bundling & Sprites:** Combining multiple files (JS/CSS) or images (sprites) into a single request to reduce connection overhead.
 
 ### 3. Avoid Redirection
 
@@ -222,7 +263,7 @@ Optimizing payload size is critical for reducing transfer time and bandwidth usa
 
 ---
 
-## 💾 Caching Strategies
+## Caching Strategies
 
 Caching is the most effective way to improve performance by avoiding the network entirely for subsequent requests.
 
