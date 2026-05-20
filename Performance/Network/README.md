@@ -25,8 +25,11 @@ Optimizing the delivery and size of resources to minimize latency and bandwidth.
     - [3. Avoid Redirection](#3-avoid-redirection)
     - [4. Fetch Priority](#4-fetch-priority)
   - [🌐 Modern Networking Protocols](#-modern-networking-protocols)
-    - [1. HTTP/1.1 vs HTTP/2 vs HTTP/3](#1-http11-vs-http2-vs-http3)
-    - [2. HTTP/2 (Multiplexing)](#2-http2-multiplexing)
+    - [1. Evolution of the Protocol Stack](#1-evolution-of-the-protocol-stack)
+    - [2. HTTP/1.1 vs HTTP/2 vs HTTP/3 Comparison](#2-http11-vs-http2-vs-http3-comparison)
+      - [🛠️ Core Protocol Definitions](#️-core-protocol-definitions)
+      - [🚀 Implementing HTTP/2 with `spdy`](#-implementing-http2-with-spdy)
+    - [3. HTTP/2 (Multiplexing)](#3-http2-multiplexing)
     - [3. HTTP/3 (QUIC - UDP based)](#3-http3-quic---udp-based)
   - [💡 Resource Hints: Guiding the Browser](#-resource-hints-guiding-the-browser)
     - [🚀 Advanced Fetch Priority Patterns](#-advanced-fetch-priority-patterns)
@@ -37,6 +40,7 @@ Optimizing the delivery and size of resources to minimize latency and bandwidth.
   - [Compression \& Delivery](#compression--delivery)
     - [1. Gzip vs. Brotli](#1-gzip-vs-brotli)
     - [2. Implementation \& Delivery](#2-implementation--delivery)
+    - [3. 103 Early Hints](#3-103-early-hints)
   - [Caching Strategies](#caching-strategies)
     - [1. HTTP Caching (Cache-Control)](#1-http-caching-cache-control)
     - [2. Service Worker Caching](#2-service-worker-caching)
@@ -244,16 +248,69 @@ Using the `fetchpriority` attribute (e.g., `high`, `low`, `auto`) to hint to the
 
 ## 🌐 Modern Networking Protocols
 
-### 1. HTTP/1.1 vs HTTP/2 vs HTTP/3
+### 1. Evolution of the Protocol Stack
 
-| Feature                   | HTTP/1.1         | HTTP/2           | HTTP/3                 |
-| :------------------------ | :--------------- | :--------------- | :--------------------- |
-| **Transport**             | TCP              | TCP              | UDP (QUIC)             |
-| **Multiplexing**          | No (Limited)     | Yes (HTTP Level) | Yes (Connection Level) |
-| **Head-of-Line Blocking** | Yes (Connection) | Yes (TCP Level)  | No                     |
-| **Compression**           | Header: None     | Header: HPACK    | Header: QPACK          |
+The transition from H1 to H3 involved significant changes in the underlying transport and security layers to reduce latency.
 
-### 2. HTTP/2 (Multiplexing)
+```mermaid
+graph LR
+    subgraph H1.1_H2
+    A[IP] --> B[TCP]
+    B --> C[TLS - Optional]
+    C --> D[HTTP/1.1 / HTTP/2]
+    end
+
+    subgraph H3
+    E[IP] --> F[UDP]
+    F --> G[QUIC - TLS 1.3 Built-in]
+    G --> H[HTTP/3]
+    end
+```
+
+### 2. HTTP/1.1 vs HTTP/2 vs HTTP/3 Comparison
+
+| Feature                    | HTTP/1.1                | HTTP/2                    | HTTP/3                    |
+| :------------------------- | :---------------------- | :------------------------ | :------------------------ |
+| **Transport Layer**        | TCP                     | TCP                       | **UDP with QUIC**         |
+| **Connection per Request** | **Yes** (one at a time) | **No** (multiple allowed) | **No** (multiple allowed) |
+| **Multiplexing**           | No (Sequential)         | Yes (Interleaved)         | Yes (Interleaved)         |
+| **Header Compression**     | No                      | **HPACK**                 | **QPACK**                 |
+| **Server Push**            | No                      | Yes                       | Yes (Experimental)        |
+| **Stream Prioritization**  | No                      | Yes                       | Yes                       |
+| **Head-of-Line Blocking**  | Yes (Connection)        | Yes (TCP Level)           | **No**                    |
+
+#### 🛠️ Core Protocol Definitions
+
+- **TCP (Transmission Control Protocol):** Connection-oriented protocol that ensures reliable, ordered, and error-checked delivery of data.
+- **UDP (User Datagram Protocol):** Connectionless, "fire-and-forget" protocol that prioritizes speed over reliability (used as the base for QUIC/H3).
+- **HPACK:** A compression algorithm for HTTP/2 headers that uses a static dictionary, a dynamic dictionary, and Huffman encoding.
+- **QPACK:** An evolution of HPACK for HTTP/3 that allows headers to be sent out-of-order to avoid HOL blocking.
+
+#### 🚀 Implementing HTTP/2 with `spdy`
+
+While Node.js has a native `http2` module, the `spdy` library is often used for easier setup and fallback support.
+
+- **SSL Requirement:** HTTP/2 requires HTTPS. You must provide a **Private Key** (`server.key`) and a **Certificate** (`server.cert`).
+- **Example Setup:**
+
+```javascript
+const spdy = require('spdy');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('./server.key'),
+  cert: fs.readFileSync('./server.cert'),
+};
+
+spdy
+  .createServer(options, (req, res) => {
+    res.writeHead(200);
+    res.end('Hello from HTTP/2!');
+  })
+  .listen(3000);
+```
+
+### 3. HTTP/2 (Multiplexing)
 
 H/2 solved the "Head-of-Line Blocking" at the HTTP level by allowing multiple requests over a single TCP connection.
 
@@ -341,6 +398,8 @@ Optimizing payload size is critical for reducing transfer time and bandwidth usa
 - **Brotli (br):** A modern compression algorithm that uses a dictionary of common web strings (HTML tags, common JS keywords). It is more CPU-intensive to compress at high levels but offers much smaller file sizes and fast decompression.
 - **Gzip:** The industry standard for decades. While Brotli is superior for most web content, Gzip remains a critical fallback for older browsers and is often faster for on-the-fly compression of dynamic responses.
 
+> Further Reading: Compression techniques ([web.dev](https://web.dev/articles/codelab-text-compression-brotli))
+
 ### 2. Implementation & Delivery
 
 - **Negotiation:** The browser sends `Accept-Encoding: gzip, deflate, br`. The server responds with `Content-Encoding: br` if it supports Brotli, otherwise falls back to Gzip.
@@ -348,7 +407,32 @@ Optimizing payload size is critical for reducing transfer time and bandwidth usa
   - **Static Assets:** Should be pre-compressed (e.g., at build time) using maximum Brotli compression (level 11).
   - **Dynamic Content:** Usually compressed on-the-fly at lower levels (e.g., Brotli level 4 or Gzip level 6) to balance CPU overhead and latency.
 - **Edge Compression:** Modern CDNs (like Cloudflare) can automatically compress assets at the edge, serving Brotli to supported browsers even if the origin only supports Gzip.
-- **Early Hints (103):** Allows the server to tell the browser about critical resources (CSS/JS) before the full HTML response is even generated.
+
+### 3. 103 Early Hints
+
+Early Hints allows the server to overlap "Server Think-time" with asset discovery by sending a preliminary response while the main HTML is still being generated.
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant S as Server
+
+    B->>S: GET /index.html
+    S-->>B: 103 Early Hints (Link: common.css)
+
+    rect rgb(240, 240, 240)
+    Note over S: Server Think-time (e.g., 200ms)
+    Note right of B: Parallel Fetching
+    B->>S: GET /common.css
+    S-->>B: 200 OK (CSS Data)
+    end
+
+    S-->>B: 200 OK (HTML Data)
+```
+
+- **The Problem:** In a standard request, the browser is idle while the server "thinks" (database lookups, backend logic). Asset discovery only happens _after_ the HTML starts arriving.
+- **The Solution:** The server sends a `103 Early Hints` response immediately with `Link: </style.css>; rel=preload`. This allows the browser to start fetching critical resources during the server's processing time.
+- **Result:** Drastically reduces the time to **First Contentful Paint (FCP)** by ensuring the Critical Rendering Path assets are already in flight or downloaded when the HTML parsing begins.
 
 ---
 
