@@ -7,6 +7,8 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 ## Project Structure
 
 ```text
+├── Infrastructure/             # Traffic routing & Observability
+├── Data/                       # Distributed Storage & Caching
 ├── Communication/               # Real-time & Event-driven patterns
 │   ├── ShortPolling/            # Basic interval-based polling
 │   ├── LongPolling/             # Optimized hanging requests
@@ -45,7 +47,15 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 
 ## 🚀 Key Modules
 
-### 1. [Communication Strategies](./Communication/README.md)
+### 1. [Infrastructure & Observability](./Infrastructure/README.md)
+
+Master the "Nervous System" of distributed systems. Covers L4/L7 Load Balancing, Service Mesh (Istio), the 3 Pillars of Observability (Metrics, Logs, Tracing), and advanced deployment strategies like Blue/Green and Canary.
+
+### 2. [Distributed Data & Caching](./Data/README.md)
+
+Masterclass on storage selection using the **PACELC Theorem**. Deep dive into Caching strategies (Cache-Aside, Write-Back), Cache Coherency, and high-scale messaging patterns like the Outbox Pattern and Idempotent Consumers.
+
+### 3. [Communication Strategies](./Communication/README.md)
 
 Explore how services talk to each other. Includes a decision tree for choosing between WebSockets, SSE, Webhooks, and Polling based on real-time requirements and scalability.
 

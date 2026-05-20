@@ -131,11 +131,18 @@ Choosing a communication strategy is about managing **State**, **Latency**, and 
 | **Long Polling**  | Real-time behind strict firewalls. | "Connection Hanging" (Resource leak). | The fallback of last resort for DPI firewalls.       |
 | **SSE (Push)**    | Real-time dashboards/feeds.        | Browser connection limits (HTTP/1.1). | **Mobile Hero:** Better for battery than WebSockets. |
 | **WebSockets**    | High-frequency Bidirectional data. | Stateful servers + Sticky Sessions.   | Requires a **Pub/Sub Backplane** to scale.           |
+| **WebRTC**        | Peer-to-Peer Audio/Video/Data.     | NAT Traversal + Mesh scaling.         | Use an **SFU** to scale beyond 3-4 peers.            |
 | **Webhooks**      | Event-driven Server-to-Server.     | Reliability (Retries) + Security.     | Always use **HMAC Signatures** to prevent spoofing.  |
 
 ---
 
 ## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q0: Why is WebRTC the only choice for ultra-low latency, and what is the trade-off?
+
+> **Answer:** WebRTC is built on **UDP** (via SCTP/SRTP), which avoids the "Head-of-Line Blocking" inherent in TCP-based WebSockets.
+>
+> - **The Trade-off:** Complexity. You must manage **STUN/TURN** servers for NAT traversal and a complex **Signaling** state machine.
 
 ### Q1: How do you handle "Zombie Connections" when scaling to 1M+ users?
 

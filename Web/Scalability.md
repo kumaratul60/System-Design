@@ -127,6 +127,39 @@ Scaling isn't just about adding servers; it's about choosing which distributed s
 
 ---
 
+## 🛡️ Rate Limiting Algorithms: Protecting the System
+
+How do you decide _which_ request to drop when the system is under load?
+
+| Algorithm          | How it Works                                                          | Pros                                   | Cons                                                                  |
+| :----------------- | :-------------------------------------------------------------------- | :------------------------------------- | :-------------------------------------------------------------------- |
+| **Token Bucket**   | Tokens added to a bucket at a fixed rate. Each request takes 1 token. | Allows **Bursts** of traffic.          | Memory overhead for tracking buckets.                                 |
+| **Leaky Bucket**   | Requests enter a queue and are processed at a constant rate.          | **Smooths out** traffic (Zero bursts). | Requests dropped if queue is full.                                    |
+| **Fixed Window**   | Counter reset every minute.                                           | Simple to implement.                   | **Edge Burst:** A user can double their limit at the window boundary. |
+| **Sliding Window** | Tracks timestamps of requests (log-based).                            | Most accurate; no edge bursts.         | **Expensive:** High memory/CPU for high traffic.                      |
+
+---
+
+## 🎡 Consistent Hashing: Scaling the Caching Layer
+
+When you have a cluster of 10 Redis nodes, how do you decide which node stores a specific key?
+
+### 1. The Naive Approach: `hash(key) % N`
+
+If you have 10 nodes, you take the modulo of the hash.
+
+- **The Problem:** If 1 node dies (N becomes 9), the result of the modulo changes for **nearly all keys**. This causes a "Cache Stampede" as every request misses and hits the DB at once.
+
+### 2. The Solution: Consistent Hashing
+
+Instead of a simple modulo, keys and nodes are mapped onto a **Hash Ring** (0 to 2^32-1).
+
+- **The Process:** A key is hashed and placed on the ring. You move clockwise until you hit a node. That node "owns" the key.
+- **Node Failure:** If a node dies, only the keys that were on that specific segment move to the next node. **All other keys stay on their original nodes.**
+- **Virtual Nodes:** To prevent "skew" (one node being physically more powerful or getting more keys), we use **Virtual Nodes**. Each physical node is hashed multiple times to appear at different spots on the ring, ensuring a perfectly even distribution.
+
+---
+
 ## 🔥 Senior/Staff Level "Grill" Questions
 
 ### Q1: CAP Theorem is famous, but what is PACELC?
@@ -160,6 +193,39 @@ Scaling isn't just about adding servers; it's about choosing which distributed s
 >   1. **Probabilistic Early Recomputation:** Re-calculate the cache value _before_ it expires.
 >   2. **Mutex Locks:** Only allow the first request to hit the DB; make others wait/retry for the cache to be refilled.
 >   3. **Soft TTL:** Return stale data for a few seconds while the background process updates the cache.
+
+---
+
+## 🧮 Architect's Math: Back-of-the-Envelope Estimation
+
+When designing a system, you must be able to estimate load and storage requirements in seconds.
+
+### 1. The Power of 10 (Quick QPS)
+
+- **1 Million requests / day** ≈ 12 requests / second.
+- **10 Million requests / day** ≈ 120 requests / second.
+- **100 Million requests / day** ≈ 1,200 requests / second (1.2k QPS).
+- **1 Billion requests / day** ≈ 12,000 requests / second (12k QPS).
+
+### 2. Latency Numbers Every Architect Should Know
+
+| Operation                             | Latency                 |
+| :------------------------------------ | :---------------------- |
+| **L1 Cache reference**                | 0.5 ns                  |
+| **Main memory reference**             | 100 ns                  |
+| **Compress 1KB with Zippy**           | 3,000 ns                |
+| **Read 1MB sequentially from memory** | 250,000 ns (0.25 ms)    |
+| **Round trip within same datacenter** | 500,000 ns (0.5 ms)     |
+| **Read 1MB sequentially from SSD**    | 1,000,000 ns (1 ms)     |
+| **Read 1MB sequentially from Disk**   | 20,000,000 ns (20 ms)   |
+| **Round trip (CA to Netherlands)**    | 150,000,000 ns (150 ms) |
+
+### 3. Storage Estimation (The "Rule of Thumb")
+
+- **1 Character (UTF-8)** = 1 to 4 bytes (Average 1-2).
+- **1 User Record** (ID, Name, Email, Hash) ≈ 500 bytes to 1 KB.
+- **1 Million Users** ≈ 1 GB of storage.
+- **1 Billion Users** ≈ 1 TB of storage.
 
 ---
 

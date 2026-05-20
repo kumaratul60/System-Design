@@ -389,25 +389,45 @@ fetch('/api/protected', {
 
 ---
 
+## 🔒 Advanced "Spectre-Level" Security Headers
+
+In the wake of CPU vulnerabilities like Spectre, browsers introduced headers to isolate your site's process from others.
+
+| Header   | Full Name                    | Purpose                                                                                           |
+| :------- | :--------------------------- | :------------------------------------------------------------------------------------------------ |
+| **COOP** | Cross-Origin-Opener-Policy   | Prevents a malicious site from opening your site in a popup and accessing your `window` object.   |
+| **COEP** | Cross-Origin-Embedder-Policy | Prevents your site from loading any cross-origin resources that don't explicitly opt-in via CORP. |
+| **CORP** | Cross-Origin-Resource-Policy | Allows a resource (image/script) to tell the browser: "I can only be loaded by my own origin."    |
+
+---
+
 ## 🔥 Senior/Staff Level "Grill" Questions
 
 ### Q1: What is the `Vary` header and why is it called the "Cache Killer"?
-> **Answer:** The `Vary` header tells a cache (CDN or Browser) which request headers should be used to create a unique cache key. 
-> - **The Problem:** If you set `Vary: User-Agent`, the CDN will create a separate cached version for *every single browser version* in existence. This effectively kills your "Cache Hit Ratio."
+
+> **Answer:** The `Vary` header tells a cache (CDN or Browser) which request headers should be used to create a unique cache key.
+>
+> - **The Problem:** If you set `Vary: User-Agent`, the CDN will create a separate cached version for _every single browser version_ in existence. This effectively kills your "Cache Hit Ratio."
 > - **Best Practice:** Only use `Vary` for highly specific dimensions like `Accept-Encoding` or `Accept` (for WebP support).
 
 ### Q2: Why is the `Connection: keep-alive` header both a blessing and a curse?
-> **Answer:** 
+
+> **Answer:**
+>
 > - **Blessing:** It allows multiple HTTP requests over a single TCP connection, avoiding the overhead of the 3-way handshake for every file.
 > - **Curse:** In a high-traffic system, "holding" thousands of idle TCP connections consumes significant server memory. Furthermore, it makes **L4 Load Balancing** difficult, as one client is "stuck" to one backend server until the connection closes.
 
 ### Q3: How does the `Strict-Transport-Security` (HSTS) "Preload" list work?
-> **Answer:** Normally, the first time a user visits your site, they might use `http://`, and only *then* receive the HSTS header to switch to `https://`. This first request is a window for a **Man-in-the-Middle (MitM)** attack.
+
+> **Answer:** Normally, the first time a user visits your site, they might use `http://`, and only _then_ receive the HSTS header to switch to `https://`. This first request is a window for a **Man-in-the-Middle (MitM)** attack.
+>
 > - **The Solution:** By adding the `preload` directive and submitting your domain to the **HSTS Preload List** (managed by Google), the browser comes "pre-configured" to never use HTTP for your domain, even on the very first visit.
 > - **The Risk:** If you lose your SSL certificate or need to roll back to HTTP, your site will be **permanently inaccessible** to users until the browser vendor updates their hardcoded list.
 
 ### Q4: Explain the `X-Content-Type-Options: nosniff` header.
+
 > **Answer:** Browsers have a feature called "MIME Sniffing" where they try to "guess" the content type of a file if it's missing or looks wrong.
+>
 > - **The Attack:** An attacker uploads a malicious script disguised as an image (`avatar.jpg`). If the browser "sniffs" the file and sees it's actually JS, it might execute it.
 > - **The Defense:** `nosniff` forces the browser to strictly follow the `Content-Type` header sent by the server. If the server says it's an image, the browser treats it as an image, period.
 
