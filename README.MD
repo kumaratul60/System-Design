@@ -86,10 +86,10 @@ Exhaustive documentation on the building blocks of the web:
 
 ---
 
-## 🛠️ Tech Stack & Concepts
+## 🔗 Useful Resources
 
-- **Node.js & Express:** Core for most service implementations.
-- **TypeScript:** Used in the GraphQL implementation for type safety.
-- **Protocol Buffers:** For gRPC service definitions.
-- **Event-Driven Architecture:** Focused on Webhooks and WebSockets.
-- **Full-Duplex vs. Half-Duplex:** Explored through various communication modes.
+- **Design Patterns:** [kumaratul60/design-patterns](https://github.com/kumaratul60/design-patterns)
+- **React Web Development:** [kumaratul60/web-dev/Notes](https://github.com/kumaratul60/web-dev/tree/main/Notes)
+- **JavaScript in Depth:** [kumaratul60/javascript-interview](https://github.com/kumaratul60/javascript-interview)
+- **System Design:** [kumaratul60/System-Design](https://github.com/kumaratul60/System-Design)
+- **Online JavaScript Editor:** [Runlet Practice Environment](https://runlet.vercel.app)
