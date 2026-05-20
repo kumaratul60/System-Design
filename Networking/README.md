@@ -4,7 +4,7 @@ Modern applications rely on different architectural styles for service-to-servic
 
 ---
 
-## 🗺️ Networking Landscape
+## Networking Landscape
 
 ```mermaid
 mindmap
@@ -63,7 +63,7 @@ Choosing a networking style isn't about "which is better," but "which trade-offs
 
 ---
 
-## 🔥 The Unified Networking "Grill"
+## The Unified Networking "Grill"
 
 ### Q1: What are the "8 Fallacies of Distributed Computing" and which one hurts APIs the most?
 

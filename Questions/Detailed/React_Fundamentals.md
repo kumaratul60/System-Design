@@ -22,7 +22,7 @@ The fundamental difference between `const x = { current: 0 }` inside a component
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: React Fiber - How does it actually enable "Time Slicing"?
 

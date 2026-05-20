@@ -13,7 +13,7 @@ XSS is consistently in the **OWASP Top 10** because its impact can be devastatin
 
 ---
 
-## 🗺️ Learning Roadmap
+## Learning Roadmap
 
 This documentation is split into two main sections: **Vulnerability** (how it works) and **Mitigation** (how to stop it).
 
@@ -48,7 +48,7 @@ _Build a "Defense in Depth" fortress._
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: What is "Trusted Types" and why is it the "Final Boss" of DOM XSS defense?
 

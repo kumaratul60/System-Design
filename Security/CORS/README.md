@@ -103,7 +103,7 @@ The following headers are sent by the server to control how the browser handles 
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: How does CORS affect the "Double Round-Trip" problem and Web Performance?
 

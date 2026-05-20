@@ -262,7 +262,7 @@ The `eval()` function is one of the most dangerous features in JavaScript. It ev
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: How do you prevent SSRF when your server _must_ fetch external URLs (e.g., a Link Preview service)?
 

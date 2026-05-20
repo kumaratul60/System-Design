@@ -9,7 +9,7 @@ Optimized for fast lookup, daily workflows, and production debugging.
 
 - [Terminal Guide (Linux \& macOS)](#terminal-guide-linux--macos)
   - [Index](#index)
-  - [🔥 Senior/Staff Level "Grill" Questions](#-seniorstaff-level-grill-questions)
+  - [Senior/Staff Level "Grill" Questions](#-seniorstaff-level-grill-questions)
     - [Q1: SIGTERM (15) vs SIGKILL (9) - When should you NEVER use `-9`?](#q1-sigterm-15-vs-sigkill-9---when-should-you-never-use--9)
     - [Q2: What is the "Zombie Process" and how do you "kill" it if `kill -9` fails?](#q2-what-is-the-zombie-process-and-how-do-you-kill-it-if-kill--9-fails)
     - [Q3: Explain the `2>&1` syntax and why it's critical for logging.](#q3-explain-the-21-syntax-and-why-its-critical-for-logging)
@@ -53,7 +53,7 @@ Optimized for fast lookup, daily workflows, and production debugging.
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: SIGTERM (15) vs SIGKILL (9) - When should you NEVER use `-9`?
 

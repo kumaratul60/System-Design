@@ -4,7 +4,7 @@ Use this guide as a structured bank of questions to assess candidates across dif
 
 ---
 
-## 🗺️ The Interview Pillars
+## The Interview Pillars
 
 ```mermaid
 mindmap
@@ -78,7 +78,7 @@ When interviewing for Senior/Staff roles, look for the following behavioral and 
 
 ---
 
-## 🧠 Final Interviewer Tip
+## Final Interviewer Tip
 
 A Staff Engineer is not just a "Faster Coder." They are a **Force Multiplier**. They build the patterns, libraries, and documentation that allow the other 10 developers on the team to be 10% more effective every day.
 

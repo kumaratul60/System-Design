@@ -78,7 +78,7 @@ graph TD
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is Long Polling "Memory Heavy" compared to Short Polling?
 

@@ -4,7 +4,7 @@ Effective communication is the backbone of any distributed system. This director
 
 ---
 
-## 🗺️ Communication Landscape
+## Communication Landscape
 
 ```mermaid
 mindmap
@@ -136,7 +136,7 @@ Choosing a communication strategy is about managing **State**, **Latency**, and 
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q0: Why is WebRTC the only choice for ultra-low latency, and what is the trade-off?
 
@@ -206,7 +206,7 @@ Choosing a communication strategy is about managing **State**, **Latency**, and 
 
 ---
 
-## 🧠 Interview Deep Dive: From Basic to Staff Level
+## Interview Deep Dive: From Basic to Staff Level
 
 ### 🟢 Basic (Junior / Mid Level)
 

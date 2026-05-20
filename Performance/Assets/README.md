@@ -4,7 +4,7 @@ Assets typically account for over 80% of a website's total byte weight. Optimizi
 
 ---
 
-## 🗺️ Asset Optimization Mindmap
+## Asset Optimization Mindmap
 
 ```mermaid
 mindmap
@@ -49,7 +49,7 @@ WebP and AVIF achieve higher efficiency without reducing resolution by using mor
 
 **Summary:** While JPEG stores the "raw" differences in 8x8 chunks, AVIF "describes" the image using complex geometric predictions and high-efficiency math, allowing it to reconstruct the same resolution with 50-70% less data.
 
-#### 🧠 Staff-Level Interview "Grill" Questions
+#### Staff-Level Interview "Grill" Questions
 
 **Q: If AVIF is 50% smaller than JPEG, why don't we use it for 100% of our images?**
 
@@ -211,7 +211,7 @@ Tell the browser to fetch the font early in the lifecycle.
 
 ---
 
-## 🔥 Advanced Asset "Grill" Questions (Senior/Staff)
+## Advanced Asset "Grill" Questions (Senior/Staff)
 
 ### Q1: What is "Content-Aware Image Compression"?
 
@@ -246,7 +246,7 @@ Tell the browser to fetch the font early in the lifecycle.
 
 ---
 
-## 🧠 Staff Level Interview Question (General Performance)
+## Staff Level Interview Question (General Performance)
 
 **Q: What is the difference between "Lazy Loading" and "Priority Hints"?**
 

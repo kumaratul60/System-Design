@@ -18,7 +18,7 @@ By injecting only the necessary dependencies, you limit the capabilities of a mo
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Can DI actually _increase_ the attack surface?
 

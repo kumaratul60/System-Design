@@ -4,7 +4,7 @@ Micro-frontends extend the microservices philosophy to the frontend, allowing in
 
 ---
 
-## 🗺️ MFE Architecture Mindmap
+## MFE Architecture Mindmap
 
 ```mermaid
 mindmap
@@ -40,7 +40,7 @@ mindmap
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: What is the "Integration Gap" in Micro-frontends?
 

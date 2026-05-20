@@ -10,7 +10,7 @@ Welcome to the central security knowledge base. This directory covers end-to-end
 
 ---
 
-## 🗺️ Security Landscape
+## Security Landscape
 
 ```mermaid
 mindmap
@@ -45,7 +45,7 @@ mindmap
 
 ---
 
-## 📂 Knowledge Modules
+## Knowledge Modules
 
 ### 🔐 Authentication & Identity
 
@@ -96,7 +96,7 @@ Security is the art of "Informed Friction." You are choosing where to place the 
 
 ---
 
-## 🔥 The Unified Security "Grill"
+## The Unified Security "Grill"
 
 ### Q1: If you have a 100% secure CSP, do you still need to sanitize user input?
 

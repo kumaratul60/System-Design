@@ -35,7 +35,7 @@ React state updates are **asynchronous** and **batched**. When dealing with asyn
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: What is the "Closure Trap" in React Hooks and how do you avoid it?
 

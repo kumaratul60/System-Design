@@ -15,7 +15,7 @@ A comprehensive guide to HTTP headers and status codes: from beginner basics to 
 
 ---
 
-## 🗺️ Headers & Status Landscape
+## Headers & Status Landscape
 
 ```mermaid
 mindmap
@@ -401,7 +401,7 @@ In the wake of CPU vulnerabilities like Spectre, browsers introduced headers to 
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: What is the `Vary` header and why is it called the "Cache Killer"?
 

@@ -31,7 +31,7 @@ _\*Note: 10GB (10,737,418,240 bytes) is a common default reported by modern Chro
 
 ## 🛡️ Security Mechanisms & Best Practices
 
-> **🔥 Pro-Tip (Interview Gold):** While you might see snippets like `document.cookie = "...; HttpOnly"`, the **HttpOnly** flag **CANNOT** be set via client-side JavaScript. It is a server-side instruction. If you try to set it via `document.cookie`, the browser will ignore the flag for security reasons. It must be sent via the `Set-Cookie` HTTP header from the server.
+> **Pro-Tip (Interview Gold):** While you might see snippets like `document.cookie = "...; HttpOnly"`, the **HttpOnly** flag **CANNOT** be set via client-side JavaScript. It is a server-side instruction. If you try to set it via `document.cookie`, the browser will ignore the flag for security reasons. It must be sent via the `Set-Cookie` HTTP header from the server.
 
 ## 🛡️ Security Mechanisms & Best Practices
 
@@ -223,7 +223,7 @@ async function encryptData(text, password) {
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is "IndexedDB" safer for massive data than LocalStorage, beyond just size?
 

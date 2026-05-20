@@ -162,7 +162,7 @@ Use the **Testing Trophy** approach (prioritizing integration tests):
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Micro-frontends (MFEs) - Is "Module Federation" always the best choice?
 

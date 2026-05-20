@@ -316,7 +316,7 @@ test('user query', async () => {
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Does "DataLoader" actually solve the N+1 problem, or just hide it?
 

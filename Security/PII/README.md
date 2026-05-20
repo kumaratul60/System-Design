@@ -70,7 +70,7 @@ app.use((req, res, next) => {
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: How do you handle the "Right to be Forgotten" (GDPR) in immutable database backups?
 

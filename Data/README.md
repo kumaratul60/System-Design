@@ -4,7 +4,7 @@ The "Hard Drive" of the internet. This module covers how to choose the right dat
 
 ---
 
-## 🗺️ Data Strategy Mindmap
+## Data Strategy Mindmap
 
 ```mermaid
 mindmap
@@ -83,7 +83,7 @@ In distributed systems, achieving **Exactly-Once** is mathematically impossible 
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: When is "NoSQL" the wrong choice for a high-scale system?
 

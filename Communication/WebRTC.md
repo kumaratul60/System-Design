@@ -4,7 +4,7 @@ WebRTC (Web Real-Time Communication) allows for direct, peer-to-peer (P2P) audio
 
 ---
 
-## 🗺️ WebRTC Architecture
+## WebRTC Architecture
 
 ```mermaid
 sequenceDiagram
@@ -52,7 +52,7 @@ A framework for finding the best way for two peers to connect (Direct IP, mapped
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is WebRTC "harder" to scale than WebSockets?
 

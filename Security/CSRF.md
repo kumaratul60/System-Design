@@ -157,7 +157,7 @@ Content-Security-Policy: frame-ancestors 'self'; script-src 'self' https://trust
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: If `SameSite=Lax` is now the browser default, is CSRF "Dead"?
 

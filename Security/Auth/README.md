@@ -79,7 +79,7 @@ app.listen(3000);
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: OAuth 2.0 vs. OpenID Connect (OIDC): Why do we need both?
 

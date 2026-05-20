@@ -143,7 +143,7 @@ ws.onclose = () => {
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is Load Balancing "harder" for WebSockets than for REST?
 

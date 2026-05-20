@@ -2,7 +2,7 @@
 
 Strategies for building high-performance React applications, focusing on rendering efficiency and state management.
 
-## 🗺️ React Performance Mindmap
+## React Performance Mindmap
 
 ```mermaid
 mindmap
@@ -70,7 +70,7 @@ Similar to debouncing, but handled by React's scheduler. It defers re-rendering 
 
 ---
 
-## 📂 Key Topics Summary
+## Key Topics Summary
 
 - **Preventing Re-renders:** Deep dive into how props and state changes trigger renders and how to bail out.
 - **List Optimization:** Using `react-window` or `react-virtualized` for efficient rendering of long lists.
@@ -78,7 +78,7 @@ Similar to debouncing, but handled by React's scheduler. It defers re-rendering 
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is "Over-memoization" a potential performance anti-pattern?
 

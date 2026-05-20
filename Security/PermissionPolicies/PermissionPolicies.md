@@ -78,7 +78,7 @@ When a feature is requested within an iframe, the browser checks both the **Resp
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is `Permissions-Policy` better than just not using the JS API?
 

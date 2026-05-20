@@ -42,7 +42,7 @@ Unused or legacy feature flags clutter the codebase, making it harder to audit a
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Is a Feature Flag a form of "Authorization"?
 

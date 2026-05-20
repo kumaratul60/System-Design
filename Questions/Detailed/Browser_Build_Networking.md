@@ -92,7 +92,7 @@ When you run `npm install --production`, only `dependencies` are installed. This
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Vite vs. Webpack - Why is Vite "Faster" in development but similar in production?
 

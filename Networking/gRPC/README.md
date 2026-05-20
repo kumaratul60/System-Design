@@ -74,7 +74,7 @@ In Protocol Buffers, `int32` specifies a 32-bit signed integer (-2^31 to 2^31-1)
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is Load Balancing "harder" with gRPC than REST?
 

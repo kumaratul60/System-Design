@@ -93,7 +93,7 @@ Allows you to control which browser features (camera, microphone, geolocation) c
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Can "too many" security headers hurt performance?
 

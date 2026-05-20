@@ -23,7 +23,7 @@ Custom Hooks have largely replaced HOCs and Render Props for **logic reuse.** Ho
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: What is the "Compound Components" pattern and why is it superior for library authors?
 

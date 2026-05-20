@@ -143,7 +143,7 @@ React 18 introduced **Concurrent Rendering**, allowing React to interrupt a rend
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is "Over-optimization" with `useMemo` potentially worse than not using it at all?
 

@@ -70,7 +70,7 @@ Many build tools (Webpack, Rollup) have plugins that automatically generate SRI 
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why does SRI require `crossorigin="anonymous"`?
 

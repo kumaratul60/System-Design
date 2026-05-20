@@ -4,7 +4,7 @@ A deep dive into the building blocks of the modern web, covering everything from
 
 ---
 
-## 🗺️ Web Fundamentals Landscape
+## Web Fundamentals Landscape
 
 ```mermaid
 mindmap
@@ -29,7 +29,7 @@ mindmap
 
 ---
 
-## 📂 Knowledge Modules
+## Knowledge Modules
 
 - **[How the Web Works](./web.md):** The end-to-end journey from a URL to pixels on the screen.
 - **[Git & Version Control](./Git.md):** Mastering Git productivity, workflows, and security.

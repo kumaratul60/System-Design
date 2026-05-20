@@ -4,7 +4,7 @@ Core Web Vitals are a set of specific factors that Google considers important in
 
 ---
 
-## 🗺️ The Performance Timeline
+## The Performance Timeline
 
 This flow illustrates when each metric occurs during a typical page load and lifecycle.
 
@@ -240,7 +240,7 @@ While **INP** tells you _that_ a page was slow, **LoAF** tells you _why_.
 
 ---
 
-## 🧠 Interview Deep Dive: Core Web Vitals
+## Interview Deep Dive: Core Web Vitals
 
 ### 🟢 Basic (Junior / Mid Level)
 

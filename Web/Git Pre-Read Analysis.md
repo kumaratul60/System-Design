@@ -161,7 +161,7 @@ git branch -r --sort=committerdate --format="%(committerdate:relative) -> %(refn
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: What is "Trunk-Based Development" vs. "GitFlow" at scale?
 > **Answer:** 

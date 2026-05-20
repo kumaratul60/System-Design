@@ -12,7 +12,7 @@ A comprehensive guide to Git for developers at all levels. VCS(version control s
 
 ---
 
-## 🗺️ Git Touchpoints
+## Git Touchpoints
 
 ```mermaid
 mindmap
@@ -48,7 +48,7 @@ mindmap
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: What are the 3 core "Objects" in Git's internal architecture?
 

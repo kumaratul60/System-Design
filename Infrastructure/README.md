@@ -4,7 +4,7 @@ The "Nervous System" of distributed systems. This module covers how traffic is r
 
 ---
 
-## 🗺️ Infrastructure Mindmap
+## Infrastructure Mindmap
 
 ```mermaid
 mindmap
@@ -94,7 +94,7 @@ Modern CDNs (Cloudflare, Akamai) allow you to run code at the edge.
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why does a "Service Mesh" introduce latency, and how do we justify it?
 

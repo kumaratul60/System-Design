@@ -2,7 +2,7 @@
 
 Web performance is the speed at which web pages are downloaded and displayed on the user's web browser. It is a critical factor for user experience, SEO, and business success.
 
-## 🗺️ Performance Overview
+## Performance Overview
 
 The following graph illustrates the key pillars and touchpoints of web performance optimization as discussed in this module.
 

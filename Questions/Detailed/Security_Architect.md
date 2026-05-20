@@ -251,6 +251,6 @@ Zero Trust means "Never Trust, Always Verify." In legacy:
 
 ---
 
-## 🧠 Final Interviewer Tip
+## Final Interviewer Tip
 
 A Staff Engineer is not just a "Faster Coder." They are a **Force Multiplier**. They build the patterns, libraries, and documentation that allow the other 10 developers on the team to be 10% more effective every day.

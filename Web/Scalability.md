@@ -160,7 +160,7 @@ Instead of a simple modulo, keys and nodes are mapped onto a **Hash Ring** (0 to
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: CAP Theorem is famous, but what is PACELC?
 
@@ -229,7 +229,7 @@ When designing a system, you must be able to estimate load and storage requireme
 
 ---
 
-## 🗺️ Scalability & Performance Landscape
+## Scalability & Performance Landscape
 
 ```mermaid
 mindmap

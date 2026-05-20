@@ -4,7 +4,7 @@ Choosing the right rendering strategy is one of the most important architectural
 
 ---
 
-## 🗺️ Rendering Landscape
+## Rendering Landscape
 
 ```mermaid
 mindmap
@@ -158,7 +158,7 @@ sequenceDiagram
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q0: What is "Hydration" and why is it a performance bottleneck in SSR?
 
@@ -221,7 +221,7 @@ Rendering isn't just about SEO; it's about the **CPU/Battery/Network** constrain
 | **Mid (Tablet/Laptop)**      | Moderate CPU, WiFi/5G            | **ISR / Hybrid**       | Can handle hydration well. Benefit from the "Best of both worlds" (speed + freshness).                |
 | **Large (High-end Desktop)** | High CPU, Fiber, Unlimited Power | **CSR / SPA**          | Can handle huge JS bundles and complex client-side logic without breaking a sweat.                    |
 
-### 🧠 The "Adaptive Loading" Pattern
+### The "Adaptive Loading" Pattern
 
 Instead of picking one strategy for everyone, advanced apps use **Adaptive Loading**:
 

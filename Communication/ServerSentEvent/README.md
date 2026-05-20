@@ -76,7 +76,7 @@ Server-Sent Events (SSE) is a standard designed to allow a web server to push re
 
 ---
 
-## 🔥 Senior/Staff Level "Grill" Questions
+## Senior/Staff Level "Grill" Questions
 
 ### Q1: Why is SSE often better for "Battery Life" on mobile than WebSockets?
 
