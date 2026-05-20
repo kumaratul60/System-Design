@@ -121,6 +121,52 @@ Full-duplex, bidirectional communication over a single TCP connection.
 
 ---
 
+## 🏛️ Architect's Decision Matrix: Communication Patterns
+
+Choosing a communication strategy is about managing **State**, **Latency**, and **Battery**.
+
+| Pattern           | Best for...                        | Scaling Challenge                     | The "Staff" Insight                                  |
+| :---------------- | :--------------------------------- | :------------------------------------ | :--------------------------------------------------- |
+| **Short Polling** | Non-critical status updates.       | High server CPU (Empty requests).     | Only use when latency > 30s is acceptable.           |
+| **Long Polling**  | Real-time behind strict firewalls. | "Connection Hanging" (Resource leak). | The fallback of last resort for DPI firewalls.       |
+| **SSE (Push)**    | Real-time dashboards/feeds.        | Browser connection limits (HTTP/1.1). | **Mobile Hero:** Better for battery than WebSockets. |
+| **WebSockets**    | High-frequency Bidirectional data. | Stateful servers + Sticky Sessions.   | Requires a **Pub/Sub Backplane** to scale.           |
+| **Webhooks**      | Event-driven Server-to-Server.     | Reliability (Retries) + Security.     | Always use **HMAC Signatures** to prevent spoofing.  |
+
+---
+
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: How do you handle "Zombie Connections" when scaling to 1M+ users?
+
+> **Answer:** A "Zombie" is a connection that the server thinks is alive, but the client has silently disconnected (e.g., entered a tunnel).
+>
+> - **The Solution:** Implement **Heartbeats (Ping/Pong)**. The server sends a Ping; if the client doesn't Pong within X seconds, the server forcefully closes the socket and cleans up resources.
+> - **Scale Tip:** Don't send heartbeats to everyone at once. **Jitter** the heartbeat intervals to avoid a "Thundering Herd" of simultaneous Pings.
+
+### Q2: What is "Connection Draining" and why is it a nightmare for WebSockets?
+
+> **Answer:** When you deploy a new version of your server, you need to shut down the old instances. With REST, you just stop accepting new requests. With WebSockets, users are "stuck" to the old instance.
+>
+> - **The Strategy:** Use **Graceful Reconnection**. Tell the old server to send a "Goaway" frame or a custom `RECONNECT` message. The clients should then reconnect to the **Load Balancer**, which routes them to the _new_ instances.
+> - **Danger:** If 1M users reconnect simultaneously, you get a **Thundering Herd** that can crash your Auth service or Database. You must use **Exponential Backoff + Jitter** on the client-side reconnection logic.
+
+### Q3: Why is SSE often better for "Battery Life" on mobile than WebSockets?
+
+> **Answer:** WebSockets require a raw TCP connection that bypasses many of the browser's and OS's standard HTTP optimizations. SSE is just a "hanging" HTTP GET request.
+>
+> - **Radio Optimization:** Mobile OSs can "batch" HTTP requests to keep the radio in a low-power state. Keeping a raw WebSocket alive often forces the radio to stay in a "High Power" state, draining the battery significantly faster.
+
+### Q4: How do you handle "Backpressure" in a high-volume WebSocket stream?
+
+> **Answer:** If the server is pushing data faster than the client can consume (common in data-heavy dashboards):
+>
+> - **Sampling:** Only send the latest state every 100ms instead of every single update.
+> - **Delta Encoding:** Only send the _change_ in data, not the whole object.
+> - **Client-side Signaling:** The client sends a "Pause" message when its internal buffer is full.
+
+---
+
 ## 🏗️ Common Architecture Patterns
 
 ### The "Fulfillment" Pattern

@@ -114,6 +114,55 @@ It's not just about speed; it's about promises.
 
 ---
 
+## 🏛️ Architect's Decision Matrix: Scaling & Consistency
+
+Scaling isn't just about adding servers; it's about choosing which distributed system guarantees you are willing to break.
+
+| Trade-off         | Strategy A                                                          | Strategy B                                  | The "Staff" Insight                                                                                   |
+| :---------------- | :------------------------------------------------------------------ | :------------------------------------------ | :---------------------------------------------------------------------------------------------------- |
+| **Consistency**   | **Strong:** (Acid, 2PC). Everyone sees the latest data immediately. | **Eventual:** (BASE). Data syncs over time. | High-scale systems MUST use **Eventual Consistency** for performance.                                 |
+| **Read Scaling**  | **Replication:** Multiple read-only slaves.                         | **Caching:** Redis/CDN in front of DB.      | Replication is for **Availability**; Caching is for **Latency**.                                      |
+| **Write Scaling** | **Vertical Scaling:** Bigger DB instance.                           | **Sharding:** Partitioning data across DBs. | Sharding is the "Nuclear Option." Avoid it until you have no other choice due to **Join complexity**. |
+| **Availability**  | **Multi-AZ:** Same region, different buildings.                     | **Multi-Region:** Global distribution.      | Multi-Region protects against **Cloud Provider outages**, not just local failure.                     |
+
+---
+
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: CAP Theorem is famous, but what is PACELC?
+
+> **Answer:** CAP is too simple for real-world networking. **PACELC** extends it:
+>
+> - **If there is a Partition (P):** You choose between Availability (A) and Consistency (C).
+> - **Else (E) (Normal operation):** You choose between Latency (L) and Consistency (C).
+> - **The Insight:** Even when everything is working perfectly, you still have to choose: Do I wait for all nodes to sync (High Consistency, High Latency) or do I return data fast (Low Latency, Potential Stale Data)?
+
+### Q2: How do you handle "Hot Shards" in a global system?
+
+> **Answer:** A "Hot Shard" occurs when one shard gets 90% of the traffic (e.g., a shard containing data for a celebrity on Twitter).
+>
+> - **Mitigation:**
+>   1. **Salting:** Add a random suffix to the sharding key to distribute the data more evenly.
+>   2. **Dynamic Re-sharding:** Automatically move active data to less busy shards (extremely complex).
+>   3. **Caching:** Aggressively cache the "Hot" data at the Edge/CDN to prevent requests from ever hitting the shard.
+
+### Q3: Why is "Two-Phase Commit" (2PC) considered an anti-pattern for Microservices?
+
+> **Answer:** 2PC provides strong consistency across services but is a "Blocker." If the coordinator fails, or one service is slow, the entire transaction (and all locked resources) hangs.
+>
+> - **The Alternative:** Use the **Saga Pattern**. Instead of one big transaction, use a sequence of local transactions. If one fails, you trigger **Compensating Transactions** to "undo" the previous successful steps (e.g., "Refund money" if "Inventory allocation" failed).
+
+### Q4: What is the "Thundering Herd" problem in Caching?
+
+> **Answer:** This occurs when a very popular cache key expires. Suddenly, 10,000 concurrent requests all "miss" the cache and hit the Database at the exact same millisecond, crashing it.
+>
+> - **The Solution:**
+>   1. **Probabilistic Early Recomputation:** Re-calculate the cache value _before_ it expires.
+>   2. **Mutex Locks:** Only allow the first request to hit the DB; make others wait/retry for the cache to be refilled.
+>   3. **Soft TTL:** Return stale data for a few seconds while the background process updates the cache.
+
+---
+
 ## 🗺️ Scalability & Performance Landscape
 
 ```mermaid
