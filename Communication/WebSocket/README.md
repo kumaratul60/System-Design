@@ -143,6 +143,39 @@ ws.onclose = () => {
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why is Load Balancing "harder" for WebSockets than for REST?
+
+> **Answer:** Standard HTTP is stateless; any server can handle any request. WebSockets are **stateful** and **long-lived**.
+>
+> - **The Problem:** A standard L4 Load Balancer might distribute connections evenly, but if one server stays up for 10 days and another for 1 hour, the older server will accumulate 10x more connections (**Sticky Connection Imbalance**).
+> - **The Solution:** Use **L7 Load Balancers** (like Envoy or ALB) with **Connection Draining** and **Load-based rebalancing**. Also, implement client-side **Jittered Reconnection** to redistribute load after a server restart.
+
+### Q2: How do you implement "Authentication" for WebSockets securely?
+
+> **Answer:** The WebSocket RFC doesn't specify an auth mechanism.
+>
+> - **Standard Pattern:** Authenticate during the **HTTP Upgrade (Handshake)**. Send a JWT in a cookie (HttpOnly/Secure) or a query parameter (though query params leak in logs).
+> - **Staff Tip:** For high-security systems, use a **Ticket-based System**. The client gets a short-lived, one-time-use "ticket" from a REST API, then sends that ticket in the WebSocket handshake. The ticket is immediately invalidated once the socket opens.
+
+### Q3: Explain the "Pub/Sub Backplane" and why it's mandatory for scaled WebSockets.
+
+> **Answer:** If User A is connected to Server 1 and User B to Server 2, how does Server 1 send a message to User B?
+>
+> - **The Architecture:** You need a central **Message Bus** (Redis Pub/Sub, NATS, or RabbitMQ). Every server subscribes to a channel. When a message is sent to User B, Server 1 publishes it to the bus. Server 2 receives it and pushes it down the specific TCP pipe it holds for User B.
+
+### Q4: How do you handle "Head-of-Line Blocking" at the application level in WebSockets?
+
+> **Answer:** While WebSockets are full-duplex, they run over a single TCP stream. If you send a 100MB file and a 1KB "Hi" message over the same socket, the "Hi" message is stuck behind the 100MB file.
+>
+> - **The Solution:**
+>   1. **Message Chunking:** Break large messages into small frames.
+>   2. **Priority Lanes:** Use multiple WebSocket connections (one for control, one for data).
+>   3. **The Modern Fix:** Switch to **WebTransport (HTTP/3)**, which allows multiple independent streams over a single connection, eliminating stream-level HOL blocking.
+
+---
+
 ## 10. Libraries: `ws` vs `Socket.io`
 
 | Feature           | `ws` (Raw WebSockets)           | `Socket.io` (Abstraction Layer)          |

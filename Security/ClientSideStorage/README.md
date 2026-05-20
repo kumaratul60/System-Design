@@ -223,6 +223,38 @@ async function encryptData(text, password) {
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why is "IndexedDB" safer for massive data than LocalStorage, beyond just size?
+
+> **Answer:**
+>
+> 1. **Asynchronous:** LocalStorage is synchronous and blocks the main thread, causing "UI Jank" for large data. IndexedDB is asynchronous.
+> 2. **Transaction-based:** IndexedDB supports ACID transactions. If a crash happens during a write, the database remains consistent. LocalStorage can be corrupted if a write is interrupted.
+> 3. **Structured Data:** You can store Blobs and Files in IndexedDB without manual serialization.
+
+### Q2: What is "XSS-based Data Extraction" and how do attackers bypass `HttpOnly`?
+
+> **Answer:** `HttpOnly` stops an attacker from reading a cookie. However, it doesn't stop them from **Using** it.
+>
+> - **The Attack:** If your app stores PII in `LocalStorage` (e.g., `user_settings`), the attacker can read that directly. If you use `HttpOnly` cookies for auth, the attacker can't read the token, but they can still trigger `fetch('/delete-account')` from their malicious script. The browser will automatically attach the `HttpOnly` cookie. This is why you need **CSRF protection** even with `HttpOnly`.
+
+### Q3: Explain the "Persistence Request" in the StorageManager API.
+
+> **Answer:** Browsers normally use "Best-Effort" storage, meaning they will delete your app's data if the disk is full.
+>
+> - **The Solution:** Call `navigator.storage.persist()`. If granted, the browser promises not to delete your data until the user manually uninstalls the app or clears cache. This is critical for Offline-First PWAs.
+
+### Q4: How do you handle "Sensitive Data" in shared environments (e.g., a Library/Public PC)?
+
+> **Answer:**
+>
+> 1. **Session-only:** Use `SessionStorage` so data is wiped when the tab closes.
+> 2. **Clear-Site-Data:** Send the `Clear-Site-Data: "storage"` header on logout.
+> 3. **In-Memory:** Store encryption keys in a plain JS variable (which dies on refresh) and only keep the encrypted blob in storage.
+
+---
+
 ## 🔐 Secure Communication (HTTPS)
 
 In Frontend System Design, client-side security is only as strong as the "pipe" through which data travels. HTTPS is the foundational layer for all secure web interactions.

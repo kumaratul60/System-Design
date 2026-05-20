@@ -161,6 +161,31 @@ git branch -r --sort=committerdate --format="%(committerdate:relative) -> %(refn
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: What is "Trunk-Based Development" vs. "GitFlow" at scale?
+> **Answer:** 
+> - **GitFlow:** Uses long-lived feature branches, develop, and release branches. **Pros:** Stable, controlled releases. **Cons:** Merge hell, high lead time.
+> - **Trunk-Based:** Developers push small, frequent commits directly to `main` (or short-lived PRs). **Pros:** Fast feedback, CI/CD compatibility. **Cons:** Requires rigorous automated testing and **Feature Flags** to prevent breaking production.
+> - **The "Staff" Choice:** High-velocity teams (Amazon, Google) use Trunk-Based development to minimize integration friction.
+
+### Q2: How do you solve the "Monorepo Bloat" problem in Git?
+> **Answer:** As a monorepo grows to GBs of history, `git clone` and `git status` become painfully slow. 
+> - **The Fix:** 
+>   1. **Sparse Checkout:** Only download the specific directories you need to work on.
+>   2. **Shallow Clone (`--depth 1`):** Only download the latest commit history.
+>   3. **VFS for Git (Microsoft):** A virtual filesystem that only downloads files when they are accessed.
+
+### Q3: Explain "Git Hooks" as a Governance Tool.
+> **Answer:** You can use **Pre-commit** and **Pre-push** hooks to enforce team standards. 
+> - **Examples:** Block commits that contain "FIXME" comments, ensure `package-lock.json` is updated, run linting, and prevent committing large files or secrets (using tools like `git-secrets`).
+
+### Q4: Why is `git push --force` dangerous, and what is the safer alternative?
+> **Answer:** `--force` overwrites the remote branch with your local history, potentially deleting someone else's work if they pushed in the meantime. 
+> - **The Alternative:** **`git push --force-with-lease`**. This command checks if the remote branch has changed since your last fetch. If it has, it refuses to push, protecting the work of your teammates.
+
+---
+
 Use this to build an architectural map of an unfamiliar repository in under 2 minutes.
 
 - https://piechowski.io/post/git-commands-before-reading-code

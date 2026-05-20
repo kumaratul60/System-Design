@@ -70,6 +70,44 @@ Many build tools (Webpack, Rollup) have plugins that automatically generate SRI 
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why does SRI require `crossorigin="anonymous"`?
+
+> **Answer:** SRI works by fetching the file and calculating its hash.
+>
+> - **The SOP Barrier:** Normally, the **Same-Origin Policy (SOP)** prevents a site from reading the raw bytes of a script from a different domain.
+> - **The Fix:** `crossorigin="anonymous"` triggers a **CORS request**. If the CDN responds with `Access-Control-Allow-Origin: *`, the browser is allowed to read the bytes, calculate the hash, and perform the integrity check.
+> - **Note:** If you forget `crossorigin`, the SRI check will fail and the script will be blocked.
+
+### Q2: How does SRI handle "Dynamic Scripts" (e.g., Google Analytics or Ads)?
+
+> **Answer:** It doesn't. Dynamic scripts change their content frequently (personalized data, version updates), meaning the hash would break every few hours.
+>
+> - **The Trade-off:** You cannot use SRI for dynamic 3rd-party trackers.
+> - **The Defense:** For these, you must rely on a strong **Content-Security-Policy (CSP)** to restrict what those scripts can do and where they can send data.
+
+### Q3: What is the "SRI Fallback" pattern?
+
+> **Answer:** If a CDN is down or a hash mismatches, your site might break.
+>
+> - **The Solution:** A small inline script can detect if a required library (like jQuery) failed to load and then try to load a **local fallback** version.
+>
+> ```html
+> <script src="https://cdn.com/jquery.js" integrity="..." crossorigin="anonymous"></script>
+> <script>
+>   window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>');
+> </script>
+> ```
+
+### Q4: Can SRI protect against a "Compromised Developer Machine"?
+
+> **Answer:** No. SRI protects against the **Delivery Channel** (the CDN) being compromised. If a developer's machine is infected and they commit malicious code _before_ the hash is generated, the SRI hash will simply reflect that malicious code, and the browser will execute it without warning.
+>
+> - **The Defense:** Use **Signed Commits (GPG)** and **Code Reviews** to protect the integrity of the source code.
+
+---
+
 ## SRI and Browser Support
 
 SRI is supported by all modern browsers. If a browser doesn't support SRI, it simply ignores the `integrity` attribute and loads the script normally, so it is a **progressive enhancement** with no downside for older browsers.

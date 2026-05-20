@@ -190,6 +190,38 @@ if (top != self) {
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why is `X-Frame-Options` being deprecated in favor of CSP `frame-ancestors`?
+
+> **Answer:** `X-Frame-Options` is a coarse, page-level header with only two real options (DENY or SAMEORIGIN).
+>
+> - **The CSP Advantage:** `frame-ancestors` is much more granular. It allows you to specify a **Whitelist** of trusted domains (e.g., `frame-ancestors 'self' https://partner.com`).
+> - **Precedence:** Modern browsers prioritize CSP. If both are present, the browser ignores `X-Frame-Options`.
+
+### Q2: Explain the "Double-Framing" attack and how to prevent it.
+
+> **Answer:** An attacker embeds a "decoy" iframe, which then embeds your target iframe. Sometimes simple frame-busting scripts only check the immediate parent (`window.parent`), which the attacker controls.
+>
+> - **The Fix:** Use `window.top` to check the absolute highest window in the hierarchy. However, the true defense is **CSP `frame-ancestors 'self'`**, which the browser enforces regardless of the nesting depth.
+
+### Q3: How do you secure `window.postMessage` in a production environment?
+
+> **Answer:** `postMessage` is a common source of XSS and data leaks.
+>
+> 1. **Target Origin:** Never use `*`. Always specify the exact domain of the receiver.
+> 2. **Sender Origin:** The listener **MUST** verify `event.origin` against a whitelist before processing the data.
+> 3. **Data Schema:** Treat `event.data` as **Untrusted User Input**. Sanitize it using a library like **Zod** or **DOMPurify** before using it in the DOM or an `eval`-like sink.
+
+### Q4: What is the "Sandbox Escape" and how does it happen?
+
+> **Answer:** This occurs when the `sandbox` attribute is misconfigured.
+>
+> - **The Vulnerability:** Combining `allow-scripts` and `allow-same-origin` on an iframe from the **same origin** as the parent.
+> - **The Result:** The script in the iframe can reach out, access the parent's `document`, and programmatically remove its own `sandbox` attribute or steal the parent's cookies.
+
+---
+
 ## 9. Security Checklist
 
 ### 🛡️ For the Child (Being Embedded)

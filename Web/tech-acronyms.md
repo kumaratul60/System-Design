@@ -67,9 +67,16 @@ _The core technologies and concepts for building websites and web applications._
 - **SSR** — Server-Side Rendering
 - **CSR** — Client-Side Rendering
 - **SSG** — Static Site Generation
+- **ISR** — Incremental Static Regeneration
+- **RSC** — React Server Components
 - **WASM** — WebAssembly (A binary instruction format for the web)
 - **SVG** — Scalable Vector Graphics
 - **A11Y** — Accessibility (Numerical representation of 'a' + 11 letters + 'y')
+- **INP** — Interaction to Next Paint (Core Web Vital)
+- **LCP** — Largest Contentful Paint (Core Web Vital)
+- **CLS** — Cumulative Layout Shift (Core Web Vital)
+- **RUM** — Real User Monitoring
+- **SWR** — Stale-While-Revalidate (Caching strategy)
 
 ---
 
@@ -226,6 +233,19 @@ _The field of creating intelligent systems._
 - **DL** — Deep Learning
 - **NLP** — Natural Language Processing
 - **LLM** — Large Language Model
+- **GAN** — Generative Adversarial Network
+
+---
+
+## 13. Version Control
+
+_Systems for tracking changes in code over time._
+
+- **VCS** — Version Control System
+- **Git** — A distributed version control system
+- **SVN** — Subversion (A centralized version control system)
+- **Mercurial** — A distributed version control system
+ **LLM** — Large Language Model
 - **GAN** — Generative Adversarial Network
 
 ---

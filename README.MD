@@ -2,6 +2,8 @@
 
 A comprehensive repository for exploring, implementing, and documenting core System Design patterns, Networking protocols, and Communication strategies.
 
+> **🌟 Key Feature:** This repository has been **"Grill-Hardened"** for Senior and Staff-level engineering roles. Each module contains a **"Senior/Staff Level Grill"** section covering architectural trade-offs, edge-case failures, and deep protocol nuances.
+
 ## Project Structure
 
 ```text

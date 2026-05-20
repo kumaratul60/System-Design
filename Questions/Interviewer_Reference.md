@@ -63,6 +63,27 @@ mindmap
 
 ---
 
+## 🏛️ 6. Staff-Level Assessment: Red Flags vs. Green Flags
+
+When interviewing for Senior/Staff roles, look for the following behavioral and technical indicators:
+
+| Category            | 🚩 Red Flag (Senior-Minus)                           | ✅ Green Flag (Staff-Plus)                                                                    |
+| :------------------ | :--------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| **Problem Solving** | Jumps straight into code/syntax.                     | Asks about **Constraints** and **Business Value** first.                                      |
+| **Performance**     | Says "I use useMemo for everything."                 | Discusses **Trade-offs** (CPU vs Network) and **Metric-Driven** optimization.                 |
+| **Security**        | Thinks `HttpOnly` solves all XSS.                    | Mentions **Trusted Types**, **Nonce-based CSP**, and **Defense-in-Depth**.                    |
+| **Scalability**     | Suggests "Adding more servers" for every bottleneck. | Identifies **Data Contention**, **Hot Shards**, and **Distributed Consistency** issues.       |
+| **Testing**         | Focuses on 100% Code Coverage.                       | Focuses on **Contract Testing**, **Flaky Test Management**, and **Production Observability**. |
+| **Compliance**      | Sees it as a "Check-the-box" annoying task.          | Sees it as a **System Constraint** and builds **Automated Guardrails** to help the team.      |
+
+---
+
+## 🧠 Final Interviewer Tip
+
+A Staff Engineer is not just a "Faster Coder." They are a **Force Multiplier**. They build the patterns, libraries, and documentation that allow the other 10 developers on the team to be 10% more effective every day.
+
+---
+
 ## 🏗️ 3. Architecture & System Design
 
 1.  **Scaling Frontend:** "In backend, we scale with more servers. How do you scale a complex Frontend application for 50+ developers across 5 teams?"

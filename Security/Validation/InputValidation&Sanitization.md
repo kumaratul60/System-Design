@@ -160,6 +160,43 @@ app.use(helmet()); // Sets CSP, HSTS, X-Frame-Options, etc.
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: What is "ReDoS" (Regular Expression Denial of Service) and how do you prevent it?
+
+> **Answer:** ReDoS occurs when a malicious string triggers "Exponential Backtracking" in a poorly written regex (e.g., `(a+)+$`).
+>
+> - **The Attack:** An attacker sends a string like `aaaaaaaaaaaaaaaaaaaaaaaaaaaaa!` which takes minutes or hours to process, pegging the CPU and crashing the server.
+> - **The Fix:**
+>   1. **Regex Static Analysis:** Use tools like `safe-regex` to detect vulnerable patterns.
+>   2. **Timeouts:** Use a regex engine that supports execution timeouts.
+>   3. **Simplicity:** Avoid nested quantifiers and complex alternations in regex used on untrusted user input.
+
+### Q2: Explain the "Canonicalization" (Path Traversal) attack.
+
+> **Answer:** This occurs when a server fails to resolve "Shortcuts" (like `../`) in a filename before using it.
+>
+> - **The Attack:** A user uploads a file named `../../../etc/passwd`. If the server blindly concatenates this to `/uploads/`, it will overwrite or read system files.
+> - **The Fix:** Always **Normalize** the path (e.g., `path.resolve()` in Node.js) and check if the resulting absolute path still starts with the intended directory.
+
+### Q3: Why is "Double Encoding" a common bypass for input filters?
+
+> **Answer:** An attacker sends a payload like `%253Cscript%253E`.
+>
+> 1. The **Security Filter** decodes it once: `%3Cscript%3E`. It looks safe (not executable).
+> 2. The **Application Logic** decodes it a _second_ time (e.g., during database insertion or template rendering): `<script>`.
+>
+> - **The Fix:** Always decode once at the edge and perform validation on the **Final Normalized Data**.
+
+### Q4: When is "Client-Side Sanitization" actually dangerous?
+
+> **Answer:** If you rely on the client (browser) to sanitize data before sending it to the server.
+>
+> - **The Danger:** An attacker can easily bypass your client-side script using `curl` or a proxy, sending the "raw" malicious payload directly to your server.
+> - **The "Staff" Rule:** Client-side sanitization is for **UX**; Server-side sanitization is for **Security**. Never trust data coming from the client, even if it was "sanitized" there.
+
+---
+
 ## The "Safe Way": Using Frameworks & Libraries
 
 Modern frameworks provide battle-tested tools. **Don't build your own security logic from scratch.**

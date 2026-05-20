@@ -42,6 +42,30 @@ Unused or legacy feature flags clutter the codebase, making it harder to audit a
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Is a Feature Flag a form of "Authorization"?
+
+> **Answer:** Technically, no.
+>
+> - **Authorization** is "Can User X do Y?".
+> - **Feature Flag** is "Is Feature Y turned on?".
+> - **The Conflict:** If you use a flag to hide an admin tool, but the API endpoint itself doesn't check the user's role, an attacker can still use the tool. Always perform **RBAC/ABAC** checks independently of feature flags.
+
+### Q2: How do you prevent "State Inconsistency" across microservices when toggling a flag?
+
+> **Answer:** This is the "Distributed Toggle" problem. If Service A enables a new data format but Service B (the consumer) hasn't received the flag update yet, the system crashes.
+>
+> - **The Solution:**
+>   1. **Phased Rollout:** Always update the "Consumer" first to handle the new format _before_ the "Producer" starts sending it.
+>   2. **Flag Sync Service:** Use a centralized provider (like LaunchDarkly) with **Push-based updates (SSE)** to ensure all services sync within milliseconds.
+
+### Q3: Why is "Flag Debt" a Security Risk?
+
+> **Answer:** Unused flags make the code path complex and difficult to audit. An attacker might find a "Dead Flag" that still has logic attached to it and toggle it via a cache-poisoning or database-injection attack to re-enable a vulnerable or deprecated feature.
+
+---
+
 ## Implementation Example (Express.js)
 
 ```javascript

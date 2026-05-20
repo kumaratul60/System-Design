@@ -78,6 +78,29 @@ When a feature is requested within an iframe, the browser checks both the **Resp
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why is `Permissions-Policy` better than just not using the JS API?
+
+> **Answer:** Defensive engineering. Even if _your_ code doesn't use the camera, a **Third-Party Script** (e.g., a chatbot or analytics) might be compromised and try to access it.
+>
+> - **The Policy:** By setting `camera=()`, you provide an **Enforced Sandbox** that stops malicious scripts even if they find an XSS vulnerability on your page.
+
+### Q2: What is the "Delegation" problem in Iframes?
+
+> **Answer:** If you allow an iframe to use `geolocation`, can _that_ iframe then delegate the permission to another nested iframe?
+>
+> - **The Fix:** The Permission Policy explicitly controls this. If the top-level page doesn't grant the permission to the origin of the second iframe, the browser blocks it automatically, regardless of what the first iframe "allows."
+
+### Q3: How do Permission Policies improve Web Performance?
+
+> **Answer:** Beyond security, you can disable "Performance Killers":
+>
+> 1. **`sync-xhr=()`**: Disables synchronous XMLHttpRequests which block the main thread.
+> 2. **`oversized-images=()`**: (Experimental) Tells the browser to report/block images that are significantly larger than their container.
+
+---
+
 ## Code Examples
 
 ### Express.js Example

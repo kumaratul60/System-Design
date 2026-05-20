@@ -76,6 +76,38 @@ Server-Sent Events (SSE) is a standard designed to allow a web server to push re
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why is SSE often better for "Battery Life" on mobile than WebSockets?
+
+> **Answer:** Mobile operating systems are highly optimized for HTTP.
+>
+> - **The Reason:** SSE is just a "hanging" HTTP GET request. The mobile OS can "batch" this with other HTTP requests to keep the cellular radio in a low-power state. WebSockets, being a raw TCP stream, often force the radio to stay in a "High Power" state to maintain the socket, draining the battery significantly faster.
+
+### Q2: How do you handle "Proxy Buffering" (Nginx/Cloudflare) breaking your real-time SSE?
+
+> **Answer:** Many proxies buffer responses to be efficient. For SSE, this is fatal because the data won't reach the client until the buffer is full.
+>
+> - **The Solution:** You must send specific headers to tell the proxy NOT to buffer:
+>   1. `X-Accel-Buffering: no` (for Nginx).
+>   2. `Cache-Control: no-transform` (prevents CDNs from compressing/modifying the stream).
+
+### Q3: What happens to an SSE connection when the user switches from WiFi to 4G?
+
+> **Answer:** Since SSE is tied to a specific TCP connection (IP/Port 4-tuple), the connection will break.
+>
+> - **Recovery:** The browser's native `EventSource` will automatically detect the drop and attempt to reconnect.
+> - **The "Staff" Nuance:** To prevent data loss during the reconnect, the server should send a **`Last-Event-ID`**. When the client reconnects, it sends this ID in the `Last-Event-ID` header, allowing the server to "replay" missed messages from its buffer (usually Redis).
+
+### Q4: Can you use SSE for "Binary Data"?
+
+> **Answer:** No, the SSE spec defines the data format as UTF-8 text.
+>
+> - **The Workaround:** You must **Base64 encode** your binary data.
+> - **The Trade-off:** Base64 increases the data size by ~33%, which can be a significant performance hit for large assets. For binary-heavy real-time needs, WebSockets or WebTransport are superior.
+
+---
+
 ### Decision Matrix: When to Use SSE
 
 | Feature            | SSE                | WebSockets         | Long Polling     |

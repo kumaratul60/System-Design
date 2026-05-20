@@ -18,6 +18,27 @@ By injecting only the necessary dependencies, you limit the capabilities of a mo
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Can DI actually _increase_ the attack surface?
+
+> **Answer:** Yes, if the "Composition Root" (the place where dependencies are linked) is not secured. If an attacker can control which modules are injected (e.g., via a dynamic configuration file or a `require(variable)` vulnerability), they can inject a **Malicious Mock** that exfiltrates data or grants admin access.
+
+### Q2: Explain "Circular Dependencies" and why they are an architectural red flag.
+
+> **Answer:** Module A depends on B, and B depends on A.
+>
+> - **The Problem:** It makes the system impossible to test in isolation, creates "Spaghetti Code," and can lead to memory leaks or stack overflows during initialization.
+> - **The Fix:** Use a **Third Module** (C) to hold the shared logic, or use **Interface Injection** to break the direct link.
+
+### Q3: Why is "Singleton Injection" dangerous in a multi-tenant environment?
+
+> **Answer:** If you inject a Singleton service (like a `UserContext`) that stores data in its local memory, and that service is shared across multiple concurrent requests from different users, you might leak **User A's data to User B**.
+>
+> - **The Rule:** Never store request-specific state in a Singleton. Use **Request-scoped Injection**.
+
+---
+
 ## Example: Insecure vs. Secure (DI)
 
 ### Insecure: Hardcoded Dependency

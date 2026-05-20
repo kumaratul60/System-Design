@@ -226,9 +226,31 @@ Zero Trust means "Never Trust, Always Verify." In legacy:
 
 ---
 
-## 🧠 Situational "Grills"
+## 🏛️ Level 4: Situational Architect's Grill (Deep Logic)
 
-**Q: You discover a critical SQL injection in a core service. The fix requires a database schema change and 4 hours of downtime. The Business wants to wait until the weekend. What is your move?**
+### Q: Scenario: You are moving to a multi-region architecture. How do you handle "Global Session Invalidation"?
 
-- **SDE-1:** "I'll follow whatever the manager says."
-- **Staff/Architect:** "I will propose an immediate **WAF (Web Application Firewall)** rule to block the specific injection pattern at the edge. This buys us time to perform the proper schema change during off-peak hours without leaving the app vulnerable for days. If the WAF isn't possible, I'll escalate the risk: cost of downtime vs. cost of a full database leak."
+> **Answer:**
+>
+> - **The Problem:** If a user logs out in `us-east-1`, their JWT might still be valid in `eu-central-1` if your blacklist/revocation list isn't globally synced.
+> - **The Solution:** Use a **Global Pub/Sub** (like Redis Global Datastore or DynamoDB Global Tables) to broadcast the revocation event.
+> - **Trade-off:** Global sync has latency (e.g., 500ms). You must accept a "Consistency Window" where a revoked token might still work in another region for a few milliseconds, or use **Short-lived Access Tokens (5 min)** to minimize the risk.
+
+### Q: Scenario: An attacker is performing a "Low and Slow" credential stuffing attack. Your rate limiter is based on IP, and they are using a distributed proxy network (10k IPs). How do you stop them?
+
+> **Answer:** IP-based rate limiting fails here.
+>
+> - **Behavioral Analysis:** Implement **Fingerprinting** (TLS JA3 fingerprint, Browser headers) and **Account-based Throttling**. If you see 100 failed logins for 100 _different_ accounts but from the same "browser signature," block the signature.
+> - **Step-up Auth:** Instead of blocking, trigger a "Hard" CAPTCHA or MFA for any suspicious traffic.
+
+### Q: Scenario: You need to implement "Zero Trust" for a legacy internal service that doesn't support Auth. You cannot modify the service's code.
+
+> **Answer:** Use the **Sidecar/Ambassador Pattern**.
+>
+> - **Implementation:** Deploy a Proxy (like Envoy or Nginx) in front of the legacy service. All traffic must go through the proxy. The proxy handles the OIDC/JWT verification and only forwards the request to the legacy service if the token is valid. This is the foundation of a **Service Mesh**.
+
+---
+
+## 🧠 Final Interviewer Tip
+
+A Staff Engineer is not just a "Faster Coder." They are a **Force Multiplier**. They build the patterns, libraries, and documentation that allow the other 10 developers on the team to be 10% more effective every day.

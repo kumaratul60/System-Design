@@ -97,6 +97,35 @@ A mandatory requirement for security transparency, especially under **US Executi
 7.  **Employee Training:** Human error is the leading cause of breaches. Regularly train staff on phishing, social engineering, and secure coding.
 8.  **Incident Response Plan:** Have a tested plan in place for when (not if) a breach occurs to minimize impact and meet reporting deadlines (e.g., GDPR's 72-hour rule).
 
+---
+
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Is "Compliance" the same as "Security"?
+
+> **Answer:** Absolutely not. Compliance is a **Legal Baseline** (e.g., "Do you have a firewall?"). Security is a **Technical Reality** (e.g., "Is your firewall configured to block a specific Zero-Day exploit?"). You can be 100% compliant with SOC 2 and still get hacked because your application code has a logic flaw that compliance audits didn't check.
+
+### Q2: How do you handle "Conflicts" between different regulations (e.g., GDPR vs. Anti-Money Laundering/AML)?
+
+> **Answer:** This is a major architectural and legal headache.
+>
+> - **The Conflict:** GDPR gives users the **Right to be Forgotten**. AML laws **require** banks to keep transaction history for 5-10 years to prevent crime.
+> - **The Resolution:** In law, **"Legal Obligation"** (AML) usually overrides "Right to be Forgotten" (GDPR). However, the architect must ensure the data is **Isolated**—it should be removed from all marketing/analytics systems and kept only in a "Cold Storage" audit-only database.
+
+### Q3: What is "Vulnerability Disclosure Policy" (VDP) and why does a Staff Engineer care?
+
+> **Answer:** A VDP is a "Safe Harbor" for security researchers to report bugs to you without being sued.
+>
+> - **The Value:** It is a critical component of **Maturity-based Compliance** (like ISO 27001). Without a VDP, you are essentially "blind" to the security community. A Staff engineer ensures the VDP is linked to an internal **Incident Response** pipeline so bugs are fixed before they are publicly disclosed.
+
+### Q4: Explain the risk of "Compliance Fatigue" in a large organization.
+
+> **Answer:** When developers are forced to follow 50+ compliance rules (e.g., "Change passwords every 90 days"), they start taking shortcuts (e.g., "Password123!", "Password124!").
+>
+> - **The Staff Fix:** Automate compliance away. Instead of forced password changes, implement **MFA + Single Sign-On (SSO)**. Instead of manual security reviews, implement **Automated SBOM scanning** in the CI/CD pipeline. Move the burden from the human to the system.
+
+---
+
 ## Shared Responsibility Model
 
 In modern cloud-native applications, security and compliance are a partnership between the **Cloud Service Provider (CSP)** and the **Customer**.

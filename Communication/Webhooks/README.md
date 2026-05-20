@@ -141,6 +141,41 @@ Network issues can cause duplicate webhooks. Consumers should:
 
 ---
 
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: How do you handle "Message Ordering" in Webhooks when retries are involved?
+
+> **Answer:** If Event A fails but Event B succeeds, and then Event A is retried and succeeds, they arrive out of order.
+>
+> - **The Solution:** Use an **Incremental Version** or **Timestamp** in the payload. The consumer should only process a webhook if its version is _greater_ than the last processed version stored in the database.
+
+### Q2: What is a "Webhook Fan-out" and how do you architect for it?
+
+> **Answer:** This occurs when a single event (e.g., a "Product Price Update") triggers 10,000+ webhooks to different third-party consumers simultaneously.
+>
+> - **The Architecture:** Don't send webhooks from your main API thread.
+>   1. Push the event to a **Message Queue** (SQS/Kafka).
+>   2. Have a fleet of **Worker Nodes** consume the queue.
+>   3. Use a **Rate Limiter** per consumer so you don't accidentally DDoS your own partners.
+
+### Q3: How do you handle "Webhook Ingestion" at scale (10k requests/sec)?
+
+> **Answer:** If your system is receiving thousands of webhooks, your server might crash under the load.
+>
+> - **The "Staff" Way:** Implement a **Serverless Ingestion Layer**. Use an AWS Lambda or a lightweight Go service that does NOTHING but:
+>   1. Verify the signature.
+>   2. Drop the payload into a queue (e.g., Kinesis or SQS).
+>   3. Return `200 OK` immediately.
+>      All business logic happens asynchronously from the queue.
+
+### Q4: Explain "Webhook Circuit Breaking".
+
+> **Answer:** If a partner's server is down and returning `500` errors, retrying 10,000 times is a waste of your resources.
+>
+> - **The Fix:** Implement a **Circuit Breaker**. If a specific endpoint fails X times in a row, "open" the circuit and stop sending webhooks to that consumer for a cooldown period (e.g., 1 hour). Notify the developer via email.
+
+---
+
 ## 7. Common Use Cases
 
 1.  **Payment Gateways:** Notifying your system when a subscription payment succeeds (e.g., Stripe).

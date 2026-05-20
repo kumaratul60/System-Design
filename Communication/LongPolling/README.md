@@ -76,6 +76,24 @@ graph TD
 - **Connection Management:** Dealing with timeouts, network drops, and immediate reconnections makes the client-side logic slightly more complex.
 - **Latency on Reconnect:** During the brief window when a client is reconnecting after receiving a response, updates can theoretically be missed or delayed.
 
+---
+
+## 🔥 Senior/Staff Level "Grill" Questions
+
+### Q1: Why is Long Polling "Memory Heavy" compared to Short Polling?
+
+> **Answer:** In Short Polling, the request is parsed, handled, and the thread is released immediately. In Long Polling, the server must **keep the connection open** for 30-60 seconds. Each open connection consumes a **File Descriptor** and a chunk of **RAM** (the request context).
+>
+> - **Scale Tip:** Use an **Asynchronous/Non-blocking server** (like Node.js or Go with Goroutines) to handle thousands of "waiting" connections without spawning thousands of OS threads.
+
+### Q2: How do you handle "The Thundering Herd" when the server restarts?
+
+> **Answer:** If your server restarts, all 100,000 long-polling connections will drop simultaneously. When the server comes back up, all 100,000 clients will immediately send a new request to reconnect.
+>
+> - **The Fix:** Implement **Client-side Jitter**. The client should add a random delay (e.g., 0-5 seconds) before attempting to reconnect after a failure or server-side drop.
+
+---
+
 ## Key Differences: Short Polling vs. Long Polling
 
 | Feature               | Short Polling                            | Long Polling                                |
