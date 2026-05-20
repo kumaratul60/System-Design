@@ -211,6 +211,26 @@ sequenceDiagram
 
 ---
 
+## 📱 Device-Specific Rendering Strategy
+
+Rendering isn't just about SEO; it's about the **CPU/Battery/Network** constraints of the user's device.
+
+| Device Category              | Hardware Constraints             | Best Rendering Pattern | Why?                                                                                                  |
+| :--------------------------- | :------------------------------- | :--------------------- | :---------------------------------------------------------------------------------------------------- |
+| **Small (Mobile/Low-end)**   | Low CPU, 4G/3G, Limited Battery  | **SSR / SSG**          | Offloads the "heavy lifting" (parsing/rendering) to the server. Minimizes JS execution on the device. |
+| **Mid (Tablet/Laptop)**      | Moderate CPU, WiFi/5G            | **ISR / Hybrid**       | Can handle hydration well. Benefit from the "Best of both worlds" (speed + freshness).                |
+| **Large (High-end Desktop)** | High CPU, Fiber, Unlimited Power | **CSR / SPA**          | Can handle huge JS bundles and complex client-side logic without breaking a sweat.                    |
+
+### 🧠 The "Adaptive Loading" Pattern
+
+Instead of picking one strategy for everyone, advanced apps use **Adaptive Loading**:
+
+- **On 2G/3G:** Serve a static **SSR** version with zero JS.
+- **On 4G/5G:** Serve the full **Hydrated/CSR** version for interactivity.
+- **On Data-Saver Mode:** Disable heavy assets (videos/hero images) and use **Server-Side** logic to strip out non-essential components.
+
+---
+
 ## 📈 Decision Matrix: Which one to choose?
 
 1. **Does the page need to be behind a login?** Use **CSR**.
