@@ -128,7 +128,7 @@ graph LR
 This directory contains deep dives into each of the touchpoints mentioned above:
 
 - **[Metrics/](./Metrics/README.md)**: Understanding FCP, LCP, FID, INP, and CLS.
-- **[Network/](./Network/)**: Strategies for faster delivery.
-- **[Assets/](./Assets/)**: Techniques for image and code optimization.
-- **[React/](./React/)**: Framework-specific performance patterns.
-- **[Rendering/](./Rendering/)**: Choosing between SSR, CSR, and SSG.
+- **[Network/](./Network/README.md)**: Strategies for faster delivery.
+- **[Assets/](./Assets/README.md)**: Techniques for image and code optimization.
+- **[React/](./React/README.md)**: Framework-specific performance patterns.
+- **[Rendering/](./Rendering/README.md)**: Choosing between SSR, CSR, and SSG.
