@@ -65,6 +65,8 @@ mindmap
 | **Tracing** | "Where is the bottleneck?" (Context). | Jaeger, Honeycomb, OpenTelemetry. |
 
 > **The "Staff" Insight:** Metrics tell you _that_ there is a problem. Logs tell you _what_ the problem is. Tracing tells you _where_ it is in a complex microservice chain (solving the p99 tail latency problem).
+>
+> **Detailed Guide:** For a deep dive into telemetry collection (User interactions, Web Vitals, and Error tracking), see the [Logging & Monitoring Module](../Logging-Monitoring/README.md).
 
 ---
 

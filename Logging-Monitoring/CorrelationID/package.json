@@ -1,0 +1,15 @@
+{
+  "name": "correlation-id-example",
+  "version": "1.0.0",
+  "description": "Example demonstrating Correlation ID propagation in microservices",
+  "main": "order-service.js",
+  "scripts": {
+    "start:order": "node order-service.js",
+    "start:payment": "node payment-service.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "express": "^4.18.2",
+    "uuid": "^9.0.1"
+  }
+}

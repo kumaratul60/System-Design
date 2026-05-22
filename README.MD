@@ -8,6 +8,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 
 ```text
 ├── Infrastructure/             # Traffic routing & Observability
+├── Logging-Monitoring/         # Telemetry, Log Collection & Monitoring
 ├── Data/                       # Distributed Storage & Caching
 ├── Communication/               # Real-time & Event-driven patterns
 │   ├── ShortPolling/            # Basic interval-based polling
@@ -51,15 +52,19 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 
 Master the "Nervous System" of distributed systems. Covers L4/L7 Load Balancing, Service Mesh (Istio), the 3 Pillars of Observability (Metrics, Logs, Tracing), and advanced deployment strategies like Blue/Green and Canary.
 
-### 2. [Distributed Data & Caching](./Data/README.md)
+### 2. [Logging & Monitoring](./Logging-Monitoring/README.md)
+
+A deep dive into data collection and telemetry. Covers capturing user interactions, performance metrics (Web Vitals), resource errors, and utilization tracking.
+
+### 3. [Distributed Data & Caching](./Data/README.md)
 
 Masterclass on storage selection using the **PACELC Theorem**. Deep dive into Caching strategies (Cache-Aside, Write-Back), Cache Coherency, and high-scale messaging patterns like the Outbox Pattern and Idempotent Consumers.
 
-### 3. [Communication Strategies](./Communication/README.md)
+### 4. [Communication Strategies](./Communication/README.md)
 
 Explore how services talk to each other. Includes a decision tree for choosing between WebSockets, SSE, Webhooks, and Polling based on real-time requirements and scalability.
 
-### 2. [Networking Protocols](./Networking/README.md)
+### 5. [Networking Protocols](./Networking/README.md)
 
 Practical implementations of the three most common API styles:
 
@@ -67,7 +72,7 @@ Practical implementations of the three most common API styles:
 - **GraphQL:** Client-specified data fetching to prevent over-fetching.
 - **gRPC:** Binary protocol using Protocol Buffers for high-efficiency microservices communication.
 
-### 3. [Security Engineering](./Security/README.md)
+### 6. [Security Engineering](./Security/README.md)
 
 Comprehensive coverage of web and architectural security:
 
@@ -76,7 +81,7 @@ Comprehensive coverage of web and architectural security:
 - **Architecture:** Zero Trust, OAuth2/OIDC, and secure JWT management.
 - **Compliance:** Practical insights into GDPR, SOC 2, and HIPAA.
 
-### 4. [Performance Optimization](./Performance/README.md)
+### 7. [Performance Optimization](./Performance/README.md)
 
 A deep dive into the 8 pillars of web performance:
 
@@ -84,11 +89,11 @@ A deep dive into the 8 pillars of web performance:
 - **Optimization:** Network, Asset, Build, and Framework-specific (React) techniques.
 - **Patterns:** SSR, CSR, SSG, and ISR trade-offs.
 
-### 5. [Interview & Concept Deep Dives](./Questions/Detailed/Security_Architect.md)
+### 8. [Interview & Concept Deep Dives](./Questions/Detailed/Security_Architect.md)
 
 A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles.
 
-### 6. [Web Fundamentals](./Web/web.md)
+### 9. [Web Fundamentals](./Web/web.md)
 
 Exhaustive documentation on the building blocks of the web:
 
