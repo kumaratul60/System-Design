@@ -28,29 +28,46 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 ```text
 ├── Infrastructure/             # Traffic routing & Observability
 ├── Logging-Monitoring/         # Telemetry, Log Collection & Monitoring
+│   └── CorrelationID/           # Distributed tracing & Correlation ID setup
 ├── Database&Caching/           # Distributed & Client-side Storage & Caching
 ├── Communication/               # Real-time & Event-driven patterns
 │   ├── ShortPolling/            # Basic interval-based polling
 │   ├── LongPolling/             # Optimized hanging requests
 │   ├── Webhooks/                # Server-to-server POST callbacks
 │   ├── ServerSentEvent/         # Unidirectional streaming (SSE)
-│   └── WebSocket/               # Full-duplex bidirectional streams
+│   ├── WebSocket/               # Full-duplex bidirectional streams
+│   └── WebRTC.md                # Peer-to-peer real-time connection
 ├── Networking/                  # API Architectural Styles
 │   ├── RestAPI/                 # Standard REST implementation
 │   ├── Graphql/                 # Schema-driven query language
 │   └── gRPC/                    # High-performance RPC (Protocol Buffers)
 ├── Security/                    # End-to-End Security Architecture
 │   ├── Auth/                    # Identity & Session Management
+│   ├── CORS/                    # Cross-Origin Resource Sharing
+│   ├── ClientSideStorage/       # Secure cookies, localStorage & sessionStorage
+│   ├── FeatureFlags/            # Feature toggle management
+│   ├── SecurityHeaders/         # Security headers (HSTS, CSP, X-Frame-Options)
+│   ├── SubresourceIntegrity/    # SRI hashes verification
+│   ├── Validation/              # Input validation and sanitization
 │   ├── XSS/                     # Cross-Site Scripting & CSP
 │   ├── CSRF.md                  # Detailed CSRF Mitigations
 │   ├── SSRF&JI.md               # SSRF, Injection & XXE
 │   └── Compliance&Regulations.md # GDPR, HIPAA, SOC 2
 ├── Performance/                 # Web Performance Optimization
-│   ├── README.md                # Comprehensive performance overview
-│   ├── Metrics/                 # Web Vitals & measurement
-│   └── Assets/                  # Image & code optimization
+│   ├── Metrics/                 # Web Vitals (LCP, FID/INP, CLS) & measurement
+│   ├── Assets/                  # Image & font optimization
+│   ├── Network/                 # Network optimization, HTTP/3, compression
+│   ├── React/                   # React rendering lifecycle & memoization hooks
+│   └── Rendering/               # SSR, CSR, SSG & ISR patterns
 ├── Questions/                   # Interview Prep & Deep Dives
-│   ├── Detailed/                # Scaling, Performance, Design Patterns
+│   ├── Detailed/                # Scaling, Performance, Design Patterns, React
+│   │   ├── Architecture_Scaling.md
+│   │   ├── Browser_Build_Networking.md
+│   │   ├── Design_Patterns.md
+│   │   ├── Misc.md
+│   │   ├── Performance_Optimization.md
+│   │   ├── React_Fundamentals.md
+│   │   └── Security_Architect.md
 │   ├── machine_code.md          # Machine coding round preparation
 │   └── Interviewer_Reference.md # Key concepts for interviews
 └── Web/                         # Fundamentals & Web Infrastructure
@@ -58,6 +75,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     ├── Scalability.md           # Horizontal vs Vertical scaling
     ├── Git.md                   # Version control & Git internals
     ├── Git Pre-Read Analysis.md # Deep analysis of Git workflows
+    ├── MicroFrontends.md        # Micro Frontend design and loading patterns
     ├── terminal.md              # Terminal & CLI productivity
     ├── tech-acronyms.md         # Comprehensive tech glossary
     └── web.md                   # Core web concepts and protocols
