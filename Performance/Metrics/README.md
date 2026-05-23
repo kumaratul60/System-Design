@@ -308,3 +308,46 @@ While **INP** tells you _that_ a page was slow, **LoAF** tells you _why_.
 > 2. **CI/CD Integration:** Use tools like **Lighthouse CI** to run audits on every Pull Request.
 > 3. **Blocking Builds:** Configure the CI to fail the build if the new code exceeds the budget.
 > 4. **Transparency:** Use a dashboard (Grafana/Datadog) to track performance trends over time so teams can see the impact of their changes in real-time.
+
+---
+
+## 🧪 Custom Metrics & The User Timing API
+
+While standard Core Web Vitals (LCP, CLS, INP) capture the general health of a webpage, they are generic. For complex applications, you need custom metrics to measure specific business-critical user journeys (e.g., "Time to Interactive Search Results" or "Checkout Button Click to Success").
+
+### The User Timing API (`performance.mark` & `performance.measure`)
+
+The browser provides the User Timing API to record high-precision, microsecond-level timestamps. These metrics are automatically integrated into the browser's performance timeline (visible in Chrome DevTools Performance audits) and can be extracted programmatically to report back to your Real User Monitoring (RUM) analytics.
+
+#### How to Implement:
+
+```javascript
+function processCheckoutFlow() {
+  // 1. Establish the starting mark
+  performance.mark('checkout-flow-start');
+
+  try {
+    // Perform data processing / server calls
+    executeCheckoutAPICall();
+
+    // 2. Establish the ending mark once the UI has fully updated
+    performance.mark('checkout-flow-end');
+
+    // 3. Measure the difference between the two marks
+    performance.measure('Checkout Flow Duration', 'checkout-flow-start', 'checkout-flow-end');
+
+    // 4. Retrieve the measure entry to send to telemetry
+    const measures = performance.getEntriesByName('Checkout Flow Duration');
+    const duration = measures[0].duration; // in milliseconds (high precision decimal)
+
+    sendToAnalytics({ metric: 'checkout_duration_ms', value: duration });
+  } catch (error) {
+    console.error('Checkout failed', error);
+  } finally {
+    // 5. Clean up marks and measures from the browser buffer to avoid memory bloat
+    performance.clearMarks('checkout-flow-start');
+    performance.clearMarks('checkout-flow-end');
+    performance.clearMeasures('Checkout Flow Duration');
+  }
+}
+```

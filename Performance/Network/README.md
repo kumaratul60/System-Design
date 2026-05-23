@@ -53,6 +53,18 @@ Optimizing the delivery and size of resources to minimize latency and bandwidth.
     - [Q2: Explain "Domain Sharding" and why it's an anti-pattern in HTTP/2+.](#q2-explain-domain-sharding-and-why-its-an-anti-pattern-in-http2)
     - [Q3: How do "103 Early Hints" differ from "HTTP/2 Server Push"?](#q3-how-do-103-early-hints-differ-from-http2-server-push)
     - [Q4: When would `preconnect` be "harmful" to performance?](#q4-when-would-preconnect-be-harmful-to-performance)
+  - [🛠️ Main Thread Offloading \& Task Scheduling](#️-main-thread-offloading--task-scheduling)
+    - [1. Web Workers: Offloading Heavy Calculations](#1-web-workers-offloading-heavy-calculations)
+    - [2. Task Scheduling: `queueMicrotask` vs. `requestAnimationFrame` vs. `requestIdleCallback`](#2-task-scheduling-queuemicrotask-vs-requestanimationframe-vs-requestidlecallback)
+    - [Deep Dive: Costs, Pitfalls, \& Best Use Cases](#deep-dive-costs-pitfalls--best-use-cases)
+      - [1. `queueMicrotask`](#1-queuemicrotask)
+      - [2. `requestAnimationFrame` (rAF)](#2-requestanimationframe-raf)
+      - [3. `requestIdleCallback` (rIC)](#3-requestidlecallback-ric)
+  - [Memory Management: WeakMap \& WeakSet for Memory Leak Prevention](#memory-management-weakmap--weakset-for-memory-leak-prevention)
+    - [The Problem: Strong References](#the-problem-strong-references)
+    - [The Solution: `WeakMap` \& `WeakSet`](#the-solution-weakmap--weakset)
+      - [Implementation Pattern:](#implementation-pattern)
+      - [Differences at a Glance:](#differences-at-a-glance)
 
 ---
 
@@ -513,3 +525,154 @@ A programmable proxy between the browser and the network, allowing for fine-grai
 ### Q4: When would `preconnect` be "harmful" to performance?
 
 > **Answer:** Every `preconnect` consumes CPU and memory for the handshake. If you preconnect to 10 different origins that aren't critical for the initial paint, you are "stealing" bandwidth and main-thread time from the resources that actually matter for LCP.
+
+---
+
+## 🛠️ Main Thread Offloading & Task Scheduling
+
+To maintain excellent **INP (Interaction to Next Paint)**, the browser's main thread must remain free to process user interactions instantly. Heavy JavaScript calculations or low-priority background processing must be scheduled or offloaded.
+
+### 1. Web Workers: Offloading Heavy Calculations
+
+By default, JavaScript runs on a single thread (the main thread). If you perform complex computations (e.g., parsing a 5MB CSV file, processing images, or running path-finding algorithms), the thread freezes, and the page stops responding.
+
+**Web Workers** allow you to spin up a background OS thread that runs JS in isolation. It communicates with the main thread via message passing (`postMessage`):
+
+```javascript
+// 1. worker.js (Background Thread)
+self.onmessage = function (e) {
+  const data = e.data;
+  const result = runHeavyAnalysis(data); // CPU-heavy operation
+  self.postMessage(result); // Send back to main thread
+};
+
+function runHeavyAnalysis(numbers) {
+  return numbers.reduce((acc, val) => acc + Math.sqrt(val), 0);
+}
+
+// 2. main.js (Main Thread / React Component)
+const worker = new Worker(new URL('./worker.js', import.meta.url));
+
+function handleStartComputation(largeDataSet) {
+  // Send data to worker, freeing up the main thread immediately
+  worker.postMessage(largeDataSet);
+
+  worker.onmessage = function (e) {
+    console.log('Calculation complete:', e.data);
+  };
+}
+```
+
+---
+
+### 2. Task Scheduling: `queueMicrotask` vs. `requestAnimationFrame` vs. `requestIdleCallback`
+
+Choosing the correct task scheduling method is vital to prevent main thread blocking and visual lag.
+
+| Scheduler                         | When does it execute?                                                                         | Impact on Rendering / Main Thread                                                                                        | Ideal Use Case                                             |
+| :-------------------------------- | :-------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------- |
+| **`queueMicrotask`**              | Immediately after the current call stack clears, _before_ yielding to the browser event loop. | **Blocking:** It halts rendering/painting. If a microtask triggers more microtasks, it will freeze the page.             | State updates, internal promise resolution, cleanups.      |
+| **`requestAnimationFrame` (rAF)** | Right before the next layout, paint, and frame paint.                                         | **Synchronous:** Blocks paint if the task is too slow, but guarantees execution aligned with the monitor's refresh rate. | DOM animations, visual styling changes, canvas drawing.    |
+| **`requestIdleCallback` (rIC)**   | When the browser is completely idle (empty event loop queue) or when a deadline is reached.   | **Non-blocking:** Yields instantly if a user interacts with the page, preserving responsiveness.                         | Logging analytics, preloading future assets, caching data. |
+
+**Example: Splitting long lists of tasks with `requestIdleCallback`**
+
+```javascript
+const tasks = [task1, task2, task3 /* ... */];
+
+function workLoop(deadline) {
+  // Execute tasks only while there is remaining time in the current frame
+  // and we haven't timed out.
+  while ((deadline.timeRemaining() > 0 || deadline.didTimeout) && tasks.length > 0) {
+    const currentTask = tasks.shift();
+    performTask(currentTask);
+  }
+
+  // If there are tasks left, request another idle window
+  if (tasks.length > 0) {
+    requestIdleCallback(workLoop);
+  }
+}
+
+// Start the idle loop
+requestIdleCallback(workLoop, { timeout: 2000 }); // Ensure it runs after max 2s
+```
+
+---
+
+### Deep Dive: Costs, Pitfalls, & Best Use Cases
+
+#### 1. `queueMicrotask`
+
+- **Cost:** **Negligible CPU overhead, but high UI blocking risk.** Microtasks are lightweight, but because they run _before_ the browser paint event, executing too many blocks the rendering process.
+- **Pitfalls (Microtask Starvation):** If a microtask recursively schedules another microtask (e.g., a continuous loop of `Promise.resolve().then()`), the browser queue never empties. The event loop cannot proceed to render frames, layout, or capture user events, causing the entire browser tab to freeze.
+- **When to use:** Use for tiny, critical operations that must execute _immediately_ after the current call stack finishes but _before_ layout and paint (e.g., batching state changes or handling internal library state cleanups).
+
+#### 2. `requestAnimationFrame` (rAF)
+
+- **Cost:** **Medium CPU cost.** Highly efficient as it is locked to the monitor's frame rate (e.g., 60Hz or 120Hz), but executing expensive JavaScript inside it will instantly drop frames.
+- **Pitfalls (Layout Thrashing):** If you perform a DOM write (e.g., modifying `element.style.left`) and then immediately perform a DOM read (e.g., querying `element.offsetWidth`) inside a rAF loop, you force the browser to compute layout synchronously on the spot. Doing this repeatedly drops the rendering rate down to single digits.
+- **When to use:** Use for any synchronous DOM changes, style adjustments, or canvas updates that must sync with screen updates (e.g., scrolling animations, gesture tracking, physics loops).
+
+#### 3. `requestIdleCallback` (rIC)
+
+- **Cost:** **Highest tracking overhead.** The browser must continuously monitor frame budget times to calculate the remaining idle millisecond slices.
+- **Pitfalls:**
+  1. **DOM Mutation Warning:** Never run DOM writes (styles/layouts) inside `requestIdleCallback`. Doing so triggers layout shifts that will delay the next frame, causing visible lag.
+  2. **Main Thread Blocking:** The idle deadline is capped at a maximum of `50ms`. If your task exceeds this timeout without checking `deadline.timeRemaining()`, you will block user interactions.
+  3. **Browser Support (Safari):** Safari does not natively support `requestIdleCallback`. Production code must include a polyfill (typically falling back to `setTimeout(fn, 1)`).
+- **When to use:** Use for low-priority background operations (e.g., logging telemetry/analytics, prefetching future bundles/images, caching API responses, or indexing data in IndexedDB).
+
+---
+
+## Memory Management: WeakMap & WeakSet for Memory Leak Prevention
+
+In high-performance single-page applications, memory leaks (such as **detached DOM nodes**) can gradually degrade performance, leading to high CPU usage, tab crashes, and lag.
+
+### The Problem: Strong References
+
+A standard JS `Map` or `Set` holds a **strong reference** to its keys and values. If you map metadata to a DOM element (e.g., tracking render times or touch states):
+
+```javascript
+const elementCache = new Map();
+
+function cacheElementData(element, metadata) {
+  elementCache.set(element, metadata);
+}
+```
+
+Even if `element` is completely removed from the DOM (unmounted by React or removed via `removeChild`), the garbage collector **cannot** free its memory. Why? Because the `elementCache` Map still holds a strong reference to it as a key. This is a classic memory leak.
+
+### The Solution: `WeakMap` & `WeakSet`
+
+`WeakMap` (and `WeakSet`) hold **weak references** to their keys (which must be objects). If there are no other strong references to a key object (e.g., the DOM node is unmounted and no other variables refer to it), the garbage collector automatically releases the object and removes its entry from the `WeakMap`.
+
+#### Implementation Pattern:
+
+```javascript
+// A WeakMap prevents garbage collection blocking
+const domMetadata = new WeakMap();
+
+export function associateMetadata(domNode, data) {
+  // Key must be an object (the DOM node)
+  domMetadata.set(domNode, {
+    ...data,
+    timestamp: performance.now(),
+  });
+}
+
+// When the DOM node is unmounted/removed:
+// 1. React removes it from the browser page.
+// 2. We nullify local client references.
+// 3. The garbage collector automatically reclaims the memory of the node and the metadata entry.
+```
+
+#### Differences at a Glance:
+
+| Feature               | `Map` / `Set`                                  | `WeakMap` / `WeakSet`                                    |
+| :-------------------- | :--------------------------------------------- | :------------------------------------------------------- |
+| **Reference Type**    | Strong                                         | **Weak**                                                 |
+| **Keys Type**         | Any type (primitives, objects)                 | **Objects only**                                         |
+| **Iterability**       | Yes (has `.keys()`, `.values()`, `.forEach()`) | **No** (cannot be iterated; prevents GC exposure)        |
+| **Size Property**     | Yes (`.size`)                                  | **No**                                                   |
+| **Garbage Collected** | No (retained as long as Map exists)            | **Yes** (keys collected automatically when unreferenced) |
