@@ -2,6 +2,23 @@
 
 This guide covers common design patterns and how to implement real-world features correctly.
 
+## Table of Contents
+
+- [React Design Patterns \& Common Tasks](#react-design-patterns--common-tasks)
+  - [Table of Contents](#table-of-contents)
+  - [1. HOC vs Render Props vs Custom Hooks](#1-hoc-vs-render-props-vs-custom-hooks)
+  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+    - [Q1: What is the "Compound Components" pattern and why is it superior for library authors?](#q1-what-is-the-compound-components-pattern-and-why-is-it-superior-for-library-authors)
+    - [Q2: Explain "Inversion of Control" (IoC) in the context of React Hooks.](#q2-explain-inversion-of-control-ioc-in-the-context-of-react-hooks)
+    - [Q3: How do you handle "Portals" and the "Z-Index War" in a large application?](#q3-how-do-you-handle-portals-and-the-z-index-war-in-a-large-application)
+    - [Q4: Controlled vs. Uncontrolled Components: When is "Uncontrolled" actually better?](#q4-controlled-vs-uncontrolled-components-when-is-uncontrolled-actually-better)
+  - [🛠️ Architect's Pattern Selection](#️-architects-pattern-selection)
+  - [2. Error Boundaries](#2-error-boundaries)
+  - [3. Implementing a Search with Debouncing](#3-implementing-a-search-with-debouncing)
+  - [4. Configurable Dropdown (Modular Design)](#4-configurable-dropdown-modular-design)
+  - [5. Handling Side Effects \& Async Data](#5-handling-side-effects--async-data)
+  - [6. Forms \& Validation](#6-forms--validation)
+
 ---
 
 ## 1. HOC vs Render Props vs Custom Hooks
@@ -136,6 +153,9 @@ Without a cleanup function (`clearTimeout`), every keystroke would still trigger
 
 **Best Practice:**
 Use a library like `TanStack Query` (React Query) which handles caching, deduplication, and stale-time automatically.
+
+> [!NOTE]
+> For advanced patterns such as Optimistic UI and dynamic query prefetching, see [Advanced React 18/19 Performance Patterns](../../Performance/React/README.md#1-optimistic-ui-updates-modern-react-19-useoptimistic).
 
 ---
 

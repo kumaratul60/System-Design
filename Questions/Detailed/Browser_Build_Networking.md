@@ -2,6 +2,22 @@
 
 This guide covers the "under the hood" mechanics of how web applications are delivered and parsed.
 
+## Table of Contents
+
+- [Browser, Networking, and Build Optimization](#browser-networking-and-build-optimization)
+  - [Table of Contents](#table-of-contents)
+  - [1. What happens when you type a URL? (DNS \& HTML Parsing)](#1-what-happens-when-you-type-a-url-dns--html-parsing)
+  - [2. Dependencies vs devDependencies](#2-dependencies-vs-devdependencies)
+  - [3. Webpack, Chunking, and Optimization](#3-webpack-chunking-and-optimization)
+  - [4. Script \& Image Optimization](#4-script--image-optimization)
+  - [5. Styling Approaches in React](#5-styling-approaches-in-react)
+  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+    - [Q1: Vite vs. Webpack - Why is Vite "Faster" in development but similar in production?](#q1-vite-vs-webpack---why-is-vite-faster-in-development-but-similar-in-production)
+    - [Q2: How do you solve the "Waterfall" problem in dynamic imports?](#q2-how-do-you-solve-the-waterfall-problem-in-dynamic-imports)
+    - [Q3: What is "Content Hashing" and why is it critical for Long-term Caching?](#q3-what-is-content-hashing-and-why-is-it-critical-for-long-term-caching)
+    - [Q4: Explain the "Critical CSS" pattern to eliminate Render-Blocking.](#q4-explain-the-critical-css-pattern-to-eliminate-render-blocking)
+  - [🏛️ Architect's Build Checklist](#️-architects-build-checklist)
+
 ---
 
 ## 1. What happens when you type a URL? (DNS & HTML Parsing)
@@ -22,6 +38,9 @@ This guide covers the "under the hood" mechanics of how web applications are del
 
 **Explain Me (Parsing Nuance):**
 Parsing is **incremental**. The browser starts building the DOM as soon as the first chunks of HTML arrive. However, CSS is **render-blocking** (the browser won't paint until CSSOM is ready), and synchronous Scripts are **parser-blocking** (the browser stops building the DOM to download and execute JS).
+
+> [!NOTE]
+> For a deep-dive on modern networking protocols, connection parameters, and the rendering flow, see [Critical Rendering Path (CRP)](../../Performance/Network/README.md#1-critical-rendering-path-crp), [TCP Slow Start](../../Performance/Network/README.md#q1-what-is-tcp-slow-start-and-how-does-it-affect-initial-page-load), and [Resource Hints (dns-prefetch / preconnect)](../../Performance/Network/README.md#%F0%9F%92%A1-resource-hints-guiding-the-browser).
 
 ---
 
@@ -52,6 +71,9 @@ When you run `npm install --production`, only `dependencies` are installed. This
 2.  **Tree Shaking:** Removing unused code from the final bundle.
 3.  **Minification:** Removing whitespace and shortening variable names (using Terser).
 
+> [!TIP]
+> See [Tree-Shaking & dependency traps](../../Performance/Assets/README.md#q6-how-does-tree-shaking-actually-evaluate-sideeffects-in-packagejson-and-what-is-the-cjsesm-duplicate-dependency-trap) in the Assets Optimization module for details on bundling side effects and duplicate dependencies.
+
 ---
 
 ## 4. Script & Image Optimization
@@ -71,6 +93,9 @@ When you run `npm install --production`, only `dependencies` are installed. This
 - **Responsive Images:** Use `srcset` and `<picture>` to serve different sizes based on device.
 - **Lazy Loading:** Use the native `loading="lazy"` attribute for below-the-fold images.
 - **Aspect Ratio:** Always set `width` and `height` to prevent layout shifts (CLS).
+
+> [!NOTE]
+> For comprehensive guides on format comparison, responsive patterns, and priority hints, see [Image Optimization](../../Performance/Assets/README.md#🖼️-image-optimization) and [Script Loading Options](../../Performance/Network/README.md#⚡-script-loading-async-vs-defer).
 
 ---
 
@@ -106,6 +131,7 @@ When you run `npm install --production`, only `dependencies` are installed. This
 > **Answer:** Code splitting (Lazy Loading) can create "Waterfalls" where the browser doesn't know it needs `Chunk B` until `Chunk A` has finished downloading and executing.
 >
 > - **The Fix:** Use **Preload Hints** (`<link rel="modulepreload" href="...">`). This tells the browser to fetch the dependency in parallel with the main bundle, even if it hasn't "discovered" it in the code yet.
+> - **Reference:** See [Chunk Prefetching for Lazy Components](../../Performance/React/README.md#3-chunk-prefetching-for-lazy-components) in the React Performance module for client-side preloading implementation.
 
 ### Q3: What is "Content Hashing" and why is it critical for Long-term Caching?
 

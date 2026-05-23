@@ -2,6 +2,27 @@
 
 This guide covers how to scale React applications both technically and organizationally.
 
+## Table of Contents
+
+- [Frontend Architecture \& Scaling](#frontend-architecture--scaling)
+  - [Table of Contents](#table-of-contents)
+  - [1. How to scale Frontend Applications?](#1-how-to-scale-frontend-applications)
+  - [2. Rendering Strategies: The Deep Comparison](#2-rendering-strategies-the-deep-comparison)
+    - [1. CSR (Client-Side Rendering)](#1-csr-client-side-rendering)
+    - [2. SSR (Server-Side Rendering)](#2-ssr-server-side-rendering)
+    - [3. SSG (Static Site Generation)](#3-ssg-static-site-generation)
+    - [4. ISR (Incremental Static Regeneration)](#4-isr-incremental-static-regeneration)
+  - [3. Next.js: Does `"use client"` mean CSR only?](#3-nextjs-does-use-client-mean-csr-only)
+  - [4. State Management in Large Applications](#4-state-management-in-large-applications)
+  - [5. Multi-team Collaboration: Micro-frontends (MFEs)](#5-multi-team-collaboration-micro-frontends-mfes)
+  - [6. Scalable Testing Strategies](#6-scalable-testing-strategies)
+  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+    - [Q1: Micro-frontends (MFEs) - Is "Module Federation" always the best choice?](#q1-micro-frontends-mfes---is-module-federation-always-the-best-choice)
+    - [Q2: What is the "State Density" problem in large React apps?](#q2-what-is-the-state-density-problem-in-large-react-apps)
+    - [Q3: How do you handle "Versioning" in an MFE architecture with independent deployments?](#q3-how-do-you-handle-versioning-in-an-mfe-architecture-with-independent-deployments)
+    - [Q4: Why is "p99 Testing" critical for CI/CD in large organizations?](#q4-why-is-p99-testing-critical-for-cicd-in-large-organizations)
+  - [🏛️ Architect's Checklist for Scale](#️-architects-checklist-for-scale)
+
 ---
 
 ## 1. How to scale Frontend Applications?
@@ -24,11 +45,17 @@ Frontend scaling is less about "more servers" and more about **Performance, Main
 2.  **Monorepo Tools (Nx, Turborepo):** Manage multiple packages/apps with optimized build caching and dependency management.
 3.  **RFC (Request for Comments) Process:** Standardize architectural decisions across teams.
 
+> [!NOTE]
+> For a deep-dive on scaling strategies and standard practices, see [Web Performance Optimization Overview](../../Performance/README.md) and [Rendering Patterns Overview](../../Performance/Rendering/README.md).
+
 ---
 
 ## 2. Rendering Strategies: The Deep Comparison
 
 **Question:** When should we use CSR, SSR, SSG, or ISR? Provide detailed scenarios for each, including when to avoid them.
+
+> [!TIP]
+> For visual flow sequences, device-specific matrices, and architectural trade-offs, see the full deep-dive in [Rendering Patterns](../../Performance/Rendering/README.md).
 
 ### 1. CSR (Client-Side Rendering)
 
@@ -88,6 +115,9 @@ A hybrid of SSG and SSR. It allows you to update static pages _after_ the build,
 **Answer:**
 The short answer is: **It uses both.**
 
+> [!NOTE]
+> Detailed mechanics of initial paint and dynamic code execution can be found in the [Hydration & Islands Architecture](../../Performance/Rendering/README.md#q0-what-is-hydration-and-why-is-it-a-performance-bottleneck-in-ssr) documentation.
+
 A component marked with `"use client"` is still rendered on the server into static HTML for the initial page load, but it then "hydrates" on the client to become interactive.
 
 **The Nuance:**
@@ -110,7 +140,10 @@ A component marked with `"use client"` is still rendered on the server into stat
 **Question:** Can React Hooks fully replace Redux? How would you manage state in a large app?
 
 **Answer:**
-**Hooks vs Redux:** Hooks (specifically `useContext` + `useReducer`) can replace Redux for many use cases, but Redux (or similar) still has a place.
+
+> [!TIP]
+> Refer to [State Colocation & Selection](../../Performance/React/README.md#3-state-colocation) in the React Performance module for best practices on avoiding re-render propagation.
+> **Hooks vs Redux:** Hooks (specifically `useContext` + `useReducer`) can replace Redux for many use cases, but Redux (or similar) still has a place.
 
 **When to use Redux/Zustand:**
 
@@ -176,6 +209,7 @@ Use the **Testing Trophy** approach (prioritizing integration tests):
 > **Answer:** As an app grows, developers tend to store _everything_ in a global store (Redux/Zustand). This leads to "State Density" where a single update in a deeply nested object triggers re-renders in 100+ unrelated components.
 >
 > - **The Fix:** **State Colocation**. Only put state in the global store if it's truly global (Auth, Theme). Everything else should live in the smallest possible component subtree. Use **Atomic State** (Recoil/Jotai) or **Selectors** (Redux Toolkit/Zustand) to ensure components only re-render when their specific "slice" of data changes.
+> - **Reference:** For details on context performance bottlenecks and external store synchronization, see [Context API Bottlenecks](../../Performance/React/README.md#q2-explain-the-context-api-performance-bottleneck-and-how-to-solve-it).
 
 ### Q3: How do you handle "Versioning" in an MFE architecture with independent deployments?
 

@@ -2,6 +2,24 @@
 
 This guide covers specific scenarios and "gotcha" questions that often arise in interviews, ensuring you can speak to the "how" and "why" of React's internal behavior.
 
+## Table of Contents
+
+- [Miscellaneous React \& JavaScript Interview Questions](#miscellaneous-react--javascript-interview-questions)
+  - [Table of Contents](#table-of-contents)
+  - [1. Extracting Utility Functions](#1-extracting-utility-functions)
+  - [2. Asynchronous State Updates \& Promises](#2-asynchronous-state-updates--promises)
+  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+    - [Q1: What is the "Closure Trap" in React Hooks and how do you avoid it?](#q1-what-is-the-closure-trap-in-react-hooks-and-how-do-you-avoid-it)
+    - [Q2: Why is "Prop Drilling" sometimes _better_ than using the Context API?](#q2-why-is-prop-drilling-sometimes-better-than-using-the-context-api)
+    - [Q3: Explain the difference between `npm install` and `npm ci`.](#q3-explain-the-difference-between-npm-install-and-npm-ci)
+    - [Q4: How do you handle "The Event Loop" being blocked by a synchronous task?](#q4-how-do-you-handle-the-event-loop-being-blocked-by-a-synchronous-task)
+  - [3. Communication between Sibling Components](#3-communication-between-sibling-components)
+  - [4. Window Events \& Listeners](#4-window-events--listeners)
+  - [5. Shallow vs Deep Comparison](#5-shallow-vs-deep-comparison)
+  - [6. Limitations of React](#6-limitations-of-react)
+  - [7. React Router \& Dynamic Routing](#7-react-router--dynamic-routing)
+  - [8. The Module Pattern](#8-the-module-pattern)
+
 ---
 
 ## 1. Extracting Utility Functions
@@ -32,6 +50,9 @@ React state updates are **asynchronous** and **batched**. When dealing with asyn
 3.  **Error Handling:** Use `try/catch` blocks inside `async` functions to handle API failures and update error states accordingly.
 
 **Explain Me:** React batches multiple `setState` calls into a single re-render for performance. However, in versions before React 18, state updates inside `setTimeout` or `Promises` were NOT batched. With **Automatic Batching** in React 18+, almost all updates are batched, regardless of where they originate.
+
+> [!NOTE]
+> For a deep-dive on concurrent transition features and automatic batching, see the [Concurrent React](../../Performance/React/README.md#-concurrent-react-react-18) section.
 
 ---
 
@@ -69,6 +90,7 @@ React state updates are **asynchronous** and **batched**. When dealing with asyn
 >   1. **Web Workers:** Run the task in a background thread.
 >   2. **Chunking:** Break the task into 10ms chunks using `setTimeout` or `requestIdleCallback`.
 >   3. **Scheduler:** React 18's `useTransition` yields to the main thread automatically.
+> - **Reference:** For details on task scheduling API costs and Web Workers communication, see [Main Thread Offloading & Task Scheduling](../../Performance/Network/README.md#%EF%B8%8F-main-thread-offloading--task-scheduling).
 
 ---
 

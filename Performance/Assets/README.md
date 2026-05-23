@@ -244,6 +244,29 @@ Tell the browser to fetch the font early in the lifecycle.
 >
 > - **The Edge:** The CDN computes the transformation once, caches it at the edge, and serves it to all subsequent users. This reduces build times (no need to generate 1000s of thumbnails) and ensures the most efficient format is always used.
 
+### Q5: How does CSS Selector Complexity affect style calculation, and how does Layout Containment (the CSS `contain` property) optimize rendering?
+
+> **Answer:**
+>
+> 1. **CSS Selector Complexity:** Browsers match CSS selectors from **right to left** (the key selector first, then walking up the DOM tree to verify ancestry). Complex nested selectors like `.card .content .body ul li a:hover` require the browser to perform extensive DOM tree traversal for every matching element whenever style recalcs trigger. Keeping selectors flat (e.g., using BEM naming like `.card-link--hover`) reduces matching time to $O(1)$ relative to DOM depth.
+> 2. **Layout Containment (`contain` property):** When DOM elements change dynamically, the browser often re-calculates styles and layouts for the entire page (global reflow). The CSS `contain` property allows developers to isolate subtrees from the rest of the document:
+>    - `contain: layout;` tells the browser that styles/layout changes inside this element will not affect the layout of elements outside it.
+>    - `contain: paint;` guarantees that descendants of the element are not painted outside its bounds.
+>    - `contain: size;` tells the browser it can calculate the size of this element without checking its children.
+>    - **Combined Value:** Using `contain: layout paint;` on elements like off-screen menus, dynamic widgets, or scrollable feeds restricts the browser's layout boundary, ensuring style recalculations and repaints are localized, which drastically reduces frame rendering times.
+
+### Q6: How does tree-shaking actually evaluate `"sideEffects"` in `package.json`, and what is the CJS/ESM duplicate dependency trap?
+
+> **Answer:**
+>
+> 1. **Tree-Shaking & `"sideEffects"`:** Tree-shaking relies on the static structure of ES6 modules (`import`/`export`). However, a bundler cannot drop an unused module if it might perform a "side effect" upon import (e.g., modifying `window` or prototypes, setting up global event listeners).
+>    - By setting `"sideEffects": false` in a library's `package.json`, the author declares that none of its files have side effects, giving bundlers permission to skip importing/bundling unused modules entirely.
+>    - You can also specify an array of files that _do_ contain side effects (e.g., `"sideEffects": ["*.css", "./src/polyfills.js"]`).
+> 2. **CJS/ESM Duplicate Dependency Trap:** When a project imports a library that supports both CommonJS (CJS, `require()`) and ES Modules (ESM, `import`), or when different transitive dependencies resolve to different module formats of the same library:
+>    - The bundler may bundle the same library **twice** (once as CJS and once as ESM).
+>    - **Consequences:** This bloats the final bundle size. More critically, it creates separate instances of the module's state. If the library depends on a singleton registry (e.g., a React context, custom registry, or global configuration cache), duplicate copies will break state consistency since they won't share the same memory instance.
+>    - **Solution:** Configure bundler aliases (e.g., Rollup/Webpack `resolve.alias` or package exports fields) to force the resolution of a single format (usually ESM) across the bundle graph.
+
 ---
 
 ## Staff Level Interview Question (General Performance)

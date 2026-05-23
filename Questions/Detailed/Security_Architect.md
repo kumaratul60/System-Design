@@ -2,6 +2,45 @@
 
 This guide provides a tiered approach to security interview questions. It ranges from foundational knowledge (SDE-1) to complex, open-ended architectural challenges (Staff/Architect).
 
+## Table of Contents
+
+- [🛡️ Security Architect Interview Grill (SDE-1 to Staff/Architect)](#️-security-architect-interview-grill-sde-1-to-staffarchitect)
+  - [Table of Contents](#table-of-contents)
+  - [🟢 Level 1: Foundational (SDE-1 / Junior)](#-level-1-foundational-sde-1--junior)
+    - [Q: What is the difference between Authentication and Authorization?](#q-what-is-the-difference-between-authentication-and-authorization)
+    - [Q: Why should you never store passwords in plain text?](#q-why-should-you-never-store-passwords-in-plain-text)
+    - [Q: What is a "Salt" in the context of password hashing?](#q-what-is-a-salt-in-the-context-of-password-hashing)
+    - [Q: What does the `HttpOnly` flag on a cookie do?](#q-what-does-the-httponly-flag-on-a-cookie-do)
+    - [Q: What is the Principle of Least Privilege (PoLP)?](#q-what-is-the-principle-of-least-privilege-polp)
+    - [Q: What is an IDOR (Insecure Direct Object Reference) vulnerability, and how do you prevent it at scale?](#q-what-is-an-idor-insecure-direct-object-reference-vulnerability-and-how-do-you-prevent-it-at-scale)
+    - [Q: What are the 4 critical security flags for a session cookie?](#q-what-are-the-4-critical-security-flags-for-a-session-cookie)
+    - [Q: What is Clickjacking, and how does it differ from CSRF?](#q-what-is-clickjacking-and-how-does-it-differ-from-csrf)
+  - [🟡 Level 2: Experienced (SDE-2 / Senior)](#-level-2-experienced-sde-2--senior)
+    - [Q: How do you choose between `SameSite=Strict` and `SameSite=Lax` for session cookies?](#q-how-do-you-choose-between-samesitestrict-and-samesitelax-for-session-cookies)
+    - [Q: Explain "Defense in Depth" in the context of an API.](#q-explain-defense-in-depth-in-the-context-of-an-api)
+    - [Q: What is a Replay Attack, and how do you prevent it in a REST API?](#q-what-is-a-replay-attack-and-how-do-you-prevent-it-in-a-rest-api)
+  - [🔴 Level 3: Advanced (Staff / Architect)](#-level-3-advanced-staff--architect)
+    - [Q: Explain SSRF (Server-Side Request Forgery) and its impact in Cloud environments.](#q-explain-ssrf-server-side-request-forgery-and-its-impact-in-cloud-environments)
+    - [Q: What is the difference between OAuth2 and OpenID Connect (OIDC)?](#q-what-is-the-difference-between-oauth2-and-openid-connect-oidc)
+    - [Q: How would you design a defense-in-depth strategy for a large-scale Micro-Frontends (MFE) application?](#q-how-would-you-design-a-defense-in-depth-strategy-for-a-large-scale-micro-frontends-mfe-application)
+    - [Q: We are moving to a stateless JWT-based authentication. What are the primary security trade-offs, and how do you handle token revocation/logout?](#q-we-are-moving-to-a-stateless-jwt-based-authentication-what-are-the-primary-security-trade-offs-and-how-do-you-handle-token-revocationlogout)
+    - [Q: "Zero Trust" is a popular buzzword. How would you practically implement it in a legacy microservices environment?](#q-zero-trust-is-a-popular-buzzword-how-would-you-practically-implement-it-in-a-legacy-microservices-environment)
+    - [Q: We are building a Public API for third-party developers. How do you handle Rate Limiting and DoS protection at scale?](#q-we-are-building-a-public-api-for-third-party-developers-how-do-you-handle-rate-limiting-and-dos-protection-at-scale)
+    - [Q: Design a secure "Forgot Password" flow that is resilient to User Enumeration and Account Takeover (ATO).](#q-design-a-secure-forgot-password-flow-that-is-resilient-to-user-enumeration-and-account-takeover-ato)
+    - [Q: How do you handle "The Secret Management Problem" (Chicken \& Egg)? How does a server get its first secret to talk to the Vault?](#q-how-do-you-handle-the-secret-management-problem-chicken--egg-how-does-a-server-get-its-first-secret-to-talk-to-the-vault)
+    - [Q: Scenario: A developer accidentally logs user emails and SSNs in plain text. How do you fix this and prevent it from happening again?](#q-scenario-a-developer-accidentally-logs-user-emails-and-ssns-in-plain-text-how-do-you-fix-this-and-prevent-it-from-happening-again)
+    - [Q: Explain the security implications of Prototype Pollution. How do you prevent it in a high-performance Node.js environment?](#q-explain-the-security-implications-of-prototype-pollution-how-do-you-prevent-it-in-a-high-performance-nodejs-environment)
+    - [Q: Compare CSP Nonces vs. Hashes. Which would you recommend for a legacy codebase that uses many inline scripts?](#q-compare-csp-nonces-vs-hashes-which-would-you-recommend-for-a-legacy-codebase-that-uses-many-inline-scripts)
+    - [Q: How do you protect against Supply Chain attacks (malicious dependencies) without slowing down the development team?](#q-how-do-you-protect-against-supply-chain-attacks-malicious-dependencies-without-slowing-down-the-development-team)
+    - [Q: Why is OAuth2 PKCE (Proof Key for Code Exchange) recommended for SPAs/Mobile apps over the standard Authorization Code flow?](#q-why-is-oauth2-pkce-proof-key-for-code-exchange-recommended-for-spasmobile-apps-over-the-standard-authorization-code-flow)
+    - [Q: What are the unique security risks of GraphQL compared to REST, and how do you mitigate them?](#q-what-are-the-unique-security-risks-of-graphql-compared-to-rest-and-how-do-you-mitigate-them)
+    - [Q: Explain the "Shared Responsibility Model" in Cloud Security (AWS/GCP/Azure).](#q-explain-the-shared-responsibility-model-in-cloud-security-awsgcpazure)
+  - [🏛️ Level 4: Situational Architect's Grill (Deep Logic)](#️-level-4-situational-architects-grill-deep-logic)
+    - [Q: Scenario: You are moving to a multi-region architecture. How do you handle "Global Session Invalidation"?](#q-scenario-you-are-moving-to-a-multi-region-architecture-how-do-you-handle-global-session-invalidation)
+    - [Q: Scenario: An attacker is performing a "Low and Slow" credential stuffing attack. Your rate limiter is based on IP, and they are using a distributed proxy network (10k IPs). How do you stop them?](#q-scenario-an-attacker-is-performing-a-low-and-slow-credential-stuffing-attack-your-rate-limiter-is-based-on-ip-and-they-are-using-a-distributed-proxy-network-10k-ips-how-do-you-stop-them)
+    - [Q: Scenario: You need to implement "Zero Trust" for a legacy internal service that doesn't support Auth. You cannot modify the service's code.](#q-scenario-you-need-to-implement-zero-trust-for-a-legacy-internal-service-that-doesnt-support-auth-you-cannot-modify-the-services-code)
+  - [Final Interviewer Tip](#final-interviewer-tip)
+
 ---
 
 ## 🟢 Level 1: Foundational (SDE-1 / Junior)
@@ -47,6 +86,9 @@ _Focus: Definitions, basic mechanics, and awareness._
 3.  **SameSite:** (Strict/Lax) Prevents the browser from sending the cookie in cross-site requests (mitigates CSRF).
 4.  **Domain/Path:** Restricts the cookie's scope to specific subdomains or paths to prevent "Cookie Tossing" attacks.
 
+> [!NOTE]
+> For Cookie Tossing vulnerabilities and modern cookie security configurations, see [Cookie Prefixes (`__Host-` / `__Secure-`)](../../Security/ClientSideStorage/README.md#q6-what-are-cookie-prefixes-__host--and-__secure--and-how-do-they-work).
+
 ### Q: What is Clickjacking, and how does it differ from CSRF?
 
 **Answer:**
@@ -55,6 +97,9 @@ _Focus: Definitions, basic mechanics, and awareness._
 - **Prevention:**
   1.  **X-Frame-Options:** Set to `DENY` or `SAMEORIGIN`.
   2.  **CSP `frame-ancestors`:** (Modern way) `Content-Security-Policy: frame-ancestors 'self'`.
+
+> [!NOTE]
+> For Express implementation examples of clickjacking headers and the modern shift to CSP ancestors, see [X-Frame-Options & frame-ancestors](file:///Users/atulkumarawasthi/projects/SystemDesign/Security/SecurityHeaders/README.md#q3-why-is-x-frame-options-deny-being-replaced-by-csp-frame-ancestors-none).
 
 ---
 
@@ -103,6 +148,9 @@ _Focus: Strategy, system-wide impact, and threat modeling._
   2.  **Network Segmentation:** Use VPCs and security groups to block the app server from reaching sensitive internal ports.
   3.  **Disable Metadata Access:** Use IMDSv2 (AWS) which requires a session token and resists simple SSRF.
 
+> [!IMPORTANT]
+> For detailed SSRF patterns, code demonstrations, and DNS Rebinding protections, see [SSRF Prevention and DNS Rebinding](../../Security/SSRF&JI.md#L269-L276).
+
 ### Q: What is the difference between OAuth2 and OpenID Connect (OIDC)?
 
 **1-Liner:** **OAuth2** is for **Authorization** (obtaining a token to access a resource/API); **OIDC** is an identity layer on top of OAuth2 for **Authentication** (obtaining an ID Token to know _who_ the user is).
@@ -117,6 +165,9 @@ A defense-in-depth strategy for MFEs must be applied at multiple layers:
 3.  **Sandbox Layer:** Use the `sandbox` attribute on iframes to restrict script execution. For module-based MFEs, use CSP to restrict script sources.
 4.  **Auth Layer:** Centralize authentication (OIDC/OAuth2) so individual MFEs don't handle credentials. Use scoped tokens (claims).
 5.  **Build Layer:** Implement Subresource Integrity (SRI) for shared vendor bundles and use dependency scanning.
+
+> [!TIP]
+> For code implementation reference on SRI and CORS configuration details, see [Subresource Integrity (SRI) Guides](../../Security/SubresourceIntegrity/README.md) and [CORS Preflight Caching & OPTIONS latency](../../Security/CORS/README.md#L106-L114).
 
 ### Q: We are moving to a stateless JWT-based authentication. What are the primary security trade-offs, and how do you handle token revocation/logout?
 

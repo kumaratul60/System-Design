@@ -2,6 +2,25 @@
 
 This guide provides deep answers to performance-related questions, focusing on both React-specific and general web performance.
 
+## Table of Contents
+
+- [Performance Optimization in React](#performance-optimization-in-react)
+  - [Table of Contents](#table-of-contents)
+  - [1. Memoization: `React.memo`, `useMemo`, and `useCallback`](#1-memoization-reactmemo-usememo-and-usecallback)
+  - [2. Layout Thrashing](#2-layout-thrashing)
+  - [3. Web Vitals \& Improving Them](#3-web-vitals--improving-them)
+  - [4. Virtualization for Large Lists](#4-virtualization-for-large-lists)
+  - [5. Code Splitting \& Lazy Loading](#5-code-splitting--lazy-loading)
+  - [6. Optimizing Build Time \& Bundle Sizes](#6-optimizing-build-time--bundle-sizes)
+  - [7. Web Workers: Offloading the Main Thread](#7-web-workers-offloading-the-main-thread)
+  - [8. React 18 Concurrent Features: `useTransition` \& `useDeferredValue`](#8-react-18-concurrent-features-usetransition--usedeferredvalue)
+  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+    - [Q1: Why is "Over-optimization" with `useMemo` potentially worse than not using it at all?](#q1-why-is-over-optimization-with-usememo-potentially-worse-than-not-using-it-at-all)
+    - [Q2: What is the "Zombie Child" problem and how does it relate to performance/correctness?](#q2-what-is-the-zombie-child-problem-and-how-does-it-relate-to-performancecorrectness)
+    - [Q3: Explain "Cumulative Layout Shift" (CLS) and why Skeleton Screens can sometimes _increase_ it.](#q3-explain-cumulative-layout-shift-cls-and-why-skeleton-screens-can-sometimes-increase-it)
+    - [Q4: How does "Tree Shaking" actually work and what are "Side Effects"?](#q4-how-does-tree-shaking-actually-work-and-what-are-side-effects)
+  - [9. Debugging Website Slowness Post-Load](#9-debugging-website-slowness-post-load)
+
 ---
 
 ## 1. Memoization: `React.memo`, `useMemo`, and `useCallback`
@@ -44,6 +63,9 @@ Use memoization only when:
 3.  **Avoid forced synchronous layout:** Be aware of properties that trigger reflow (e.g., `offsetTop`, `scrollLeft`, `getComputedStyle`).
 4.  **Use CSS for animations:** Prefer CSS transitions/animations or `transform`/`opacity` which can be handled by the GPU (compositor layer) rather than the main thread.
 
+> [!NOTE]
+> For detailed execution timeline visuals, forced reflow APIs, and task scheduling details, see [Layout Thrashing & Microtask/Macrotask Timings](../../Performance/Network/README.md#q2-requestanimationframe-raf) and [CSS Selector Complexity & Layout Containment](../../Performance/Assets/README.md#q5-how-does-css-selector-complexity-affect-style-calculation-and-how-does-layout-containment-the-css-contain-property-optimize-rendering).
+
 ---
 
 ## 3. Web Vitals & Improving Them
@@ -59,6 +81,9 @@ Web Vitals are a set of metrics that Google uses to measure user experience.
   - _Improve:_ Optimize event handlers, use `useTransition` to mark low-priority updates.
 - **CLS (Cumulative Layout Shift):** Measures visual stability. Goal: < 0.1.
   - _Improve:_ Set dimensions for images/videos, avoid inserting content above existing content dynamically.
+
+> [!NOTE]
+> For a detailed guide on performance timelines, lab vs. field metrics (CrUX), and developer tooling audits, see [Core Web Vitals & Performance Metrics](../../Performance/Metrics/README.md).
 
 ---
 
@@ -127,6 +152,9 @@ Use **Web Workers**. They allow you to run JavaScript in a background thread, se
 - **Use Case:** Large data transformations, encryption/decryption, or any CPU-intensive logic that exceeds 16ms (to maintain 60fps).
 - **React Integration:** Use a library like `comlink` or handle the worker lifecycle within a `useEffect`.
 
+> [!TIP]
+> Refer to [Web Workers](../../Performance/Network/README.md#1-web-workers-offloading-heavy-calculations) in the Network & Asset module for advanced multi-threading configurations.
+
 ---
 
 ## 8. React 18 Concurrent Features: `useTransition` & `useDeferredValue`
@@ -140,6 +168,9 @@ React 18 introduced **Concurrent Rendering**, allowing React to interrupt a rend
 2.  **`useDeferredValue`:** Similar to debouncing but managed by React. it "defers" a value update, allowing the UI to stay responsive while a heavy component (like a large filtered list) catches up.
 
 **Explain Me:** Unlike `setTimeout` (which is a fixed delay), these hooks are "interruptible." If a new update comes in while React is rendering the deferred/transition state, it will abort the current render and start fresh with the new data.
+
+> [!NOTE]
+> For concurrent rendering pipelines and internal mechanics, see the [Concurrent React](../../Performance/React/README.md#-concurrent-react-react-18) details in the React optimization module.
 
 ---
 
@@ -174,6 +205,7 @@ React 18 introduced **Concurrent Rendering**, allowing React to interrupt a rend
 >
 > - **The Pitfall:** If a module has **Side Effects** (e.g., adding a property to `window` or modifying a prototype), the bundler _cannot_ safely remove it even if you don't use its exports.
 > - **The Fix:** Mark your library as `"sideEffects": false` in `package.json` to tell the bundler it's safe to prune.
+> - **Reference:** For details on ESM/CJS duplicate dependency resolution and bundling optimizations, see [Tree-Shaking & sideEffects deep-dive](../../Performance/Assets/README.md#q6-how-does-tree-shaking-actually-evaluate-sideeffects-in-packagejson-and-what-is-the-cjsesm-duplicate-dependency-trap).
 
 ---
 

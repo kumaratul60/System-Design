@@ -253,6 +253,28 @@ async function encryptData(text, password) {
 > 2. **Clear-Site-Data:** Send the `Clear-Site-Data: "storage"` header on logout.
 > 3. **In-Memory:** Store encryption keys in a plain JS variable (which dies on refresh) and only keep the encrypted blob in storage.
 
+### Q5: What is "Subdomain Cookie Tossing" / "Cookie Hijacking" and how do you prevent it?
+
+> **Answer:**
+>
+> In the standard cookie model, any subdomain (e.g., `malicious.example.com` or `dev.example.com`) can write a cookie to the parent domain (`.example.com`).
+>
+> - **The Attack:** If an attacker compromises or controls a subdomain, they can write (toss) a cookie named `session_id` to `.example.com` with their own session. When the user visits `example.com`, the browser sends both cookies. Depending on how the server parses multiple cookies with the same name, it might read the attacker's `session_id` first. This allows the attacker to execute a **Session Fixation** attack or force the victim onto the attacker's session.
+> - **The Solution:** Use **Cookie Prefixes** (`__Host-`) to prevent subdomains from setting or overwriting the cookie.
+
+### Q6: What are Cookie Prefixes (`__Host-` and `__Secure-`) and how do they work?
+
+> **Answer:** Cookie prefixes are special prefixes added to the cookie name that modern browsers enforce with strict rules:
+>
+> 1. **`__Secure-` Prefix (e.g., `Set-Cookie: __Secure-session=value; Secure`):**
+>    - **Requirement:** The cookie **must** be set with the `Secure` flag (HTTPS only).
+>    - **Browser Action:** If sent over HTTP or without the `Secure` attribute, the browser rejects it.
+> 2. **`__Host-` Prefix (e.g., `Set-Cookie: __Host-session=value; Secure; Path=/`):**
+>    - **Requirement:** Must be set with the `Secure` flag (HTTPS only).
+>    - **Requirement:** Must **NOT** contain a `Domain` attribute. This pins the cookie strictly to the host that set it, preventing subdomains from setting or overwriting it.
+>    - **Requirement:** Must have `Path=/` (accessible from the entire origin).
+>    - **Browser Action:** Bypassing any of these rules causes the browser to discard the cookie. This completely mitigates **Subdomain Cookie Tossing/Hijacking**.
+
 ---
 
 ## 🔐 Secure Communication (HTTPS)
