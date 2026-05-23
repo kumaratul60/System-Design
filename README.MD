@@ -4,12 +4,31 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 
 > **🌟 Key Feature:** This repository has been **"Grill-Hardened"** for Senior and Staff-level engineering roles. Each module contains a **"Senior/Staff Level Grill"** section covering architectural trade-offs, edge-case failures, and deep protocol nuances.
 
+## Table of Contents
+
+- [System Design \& Architecture Laboratory](#system-design--architecture-laboratory)
+  - [Table of Contents](#table-of-contents)
+  - [Project Structure](#project-structure)
+  - [🚀 Key Modules](#-key-modules)
+    - [1. Infrastructure \& Observability](#1-infrastructure--observability)
+    - [2. Logging \& Monitoring](#2-logging--monitoring)
+    - [3. Database \& Caching](#3-database--caching)
+    - [4. Communication Strategies](#4-communication-strategies)
+    - [5. Networking Protocols](#5-networking-protocols)
+    - [6. Security Engineering](#6-security-engineering)
+    - [7. Performance Optimization](#7-performance-optimization)
+    - [8. Interview \& Concept Deep Dives](#8-interview--concept-deep-dives)
+    - [9. Web Fundamentals](#9-web-fundamentals)
+  - [🔗 Useful Resources](#-useful-resources)
+
+---
+
 ## Project Structure
 
 ```text
 ├── Infrastructure/             # Traffic routing & Observability
 ├── Logging-Monitoring/         # Telemetry, Log Collection & Monitoring
-├── Data/                       # Distributed Storage & Caching
+├── Database&Caching/           # Distributed & Client-side Storage & Caching
 ├── Communication/               # Real-time & Event-driven patterns
 │   ├── ShortPolling/            # Basic interval-based polling
 │   ├── LongPolling/             # Optimized hanging requests
@@ -56,9 +75,9 @@ Master the "Nervous System" of distributed systems. Covers L4/L7 Load Balancing,
 
 A deep dive into data collection and telemetry. Covers capturing user interactions, performance metrics (Web Vitals), resource errors, and utilization tracking.
 
-### 3. [Distributed Data & Caching](./Data/README.md)
+### 3. [Database & Caching](./Database&Caching/README.md)
 
-Masterclass on storage selection using the **PACELC Theorem**. Deep dive into Caching strategies (Cache-Aside, Write-Back), Cache Coherency, and high-scale messaging patterns like the Outbox Pattern and Idempotent Consumers.
+Full-stack storage and caching strategies. Covers PACELC database selection, distributed caching (Cache-Aside, Write-Through/Back), cache coherency, message idempotency, HTTP caching, and client-side database options (IndexedDB, localStorage).
 
 ### 4. [Communication Strategies](./Communication/README.md)
 
@@ -89,9 +108,18 @@ A deep dive into the 8 pillars of web performance:
 - **Optimization:** Network, Asset, Build, and Framework-specific (React) techniques.
 - **Patterns:** SSR, CSR, SSG, and ISR trade-offs.
 
-### 8. [Interview & Concept Deep Dives](./Questions/Detailed/Security_Architect.md)
+### 8. [Interview & Concept Deep Dives](./Questions/ques.md)
 
-A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles.
+A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles. Directly jump to detailed topics:
+
+- **[React Fundamentals](./Questions/Detailed/React_Fundamentals.md)**: State management quirks, Fiber architecture, hooks lifecycle, render props, context, and JSX internals.
+- **[Security Architecture](./Questions/Detailed/Security_Architect.md)**: Zero Trust, OAuth2/OIDC, XSS/CSRF mitigations, SSRF, SQLi, and compliance (GDPR, SOC 2, HIPAA).
+- **[Architecture & Scaling](./Questions/Detailed/Architecture_Scaling.md)**: Scaling patterns, database sharding, CAP/PACELC theorems, and distributed caching.
+- **[Performance Optimization](./Questions/Detailed/Performance_Optimization.md)**: Core Web Vitals diagnostic breakdown, image/font optimizations, and rendering patterns.
+- **[Design Patterns](./Questions/Detailed/Design_Patterns.md)**: Gang of Four design patterns, structural layouts, and object-oriented architectures.
+- **[Browser, Build & Networking](./Questions/Detailed/Browser_Build_Networking.md)**: Module compilation, bundlers, tree-shaking, HTTP headers, and browser render pipelines.
+- **[Machine Coding Preparation](./Questions/machine_code.md)**: Guidelines, patterns, and templates for machine coding round success.
+- **[Interviewer Reference Guide](./Questions/Interviewer_Reference.md)**: High-level reference sheets and conceptual checks.
 
 ### 9. [Web Fundamentals](./Web/web.md)
 

@@ -1,6 +1,128 @@
-## Frontend Storage & Caching Overview
+# Full-Stack Database & Caching Architecture
 
-Modern web applications use multiple layers of caching and storage to ensure a smooth, offline-capable experience.
+This module covers both backend distributed data strategies and frontend client-side caching mechanisms to build fast, resilient, and eventually consistent applications.
+
+## Table of Contents
+
+- [Full-Stack Database \& Caching Architecture](#full-stack-database--caching-architecture)
+  - [Table of Contents](#table-of-contents)
+  - [Part 1: Distributed Data Strategy \& Storage (Backend)](#part-1-distributed-data-strategy--storage-backend)
+    - [Data Strategy Mindmap](#data-strategy-mindmap)
+    - [PACELC Storage Selection](#pacelc-storage-selection)
+    - [Distributed Caching Strategies](#distributed-caching-strategies)
+    - [Cache Coherency \& Invalidation](#cache-coherency--invalidation)
+      - [1. Time-to-Live (TTL)](#1-time-to-live-ttl)
+      - [2. Change Data Capture (CDC)](#2-change-data-capture-cdc)
+    - [Exactly-Once Message Delivery](#exactly-once-message-delivery)
+  - [Part 2: Client-Side Storage \& Caching (Frontend)](#part-2-client-side-storage--caching-frontend)
+    - [Browser Caching \& Storage Landscape](#browser-caching--storage-landscape)
+    - [HTTP Caching \& Validation](#http-caching--validation)
+      - [1. Freshness (`Cache-Control`)](#1-freshness-cache-control)
+      - [2. Validation (`ETag` \& `Last-Modified`)](#2-validation-etag--last-modified)
+    - [Database Normalization vs. Denormalization](#database-normalization-vs-denormalization)
+      - [Normalization (Single Source of Truth)](#normalization-single-source-of-truth)
+      - [Denormalization (Read Optimization)](#denormalization-read-optimization)
+    - [Client-Side Database Breakdown](#client-side-database-breakdown)
+  - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
+    - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
+    - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
+    - [Q3: How do you handle updates for files using `Cache-Control: immutable`?](#q3-how-do-you-handle-updates-for-files-using-cache-control-immutable)
+    - [Q4: Explain the difference between Application-level cache invalidation and CDC-based invalidation.](#q4-explain-the-difference-between-application-level-cache-invalidation-and-cdc-based-invalidation)
+    - [Q5: How do you protect a cache against "Cache Penetration" (fetching keys that don't exist)?](#q5-how-do-you-protect-a-cache-against-cache-penetration-fetching-keys-that-dont-exist)
+
+---
+
+## Part 1: Distributed Data Strategy & Storage (Backend)
+
+The "Hard Drive" of the internet. This section covers storage models, ACID vs. BASE consistency, and high-scale backend caching architectures.
+
+### Data Strategy Mindmap
+
+```mermaid
+mindmap
+  root((Data Strategy))
+    Storage Selection
+      SQL (Postgres/MySQL)
+      NoSQL (DynamoDB/Mongo)
+      NewSQL (CockroachDB)
+    Consistency
+      ACID vs BASE
+      PACELC Theorem
+      Eventual Consistency
+    Caching
+      Cache-Aside
+      Write-Through
+      Write-Back
+    Messaging
+      Event Sourcing
+      Exactly-Once Delivery
+      Compensating Transactions
+```
+
+### PACELC Storage Selection
+
+While the CAP theorem describes system guarantees during a network partition, the **PACELC** theorem extends this by describing trade-offs during normal operation (Else).
+
+$$\text{If Partition (P)} \rightarrow \text{choose Availability (A) vs. Consistency (C)} \quad \text{Else (E)} \rightarrow \text{choose Latency (L) vs. Consistency (C)}$$
+
+| Database      | Partition (P) Choice | Else (E) Choice | Ideal Use Case                                     |
+| :------------ | :------------------- | :-------------- | :------------------------------------------------- |
+| **Postgres**  | Consistency (C)      | Consistency (C) | Financial, ACID compliance, strict relations.      |
+| **DynamoDB**  | Availability (A)     | Latency (L)     | Global high-scale shopping carts, metadata lookup. |
+| **Cassandra** | Availability (A)     | Latency (L)     | Time-series metrics, high-frequency IoT logging.   |
+| **MongoDB**   | Consistency (C)      | Latency (L)     | Dynamic documents, content management catalogs.    |
+
+---
+
+### Distributed Caching Strategies
+
+Caching on the backend is used to offload database reads and achieve sub-millisecond response latencies.
+
+1. **Cache-Aside (Lazy Loading):**
+   - **Flow:** App checks the cache. On a miss, it queries the database, updates the cache, and returns the data.
+   - **Pro:** Simple, resilient to cache node failures (reverts to DB).
+   - **Con:** Cache misses incur double latency.
+2. **Write-Through:**
+   - **Flow:** App writes to the cache; the cache synchronously writes to the database before confirming success.
+   - **Pro:** Cache data is never stale; read hits are guaranteed to be fresh.
+   - **Con:** Slow write performance due to synchronous double-write overhead.
+3. **Write-Back (Write-Behind):**
+   - **Flow:** App writes to the cache, which acknowledges immediately. The cache updates the DB asynchronously in the background.
+   - **Pro:** Extremely high write throughput.
+   - **Con:** Risk of data loss if the cache node crashes before flushing dirty writes to the DB.
+
+---
+
+### Cache Coherency & Invalidation
+
+> **"There are only two hard things in Computer Science: cache invalidation and naming things."** — Phil Karlton
+
+#### 1. Time-to-Live (TTL)
+
+- **Strategy:** Evict keys automatically after a set duration.
+- **Staff Tip (Jitter):** Always inject random variance (jitter) into TTL limits (e.g., $3600 \pm 120$ seconds). This prevents the **Thundering Herd** problem where thousands of keys expire simultaneously, exposing the database to traffic spikes.
+
+#### 2. Change Data Capture (CDC)
+
+- **Strategy:** Use transaction log tailing (e.g., Debezium + Kafka) to observe database modifications and invalidate/update corresponding cache keys automatically.
+- **Pro:** Decoupled architecture, extremely low risk of stale cache states.
+
+---
+
+### Exactly-Once Message Delivery
+
+In distributed event-driven systems, achieving exactly-once delivery is theoretically impossible over an unreliable network. Instead, we architect for **At-Least-Once Delivery + Idempotency**:
+
+- **Producer:** Retries sending the event until it receives an acknowledgement (ACK).
+- **Consumer:** Maintains a processed keys store (often a fast cache or DB index). When a message arrives, it verifies the `idempotency_key` (UUID). If the key already exists, the consumer discards the duplicate and returns success.
+
+---
+
+## Part 2: Client-Side Storage & Caching (Frontend)
+
+Modern client-side engineering uses caching to bypass network round-trips entirely, enable offline accessibility, and manage local states.
+
+### Browser Caching & Storage Landscape
 
 ```mermaid
 graph TD
@@ -27,108 +149,104 @@ graph TD
 
 ---
 
-## ⚡ HTTP Caching: The Deep Dive
+### HTTP Caching & Validation
 
-### 1. Freshness (Cache-Control)
+#### 1. Freshness (`Cache-Control`)
 
-Tells the browser **how long** to keep a resource without checking the server.
+Specifies the duration resources can be served directly from the browser cache without validating with the server.
 
-- **`Cache-Control: max-age=3600`**: Cache for 1 hour.
-- **`Cache-Control: no-cache`**: MUST revalidate with the server every time (using ETag/Last-Modified).
-- **`Cache-Control: no-store`**: Do not cache anything.
-- **`Cache-Control: immutable`**: This file will NEVER change (used with hashed assets like `main.a1b2.js`).
+- **`Cache-Control: max-age=3600`:** Considers resource fresh for 1 hour.
+- **`Cache-Control: no-cache`:** Forces the browser to send a validation request to the server before using the cached resource.
+- **`Cache-Control: no-store`:** Prevents any caching.
+- **`Cache-Control: immutable`:** Tells the browser the file content will never change.
 
-### 2. Validation (ETag & Last-Modified)
+#### 2. Validation (`ETag` & `Last-Modified`)
 
-Tells the browser **how to check** if the cached file is still valid.
+Enables conditional requests to the server to check if a cached resource has changed:
 
-| Header              | Type   | Description                                                    |
-| :------------------ | :----- | :------------------------------------------------------------- |
-| **`ETag`**          | Strong | A unique hash/fingerprint of the file content.                 |
-| **`Last-Modified`** | Weak   | The timestamp of when the file was last changed on the server. |
+- **`ETag` (Strong):** A unique hash signature generated by the server for the file contents.
+- **`Last-Modified` (Weak):** A timestamp indicating when the file was last updated.
 
-#### The Conditional Request Flow:
+**The Conditional Validation Loop:**
 
-1. **Initial Request:** Server sends `ETag: "v1"` and `Cache-Control: no-cache`.
-2. **Subsequent Request:** Browser sends `If-None-Match: "v1"`.
-3. **Response:**
-   - If same: Server returns **`304 Not Modified`** (No body, very fast).
-   - If different: Server returns **`200 OK`** with the new file and new `ETag`.
+1. Browser requests `/main.js`. Server returns file with `ETag: "abc"` and `Cache-Control: no-cache`.
+2. On next request, browser sends `If-None-Match: "abc"`.
+3. If file hasn't changed, server returns a **`304 Not Modified`** header (empty body), saving bandwidth and processing time.
 
 ---
 
-## 🏗️ Database Normalization
+### Database Normalization vs. Denormalization
 
-Normalization is the process of organizing data to reduce redundancy and improve data integrity.
+#### Normalization (Single Source of Truth)
 
-### Why Normalize?
+Organizing nested objects into flat tables referenceable by IDs to prevent redundant data entries.
 
-- **Single Source of Truth:** Update a user's name in one place, and it reflects everywhere.
-- **Reduced Size:** Don't repeat large objects (like User profiles) in every Post.
-- **Performance:** Smaller records mean faster lookups in indexed databases.
-
-### Example: Social Media App
-
-**Unnormalized (Denormalized) Data:**
-
-```json
-[
+- **Example (Normalized):**
+  ```json
   {
-    "id": "p1",
-    "text": "Hello World",
-    "author": { "id": "u1", "name": "Alice", "avatar": "alice.png" }
-  },
-  {
-    "id": "p2",
-    "text": "Second Post",
-    "author": { "id": "u1", "name": "Alice", "avatar": "alice.png" }
+    "posts": {
+      "p1": { "id": "p1", "text": "Hello World", "authorId": "u1" }
+    },
+    "users": {
+      "u1": { "id": "u1", "name": "Alice", "avatar": "alice.png" }
+    }
   }
-]
-```
+  ```
+- **Pro:** Mutating the avatar of `u1` only requires updating a single location.
 
-_Issue: If Alice changes her avatar, we have to update every single post object._
+#### Denormalization (Read Optimization)
 
-**Normalized Data:**
+Duplicating specific fields directly into records to prevent join operations during read phases.
 
-```json
-{
-  "posts": {
-    "p1": { "id": "p1", "text": "Hello World", "authorId": "u1" },
-    "p2": { "id": "p2", "text": "Second Post", "authorId": "u1" }
-  },
-  "users": {
-    "u1": { "id": "u1", "name": "Alice", "avatar": "alice.png" }
-  }
-}
-```
-
-_Solution: To update Alice's avatar, we change one record in the `users` table._
+- **Example (Denormalized):**
+  ```json
+  [
+    {
+      "id": "p1",
+      "text": "Hello World",
+      "authorName": "Alice"
+    }
+  ]
+  ```
+- **Pro:** Fetching a post immediately provides the author name, bypassing nested database lookups.
 
 ---
 
-## 🗄️ Client-Side Databases (1-2 Liners)
+### Client-Side Database Breakdown
 
-- **localStorage:** Persistent key-value storage (up to 5MB) that survives browser restarts; synchronous and blocking.
-- **sessionStorage:** Similar to localStorage but data is cleared when the tab/session ends.
-- **Cookies:** Small (4KB) tokens sent with every HTTP request; used for auth and tracking.
-- **IndexedDB:** A powerful, asynchronous NoSQL database for storing large amounts of structured data (files/blobs).
+- **`localStorage` (5MB):** Synchronous, blocking key-value store. Persists indefinitely across browser restarts.
+- **`sessionStorage` (5MB):** Synchronous key-value store scoped strictly to the tab lifespan.
+- **`Cookies` (4KB):** Text tokens sent automatically on every HTTP request header. Secure flags (`HttpOnly`, `SameSite`, `Secure`) guard session IDs.
+- **`IndexedDB` (No rigid limits):** Asynchronous transactional database suitable for large files, blobs, and structured data.
 
 ---
 
-## Senior/Staff Level "Grill" Questions (Frontend)
+## Part 3: Senior/Staff Level "Grill" Questions
 
-### Q1: ETag vs. Last-Modified—which is better?
+### Q1: ETag vs. Last-Modified—which should be preferred for visual resources?
 
-> **Answer:** **ETag** is generally superior because it is content-based. `Last-Modified` is time-based and has a 1-second resolution; if a file is updated twice in one second, it fails. ETags also handle cases where a file was "touched" but the content didn't actually change.
+> **Answer:** **ETag** is preferred. `Last-Modified` has a 1-second resolution limit. If an asset is modified multiple times in a single second, the modification timestamp will not capture it. Additionally, if an asset is touched/re-saved without content alterations, `Last-Modified` triggers a cache invalidation, whereas ETags recognize the matching file hash and return `304 Not Modified`.
 
-### Q2: Why use `Cache-Control: no-cache` if you still want to cache?
+### Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?
 
-> **Answer:** It's a confusing name! `no-cache` doesn't mean "don't cache"; it means **"revalidate before use"**. It allows the browser to store the file but forces it to send an `If-None-Match` request to the server first. If you want to stop caching entirely, use `no-store`.
+> **Answer:** Despite its name, `no-cache` does _not_ disable caching. It tells the browser it can cache the resource, but must **revalidate** it with the server (using conditional headers like `If-None-Match`) before serving it. If you want to disable caching entirely, you must use `no-store`.
 
-### Q3: What is "Cache Busting" and why do we need it with `immutable`?
+### Q3: How do you handle updates for files using `Cache-Control: immutable`?
 
-> **Answer:** When we use `Cache-Control: immutable`, the browser will NEVER ask the server for that file again until the cache is cleared. To update the app, we must change the **filename** (e.g., `app.v1.js` -> `app.v2.js`). This is called Cache Busting.
+> **Answer:** Files marked `immutable` are never revalidated by the browser. To update the resource, you must use **Cache Busting**—changing the file URL/name dynamically (typically by appending a content hash: `main.a8d3f.js`). When code updates, the index HTML imports the new file name, bypassing the cached file.
 
-### Q4: When should you deliberately **Denormalize** data?
+### Q4: Explain the difference between Application-level cache invalidation and CDC-based invalidation.
 
-> **Answer:** For **Read Performance** in high-scale systems. If you have a dashboard that needs to show 100 posts with author names, doing 100 lookups (or a complex join) can be slow. Storing the `authorName` directly in the `Post` record (Denormalization) makes the read instant, at the cost of more complex updates.
+> **Answer:**
+>
+> - **Application-Level:** The app code explicitly deletes or updates the cache keys when running database write commands.
+>   - _Drawback:_ If the app crashes midway or a database write finishes but the cache write fails, the cache and database get out of sync.
+> - **CDC-Based:** Invalidation is decoupled. A log tailer monitors database commit logs and updates the cache.
+>   - _Benefit:_ Guarantees eventual consistency, even if individual application instances crash.
+
+### Q5: How do you protect a cache against "Cache Penetration" (fetching keys that don't exist)?
+
+> **Answer:** Cache penetration occurs when users query keys that exist in neither the cache nor the database, forcing a database lookup every time. To prevent this:
+>
+> 1. **Cache Nulls:** Store an empty value in the cache with a short TTL (e.g., 5 minutes) when a query returns empty.
+> 2. **Bloom Filters:** Place a Bloom filter (a space-efficient probabilistic data structure) in front of the cache to quickly reject requests for keys that are definitely not in the dataset.
