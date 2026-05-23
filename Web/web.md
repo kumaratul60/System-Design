@@ -7,7 +7,7 @@
 - [How the Web Works: From URL to Pixels](#how-the-web-works-from-url-to-pixels)
   - [Table of Contents](#table-of-contents)
   - [0. Big Picture](#0-big-picture)
-  - [0.1 Web Touchpoints](#01-️-web-touchpoints)
+  - [0.1 Web Touchpoints](#01-web-touchpoints)
   - [1. Understanding Domains \& URLs](#1-understanding-domains--urls)
   - [1.0 URL Anatomy: The Detailed Breakdown](#10-url-anatomy-the-detailed-breakdown)
     - [Core Components](#core-components)
@@ -23,6 +23,7 @@
   - [1.6 REST \& API Perspective](#16-rest--api-perspective)
   - [1.7 Key Takeaways](#17-key-takeaways)
   - [2. What Happens When You Hit Enter](#2-what-happens-when-you-hit-enter)
+    - [2.0 Client-Side Pre-Flight: Keyboard, Omnibox, \& HSTS Preloads](#20-client-side-pre-flight-keyboard-omnibox--hsts-preloads)
     - [2.1 Browser Pre‑Checks (Before Network)](#21-browser-prechecks-before-network)
     - [2.2 Full Request Flow (High Level)](#22-full-request-flow-high-level)
   - [3. DNS Resolution (Name → IP)](#3-dns-resolution-name--ip)
@@ -30,9 +31,11 @@
     - [3.2 DNS lookup flow](#32-dns-lookup-flow)
     - [3.3 Peering (why Google is fast)](#33-peering-why-google-is-fast)
   - [4. Transport Layer (Connection Setup)](#4-transport-layer-connection-setup)
+    - [4.0 Local Routing, ARP, \& NAT](#40-local-routing-arp--nat)
     - [4.1 TCP 3‑Way Handshake (Guaranteed Delivery)](#41-tcp-3way-handshake-guaranteed-delivery)
   - [5. Security Layer (TLS / SSL)](#5-security-layer-tls--ssl)
     - [5.1 Encryption / Decryption Flow (HTTPS)](#51-encryption--decryption-flow-https)
+    - [5.2 TLS 1.3 and 0-RTT Optimization](#52-tls-13-and-0-rtt-optimization)
   - [6. HTTP Semantics: The Shared Contract of the Web](#6-http-semantics-the-shared-contract-of-the-web)
   - [6.1 HTTP Method Semantics](#61-http-method-semantics)
     - [The Method Matrix](#the-method-matrix)
@@ -72,7 +75,7 @@
     - [13.1 What layout does](#131-what-layout-does)
     - [13.2 What triggers reflow](#132-what-triggers-reflow)
   - [14. Paint](#14-paint)
-  - [15. Compositing](#15-compositing)
+  - [15. Compositing, Rasterization, \& VSync](#15-compositing-rasterization--vsync)
   - [16. Performance Milestones](#16-performance-milestones)
   - [17. HTTP Versions Comparison](#17-http-versions-comparison)
   - [18. Peering \& ICANN](#18-peering--icann)
@@ -96,7 +99,7 @@
   - [31.3 The 7 OSI (Open Systems Interconnection) Layers (Brief Intro)](#313-the-7-osi-open-systems-interconnection-layers-brief-intro)
     - [31.4 Protocol to OSI Mapping](#314-protocol-to-osi-mapping)
     - [31.5 Why this matters for "How the Web Works":](#315-why-this-matters-for-how-the-web-works)
-  - [Senior/Staff Level "Grill" Questions](#-seniorstaff-level-grill-questions)
+  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: How does "Resource Prioritization" work in HTTP/2 vs. HTTP/3?](#q1-how-does-resource-prioritization-work-in-http2-vs-http3)
     - [Q2: Explain the "Preload Scanner" and why it's the browser's most important performance optimization.](#q2-explain-the-preload-scanner-and-why-its-the-browsers-most-important-performance-optimization)
     - [Q3: What is "Layout Thrashing" and how do you detect it in a large-scale React app?](#q3-what-is-layout-thrashing-and-how-do-you-detect-it-in-a-large-scale-react-app)
@@ -337,6 +340,27 @@ For developers, URLs are the interface of the API.
 
 ## 2. What Happens When You Hit Enter
 
+### 2.0 Client-Side Pre-Flight: Keyboard, Omnibox, & HSTS Preloads
+
+Before the browser even attempts to talk to the network card or lookup a DNS record, three critical events happen on the client machine:
+
+1. **Hardware Keyboard Interrupts:**
+   - When you press the keys of a URL and hit "Enter", the physical key triggers an electrical connection. The keyboard controller detects this and generates a **scan code** (an identifier for the key).
+   - The controller fires an interrupt request (**IRQ 1**) to the CPU.
+   - The OS kernel catches the interrupt, maps the scan code using the active keyboard layout, and places the characters into the message queue of the active window manager.
+   - The OS notifies the browser process, which receives key events (like `keydown` and `keypress`) on its main UI thread.
+2. **The "Omnibox" Parsing Logic:**
+   - The browser's URL bar [Omnibox](https://www.chromium.org/user-experience/omnibox) parses the text.
+   - It checks if the string starts with a valid protocol scheme (like `http://`, `https://`, `ftp://`) or matches a valid domain format (containing a registered TLD like `.com`, `.org`).
+   - **URL:** If it matches a URL format, the browser keeps the target hostname.
+   - **Search Query:** If the text does not match a URL (e.g., you typed "react fundamentals"), the browser appends it as query parameters to your default search engine's search template (e.g., `https://google.com/search?q=react+fundamentals`).
+3. **The HSTS Preload List Check:**
+   - Once a URL is confirmed, the browser checks its built-in, hardcoded **HSTS (HTTP Strict Transport Security) Preload List**.
+   - If the domain is on the list (e.g., `gmail.com`, `stripe.com`, `github.com`), the browser immediately rewrites the URL scheme from `http://` to `https://` internally.
+   - This prevents "bootstrap" man-in-the-middle attacks where a hacker intercepts the initial insecure HTTP request before the server can redirect the user to HTTPS.
+
+---
+
 ### 2.1 Browser Pre‑Checks (Before Network)
 
 The client checks **before hitting the router**:
@@ -400,6 +424,24 @@ Browser
 
 ## 4. Transport Layer (Connection Setup)
 
+### 4.0 Local Routing, ARP, & NAT
+
+Before a TCP connection can establish, the client must package the raw data and route it out of the local network:
+
+1. **ARP (Address Resolution Protocol) Request:**
+   - The OS wraps the TCP/IP packet in an Ethernet frame. To send the frame, the OS needs the physical **MAC Address** of the local default gateway (the home or office router).
+   - The OS checks its local ARP cache. If the gateway's IP is not mapped, the OS broadcasts an ARP Request frame (`Who has 192.168.1.1? Tell 192.168.1.50`).
+   - The router responds with its MAC address (`192.168.1.1 is at 00:1A:2B:3C:4D:5E`), allowing the OS to address and transmit the frame to the router.
+2. **NAT (Network Address Translation):**
+   - Home and office networks use private IP addresses (e.g., `192.168.x.x`) which cannot be routed over the public internet.
+   - As the packet passes through the router, the router performs **NAT**. It replaces the client's private source IP and source port with the router's single public IP address and a dynamically allocated unique port number.
+   - The router logs this translation in its NAT mapping table so it knows where to route incoming response packets.
+3. **BGP (Border Gateway Protocol) Routing:**
+   - Once the packet reaches the Internet Service Provider (ISP), it travels across multiple Autonomous Systems (AS) via the internet backbone.
+   - Core internet routers use **BGP** to dynamically share path availability and routing tables, ensuring the packet takes the most efficient route to the server's public IP address.
+
+---
+
 ### 4.1 TCP 3‑Way Handshake (Guaranteed Delivery)
 
 ```
@@ -437,6 +479,15 @@ After this:
 - No one can read packets in transit
 
 > TLS happens **after TCP**, before HTTP data
+
+---
+
+### 5.2 TLS 1.3 and 0-RTT Optimization
+
+Modern sites use **TLS 1.3**, which significantly improves connection performance compared to TLS 1.2:
+
+- **1-RTT Handshake:** In TLS 1.2, the cryptographic negotiation required two round-trips. TLS 1.3 combines key exchange negotiations into the very first packet (`ClientHello`), reducing the handshake latency to just **1 RTT**.
+- **0-RTT Session Resumption:** When a returning client reconnects to a server it has previously visited, it uses a **Pre-Shared Key (PSK)**. The client can encrypt and send application-level HTTP data in the very first packet (`ClientHello` + GET request), achieving **0-RTT** connection setup time.
 
 ---
 
@@ -812,21 +863,27 @@ Changing these triggers **repaint only**:
 
 ---
 
-## 15. Compositing
+## 15. Compositing, Rasterization, & VSync
 
-- Layers sent to GPU
-- Transforms & opacity handled here
+Once the painting phase is complete, the browser has compiled drawing instructions (a sequence of commands detailing _what_ should be drawn where), but it has not actually drawn the pixels. The final phase turns these instructions into physical screen pixels:
 
-Best for animations:
-
-```
-
-transform
-opacity
-
-```
-
----
+1. **Layer Tree Creation (Main Thread):**
+   - The browser engine creates a separate rendering layer for elements that move independently or display dynamic content (e.g., elements containing `transform`, `opacity`, `<video>`, `<canvas>`, or CSS `will-change`).
+   - This isolates elements so that updating one layer does not force the browser to repaint the entire page.
+2. **Tiling (Compositor Thread):**
+   - The main thread commits the Layer Tree and paint instructions to the **Compositor Thread**.
+   - To prevent memory bloat, the compositor does not rasterize the entire page at once. Instead, it divides each layer into standard-sized **Tiles** (typically 256x256 or 512x512 pixels), prioritizing tiles currently visible within the user's viewport.
+3. **Rasterization (Raster Helper Threads):**
+   - The compositor thread sends the tiles to **Raster Helper Threads**.
+   - Rasterization translates vector paint commands into actual bitmap grids (arrays of color values).
+   - **GPU Acceleration:** Modern browsers offload rasterization to the GPU (via WebGL/Vulkan/Metal APIs) for hardware-accelerated drawing, which is extremely fast.
+4. **Draw Quads & The GPU Process:**
+   - Once tiles are rasterized, the compositor thread generates **Draw Quads** (metadata commands specifying where on the screen each tile should be drawn, taking into account any scale, rotation, or opacity settings).
+   - The compositor packages the Draw Quads into a **Compositor Frame** and submits it to the browser's central **GPU Process**.
+5. **VSync (Vertical Synchronization):**
+   - The GPU Process takes the Compositor Frame and renders the tiles onto the display's **Back-Buffer**.
+   - The monitor updates its screen pixels periodically (e.g., 60 times a second for a 60Hz display). When the monitor is ready for the next frame, it fires a **VSync (Vertical Synchronization)** signal.
+   - Upon receiving the VSync signal, the GPU performs a buffer swap, moving the back-buffer to the active display output (the front-buffer). This prevents screen tearing and ensures fluid animations.
 
 ## 16. Performance Milestones
 
