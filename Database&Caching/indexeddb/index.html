@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IndexedDB Interactive Playground & Simulators</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-primary: #0b0f19;
+        --bg-secondary: #151d30;
+        --bg-tertiary: #1f2b45;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --error: #ef4444;
+        --warning: #f59e0b;
+        --border: rgba(148, 163, 184, 0.12);
+        --font-outfit: 'Outfit', sans-serif;
+        --font-mono: 'Fira Code', monospace;
+      }
+
+      .light-mode {
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --border: rgba(15, 23, 42, 0.08);
+        --accent: #2563eb;
+        --accent-hover: #1d4ed8;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        transition:
+          background-color 0.3s ease,
+          border-color 0.3s ease,
+          color 0.2s ease;
+      }
+
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: var(--font-outfit);
+        line-height: 1.5;
+        padding: 2rem 1.5rem;
+      }
+
+      header {
+        max-width: 1200px;
+        margin: 0 auto 2.5rem auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+      }
+
+      h1 {
+        font-size: 2.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .theme-toggle {
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 0.6rem 1.2rem;
+        border-radius: 9999px;
+        cursor: pointer;
+        font-weight: 500;
+        font-family: var(--font-outfit);
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--accent);
+      }
+
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      @media (max-width: 968px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-primary);
+      }
+
+      .badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .badge-blue {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .badge-orange {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      .badge-red {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      input,
+      select {
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-family: var(--font-outfit);
+        font-size: 0.95rem;
+        width: 100%;
+      }
+
+      input:focus,
+      select:focus {
+        outline: 2px solid var(--accent);
+        border-color: transparent;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        background-color: var(--accent);
+        color: #ffffff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--font-outfit);
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      button:hover {
+        background-color: var(--accent-hover);
+      }
+
+      button.btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+      }
+
+      button.btn-secondary:hover {
+        border-color: var(--text-secondary);
+        background-color: var(--border);
+      }
+
+      button.btn-danger {
+        background-color: var(--error);
+      }
+      button.btn-danger:hover {
+        background-color: #dc2626;
+      }
+
+      .console {
+        background-color: #05070c;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        color: #38bdf8;
+        max-height: 250px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .console-log {
+        color: #f8fafc;
+      }
+      .console-success {
+        color: #34d399;
+      }
+      .console-warn {
+        color: #fbbf24;
+      }
+      .console-error {
+        color: #f87171;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+      }
+
+      th,
+      td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        font-weight: 600;
+        color: var(--text-secondary);
+        background-color: var(--bg-tertiary);
+      }
+
+      td {
+        color: var(--text-primary);
+      }
+
+      .row-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .action-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.2rem;
+      }
+
+      .action-btn:hover {
+        color: var(--error);
+      }
+
+      .quota-bar-container {
+        width: 100%;
+        background-color: var(--bg-tertiary);
+        height: 10px;
+        border-radius: 9999px;
+        overflow: hidden;
+      }
+
+      .quota-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #10b981);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 2rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>IndexedDB Playground</h1>
+        <p style="color: var(--text-secondary); margin-top: 0.25rem">
+          Interactive CRUD transactions, Event-Loop gotchas, and schema updates
+        </p>
+      </div>
+      <button class="theme-toggle" id="themeToggler">🌙 Dark Mode</button>
+    </header>
+
+    <main>
+      <!-- Card 1: CRUD Operations -->
+      <div class="card">
+        <div class="card-title">
+          <span>Contact Database (CRUD)</span>
+          <span class="badge badge-blue">Transactional</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-secondary)">
+          Stores structured JavaScript records inside an object store scoped to this origin. Writes use primary key
+          paths (`email`) and read indexes (`category`).
+        </p>
+
+        <form id="crudForm" onsubmit="event.preventDefault()">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem">
+            <div class="form-group">
+              <label for="contactEmail">Email (Primary Key)</label>
+              <input type="email" id="contactEmail" required placeholder="name@domain.com" />
+            </div>
+            <div class="form-group">
+              <label for="contactName">Full Name</label>
+              <input type="text" id="contactName" required placeholder="John Doe" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem">
+            <div class="form-group">
+              <label for="contactCategory">Category (Indexed)</label>
+              <select id="contactCategory">
+                <option value="Friend">Friend</option>
+                <option value="Work">Work</option>
+                <option value="Family">Family</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="contactPhone">Phone</label>
+              <input type="text" id="contactPhone" placeholder="+1-234-567-8900" />
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" id="saveBtn">Save / Put Record</button>
+            <button type="button" class="btn-secondary" id="searchCategoryBtn">Filter Category</button>
+            <button type="button" class="btn-secondary" id="clearFormBtn">Clear Form</button>
+          </div>
+        </form>
+
+        <div class="console" id="crudConsole">
+          <div class="console-log">Console loaded. Open database connection active.</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Gotcha #1 - Event Loop Yield (Auto-Commit Trap) -->
+      <div class="card">
+        <div class="card-title">
+          <span>Gotcha #1: Transaction Auto-Commit</span>
+          <span class="badge badge-red">Critical Pitfall</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-secondary)">
+          The browser auto-commits a transaction when the event loop microtask queue clears. Doing an
+          <code>await fetch()</code> or <code>setTimeout</code> inside a transaction yields control, causing immediate
+          transaction closure.
+        </p>
+
+        <div class="btn-group">
+          <button class="btn-danger" id="triggerAutoCommitErrBtn">Trigger Broken Transaction</button>
+          <button id="triggerSafeTxBtn">Trigger Safe Transaction</button>
+        </div>
+
+        <div class="console" id="gotchaConsole">
+          <div class="console-log">Ready to test auto-commit boundaries.</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Gotcha #2 - Version Upgrades & Tab Blockages -->
+      <div class="card">
+        <div class="card-title">
+          <span>Gotcha #2: Multi-Tab Upgrade Blockages</span>
+          <span class="badge badge-orange">Versioning</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-secondary)">
+          Upgrading database versions while another tab has an active connection triggers a deadlock block. Open another
+          tab of this page and click "Trigger Version Upgrade" to see block notification cycles.
+        </p>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+          "
+        >
+          <div>
+            <span style="font-size: 0.85rem; color: var(--text-secondary)">Active DB Version:</span>
+            <strong id="activeVersionLabel" style="font-size: 1.2rem; margin-left: 0.5rem">1</strong>
+          </div>
+          <button class="btn-secondary" id="upgradeVersionBtn">Increment DB Version</button>
+        </div>
+
+        <div class="console" id="versionConsole">
+          <div class="console-log">Listening for tab connection and version notifications...</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Quota & Deletion System -->
+      <div class="card">
+        <div class="card-title">
+          <span>Storage Quota & Database Wiping</span>
+          <span class="badge badge-blue">Disk Admin</span>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-secondary)">
+          Track dynamic origin quotas and execute database deletions. Deleting databases on logout prevents localized
+          data exposure.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem">
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem">
+            <span id="quotaUsageLabel" style="color: var(--text-secondary)">Calculating usage...</span>
+            <span id="quotaLimitLabel" style="font-weight: 500">Estimate unavailable</span>
+          </div>
+          <div class="quota-bar-container">
+            <div class="quota-bar" id="quotaFillBar"></div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn-danger" id="deleteDbBtn">Delete All Sandbox Databases</button>
+          <button class="btn-secondary" id="refreshQuotaBtn">Recalculate Estimate</button>
+        </div>
+      </div>
+
+      <!-- Full-Width Card: Live Record Viewer -->
+      <div class="card" style="grid-column: 1 / -1">
+        <div class="card-title">
+          <span>Live IndexedDB Viewer</span>
+          <span class="badge badge-blue">Real-time sync</span>
+        </div>
+
+        <div style="overflow-x: auto">
+          <table id="recordsTable">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Category</th>
+                <th>Phone</th>
+                <th style="width: 80px">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recordsTableBody">
+              <tr>
+                <td colspan="5" class="empty-state">No records found. Save a contact above to populate store.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // --- Theme Toggler & FOUC Prevention ---
+      const themeToggler = document.getElementById('themeToggler');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = localStorage.getItem('app_theme_idb') || (systemPrefersDark ? 'dark' : 'light');
+
+      if (initialTheme === 'light') {
+        document.body.classList.add('light-mode');
+        themeToggler.innerHTML = '☀️ Light Mode';
+      } else {
+        themeToggler.innerHTML = '🌙 Dark Mode';
+      }
+
+      themeToggler.addEventListener('click', () => {
+        if (document.body.classList.contains('light-mode')) {
+          document.body.classList.remove('light-mode');
+          themeToggler.innerHTML = '🌙 Dark Mode';
+          localStorage.setItem('app_theme_idb', 'dark');
+        } else {
+          document.body.classList.add('light-mode');
+          themeToggler.innerHTML = '☀️ Light Mode';
+          localStorage.setItem('app_theme_idb', 'light');
+        }
+      });
+
+      // --- Helper Log Consoles ---
+      function logToConsole(elementId, text, type = 'log') {
+        const consoleEl = document.getElementById(elementId);
+        const logDiv = document.createElement('div');
+        logDiv.className = `console-${type}`;
+        logDiv.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+        consoleEl.appendChild(logDiv);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      }
+
+      // --- Core SafeIndexedDB Wrapper Interface ---
+      class PlayDBManager {
+        constructor(dbName, version) {
+          this.dbName = dbName;
+          this.version = version;
+          this.db = null;
+        }
+
+        open() {
+          return new Promise((resolve, reject) => {
+            const req = indexedDB.open(this.dbName, this.version);
+
+            req.onupgradeneeded = (e) => {
+              const db = req.result;
+              logToConsole(
+                'versionConsole',
+                `Schema Upgrade Initiated: Version ${e.oldVersion} -> ${e.newVersion}`,
+                'warn',
+              );
+
+              if (!db.objectStoreNames.contains('contacts')) {
+                const store = db.createObjectStore('contacts', { keyPath: 'email' });
+                store.createIndex('category', 'category', { unique: false });
+                logToConsole('versionConsole', `Object store "contacts" created with index "category"`, 'success');
+              }
+            };
+
+            req.onsuccess = () => {
+              this.db = req.result;
+
+              // Listen for version upgrades elsewhere
+              this.db.onversionchange = () => {
+                logToConsole(
+                  'versionConsole',
+                  'Version change requested by another tab. Closing connection to prevent upgrades block...',
+                  'warn',
+                );
+                this.db.close();
+                this.db = null;
+                logToConsole('versionConsole', 'Connection successfully closed. Reload page to reconnect.', 'error');
+                document.getElementById('activeVersionLabel').textContent = `${this.version} (Closed)`;
+              };
+
+              logToConsole(
+                'versionConsole',
+                `Database successfully connected at version: ${this.db.version}`,
+                'success',
+              );
+              document.getElementById('activeVersionLabel').textContent = this.db.version;
+              resolve(this.db);
+            };
+
+            req.onerror = () => {
+              logToConsole('versionConsole', `Database Connection Failed: ${req.error.message}`, 'error');
+              reject(req.error);
+            };
+
+            req.onblocked = () => {
+              logToConsole(
+                'versionConsole',
+                'Connection Blocked: Close all other active tabs to allow upgrades.',
+                'warn',
+              );
+            };
+          });
+        }
+
+        getStore(mode = 'readonly') {
+          if (!this.db) {
+            throw new Error('Database is not connected');
+          }
+          const transaction = this.db.transaction('contacts', mode);
+          return transaction.objectStore('contacts');
+        }
+
+        saveContact(contact) {
+          return new Promise((resolve, reject) => {
+            try {
+              const store = this.getStore('readwrite');
+              const req = store.put(contact);
+              req.onsuccess = () => resolve(true);
+              req.onerror = () => reject(req.error);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        }
+
+        deleteContact(email) {
+          return new Promise((resolve, reject) => {
+            try {
+              const store = this.getStore('readwrite');
+              const req = store.delete(email);
+              req.onsuccess = () => resolve(true);
+              req.onerror = () => reject(req.error);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        }
+
+        getAllContacts() {
+          return new Promise((resolve, reject) => {
+            try {
+              const store = this.getStore('readonly');
+              const req = store.getAll();
+              req.onsuccess = () => resolve(req.result);
+              req.onerror = () => reject(req.error);
+            } catch (e) {
+              // Resolve empty if not connected or store missing
+              resolve([]);
+            }
+          });
+        }
+
+        getContactsByCategory(category) {
+          return new Promise((resolve, reject) => {
+            try {
+              const store = this.getStore('readonly');
+              const index = store.index('category');
+              const req = index.getAll(category);
+              req.onsuccess = () => resolve(req.result);
+              req.onerror = () => reject(req.error);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        }
+      }
+
+      // Initialize sandbox database manager
+      let dbVersion = parseInt(localStorage.getItem('sandbox_db_ver')) || 1;
+      const dbManager = new PlayDBManager('SandboxDB', dbVersion);
+
+      // --- Render Table function ---
+      async function refreshRecordsTable(contactsList = null) {
+        const tbody = document.getElementById('recordsTableBody');
+        try {
+          const list = contactsList || (await dbManager.getAllContacts());
+          if (!list || list.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No records found. Save a contact above to populate store.</td></tr>`;
+            return;
+          }
+
+          tbody.innerHTML = '';
+          list.forEach((c) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td><strong>${escapeHTML(c.email)}</strong></td>
+            <td>${escapeHTML(c.name)}</td>
+            <td><span class="badge ${c.category === 'Work' ? 'badge-blue' : c.category === 'Family' ? 'badge-orange' : 'badge-blue'}" style="opacity: 0.95;">${escapeHTML(c.category)}</span></td>
+            <td>${escapeHTML(c.phone || 'N/A')}</td>
+            <td class="row-actions">
+              <button class="action-btn" title="Delete contact" onclick="performRowDelete('${escapeHTML(c.email)}')">🗑️</button>
+            </td>
+          `;
+            tbody.appendChild(tr);
+          });
+        } catch (e) {
+          tbody.innerHTML = `<tr><td colspan="5" class="empty-state" style="color: var(--error);">Error retrieving records: ${e.message}</td></tr>`;
+        }
+      }
+
+      function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      async function performRowDelete(email) {
+        try {
+          await dbManager.deleteContact(email);
+          logToConsole('crudConsole', `Deleted contact: ${email}`, 'success');
+          refreshRecordsTable();
+          updateQuotaDisplay();
+        } catch (e) {
+          logToConsole('crudConsole', `Failed to delete record: ${e.message}`, 'error');
+        }
+      }
+
+      // --- Quota Display ---
+      async function updateQuotaDisplay() {
+        const usageLabel = document.getElementById('quotaUsageLabel');
+        const limitLabel = document.getElementById('quotaLimitLabel');
+        const fillBar = document.getElementById('quotaFillBar');
+
+        if (navigator.storage && navigator.storage.estimate) {
+          const { usage, quota } = await navigator.storage.estimate();
+          const usageInMB = (usage / (1024 * 1024)).toFixed(3);
+          const quotaInMB = (quota / (1024 * 1024)).toFixed(1);
+          const percent = ((usage / quota) * 100).toFixed(4);
+
+          usageLabel.textContent = `Usage: ${usageInMB} MB (${percent}%)`;
+          limitLabel.textContent = `Limit: ${quotaInMB} MB`;
+          fillBar.style.width = `${Math.max(1, percent * 100)}%`; // scale visibility
+        } else {
+          usageLabel.textContent = 'StorageManager estimate API unsupported by browser.';
+        }
+      }
+
+      // --- Connect on startup ---
+      dbManager
+        .open()
+        .then(() => {
+          refreshRecordsTable();
+          updateQuotaDisplay();
+        })
+        .catch((e) => {
+          logToConsole('crudConsole', `Startup connection failed. Schema might be upgrading in another tab.`, 'error');
+        });
+
+      // --- Button Bindings ---
+
+      // Save Contact
+      document.getElementById('saveBtn').addEventListener('click', async () => {
+        const email = document.getElementById('contactEmail').value.trim();
+        const name = document.getElementById('contactName').value.trim();
+        const category = document.getElementById('contactCategory').value;
+        const phone = document.getElementById('contactPhone').value.trim();
+
+        if (!email || !name) {
+          logToConsole('crudConsole', 'Validation Error: Email and Name are required fields.', 'error');
+          return;
+        }
+
+        const contact = { email, name, category, phone };
+        try {
+          await dbManager.saveContact(contact);
+          logToConsole('crudConsole', `Saved Record: [${category}] ${name} (${email})`, 'success');
+          refreshRecordsTable();
+          updateQuotaDisplay();
+        } catch (e) {
+          logToConsole('crudConsole', `Write failed: ${e.message}`, 'error');
+        }
+      });
+
+      // Search Category
+      document.getElementById('searchCategoryBtn').addEventListener('click', async () => {
+        const category = document.getElementById('contactCategory').value;
+        logToConsole('crudConsole', `Filtering contacts by index category: "${category}"`, 'log');
+        try {
+          const list = await dbManager.getContactsByCategory(category);
+          logToConsole('crudConsole', `Query returned ${list.length} matches.`, 'success');
+          refreshRecordsTable(list);
+        } catch (e) {
+          logToConsole('crudConsole', `Index lookup failed: ${e.message}`, 'error');
+        }
+      });
+
+      // Clear Form
+      document.getElementById('clearFormBtn').addEventListener('click', () => {
+        document.getElementById('crudForm').reset();
+        logToConsole('crudConsole', 'Form cleared.', 'log');
+        refreshRecordsTable(); // reset search filters
+      });
+
+      // Recalculate Quota
+      document.getElementById('refreshQuotaBtn').addEventListener('click', () => {
+        updateQuotaDisplay();
+      });
+
+      // Delete Entire Database
+      document.getElementById('deleteDbBtn').addEventListener('click', () => {
+        if (dbManager.db) {
+          dbManager.db.close();
+        }
+        logToConsole('crudConsole', 'Closing database connection for deletion...', 'warn');
+
+        const req = indexedDB.deleteDatabase('SandboxDB');
+        req.onsuccess = () => {
+          localStorage.removeItem('sandbox_db_ver');
+          logToConsole('crudConsole', 'Database "SandboxDB" successfully deleted.', 'success');
+          setTimeout(() => location.reload(), 1000);
+        };
+        req.onerror = () => {
+          logToConsole('crudConsole', `Database deletion failed: ${req.error.message}`, 'error');
+        };
+        req.onblocked = () => {
+          logToConsole(
+            'crudConsole',
+            'Database deletion BLOCKED: Close all other open tabs to finish purging.',
+            'error',
+          );
+        };
+      });
+
+      // Upgrade Schema / DB Version manually
+      document.getElementById('upgradeVersionBtn').addEventListener('click', () => {
+        const currentVer = parseInt(localStorage.getItem('sandbox_db_ver')) || 1;
+        const nextVer = currentVer + 1;
+
+        logToConsole('versionConsole', `Initiating schema version increment to: Version ${nextVer}`, 'log');
+        localStorage.setItem('sandbox_db_ver', nextVer);
+
+        // Reloading will open the new version on startup
+        logToConsole('versionConsole', 'Reloading page to execute connection upgrade...', 'warn');
+        setTimeout(() => location.reload(), 1000);
+      });
+
+      // --- Gotcha #1: Auto-Commit Trap Simulations ---
+
+      // 1. Trigger Broken Way (Await Fetch inside Transaction)
+      document.getElementById('triggerAutoCommitErrBtn').addEventListener('click', async () => {
+        if (!dbManager.db) {
+          logToConsole('gotchaConsole', 'Database not connected. Aborting.', 'error');
+          return;
+        }
+
+        logToConsole('gotchaConsole', 'Opening readwrite transaction on "contacts"...', 'log');
+
+        try {
+          const tx = dbManager.db.transaction('contacts', 'readwrite');
+          const store = tx.objectStore('contacts');
+
+          // Write 1: Synchronous operation
+          store.put({ email: 'yield_test@domain.com', name: 'Initial Write', category: 'Friend' });
+          logToConsole('gotchaConsole', 'First write (sync) queued successfully.', 'success');
+
+          // Await networking delay (yields event loop context!)
+          logToConsole('gotchaConsole', 'Yielding execution (awaiting 500ms delay)...', 'warn');
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          // Write 2: Post-yield write within the same transaction context
+          logToConsole('gotchaConsole', 'Attempting second write inside same transaction...', 'log');
+          store.put({ email: 'yield_test@domain.com', name: 'Post-Yield Update', category: 'Friend' });
+        } catch (e) {
+          logToConsole('gotchaConsole', `CRASH CAUGHT: ${e.name} - ${e.message}`, 'error');
+          logToConsole(
+            'gotchaConsole',
+            'Why? The microtask queue cleared during delay, triggering browser auto-commit.',
+            'warn',
+          );
+        }
+      });
+
+      // 2. Trigger Safe Way
+      document.getElementById('triggerSafeTxBtn').addEventListener('click', async () => {
+        if (!dbManager.db) {
+          logToConsole('gotchaConsole', 'Database not connected. Aborting.', 'error');
+          return;
+        }
+
+        logToConsole('gotchaConsole', 'Running delay BEFORE opening transaction...', 'log');
+
+        // Perform delay first
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        logToConsole('gotchaConsole', 'Delay finished. Now opening transactional block.', 'log');
+
+        try {
+          const tx = dbManager.db.transaction('contacts', 'readwrite');
+          const store = tx.objectStore('contacts');
+
+          // Execute writes sequentially without yielding inside
+          store.put({ email: 'yield_test@domain.com', name: 'Safe Write 1', category: 'Friend' });
+          store.put({ email: 'yield_test@domain.com', name: 'Safe Write 2', category: 'Friend' });
+
+          tx.oncomplete = () => {
+            logToConsole('gotchaConsole', 'Transaction completed successfully without yielding.', 'success');
+            refreshRecordsTable();
+            updateQuotaDisplay();
+          };
+
+          tx.onerror = () => {
+            logToConsole('gotchaConsole', `Transaction aborted: ${tx.error.message}`, 'error');
+          };
+        } catch (e) {
+          logToConsole('gotchaConsole', `Unexpected error: ${e.message}`, 'error');
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -27,6 +27,7 @@ This module covers both backend distributed data strategies and frontend client-
       - [LocalStorage Architectural Core](#localstorage-architectural-core)
       - [SessionStorage Architectural Core](#sessionstorage-architectural-core)
       - [Cookie Architectural Core](#cookie-architectural-core)
+      - [IndexedDB Architectural Core](#indexeddb-architectural-core)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -224,6 +225,8 @@ To support offline access, dynamic UI states, and request performance, modern we
 - For a fully interactive, browser-based demonstration illustrating quotas, thread-blocking, serialization quirks, and cross-tab storage events, see the **[Interactive LocalStorage Demo](./localstorage/index.html)**.
 - For the complete senior/staff architectural deep dive on session boundaries, see the **[SessionStorage Architecture & Mechanics Deep Dive](./sessionstorage/README.md)**.
 - For a fully interactive, browser-based demonstration illustrating tab cloning, copy-on-write decoupling, and session quotas, see the **[Interactive SessionStorage Demo](./sessionstorage/index.html)**.
+- For the complete senior/staff architectural deep dive on structured client databases, see the **[IndexedDB Architecture & Mechanics Deep Dive](./indexeddb/README.md)**.
+- For a fully interactive, browser-based demonstration illustrating transactional CRUD, event loop auto-commit gotchas, and version upgrades blockages, see the **[Interactive IndexedDB Demo](./indexeddb/index.html)**.
 
 #### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
 
@@ -280,6 +283,21 @@ Cookies are managed by the browser but automatically sent on every matching HTTP
 >
 > - **[Cookie Architecture & Security Mechanics Deep Dive](./cookie/README.md)**
 > - **[Interactive Cookie Demo](./cookie/index.html)**
+
+#### IndexedDB Architectural Core
+
+IndexedDB serves as a full client-side transactional database suited for offline storage:
+
+- **Asynchronous & Non-Blocking**: Runs database writes asynchronously, keeping the main UI thread free from disk latency spikes.
+- **Microtask Auto-Commit Trap**: Closed automatically by the browser when the microtask queue clears. Asynchronous tasks (like network fetches) cannot be run inside transactions.
+- **Schema & Version Upgrades**: Require versioned upgrades under `onupgradeneeded`, which can be blocked by other open tabs of the same origin.
+- **Large Capacity Limits**: Reaches up to 80% of disk space in standard browsers, but undergoes 7-day inactivity purge in Safari.
+
+> [!IMPORTANT]
+> A detailed deep dive and interactive playground for IndexedDB are available at:
+>
+> - **[IndexedDB Architecture & Mechanics Deep Dive](./indexeddb/README.md)**
+> - **[Interactive IndexedDB Demo](./indexeddb/index.html)**
 
 ---
 
