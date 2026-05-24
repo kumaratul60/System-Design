@@ -8,6 +8,14 @@ This guide covers core React concepts in detail, designed to provide deep unders
 - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
 - [2. React Virtual DOM & Reconciliation](#2-react-virtual-dom--reconciliation)
   - [Staff-Level Deep Dive: VDOM Diffing vs. Myers' and Zhang-Shasha Algorithms](#staff-level-deep-dive-vdom-diffing-vs-myers-and-zhang-shasha-algorithms)
+    - [Q1: VDOM Diffing vs. Git Diff (The Algorithms)](#q1-vdom-diffing-vs-git-diff-the-algorithms)
+    - [Q2: How Git Diff Scales](#q2-how-git-diff-scales)
+    - [Q3: How Virtual DOM Diff Scales](#q3-how-virtual-dom-diff-scales)
+    - [Q4: Reconciler vs. Compiler](#q4-reconciler-vs-compiler-sveltes-compile-time-reactivity)
+    - [Q5: Pull-Based vs. Fine-Grained Reactive Graph](#q5-pull-based-reconciler-react-vs-fine-grained-push-based-reactivity-solidjs)
+    - [Q6: Why is DOM Manipulation Slow?](#q6-why-is-dom-manipulation-slow-reflow-vs-repaint)
+    - [Q7: VDOM Diffing vs. React Reconciliation](#q7-the-relationship-between-vdom-diffing-and-react-reconciliation)
+    - [Q8: Execution Timing & Bottlenecks](#q8-execution-timing-of-reconciliation-steps--handling-large-content-updates)
   - [Constructive vs. Heuristic Algorithms in System Design](#constructive-vs-heuristic-algorithms-in-system-design)
 - [3. What is React Fiber Architecture?](#3-what-is-react-fiber-architecture)
 - [4. Controlled vs Uncontrolled Components](#4-controlled-vs-uncontrolled-components)
@@ -235,6 +243,10 @@ The **Virtual DOM (VDOM)** is a lightweight, in-memory representation of the rea
 
 ### Staff-Level Deep Dive: VDOM Diffing vs. Myers' and Zhang-Shasha Algorithms
 
+#### Q1: VDOM Diffing vs. Git Diff (The Algorithms)
+
+**Question:** Do Git Diff and DOM/VDOM Diff use the same algorithm under the hood? What are the key structural and mathematical differences?
+_or_
 **Question:** How does React's virtual DOM reconciliation differ from general tree diffing (e.g., the Zhang-Shasha algorithm) and sequence diffing (e.g., Myers' algorithm)? Why can't we use exact algorithms in real-time UI frameworks?
 _or_
 **Question:** Does React's DOM diffing algorithm utilize Myers' Diff Algorithm (like Git Diff) to find the absolute minimum changes?
@@ -244,42 +256,7 @@ _or_
 
 Exact tree or sequence matching is mathematically too expensive for the tight rendering budget of modern web applications (which requires rendering frames in under 16ms for 60fps). React rejects globally optimal diffing in favor of a fast **$O(N)$ heuristic approach** by making strict architectural assumptions.
 
-#### 1. Eugene Myers' Sequence Diffing Algorithm (1986)
-
-- **Concept:** Designed for **one-dimensional sequences** (like lines of text in source code files, e.g., `git diff`). It models sequence alignment as finding the Shortest Edit Script (SES) or the Longest Common Subsequence (LCS) by traversing an edit graph.
-- **Complexity:** $O(ND)$ time and space, where $N$ is the sum of sequence lengths ($|A| + |B|$) and $D$ is the size of the minimum edit script (number of insertions/deletions).
-- **Why it fails for VDOM:**
-  - VDOM is hierarchical (a tree), not a flat sequence. Modeling a tree as a flat sequence losing parent-child context destroys semantic UI reconciliation.
-  - Myers' treats element shifts as a sequence of deletions and insertions. In a UI, if an element moves (e.g., reordering a list), we want to reuse the DOM node and update its position (a "Move" operation). Myers' does not natively support cheap node moves.
-
-#### 2. The Zhang-Shasha Tree Edit Distance Algorithm (1989)
-
-- **Concept:** A general dynamic programming algorithm to find the absolute minimum edit distance (insertions, deletions, and substitutions of nodes) between two labeled **hierarchical trees** (like XML/DOM).
-- **Mechanism:** It computes postorder traversals of both trees and uses dynamic programming to calculate forest-to-forest edit distances. It recursively breaks the tree down based on key roots (nodes with left siblings).
-- **Complexity:**
-  $$\text{Time Complexity: } O(|T_1| \cdot |T_2| \cdot \min(\text{depth}(T_1), \text{leaves}(T_1)) \cdot \min(\text{depth}(T_2), \text{leaves}(T_2)))$$
-  - For typical balanced trees, this runs in **$O(N^3)$** time. For skewed, linear trees, it degenerates to **$O(N^4)$**.
-- **Why it fails for VDOM:**
-  - If a tree has 1,000 nodes, an $O(N^3)$ algorithm requires approximately $1,000,000,000$ operations. Running this on every keypress or animation frame is impossible in a single-threaded JavaScript environment.
-
-#### 3. React's $O(N)$ Heuristic Diffing
-
-React avoids the $O(N^3)$ bottleneck by executing a **heuristic, greedy constructive search** across the VDOM. It limits the search space using two core assumptions:
-
-1. **Type-Driven Pruning:** If two elements have different types (e.g., changing `<div>` to `<span>`, or `Header` to `Footer`), React assumes they will produce completely different trees. Instead of checking their descendants, it tears down the entire subtree and mounts the new one from scratch.
-2. **Key-Driven Matching:** Sibling elements are matched across renders using developer-supplied stable `key` props. This turns a complex structural search into simple map lookups.
-
-#### 4. React's Two-Pass List Reconciliation (No Sequence Diffing)
-
-For children arrays (lists), instead of using sequence diffing like Myers', React uses a highly optimized **two-pass scan**:
-
-- **Pass 1 (Linear Scan):** React iterates through the old and new children arrays in parallel, comparing elements at index `i`. If keys and types match, React reuses the Fiber node. If React hits a key mismatch, it **terminates the linear scan immediately**.
-- **Pass 2 (Map Lookup):** React puts all remaining old children into a temporary Map keyed by their `key` prop. It then loops through the remaining new children and performs $O(1)$ lookups in the Map.
-  - If a matching key is found, React pulls the old Fiber node out, updates it, and marks it as "Moved" if its index changed.
-  - If no matching key is found, React instantiates a new Fiber node.
-  - After the loop, React unmounts any remaining elements left in the Map.
-
-This two-pass map lookup achieves linear $O(N)$ execution speed, which is vastly faster than Myers' or general sequence/tree diffs for dynamic web UIs.
+Here is a detailed comparison matrix:
 
 #### Comparison Matrix: VDOM Diffing vs. Classical Algorithms
 
@@ -291,6 +268,225 @@ This two-pass map lookup achieves linear $O(N)$ execution speed, which is vastly
 | **Optimality**       | Suboptimal (Heuristic/Approximate)    | Globally Optimal (Minimal Tree Edits)          | Globally Optimal (SES / LCS)              |
 | **Element Moves**    | Explicitly tracked via keys in $O(1)$ | Handled as deletion + insertion                | Handled as deletion + insertion           |
 | **Use Case**         | Real-time UI reconciliation           | Document structural comparison                 | Version control diffing (Git)             |
+
+---
+
+##### 1. Eugene Myers' Sequence Diffing Algorithm (1986)
+
+- **Concept:** Designed for **one-dimensional sequences** (like lines of text in source code files, e.g., `git diff`). It models sequence alignment as finding the Shortest Edit Script (SES) or the Longest Common Subsequence (LCS) by traversing an edit graph.
+- **Complexity:** $O(ND)$ time and space, where $N$ is the sum of sequence lengths ($|A| + |B|$) and $D$ is the size of the minimum edit script (number of insertions/deletions).
+- **Why it fails for VDOM:**
+  - VDOM is hierarchical (a tree), not a flat sequence. Modeling a tree as a flat sequence losing parent-child context destroys semantic UI reconciliation.
+  - Myers' treats element shifts as a sequence of deletions and insertions. In a UI, if an element moves (e.g., reordering a list), we want to reuse the DOM node and update its position (a "Move" operation). Myers' does not natively support cheap node moves.
+
+##### 2. The Zhang-Shasha Tree Edit Distance Algorithm (1989)
+
+- **Concept:** A general dynamic programming algorithm to find the absolute minimum edit distance (insertions, deletions, and substitutions of nodes) between two labeled **hierarchical trees** (like XML/DOM).
+- **Mechanism:** It computes postorder traversals of both trees and uses dynamic programming to calculate forest-to-forest edit distances. It recursively breaks the tree down based on key roots (nodes with left siblings).
+- **Complexity:**
+  $$\text{Time Complexity: } O(|T_1| \cdot |T_2| \cdot \min(\text{depth}(T_1), \text{leaves}(T_1)) \cdot \min(\text{depth}(T_2), \text{leaves}(T_2)))$$
+  - For typical balanced trees, this runs in **$O(N^3)$** time. For skewed, linear trees, it degenerates to **$O(N^4)$**.
+- **Why it fails for VDOM:**
+  - If a tree has 1,000 nodes, an $O(N^3)$ algorithm requires approximately $1,000,000,000$ operations. Running this on every keypress or animation frame is impossible in a single-threaded JavaScript environment.
+
+---
+
+#### 3. React's $O(N)$ Heuristic Diffing
+
+React avoids the $O(N^3)$ bottleneck by executing a **heuristic, greedy constructive search** across the VDOM. It limits the search space using two core assumptions:
+
+1. **Type-Driven Pruning:** If two elements have different types (e.g., changing `<div>` to `<span>`, or `Header` to `Footer`), React assumes they will produce completely different trees. Instead of checking their descendants, it tears down the entire subtree and mounts the new one from scratch.
+2. **Key-Driven Matching:** Sibling elements are matched across renders using developer-supplied stable `key` props. This turns a complex structural search into simple map lookups.
+
+---
+
+#### Q2: How Git Diff Scales
+
+**Question:** How does Git Diff handle large-scale comparisons (e.g., comparing source files with millions of lines) without degrading in performance?
+
+**Answer:**
+Git Diff is designed for high-precision, offline code comparisons where real-time rendering is not required:
+
+- **The Scale Challenge:** In the worst-case scenario (e.g., highly repetitive files), Myers' algorithm can degrade to $O(N^2)$ time.
+- **How Git Scales:**
+  - **Not Real-time:** Git runs in a terminal/CLI environment. Taking 100ms to calculate a diff does not hurt user experience, unlike a browser which must render in under 16.6ms.
+  - **Patience & Histogram Heuristics:** Git frequently switches from pure Myers' to **Patience** or **Histogram Diffing** algorithms. These algorithms prioritize aligning unique lines (like function signatures) first, preventing Git from getting lost in highly repetitive elements (like closing braces `}`) which would blow up comparison times and produce unreadable diffs.
+
+---
+
+#### Q3: How Virtual DOM Diff Scales
+
+**Question:** How does React's Virtual DOM diffing scale to large, nested component trees without freezing the browser's single-threaded event loop?
+
+**Answer:**
+VDOM diffing must run synchronously in the browser and complete in under 16.6ms (60fps) or 8.3ms (120fps) to avoid visual lag.
+
+- **The Scale Challenge:** If React used an exact tree-diffing algorithm (like Zhang-Shasha), comparing two trees of just 1,000 elements would take $O(N^3) \approx 1,000,000,000$ operations, locking up the browser tab.
+- **How React Scales:**
+  - **Heuristic Shortcuts:** It assumes that if a parent node changes type (e.g., `<div>` becomes `<span>`), the children will be completely different. It tears down the old tree and mounts the new one without doing nested checks.
+  - **Key-based $O(1)$ Lookups:** When elements move in a list, React avoids sequence checking by putting old siblings in a hash-map keyed by the `key` prop. Matching nodes during the second pass is a simple $O(1)$ map lookup.
+
+##### React's Two-Pass List Reconciliation (No Sequence Diffing)
+
+For children arrays (lists), instead of using sequence diffing like Myers', React uses a highly optimized **two-pass scan**:
+
+- **Pass 1 (Linear Scan):** React iterates through the old and new children arrays in parallel, comparing elements at index `i`. If keys and types match, React reuses the Fiber node. If React hits a key mismatch, it **terminates the linear scan immediately**.
+- **Pass 2 (Map Lookup):** React puts all remaining old children into a temporary Map keyed by their `key` prop. It then loops through the remaining new children and performs $O(1)$ lookups in the Map.
+  - If a matching key is found, React pulls the old Fiber node out, updates it, and marks it as "Moved" if its index changed.
+  - If no matching key is found, React instantiates a new Fiber node.
+  - After the loop, React unmounts any remaining elements left in the Map.
+
+This two-pass map lookup achieves linear $O(N)$ execution speed, which is vastly faster than Myers' or general sequence/tree diffs for dynamic web UIs.
+
+- **Concurrent Scheduling (Fiber):** In massive applications, even $O(N)$ work can block the main thread if the tree is huge. React Fiber breaks this $O(N)$ rendering work into tiny chunks and yields control back to the browser's event loop to capture clicks/typing between chunks, preventing UI freezing.
+
+---
+
+#### Q4: Reconciler vs. Compiler (Svelte's Compile-Time Reactivity)
+
+**Question:** Why does Svelte discard the Virtual DOM entirely? How does Svelte update the DOM at scale without using any runtime diffing algorithm?
+
+**Answer:**
+Svelte's creator, Rich Harris, famously declared that _"Virtual DOM is overhead."_ Svelte achieves reactivity by shifting the reconciliation work from the **browser runtime** to the **build-time compiler**.
+
+- **Why VDOM is Overhead:** In a VDOM framework like React, a state change forces the component (and its children, unless memoized) to execute and return a new VDOM tree. The framework must diff this new tree with the old tree, even if only a single variable changed. This diffing process consumes CPU and memory.
+- **The Compiler Approach:** Svelte compiles HTML templates into vanilla JavaScript code that directly targets specific DOM nodes. Instead of shipping a runtime diffing engine, Svelte tracks variables inside component templates during compilation.
+- **Direct Updates ($O(1)$ Complexity):**
+  When a variable changes, Svelte runs compiled reactive update statements that target the exact DOM node directly:
+  ```javascript
+  // Compiled output snippet (conceptual)
+  if (changed.name) {
+    text_node.textContent = ctx.name; // Directly mutates the DOM node
+  }
+  ```
+  This shifts the complexity of locating DOM changes from $O(N)$ runtime tree diffing to $O(1)$ direct variable-bound DOM writes.
+
+---
+
+#### Q5: Pull-Based Reconciler (React) vs. Fine-Grained Push-Based Reactivity (SolidJS)
+
+**Question:** How does SolidJS achieve top-tier performance without a Virtual DOM? Explain the difference between React's pull-based reconciler and SolidJS's push-based reactive graph.
+
+**Answer:**
+React and SolidJS represent two opposing architectural paradigms of state propagation:
+
+- **React's Pull-Based Reconciliation:**
+  - **Paradigm:** Pull-based.
+  - **Execution:** When state changes, React marks a component as dirty. It then "pulls" the component's render function (and its descendants) to generate a new VDOM subtree. The reconciler diffs the subtrees to figure out what changed, then patches the real DOM.
+  - **Granularity:** Component-level. React does not know _which_ part of the state changed; it only knows _some_ state changed, requiring it to run the entire component function again.
+
+- **SolidJS's Push-Based Reactivity:**
+  - **Paradigm:** Fine-grained, push-based.
+  - **Execution:** SolidJS runs component functions **exactly once** during initialization to build the DOM. During this single run, it creates a dependency graph of Signals (observables) and Effects (observers).
+  - **Granularity:** Element/node-level. When a Signal value changes, it directly "pushes" the update to only the specific DOM node bound to that Signal. The component function never runs again.
+  - **No VDOM:** SolidJS JSX compiles down to native DOM creation operations (`document.createElement`) and direct node assignments, completely bypassing VDOM memory overhead and reconciliation cycles.
+
+---
+
+#### Q6: Why is DOM Manipulation Slow? (Reflow vs. Repaint)
+
+**Question:** Why is writing directly to the browser DOM considered slow? Explain the browser's rendering pipeline and how Virtual DOM batching prevents "Layout Thrashing."
+
+**Answer:**
+DOM operations (modifying JavaScript properties on DOM elements) are fast. The bottleneck is the **rendering pipeline** triggered within the browser engine (like WebKit or Blink) when layout geometry changes.
+
+- **The Browser Render Pipeline:**
+  1. **JavaScript:** DOM structure or styles are updated.
+  2. **Style (CSSOM):** CSS rules are parsed and applied to nodes.
+  3. **Layout (Reflow):** The browser calculates the exact geometric coordinates and size of every visible node on the screen.
+  4. **Paint:** The browser fills in pixels (rasterization) for text, colors, images, and borders.
+  5. **Composite:** Layers are drawn to the screen by the GPU.
+
+- **The Danger: Layout Thrashing (Synchronous Reflow):**
+  If a script writes to the DOM and immediately reads a layout property (like `offsetWidth` or `clientHeight`) in a loop, the browser is forced to run the expensive **Layout** phase synchronously on every iteration. This is called **Layout Thrashing** and freezes the browser main thread.
+
+  ```javascript
+  // ❌ Layout Thrashing Loop
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].style.width = box.offsetWidth + 10 + 'px'; // Read (blocks/reflows) -> Write
+  }
+  ```
+
+- **How VDOM Solves This via Batching:**
+  Rather than writing to the DOM immediately for every state change, React buffers mutations in the virtual tree. Once the render phase completes, React performs the minimal set of real DOM writes in a single, batched **Commit Phase**.
+  This allows the browser to perform style recalculation and layout/paint exactly once for the entire frame, avoiding visual flicker and eliminating layout thrashing.
+
+---
+
+#### Q7: The Relationship between VDOM Diffing and React Reconciliation
+
+**Question:** What is the difference and relationship between "Virtual DOM Diffing" and "React Reconciliation"? How does React use both in tandem?
+
+**Answer:**
+They are not the same thing; rather, **VDOM Diffing is a sub-phase of the larger React Reconciliation process.**
+
+- **VDOM Diffing (The "What"):** This is the **mathematical algorithm** that compares the old Virtual DOM tree with the new Virtual DOM tree to identify structural changes (e.g., _"this node changed type from `div` to `span`"_, or _"this list item moved from index 0 to 2"_).
+- **Reconciliation (The "How and When"):** This is the **entire execution engine** (the Reconciler). It schedules updates, creates the doubly-linked Fiber tree, runs the VDOM diffing phase, pauses/resumes rendering tasks (Time Slicing), and coordinates commits to the real browser DOM.
+
+---
+
+##### How React Uses Both in Tandem (The Pipeline)
+
+When a state update is triggered (e.g. `setState`), React orchestrates them in a 4-step pipeline:
+
+```text
+[1. State Change Scheduled]
+          │
+          ▼ (Reconciliation Engine assigns Lane priority)
+[2. Render Phase Begins]
+          │
+          ▼ (VDOM Diffing Algorithm compares trees)
+[3. Fiber Tree Mutation Lists Generated]
+          │
+          ▼ (Reconciliation Engine manages pause/resume)
+[4. Commit Phase Writes to DOM]
+```
+
+1. **Scheduling (Reconciliation):** The state update triggers the Reconciler. It assigns the update a priority level (**Lanes**) and schedules it on the main thread.
+2. **Recreating the Tree (Reconciliation):** The Reconciler evaluates the component. It executes the component function, which returns JSX, creating a new VDOM node tree.
+3. **Calculating Differences (VDOM Diffing):** This is where React runs the **VDOM Diffing algorithm** ($O(N)$ heuristic type pruning, stable key checks, two-pass list reconciliation) to compare the new JSX tree against the active tree.
+4. **Task Control (Reconciliation / Fiber):** If a higher-priority task (like user typing) enters the event loop, the Reconciler **pauses** this diffing process. Because the tree is stored as a doubly-linked list of Fibers rather than a stack, it can resume or discard the work later.
+5. **Committing Changes (Reconciliation):** Once diffing is fully complete, the Reconciler enters the **Commit Phase** and synchronously writes the changes to the real browser DOM in a single atomic batch.
+
+---
+
+#### Q8: Execution Timing of Reconciliation Steps & Handling Large Content Updates
+
+**Question:** How much time does each step in the React rendering/reconciliation pipeline take? What happens to these timing thresholds when there are large content changes in the application?
+
+**Answer:**
+Each phase of the rendering pipeline behaves differently under load. When a large content update occurs, the bottleneck shifts heavily toward the **synchronous DOM write and browser layout calculations**.
+
+Here is a breakdown of the execution times and behavioral adjustments for each step:
+
+##### 1. Scheduling Phase (Lanes Assignment)
+
+- **Typical Time:** Near-zero ($<0.1\text{ms}$).
+- **Under Large Content Updates:** Stays unchanged ($<0.1\text{ms}$). React is merely placing a lightweight update description object onto the task queue.
+- **Scale Strategy:** Updates are categorized via bitmasks (Lanes) to determine whether they run immediately or are deferred.
+
+##### 2. Render Phase (Component Invocation & VDOM Diffing)
+
+- **Typical Time:** $1\text{ms} - 5\text{ms}$ for medium components.
+- **Under Large Content Updates:** Can scale to $20\text{ms} - 100\text{ms}+$ depending on the size of the unmemoized subtree.
+- **Scale Strategy (Time Slicing):**
+  - To prevent locking up the browser, React's Scheduler divides this phase into **$5\text{ms}$ chunks**.
+  - After every $5\text{ms}$ of diffing, the reconciler yields control to the browser. If a high-priority user interaction (like typing) is pending in the browser's event queue, React pauses rendering to let the browser paint the input, then resumes rendering from the last evaluated Fiber node.
+  - While this prevents input lag, the _overall_ time to complete the render phase increases.
+
+##### 3. Commit Phase (DOM Mutation Writes)
+
+- **Typical Time:** $<1\text{ms}$ (simple text swaps).
+- **Under Large Content Updates:** Can balloon to **$10\text{ms} - 50\text{ms}+$**.
+- **Scale Challenge:** Unlike the Render Phase, **the Commit Phase is synchronous and cannot be paused or split**. If it is interrupted, the user would see a partially updated, broken UI.
+- **Under Load:** If thousands of elements are inserted, unmounted, or structurally shifted, React must execute a large batch of synchronous imperative DOM writes (`appendChild`, `removeChild`, `setAttribute`), blocking the main thread entirely for the duration of this step.
+
+##### 4. Post-Commit Browser Reflow & Repaint
+
+- **Typical Time:** $2\text{ms} - 8\text{ms}$.
+- **Under Large Content Updates:** Can shoot up to **$20\text{ms} - 150\text{ms}+$**.
+- **Scale Challenge:** Once React releases the main thread, the browser engine must synchronously recalculate the positions and sizes of all elements (**Reflow/Layout**) and repaint the screen (**Paint/Rasterization**).
+- **Under Load:** Large structural updates (especially near the root of the DOM tree or on elements affecting layout grids/flexbox) force the browser to compute geometries for the entire page. This phase is outside of React's code, but is directly caused by the size of React's commit payload.
 
 ---
 
@@ -1363,7 +1559,7 @@ To solve this, the React team introduced **Lanes**, representing task priorities
   - `SyncLane` (bit 0): Highly urgent updates (e.g. keyboard inputs, text entry, controlled inputs).
   - `InputContinuousLane` (bit 4): Smooth, continuous user inputs (e.g., resizing, scrolling, dragging).
   - `DefaultLane` (bit 5): Normal state updates triggered by network calls or timers.
-  - `TransitionHydrationLane` / `TransitionLanes` (bits 6–21): Transition updates.
+  - `TransitionHydrationLane` / `TransitionLanes` (bits 6-21): Transition updates.
   - `OffscreenLane` (bit 26): Offscreen, hidden subtrees.
 - **Why Bitmasks Work:** Bitwise operations allow React to evaluate priorities dynamically. React can check if a node needs rendering using `(lanes & renderLanes) !== 0`. It can pause or defer specific lanes (e.g., transition lanes) while allowing high-priority lanes (`SyncLane`) to cut in line, and later merge the deferred lanes back in.
 
@@ -1380,7 +1576,7 @@ To solve this, the React team introduced **Lanes**, representing task priorities
 When you execute code inside `startTransition(callback)`:
 
 1. React switches the active global dispatcher reference to the **Transition Dispatcher**.
-2. Any state updates triggered _during_ the execution of the callback are marked with one of the `TransitionLanes` (bits 6–21) rather than the default `SyncLane` or `DefaultLane`.
+2. Any state updates triggered _during_ the execution of the callback are marked with one of the `TransitionLanes` (bits 6-21) rather than the default `SyncLane` or `DefaultLane`.
 3. React schedules a low-priority render task with the Scheduler for the active transition lane.
 
 #### 2. Render Phase Interruption (Time Slicing)
