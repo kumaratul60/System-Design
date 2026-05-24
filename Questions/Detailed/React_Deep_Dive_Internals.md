@@ -1501,12 +1501,12 @@ Every element in the Fiber tree is a `FiberNode` containing a `tag` property, wh
 ```javascript
 export const FunctionComponent = 0;
 export const ClassComponent = 1;
-export const IndeterminateComponent = 2; // Before component type is resolved
-export const HostRoot = 3; // Root of the tree
-export const HostComponent = 5; // Native HTML tags (e.g. div, span)
-export const HostText = 6; // Text nodes
-export const MemoComponent = 14; // React.memo wrapper components
-export const SimpleMemoComponent = 15; // React.memo with no custom comparison
+export const IndeterminateComponent = 2; // Function or class before resolution
+export const HostRoot = 3; // Fiber root node
+export const HostComponent = 5; // DOM/native element (div, span, etc.)
+export const HostText = 6; // Plain text node
+export const MemoComponent = 14; // React.memo with custom compare OR wrapped component
+export const SimpleMemoComponent = 15; // React.memo with default shallow compare
 ```
 
 #### 2. The Indeterminate Component Phase
