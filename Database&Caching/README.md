@@ -26,6 +26,7 @@ This module covers both backend distributed data strategies and frontend client-
       - [Tabular Quick Lookup: Client-Side Caching \& Storage Landscape](#tabular-quick-lookup-client-side-caching--storage-landscape)
       - [LocalStorage Architectural Core](#localstorage-architectural-core)
       - [SessionStorage Architectural Core](#sessionstorage-architectural-core)
+      - [Cookie Architectural Core](#cookie-architectural-core)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -260,9 +261,25 @@ SessionStorage introduces strict context boundaries suited for transient, tab-is
 
 > [!IMPORTANT]
 > Detailed deep dives and interactive examples for SessionStorage are available at:
-> * **[SessionStorage Architecture & Mechanics Deep Dive](./sessionstorage/README.md)**
-> * **[Interactive SessionStorage Demo](./sessionstorage/index.html)**
-> * **[SessionStorage Todo CRUD Application](./sessionstorage/todo.html)**
+>
+> - **[SessionStorage Architecture & Mechanics Deep Dive](./sessionstorage/README.md)**
+> - **[Interactive SessionStorage Demo](./sessionstorage/index.html)**
+> - **[SessionStorage Todo CRUD Application](./sessionstorage/todo.html)**
+
+#### Cookie Architectural Core
+
+Cookies are managed by the browser but automatically sent on every matching HTTP request, presenting unique scoping and security behaviors:
+
+- **Automatic Request Transmission**: Transmitted automatically in HTTP request headers. Large cookies cause header bloat and slow down asset-loading performance, requiring CDNs/cookie-free domains for optimization.
+- **HTTP-Only Shielding**: Supports the `HttpOnly` flag, protecting authentication tokens (e.g., Session IDs, JWTs) from being read or stolen by scripts during XSS attacks.
+- **CSRF Protection via SameSite**: Controls cookie attachment on cross-site requests using `SameSite=Strict/Lax/None` to mitigate Cross-Site Request Forgery (CSRF).
+- **Vulnerabilities & Overwrites**: Prone to subdomain "cookie tossing" attacks. Using cookie prefixes (`__Host-` and `__Secure-`) locks cookies to HTTPS secure transport and domain contexts, preventing overwrite attacks.
+
+> [!IMPORTANT]
+> Detailed deep dives and interactive examples for Cookies are available at:
+>
+> - **[Cookie Architecture & Security Mechanics Deep Dive](./cookie/README.md)**
+> - **[Interactive Cookie Demo](./cookie/index.html)**
 
 ---
 

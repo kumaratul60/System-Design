@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Cookie Architectural Playground & Security Monitor</title>
+
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Blocking script to prevent theme flash -->
+    <script>
+      (function () {
+        try {
+          const getCookie = (name) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+          };
+          const savedTheme = getCookie('app_display_theme_cookie');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+          if (theme === 'light') {
+            document.documentElement.classList.add('light-theme');
+          } else {
+            document.documentElement.classList.remove('light-theme');
+          }
+        } catch (e) {
+          console.warn('Theme parsing crash:', e);
+        }
+      })();
+    </script>
+
+    <style>
+      :root {
+        /* Dark Theme Tokens (Default) */
+        --bg-primary: #0a0e17;
+        --bg-secondary: #121824;
+        --bg-tertiary: #1b2336;
+        --accent-color: #a855f7; /* Purple accent to distinguish from local/session storage */
+        --accent-hover: #9333ea;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border-color: #1e293b;
+        --glow-glow: 0 0 15px rgba(168, 85, 247, 0.15);
+        --card-bg: rgba(18, 24, 36, 0.7);
+      }
+
+      html.light-theme {
+        /* Light Theme Tokens */
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #e2e8f0;
+        --accent-color: #8b5cf6;
+        --accent-hover: #7c3aed;
+        --text-primary: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --border-color: #cbd5e1;
+        --glow-glow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        --card-bg: rgba(255, 255, 255, 0.85);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        padding: 2rem 1.5rem;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #c084fc 0%, #a855f7 50%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 850px;
+      }
+
+      .theme-controller {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+      }
+
+      /* Layout Grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 1.5rem;
+      }
+
+      @media (max-width: 960px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Panels */
+      .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--glow-glow);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          background-color 0.3s,
+          border-color 0.3s;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .card:hover {
+        box-shadow: 0 10px 30px rgba(168, 85, 247, 0.15);
+      }
+
+      .card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .tag {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 9999px;
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .tag-purple {
+        background: rgba(168, 85, 247, 0.2);
+        color: #d8b4fe;
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
+      .tag-green {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .tag-red {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .tag-yellow {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fde047;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+
+      .alert-info {
+        background: rgba(168, 85, 247, 0.08);
+        border: 1px solid rgba(168, 85, 247, 0.2);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .alert-info strong {
+        color: var(--text-primary);
+      }
+
+      /* Forms */
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+      }
+
+      input[type='text'],
+      textarea,
+      select {
+        width: 100%;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          background-color 0.3s;
+      }
+
+      input[type='text']:focus,
+      select:focus {
+        border-color: var(--accent-color);
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .checkbox-group input {
+        width: 1.1rem;
+        height: 1.1rem;
+        accent-color: var(--accent-color);
+        cursor: pointer;
+      }
+
+      /* Buttons */
+      .btn-group {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+
+      .btn-primary {
+        background: var(--accent-color);
+        color: #000000;
+        color: var(--bg-primary);
+      }
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+      }
+      .btn-secondary:hover {
+        background: #3b4d6b;
+      }
+
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .btn-danger:hover {
+        background: var(--danger);
+        color: #ffffff;
+      }
+
+      .btn-theme {
+        background: var(--accent-color);
+        color: var(--bg-primary);
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 9999px;
+        box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3);
+        font-weight: 700;
+      }
+      .btn-theme:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      /* Code Viewers */
+      pre {
+        background: #060911;
+        border: 1px solid var(--border-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+        color: #c084fc;
+        max-height: 180px;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .log-panel {
+        background: #060911;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 1rem;
+        flex-grow: 1;
+      }
+
+      .log-entry {
+        margin-bottom: 0.4rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        word-break: break-all;
+      }
+
+      .log-time {
+        color: var(--text-muted);
+      }
+      .log-info {
+        color: #d8b4fe;
+      }
+      .log-success {
+        color: var(--success);
+      }
+      .log-error {
+        color: var(--danger);
+      }
+      .log-warning {
+        color: var(--warning);
+      }
+
+      /* Tables */
+      .table-container {
+        margin-top: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        max-height: 250px;
+        overflow-y: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+      }
+
+      th {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        padding: 0.6rem 0.8rem;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        word-break: break-all;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .empty-state {
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      /* Simulation metrics */
+      .metric-row {
+        display: flex;
+        justify-content: space-between;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+      }
+
+      .metric-value {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--accent-color);
+        font-weight: bold;
+      }
+
+      /* Sandbox Hack panels */
+      .sandbox-hack-box {
+        border: 1px dashed var(--danger);
+        background: rgba(239, 68, 68, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+      }
+
+      footer {
+        margin-top: 3rem;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      footer a {
+        color: var(--accent-color);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div>
+          <h1>Cookie Architectural Playground & Sandbox</h1>
+          <p class="subtitle">
+            An interactive browser sandbox to experiment with Cookie CRUD operations, server-side simulation, network
+            transmission stutters, and cross-site exploits.
+          </p>
+        </div>
+
+        <div class="theme-controller">
+          <button class="btn-theme" id="theme-toggle-btn">☀️ Switch to Light Mode</button>
+          <span style="font-size: 0.75rem; color: var(--text-muted)"
+            >Cached key: <code>app_display_theme_cookie</code></span
+          >
+        </div>
+      </header>
+
+      <div class="alert-info">
+        <strong>Network Bound Transmission:</strong> Unlike Web Storage, cookies are automatically sent to the server on
+        every request. Keep cookies small to prevent request header bloat.
+      </div>
+
+      <div class="grid">
+        <!-- Section 1: Client-Side Cookie Editor -->
+        <div class="card">
+          <div class="card-title">
+            <span>Client Cookie CRUD Editor</span>
+            <span class="tag tag-purple">document.cookie</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cookie-key">Cookie Name</label>
+              <input type="text" id="cookie-key" placeholder="e.g., user_pref" />
+            </div>
+            <div class="form-group">
+              <label for="cookie-val">Cookie Value</label>
+              <input type="text" id="cookie-val" placeholder="e.g., dark_mode" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cookie-maxage">Max-Age (seconds)</label>
+              <input type="text" id="cookie-maxage" placeholder="e.g., 3600 (1 hour)" />
+            </div>
+            <div class="form-group">
+              <label for="cookie-samesite">SameSite flag</label>
+              <select id="cookie-samesite">
+                <option value="Lax">Lax (Default)</option>
+                <option value="Strict">Strict</option>
+                <option value="None">None (Requires Secure)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cookie-path">Path</label>
+              <input type="text" id="cookie-path" placeholder="e.g., /" />
+            </div>
+            <div class="form-group">
+              <label for="cookie-domain">Domain</label>
+              <input type="text" id="cookie-domain" placeholder="e.g., localhost" />
+            </div>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="cookie-secure" />
+            <label for="cookie-secure">Secure Flag (HTTPS only)</label>
+          </div>
+
+          <pre id="code-snippet" style="margin-top: 1rem">
+// document.cookie Preview string
+document.cookie = "...";</pre
+          >
+
+          <div class="btn-group">
+            <button class="btn-primary" id="btn-save">Write Cookie</button>
+            <button class="btn-secondary" id="btn-delete">Remove Cookie</button>
+          </div>
+        </div>
+
+        <!-- Section 2: Cookie Jar Viewer -->
+        <div class="card">
+          <div class="card-title">
+            <span>Active Cookie Jar Viewer</span>
+            <span class="tag tag-green">Client Store</span>
+          </div>
+
+          <p class="spinner-text" style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-secondary)">
+            Displays all keys readable by JavaScript (via <code>document.cookie</code>):
+          </p>
+
+          <div class="table-container" style="flex-grow: 1">
+            <table id="cookie-table">
+              <thead>
+                <tr>
+                  <th style="width: 30%">Name</th>
+                  <th style="width: 50%">Value</th>
+                  <th style="text-align: right; width: 20%">Action</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+            <div id="table-empty" class="empty-state">No readable cookies found.</div>
+          </div>
+
+          <!-- Simulated Server Set Cookies (HttpOnly) -->
+          <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.5rem">
+            <label style="color: var(--warning); font-weight: bold; margin-bottom: 0.2rem"
+              >HttpOnly Server Cookies (Simulated Key Store)</label
+            >
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem">
+              These cookies are sent to the server but **cannot** be read or accessed by client-side JavaScript:
+            </p>
+            <div class="table-container" style="max-height: 120px">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 40%">Name</th>
+                    <th style="width: 60%">Value</th>
+                  </tr>
+                </thead>
+                <tbody id="httponly-table-body">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="btn-group" style="margin-top: 1rem">
+            <button class="btn-secondary" id="btn-refresh">Refresh List</button>
+            <button class="btn-danger" id="btn-clear-client">Clear Client Cookies</button>
+          </div>
+        </div>
+
+        <!-- Section 3: HttpOnly Server Simulation -->
+        <div class="card">
+          <div class="card-title">
+            <span>HttpOnly Server-Setting Handshake Simulator</span>
+            <span class="tag tag-purple">Set-Cookie Header</span>
+          </div>
+
+          <p class="spinner-text" style="margin-bottom: 0.5rem">
+            Simulate an HTTP API call to set secure cookies that JavaScript cannot read:
+          </p>
+
+          <div class="form-group">
+            <label for="server-cookie-select">Select Auth Session Payload:</label>
+            <select id="server-cookie-select">
+              <option value="session_id=jwt_session_secure_xyz123">Access Session token (HttpOnly)</option>
+              <option value="oauth_refresh=token_refresh_val_888">OAuth Refresh token (HttpOnly)</option>
+            </select>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn-primary" id="btn-trigger-handshake">Execute API Handshake</button>
+            <button class="btn-secondary" id="btn-clear-server-cookies">Clear Simulated Secure Jar</button>
+          </div>
+
+          <div class="log-panel" id="handshake-logs" style="height: 150px; margin-top: 1rem">
+            <div class="log-entry">
+              <span class="log-time">[Handshake]</span>
+              <span class="log-info">API simulator idle. Trigger a handshake to trace response headers...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Network Bloat & CDN Header Cost Calculator -->
+        <div class="card">
+          <div class="card-title">
+            <span>Network Header Bloat & CDNs Simulator</span>
+            <span class="tag tag-red">Boundary Limits</span>
+          </div>
+
+          <p class="spinner-text" style="margin-bottom: 0.5rem">
+            Every HTTP request automatically carries all matching cookies in the header. See how this impacts request
+            sizes across page loads:
+          </p>
+
+          <div class="metric-row">
+            <span>Active Cookie Size (Bytes):</span>
+            <span class="metric-value" id="metrics-cookie-bytes">0 B</span>
+          </div>
+          <div class="metric-row">
+            <span>Simulated Asset Count (e.g., images/CSS):</span>
+            <span class="metric-value">50 files</span>
+          </div>
+          <div class="metric-row">
+            <span>Upstream Bandwidth Wasted (Cookie Domain):</span>
+            <span class="metric-value" id="metrics-wasted-bandwidth" style="color: var(--danger)">0 KB</span>
+          </div>
+          <div class="metric-row">
+            <span>Upstream Wasted (Cookie-Free Domain CDN):</span>
+            <span class="metric-value" style="color: var(--success)">0.00 KB (Optimized)</span>
+          </div>
+
+          <div class="btn-group" style="margin-top: auto">
+            <button class="btn-secondary" id="btn-test-bloat" style="flex: 1">Run Bandwidth Simulation</button>
+          </div>
+
+          <div class="log-panel" id="bloat-logs" style="height: 100px; margin-top: 1rem">
+            <div class="log-entry">
+              <span class="log-time">[CDN]</span> <span class="log-info">Wasted bandwidth simulator ready.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: XSS Cookie Exploit Sandbox -->
+        <div class="card">
+          <div class="card-title">
+            <span>Cross-Site Scripting (XSS) Sandbox Exploit</span>
+            <span class="tag tag-red">Security Risk</span>
+          </div>
+
+          <p class="spinner-text" style="margin-bottom: 0.5rem">
+            Simulate an XSS script injection vector attempting to extract session identifiers from client-side cookies:
+          </p>
+
+          <div class="sandbox-hack-box">
+            <pre style="color: var(--danger); font-size: 0.75rem; border: none; background: transparent; padding: 0">
+// Simulated Attacker Script Injected via XSS:
+(function() {
+  const credentials = document.cookie;
+  sendToAttackerServer(credentials);
+})();</pre
+            >
+          </div>
+
+          <div class="btn-group" style="margin-top: 1rem">
+            <button class="btn-danger" id="btn-run-xss" style="flex: 1">Execute Script Exploit</button>
+          </div>
+
+          <div class="log-panel" id="xss-logs" style="height: 120px; margin-top: 1rem">
+            <div class="log-entry">
+              <span class="log-time">[XSS Shield]</span> <span class="log-info">Waiting to execute payload...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Cross-Site Request Forgery (CSRF) Sandbox -->
+        <div class="card">
+          <div class="card-title">
+            <span>Cross-Site Request Forgery (CSRF) Sandbox</span>
+            <span class="tag tag-red">Security Risk</span>
+          </div>
+
+          <p class="spinner-text" style="margin-bottom: 0.5rem">
+            Simulate a cross-site forgery attack originating from a malicious domain (`malicious-domain.com`) attempting
+            to invoke a transfer payload:
+          </p>
+
+          <div class="form-group">
+            <label for="csrf-samesite-check">SameSite Configuration to test:</label>
+            <select id="csrf-samesite-check">
+              <option value="None">SameSite=None (Cookies Attached on Cross-Site requests)</option>
+              <option value="Lax">SameSite=Lax (withholds on cross-site subresources)</option>
+              <option value="Strict">SameSite=Strict (withholds on all cross-site transfers)</option>
+            </select>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn-danger" id="btn-run-csrf" style="flex: 1">Trigger CSRF Transfer Attack</button>
+          </div>
+
+          <div class="log-panel" id="csrf-logs" style="height: 120px; margin-top: 1rem">
+            <div class="log-entry">
+              <span class="log-time">[CSRF Shield]</span>
+              <span class="log-info">Ready to intercept forgery request...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>
+          Cookie Architectural Playground • Read the complete documentation at
+          <a href="./README.md">cookie/README.md</a>.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      // Theme toggler
+      const themeBtn = document.getElementById('theme-toggle-btn');
+
+      function getCookieValue(name) {
+        const parts = `; ${document.cookie}`.split(`; ${name}=`);
+        if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+        return null;
+      }
+
+      function setCookieValue(name, value, maxAge, sameSite = 'Lax') {
+        let str = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; path=/; samesite=${sameSite}`;
+        if (maxAge !== undefined) str += `; max-age=${maxAge}`;
+        document.cookie = str;
+      }
+
+      function updateThemeUI(theme) {
+        if (theme === 'light') {
+          document.documentElement.classList.add('light-theme');
+          themeBtn.textContent = '🌙 Switch to Dark Mode';
+        } else {
+          document.documentElement.classList.remove('light-theme');
+          themeBtn.textContent = '☀️ Switch to Light Mode';
+        }
+      }
+
+      themeBtn.onclick = () => {
+        const isLight = document.documentElement.classList.contains('light-theme');
+        const newTheme = isLight ? 'dark' : 'light';
+        setCookieValue('app_display_theme_cookie', newTheme, 365 * 24 * 3600); // 1 year expiry
+        updateThemeUI(newTheme);
+        refreshCookieJar();
+      };
+
+      const initialTheme = document.documentElement.classList.contains('light-theme') ? 'light' : 'dark';
+      updateThemeUI(initialTheme);
+
+      // CRUD Cookie Panel Logic
+      const cookieKeyInput = document.getElementById('cookie-key');
+      const cookieValInput = document.getElementById('cookie-val');
+      const maxAgeInput = document.getElementById('cookie-maxage');
+      const pathInput = document.getElementById('cookie-path');
+      const domainInput = document.getElementById('cookie-domain');
+      const sameSiteSelect = document.getElementById('cookie-samesite');
+      const secureCheckbox = document.getElementById('cookie-secure');
+      const codeSnippet = document.getElementById('code-snippet');
+
+      const tableBody = document.getElementById('table-body');
+      const tableEmpty = document.getElementById('table-empty');
+      const httpOnlyTableBody = document.getElementById('httponly-table-body');
+
+      const handshakeLogs = document.getElementById('handshake-logs');
+      const bloatLogs = document.getElementById('bloat-logs');
+      const xssLogs = document.getElementById('xss-logs');
+      const csrfLogs = document.getElementById('csrf-logs');
+
+      const cookieBytesMetric = document.getElementById('metrics-cookie-bytes');
+      const wastedBandwidthMetric = document.getElementById('metrics-wasted-bandwidth');
+
+      // Simulated Secure HttpOnly Jar
+      let secureServerCookieJar = {
+        session_id: 'jwt_session_secure_xyz123',
+        oauth_refresh: 'token_refresh_val_888',
+      };
+
+      function logMessage(panel, type, msg) {
+        const time = new Date().toLocaleTimeString();
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-${type}">${msg}</span>`;
+        panel.appendChild(entry);
+        panel.scrollTop = panel.scrollHeight;
+      }
+
+      function updateCodePreview() {
+        const key = encodeURIComponent(cookieKeyInput.value.trim() || 'name');
+        const val = encodeURIComponent(cookieValInput.value || 'val');
+        let str = `document.cookie = "${key}=${val}; path=${pathInput.value.trim() || '/'}`;
+
+        if (maxAgeInput.value.trim()) {
+          str += `; max-age=${maxAgeInput.value.trim()}`;
+        }
+        if (domainInput.value.trim()) {
+          str += `; domain=${domainInput.value.trim()}`;
+        }
+        str += `; samesite=${sameSiteSelect.value}`;
+        if (secureCheckbox.checked) {
+          str += `; secure`;
+        }
+        str += '";';
+        codeSnippet.textContent = str;
+      }
+
+      [cookieKeyInput, cookieValInput, maxAgeInput, pathInput, domainInput, sameSiteSelect, secureCheckbox].forEach(
+        (el) => {
+          el.addEventListener('input', updateCodePreview);
+        },
+      );
+
+      // Write Client Cookie Button
+      document.getElementById('btn-save').onclick = () => {
+        const key = cookieKeyInput.value.trim();
+        const val = cookieValInput.value;
+        if (!key) {
+          alert('Please enter a cookie key.');
+          return;
+        }
+        const maxAge = maxAgeInput.value.trim() ? parseInt(maxAgeInput.value.trim()) : undefined;
+        setCookieValue(key, val, maxAge, sameSiteSelect.value);
+        refreshCookieJar();
+      };
+
+      // Remove Client Cookie Button
+      document.getElementById('btn-delete').onclick = () => {
+        const key = cookieKeyInput.value.trim();
+        if (!key) {
+          alert('Please enter a key.');
+          return;
+        }
+        document.cookie = `${encodeURIComponent(key)}=; path=/; max-age=0`;
+        refreshCookieJar();
+      };
+
+      // Refresh Cookie Tables
+      function refreshCookieJar() {
+        tableBody.innerHTML = '';
+        const cookieStr = document.cookie;
+        const cookies = cookieStr ? cookieStr.split('; ') : [];
+        let totalBytes = 0;
+
+        if (cookies.length === 0) {
+          tableEmpty.style.display = 'block';
+        } else {
+          tableEmpty.style.display = 'none';
+          cookies.forEach((c) => {
+            totalBytes += c.length; // 1 byte per ASCII char in transmission
+            const parts = c.split('=');
+            const name = decodeURIComponent(parts[0]);
+            const val = parts[1] ? decodeURIComponent(parts[1]) : '';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td><strong>${name}</strong></td>
+            <td>${val}</td>
+            <td style="text-align: right;">
+              <button class="btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="deleteDirect('${parts[0]}')">Remove</button>
+            </td>
+          `;
+            tableBody.appendChild(tr);
+          });
+        }
+
+        // Populate secure HttpOnly Jar (Simulated view)
+        httpOnlyTableBody.innerHTML = '';
+        let httpOnlyKeys = Object.keys(secureServerCookieJar);
+        httpOnlyKeys.forEach((k) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+          <td><strong style="color: var(--warning);">${k}</strong> <span style="font-size: 0.7rem; color: var(--text-muted);">(HttpOnly)</span></td>
+          <td>${secureServerCookieJar[k]}</td>
+        `;
+          httpOnlyTableBody.appendChild(tr);
+          // Include httpOnly cookies in the theoretical transmission size calculations
+          totalBytes += `${k}=${secureServerCookieJar[k]}`.length;
+        });
+
+        // Update Network simulation metrics
+        cookieBytesMetric.textContent = `${totalBytes} Bytes`;
+
+        const assetCount = 50;
+        const wastedBytes = totalBytes * assetCount;
+        const wastedKb = (wastedBytes / 1024).toFixed(2);
+        wastedBandwidthMetric.textContent = `${wastedKb} KB`;
+
+        updateCodePreview();
+      }
+
+      window.deleteDirect = (name) => {
+        document.cookie = `${name}=; path=/; max-age=0`;
+        refreshCookieJar();
+      };
+
+      document.getElementById('btn-refresh').onclick = () => {
+        refreshCookieJar();
+      };
+
+      // Clear Client Cookies Button
+      document.getElementById('btn-clear-client').onclick = () => {
+        if (confirm('Delete all readable client cookies?')) {
+          const cookies = document.cookie ? document.cookie.split('; ') : [];
+          cookies.forEach((c) => {
+            const parts = c.split('=');
+            document.cookie = `${parts[0]}=; path=/; max-age=0`;
+          });
+          refreshCookieJar();
+        }
+      };
+
+      // Simulated Handshake
+      document.getElementById('btn-trigger-handshake').onclick = () => {
+        const selectVal = document.getElementById('server-cookie-select').value;
+        const parts = selectVal.split('=');
+        const key = parts[0];
+        const val = parts[1];
+
+        logMessage(handshakeLogs, 'info', `Initiating HTTPS request: GET /api/v1/auth/session...`);
+
+        setTimeout(() => {
+          logMessage(handshakeLogs, 'success', `HTTP 200 OK Received.`);
+          logMessage(
+            handshakeLogs,
+            'success',
+            `Response Header: Set-Cookie: ${key}=${val}; Secure; HttpOnly; SameSite=Lax`,
+          );
+
+          secureServerCookieJar[key] = val;
+          logMessage(handshakeLogs, 'info', `• Browser intercepted Set-Cookie.`);
+          logMessage(handshakeLogs, 'info', `• Saved "${key}" into the secure local database.`);
+          logMessage(handshakeLogs, 'info', `• JavaScript access blocked via HttpOnly.`);
+
+          refreshCookieJar();
+        }, 500);
+      };
+
+      // Clear Simulated Server Cookies
+      document.getElementById('btn-clear-server-cookies').onclick = () => {
+        secureServerCookieJar = {};
+        logMessage(handshakeLogs, 'warning', `Cleared simulated server cookie storage.`);
+        refreshCookieJar();
+      };
+
+      // Network Bloat Simulator Run
+      document.getElementById('btn-test-bloat').onclick = () => {
+        logMessage(bloatLogs, 'warning', `Simulating load of 50 images/stylesheets...`);
+        let count = 0;
+        const interval = setInterval(() => {
+          if (count >= 5) {
+            clearInterval(interval);
+            logMessage(bloatLogs, 'success', `Asset preloading complete.`);
+            logMessage(
+              bloatLogs,
+              'info',
+              `Optimized CDN subdomains bypassed cookie attachment completely! Saved 100% of header overhead.`,
+            );
+            return;
+          }
+          count++;
+          logMessage(bloatLogs, 'info', `Asset bundle #${count} loaded: Attaching cookie headers automatically.`);
+        }, 150);
+      };
+
+      // Execute XSS Hack Simulation
+      document.getElementById('btn-run-xss').onclick = () => {
+        logMessage(xssLogs, 'warning', `Injected XSS payload executing inside document context...`);
+
+        setTimeout(() => {
+          const clientCookies = document.cookie;
+          logMessage(xssLogs, 'error', `[SUCCESS] Read document.cookie: "${clientCookies}"`);
+
+          // Try to read HttpOnly cookies
+          logMessage(xssLogs, 'info', `Attempting to extract HttpOnly session IDs...`);
+          let httpOnlyFound = false;
+
+          Object.keys(secureServerCookieJar).forEach((k) => {
+            if (clientCookies.includes(k)) {
+              httpOnlyFound = true;
+            }
+          });
+
+          if (httpOnlyFound) {
+            logMessage(xssLogs, 'error', `[CRITICAL] Stale secure cookies exposed!`);
+          } else {
+            logMessage(
+              xssLogs,
+              'success',
+              `[SHIELDED] HttpOnly cookies (session_id, oauth_refresh) are INVISIBLE to the script.`,
+            );
+          }
+        }, 500);
+      };
+
+      // Execute CSRF Hack Simulation
+      document.getElementById('btn-run-csrf').onclick = () => {
+        const sameSiteConfig = document.getElementById('csrf-samesite-check').value;
+        logMessage(csrfLogs, 'warning', `User clicked malicious advertisement on external 'attacker-site.com'...`);
+        logMessage(csrfLogs, 'warning', `Dispatched Cross-Site POST request to '/api/transfer-funds'...`);
+
+        setTimeout(() => {
+          if (sameSiteConfig === 'None') {
+            logMessage(
+              csrfLogs,
+              'error',
+              `[EXPLOITED] Browser attached session_id cookie automatically! Transferred $1000 to attacker.`,
+            );
+          } else if (sameSiteConfig === 'Lax') {
+            logMessage(
+              csrfLogs,
+              'success',
+              `[SHIELDED] SameSite=Lax withheld session cookies on cross-origin POST request. Transaction rejected.`,
+            );
+          } else {
+            logMessage(
+              csrfLogs,
+              'success',
+              `[SHIELDED] SameSite=Strict withheld session cookies on all cross-origin requests. Transaction rejected.`,
+            );
+          }
+        }, 500);
+      };
+
+      // Initial load
+      refreshCookieJar();
+    </script>
+  </body>
+</html>
