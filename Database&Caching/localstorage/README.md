@@ -36,6 +36,9 @@ Unlike databases that execute asynchronous queries, LocalStorage operates **sync
 - **Memory Loading Footprint:** To enable synchronous reads (`localStorage.getItem`), the browser's layout/storage engine loads the _entire_ LocalStorage database for that origin into RAM at page startup or upon first access. If an origin consumes its full 5MB quota, it immediately inflates the heap size of _every open tab_ under that origin by 5MB (or more, due to UTF-16 representation of strings in JS). This memory cannot be garbage-collected as long as the page is open.
 - **CPU Serialization Costs:** Parsing and serializing large JSON structures is computationally expensive. Running `JSON.parse` on a 2MB-3MB string in LocalStorage can block the main thread for 15ms–50ms. High-frequency reads or writes (e.g., persisting state on every mouse movement, scroll event, or keystroke) are severe anti-patterns.
 
+> [!WARNING]
+> **Main-Thread I/O Blocks Rendering:** Because LocalStorage is completely synchronous and interfaces directly with local disk hardware, calling read/write methods on hot layout loops (e.g., inside scroll, window resizing, or mouse-move handlers) locks browser execution and triggers immediate frame drops (jank). Use debouncing, batching, or switch to IndexedDB.
+
 ### B. Web Worker & Service Worker Unavailability
 
 Because Web Workers, Service Workers, and Worklets operate on background threads to prevent UI blocking, and because they lack access to the `window` global object, **LocalStorage is completely inaccessible in worker scopes**.
@@ -50,6 +53,9 @@ Under Apple's Intelligent Tracking Prevention (ITP) rules (introduced in iOS 13.
 - **The Rule:** If a website has not received user interaction (clicks, taps, form submissions) for 7 days of active browser use, Safari will **permanently delete all client-side storage** for that origin.
 - **Scope of Purge:** This includes LocalStorage, SessionStorage, IndexedDB, Cache Storage, Service Worker registrations, and cookies set via document.cookie.
 - **Architectural Takeaway:** LocalStorage must _never_ be treated as guaranteed, permanent storage for user-created offline work. Critical data must be synchronized with a remote server or backed up asynchronously.
+
+> [!IMPORTANT]
+> **Safari Storage is Transient:** Because WebKit purges all origin databases (including LocalStorage, IndexedDB, and Cache Storage) after 7 days of user inactivity, client-side databases are **not durable storage mechanisms on iOS/Safari**. You must design automatic server synchronization fallback strategies for offline progress.
 
 ### D. Same-Origin Policy (SOP), Subdomains & CORS
 
@@ -105,6 +111,14 @@ Because LocalStorage is a JavaScript-accessible client-side API, it has severe s
 - **No HttpOnly Protection (XSS Exposure):** Unlike HTTP cookies, which can be secured with the `HttpOnly` flag to prevent JavaScript read/write operations, LocalStorage has no such safety boundary. Any JavaScript executing on the origin—including malicious code injected via Cross-Site Scripting (XSS), compromised third-party SDKs (analytics, chat widgets), or supply-chain npm vulnerabilities—can run `JSON.stringify(localStorage)` and exfiltrate the entire dataset.
 - **The Sensitive Data Ban:** You must never store session IDs, JWT access tokens, PII (emails, names, phone numbers), financial data, or credentials in LocalStorage. If an XSS vulnerability occurs, these tokens will be immediately compromised.
 - **The Encryption Key Fallacy:** Encrypting data in LocalStorage before saving it is a false security boundary. Since the decryption logic and key must exist in JavaScript memory (or be fetched dynamically from the server) to decrypt the data on the client side, a malicious script running via XSS can intercept the key, intercept the decryption function, or simply wait for the data to be decrypted and read it from memory.
+
+> [!CAUTION]
+> **Zero XSS Defenses:** LocalStorage lacks any mechanism equivalent to the cookie `HttpOnly` flag. If an attacker achieves XSS execution, **all data in LocalStorage is instantly compromised**. Encrypting stored values is a false security boundary because the decryption key or decryption runtime must reside in JavaScript.
+
+- **Why Programmatic Size Calculation & Auto-Removal are Critical Security Mitigations:**
+  - **Mitigating Storage Denial of Service (DoS):** An attacker exploiting a script injection vector can execute an infinite write loop to saturate the 5MB quota. This locks up storage and crashes application tasks that depend on saving layouts or UI configurations. Size tracking and automatic eviction of transient keys (`cache_` / `temp_`) protect storage availability.
+  - **Preventing Stale Data Exposure (TTL Auto-Removal):** Leaving cached entries in LocalStorage indefinitely increases the footprint available to future XSS exfiltration. Implementing a programmatic TTL (Time-to-Live) wrapper that automatically deletes entries upon expiration (on read/write checks) dramatically shrinks this exposure window.
+  - **Shared Terminal Data Leakage Defense:** Programmatically purging storage keys on user logout or session inactivity limits local data exposure to subsequent users on the same physical terminal.
 
 ---
 
