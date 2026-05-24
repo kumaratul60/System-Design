@@ -22,7 +22,8 @@ This module covers both backend distributed data strategies and frontend client-
     - [Database Normalization vs. Denormalization](#database-normalization-vs-denormalization)
       - [Normalization (Single Source of Truth)](#normalization-single-source-of-truth)
       - [Denormalization (Read Optimization)](#denormalization-read-optimization)
-    - [Client-Side Database Breakdown](#client-side-database-breakdown)
+    - [Client-Side Storage Landscape](#client-side-storage-landscape)
+      - [Tabular Quick Lookup: Client-Side Caching \& Storage Landscape](#tabular-quick-lookup-client-side-caching--storage-landscape)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -212,12 +213,22 @@ Duplicating specific fields directly into records to prevent join operations dur
 
 ---
 
-### Client-Side Database Breakdown
+### Client-Side Storage Landscape
 
-- **`localStorage` (5MB):** Synchronous, blocking key-value store. Persists indefinitely across browser restarts.
-- **`sessionStorage` (5MB):** Synchronous key-value store scoped strictly to the tab lifespan.
-- **`Cookies` (4KB):** Text tokens sent automatically on every HTTP request header. Secure flags (`HttpOnly`, `SameSite`, `Secure`) guard session IDs.
-- **`IndexedDB` (No rigid limits):** Asynchronous transactional database suitable for large files, blobs, and structured data.
+To support offline access, dynamic UI states, and request performance, modern web applications leverage client-side storage mechanisms. These APIs execute directly in the user's browser but carry various constraints, security rules, and performance implications.
+
+- For the complete senior/staff architectural deep dive, see the **[LocalStorage Architecture & Mechanics Deep Dive](./localstorage/README.md)**.
+- For a fully interactive, browser-based demonstration illustrating quotas, thread-blocking, serialization quirks, and cross-tab storage events, see the **[Interactive LocalStorage Demo](./localstorage/index.html)**.
+
+#### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
+
+| Storage Mechanism    | Size Limit                 | Performance & Blocking           | Data Type                               | Persistence & Lifecycle                                                   | Sent on HTTP Requests?                             | Available in Web/Service Workers?               | Cross-Tab Synchronization?                       | Best Security Practice                                       | Primary Use Case                                        |
+| :------------------- | :------------------------- | :------------------------------- | :-------------------------------------- | :------------------------------------------------------------------------ | :------------------------------------------------- | :---------------------------------------------- | :----------------------------------------------- | :----------------------------------------------------------- | :------------------------------------------------------ |
+| **`localStorage`**   | ~5MB                       | Synchronous (blocks main thread) | Strings only                            | Permanent (until manually cleared or Safari 7-day purge)                  | No                                                 | No                                              | Yes (via `storage` event)                        | Never store sensitive data (no HttpOnly); vulnerable to XSS. | Non-sensitive UI preferences (theme, language).         |
+| **`sessionStorage`** | ~5MB                       | Synchronous (blocks main thread) | Strings only                            | Tied to active tab/session lifecycle                                      | No                                                 | No                                              | No                                               | Vulnerable to XSS.                                           | Transient multi-step form data.                         |
+| **`Cookies`**        | ~4KB                       | Non-blocking                     | Strings only                            | Configurable via `Expires`/`Max-Age`                                      | Yes (sent on every network request matching scope) | Partially (Cookie Store API in Service Workers) | Yes (natively synced across same origin cookies) | Use `HttpOnly`, `Secure`, and `SameSite=Strict/Lax` flags.   | Session IDs, auth tokens, client-state correlation.     |
+| **`IndexedDB`**      | Limitless (up to 80% disk) | Asynchronous (non-blocking)      | Structured objects, Blobs, ArrayBuffers | Permanent (subject to global disk pressure eviction & Safari 7-day purge) | No                                                 | Yes                                             | Yes (via shared DB connections/events)           | Scoped to Origin. Sanitize values read to avoid XSS.         | Offline application databases, large datasets, assets.  |
+| **`Cache Storage`**  | Limitless (up to 80% disk) | Asynchronous (non-blocking)      | Request/Response pairs                  | Permanent (managed by SW lifecycle, subject to browser disk pressure)     | No                                                 | Yes                                             | Yes (accessible by all matching clients)         | Only accessible on HTTPS secure origins.                     | Progressive Web App (PWA) static assets, API responses. |
 
 ---
 

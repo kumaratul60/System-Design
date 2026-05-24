@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive LocalStorage Architectural Demo & Playground</title>
+
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Blocking Inline Script to prevent FOUC (Flash of Unstyled Content) -->
+    <script>
+      (function () {
+        try {
+          const savedTheme = localStorage.getItem('app_display_theme');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+          if (theme === 'light') {
+            document.documentElement.classList.add('light-theme');
+          } else {
+            document.documentElement.classList.remove('light-theme');
+          }
+        } catch (e) {
+          console.warn('Blocking theme script failed (storage disabled):', e);
+        }
+      })();
+    </script>
+
+    <style>
+      :root {
+        /* Dark Theme Tokens (Default) */
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --accent-color: #6366f1;
+        --accent-hover: #4f46e5;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border-color: #334155;
+        --glow-glow: 0 0 15px rgba(99, 102, 241, 0.15);
+        --card-bg: rgba(30, 41, 59, 0.7);
+      }
+
+      /* Light Theme Tokens */
+      html.light-theme {
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #e2e8f0;
+        --accent-color: #4f46e5;
+        --accent-hover: #3730a3;
+        --text-primary: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --border-color: #cbd5e1;
+        --glow-glow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        --card-bg: rgba(255, 255, 255, 0.85);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        padding: 2rem 1.5rem;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Header styling */
+      header {
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      header .title-area {
+        flex: 1;
+        min-width: 280px;
+      }
+
+      h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #818cf8 0%, #6366f1 50%, #4338ca 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 800px;
+      }
+
+      .theme-controller {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+      }
+
+      /* Layout Grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 1.5rem;
+      }
+
+      @media (max-width: 960px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Card Panels */
+      .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--glow-glow);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background-color 0.3s ease,
+          border-color 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .card:hover {
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+      }
+
+      .card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .card-title .tag {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 9999px;
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .tag-blue {
+        background: rgba(99, 102, 241, 0.2);
+        color: #818cf8;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .tag-green {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .tag-red {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .tag-yellow {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fde047;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+
+      /* Info Alerts */
+      .alert-info {
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .alert-info strong {
+        color: var(--text-primary);
+      }
+
+      /* Forms */
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+      }
+
+      input[type='text'],
+      textarea,
+      select {
+        width: 100%;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          background-color 0.3s,
+          color 0.3s;
+      }
+
+      input[type='text']:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--accent-color);
+      }
+
+      /* Buttons */
+      .btn-group {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+
+      .btn-primary {
+        background: var(--accent-color);
+        color: #ffffff;
+      }
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+      }
+      .btn-secondary:hover {
+        background: #475569;
+      }
+
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .btn-danger:hover {
+        background: var(--danger);
+        color: #ffffff;
+      }
+
+      /* Theme Toggle Button */
+      .btn-theme {
+        background: var(--accent-color);
+        color: #ffffff;
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 9999px;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+      }
+      .btn-theme:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      /* Code Preview and Logs */
+      code,
+      pre {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+        color: #38bdf8;
+        max-height: 180px;
+      }
+
+      .log-panel {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        max-height: 250px;
+        overflow-y: auto;
+        margin-top: 1rem;
+        flex-grow: 1;
+      }
+
+      .log-entry {
+        margin-bottom: 0.4rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        word-break: break-all;
+      }
+
+      .log-time {
+        color: var(--text-muted);
+      }
+      .log-info {
+        color: #38bdf8;
+      }
+      .log-success {
+        color: var(--success);
+      }
+      .log-error {
+        color: var(--danger);
+      }
+      .log-warning {
+        color: var(--warning);
+      }
+
+      /* Interactive Table / Store Viewer */
+      .table-container {
+        margin-top: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        max-height: 250px;
+        overflow-y: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+      }
+
+      th {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        padding: 0.6rem 0.8rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+      }
+
+      td {
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        word-break: break-all;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .empty-state {
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      /* Live Quota Bar & Statistics */
+      .quota-meter-container {
+        margin-top: 1rem;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      .quota-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .quota-bar-outer {
+        height: 12px;
+        background: var(--bg-tertiary);
+        border-radius: 9999px;
+        overflow: hidden;
+      }
+
+      .quota-bar-inner {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--success) 0%, var(--warning) 70%, var(--danger) 100%);
+        transition: width 0.3s ease;
+      }
+
+      /* Spinner Animation for UI Thread Blocking */
+      .spinner-demo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: rgba(99, 102, 241, 0.05);
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        border-radius: 8px;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--bg-tertiary);
+        border-top: 4px solid var(--accent-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .spinner-text {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+
+      /* Footer styling */
+      footer {
+        margin-top: 3rem;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      footer a {
+        color: var(--accent-color);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="title-area">
+          <h1>LocalStorage Architectural Playground</h1>
+          <p class="subtitle">
+            An interactive browser workspace designed to demonstrate the mechanical quirks, limits, performance
+            bottlenecks, and serialization traps of LocalStorage.
+          </p>
+        </div>
+
+        <!-- Theme controller block demonstrating dynamic caching of UI preference -->
+        <div class="theme-controller">
+          <button class="btn-theme" id="theme-toggle-btn">☀️ Switch to Light Mode</button>
+          <span class="spinner-text" style="font-size: 0.75rem">Persisted key: <code>app_display_theme</code></span>
+        </div>
+      </header>
+
+      <!-- FOUC Explanation Section -->
+      <div class="alert-info">
+        <strong>Theme Caching & FOUC Prevention:</strong> This page retrieves <code>app_display_theme</code> on startup.
+        To prevent a <strong>Flash of Unstyled Content (FOUC)</strong>, this application utilizes a
+        <strong>blocking inline script tag</strong> embedded directly in the document <code>&lt;head&gt;</code> before
+        layout evaluation. This enables instantaneous class application before HTML body renders.
+      </div>
+
+      <div class="grid">
+        <!-- Section 1: CRUD & Serialization Quirks -->
+        <div class="card">
+          <div class="card-title">
+            <span>CRUD & Serialization Tester</span>
+            <span class="tag tag-blue">Feature Test</span>
+          </div>
+
+          <div class="form-group">
+            <label for="input-key">Storage Key</label>
+            <input type="text" id="input-key" placeholder="e.g., app_theme" />
+          </div>
+
+          <div class="form-group">
+            <label for="serialization-mode">Serialization Mode</label>
+            <select id="serialization-mode">
+              <option value="raw">Raw String (Coerced if Object/Array)</option>
+              <option value="json">Structured (JSON.stringify)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="flex-grow: 1">
+            <label for="input-value">Value (Try entering an object: {"theme":"dark"} )</label>
+            <textarea id="input-value" rows="3" placeholder="e.g., dark, or a JSON payload"></textarea>
+          </div>
+
+          <pre id="code-snippet">
+// API Code Syntax Preview
+localStorage.setItem('', '');</pre
+          >
+
+          <div class="btn-group">
+            <button class="btn-primary" id="btn-save">Write to Storage</button>
+            <button class="btn-secondary" id="btn-read">Read / Print</button>
+            <button class="btn-danger" id="btn-delete">Remove Key</button>
+          </div>
+        </div>
+
+        <!-- Section 2: Live LocalStorage Viewer -->
+        <div class="card">
+          <div class="card-title">
+            <span>Real-time LocalStorage Viewer</span>
+            <span class="tag tag-green">Live Store</span>
+          </div>
+
+          <p class="spinner-text" style="margin-bottom: 0.5rem">
+            Displays the active raw `window.localStorage` contents for this origin:
+          </p>
+
+          <div class="table-container" style="flex-grow: 1">
+            <table id="storage-table">
+              <thead>
+                <tr>
+                  <th style="width: 30%">Key</th>
+                  <th style="width: 50%">Value</th>
+                  <th style="text-align: right; width: 20%">Action</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+            <div id="table-empty" class="empty-state">No items found in this origin's LocalStorage.</div>
+          </div>
+
+          <div class="btn-group" style="margin-top: 1rem">
+            <button class="btn-secondary" id="btn-refresh">Refresh List</button>
+            <button class="btn-danger" id="btn-clear">Clear All Keys</button>
+          </div>
+        </div>
+
+        <!-- Section 3: Thread Blocking & Performance Simulator -->
+        <div class="card">
+          <div class="card-title">
+            <span>Main Thread Blocking & CPU Simulator</span>
+            <span class="tag tag-yellow">Performance</span>
+          </div>
+
+          <p class="spinner-text">
+            LocalStorage is <strong>synchronous</strong>. If writing large data or running complex JSON processing
+            loops, it freezes the main thread. Watch the spinner below stutter/freeze when simulating a heavy blocking
+            load:
+          </p>
+
+          <div class="spinner-demo">
+            <div class="spinner" id="main-spinner"></div>
+            <div class="spinner-text">
+              <strong>Thread Monitor Spinner</strong><br />
+              If spinning smoothly, JavaScript event loop is free.<br />
+              If frozen, the main thread is locked!
+            </div>
+          </div>
+
+          <div class="btn-group" style="margin-top: 1.5rem">
+            <button class="btn-primary" id="btn-block-thread">Simulate Heavy Synchronous Block</button>
+            <button class="btn-secondary" id="btn-worker-check">Worker Scope Check</button>
+          </div>
+
+          <div class="log-panel" id="perf-log" style="height: 120px; margin-top: 1rem">
+            <div class="log-entry">
+              <span class="log-time">[System]</span> <span class="log-info">Ready to test thread blocking...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Type Coercion & Truthiness Gotcha Trap -->
+        <div class="card">
+          <div class="card-title">
+            <span>Type Coercion & Truthiness Trap</span>
+            <span class="tag tag-yellow">JS Gotchas</span>
+          </div>
+
+          <p class="spinner-text">
+            LocalStorage <strong>only stores strings</strong>. Writing a primitive like <code>false</code> or
+            <code>null</code> stores the string literal <code>"false"</code> or <code>"null"</code>. Since any non-empty
+            string is <strong>truthy</strong> in JS, testing it via conditional checks fails!
+          </p>
+
+          <div class="form-group" style="margin-top: 0.5rem">
+            <label for="trap-primitive">Select Primitive to Write Raw:</label>
+            <select id="trap-primitive">
+              <option value="false">Boolean: false</option>
+              <option value="0">Number: 0</option>
+              <option value="null">Value: null</option>
+              <option value="undefined">Value: undefined</option>
+            </select>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn-primary" id="btn-trap-write">Write Primitive</button>
+            <button class="btn-secondary" id="btn-trap-eval">Evaluate Truthiness</button>
+          </div>
+
+          <div class="log-panel" id="trap-log" style="height: 120px; margin-top: 1rem">
+            <div class="log-entry">
+              <span class="log-time">[Gotchas]</span>
+              <span class="log-info">Select a primitive value above to test.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Quota & Cross-Tab Sync Events -->
+        <div class="card">
+          <div class="card-title">
+            <span>Quota Fill & Cross-Tab Sync Event Monitor</span>
+            <span class="tag tag-red">Boundary Limits</span>
+          </div>
+
+          <p class="spinner-text">
+            Browsers restrict LocalStorage to <strong>5MB per Origin</strong>. Click below to write large chunks of data
+            until a `QuotaExceededError` is triggered.
+          </p>
+
+          <div class="quota-meter-container">
+            <div class="quota-header">
+              <span>Estimated Storage Used:</span>
+              <span id="quota-stats">0 KB / 5120 KB (0.00%)</span>
+            </div>
+            <div class="quota-bar-outer">
+              <div class="quota-bar-inner" id="quota-bar"></div>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn-danger" id="btn-fill-quota">Fill Storage (Trigger Quota Limit)</button>
+            <button class="btn-secondary" id="btn-clean-quota">Evict Large Blobs</button>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem; margin-bottom: 0">
+            <label>Cross-Tab Event listener Log (Open this page in another window to see sync events):</label>
+          </div>
+          <div class="log-panel" id="event-log" style="height: 120px">
+            <div class="log-entry">
+              <span class="log-time">[Events]</span>
+              <span class="log-info">Waiting for mutations from other tabs of this origin...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>
+          LocalStorage Architectural Playground • Read the complete documentation at
+          <a href="./README.md">localstorage/README.md</a>.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      // Theme Toggle Handler
+      const themeBtn = document.getElementById('theme-toggle-btn');
+
+      function updateThemeUI(theme) {
+        if (theme === 'light') {
+          document.documentElement.classList.add('light-theme');
+          themeBtn.textContent = '🌙 Switch to Dark Mode';
+        } else {
+          document.documentElement.classList.remove('light-theme');
+          themeBtn.textContent = '☀️ Switch to Light Mode';
+        }
+      }
+
+      // Toggle button action
+      themeBtn.onclick = () => {
+        const isLight = document.documentElement.classList.contains('light-theme');
+        const newTheme = isLight ? 'dark' : 'light';
+
+        try {
+          localStorage.setItem('app_display_theme', newTheme);
+          updateThemeUI(newTheme);
+          logMessage(perfLog, 'success', `Theme switched to "${newTheme}" and cached in LocalStorage!`);
+          refreshStorageTable();
+        } catch (err) {
+          logMessage(perfLog, 'error', `Theme change failed to save: ${err.message}`);
+          updateThemeUI(newTheme); // Apply locally anyway
+        }
+      };
+
+      // Load initial theme on DOM load (FOUC script handled layout, this aligns toggle text)
+      const initialTheme = document.documentElement.classList.contains('light-theme') ? 'light' : 'dark';
+      updateThemeUI(initialTheme);
+
+      // LocalStorage CRUD & Logging Code
+      const inputKey = document.getElementById('input-key');
+      const inputValue = document.getElementById('input-value');
+      const serializationMode = document.getElementById('serialization-mode');
+      const codeSnippet = document.getElementById('code-snippet');
+
+      const tableBody = document.getElementById('table-body');
+      const tableEmpty = document.getElementById('table-empty');
+
+      const perfLog = document.getElementById('perf-log');
+      const eventLog = document.getElementById('event-log');
+      const quotaStats = document.getElementById('quota-stats');
+      const quotaBar = document.getElementById('quota-bar');
+
+      // Gotcha Trap Elements
+      const trapPrimitive = document.getElementById('trap-primitive');
+      const btnTrapWrite = document.getElementById('btn-trap-write');
+      const btnTrapEval = document.getElementById('btn-trap-eval');
+      const trapLog = document.getElementById('trap-log');
+
+      // Logging helpers
+      function logMessage(panel, type, msg) {
+        const time = new Date().toLocaleTimeString();
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-${type}">${msg}</span>`;
+        panel.appendChild(entry);
+        panel.scrollTop = panel.scrollHeight;
+      }
+
+      // Refresh UI Storage Table
+      function refreshStorageTable() {
+        tableBody.innerHTML = '';
+        const totalKeys = localStorage.length;
+        let usedBytes = 0;
+
+        if (totalKeys === 0) {
+          tableEmpty.style.display = 'block';
+        } else {
+          tableEmpty.style.display = 'none';
+          for (let i = 0; i < totalKeys; i++) {
+            const key = localStorage.key(i);
+            const val = localStorage.getItem(key);
+            usedBytes += (key.length + val.length) * 2; // UTF-16 characters = 2 bytes each
+
+            const tr = document.createElement('tr');
+
+            const tdKey = document.createElement('td');
+            tdKey.textContent = key;
+
+            const tdVal = document.createElement('td');
+            tdVal.textContent = val.length > 80 ? val.substring(0, 80) + '...' : val;
+
+            const tdAction = document.createElement('td');
+            tdAction.style.textAlign = 'right';
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn-danger';
+            delBtn.style.padding = '0.2rem 0.5rem';
+            delBtn.style.fontSize = '0.75rem';
+            delBtn.textContent = 'Remove';
+            delBtn.onclick = () => {
+              localStorage.removeItem(key);
+              refreshStorageTable();
+              updateQuotaMeter();
+            };
+
+            tdAction.appendChild(delBtn);
+            tr.appendChild(tdKey);
+            tr.appendChild(tdVal);
+            tr.appendChild(tdAction);
+            tableBody.appendChild(tr);
+          }
+        }
+
+        updateQuotaMeter();
+      }
+
+      // Quota Meter calculations
+      function updateQuotaMeter() {
+        let totalBytes = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          const val = localStorage.getItem(key);
+          // Browser localStorage strings are stored in UTF-16, so 2 bytes per char
+          totalBytes += (key.length + val.length) * 2;
+        }
+
+        const kbUsed = (totalBytes / 1024).toFixed(2);
+        const limitKb = 5120; // 5MB standard limit
+        const percentage = Math.min((kbUsed / limitKb) * 100, 100).toFixed(2);
+
+        quotaStats.textContent = `${kbUsed} KB / ${limitKb} KB (${percentage}%)`;
+        quotaBar.style.width = `${percentage}%`;
+
+        // Disable/enable fill button reactively based on usage
+        const fillBtn = document.getElementById('btn-fill-quota');
+        if (kbUsed >= limitKb - 100) {
+          fillBtn.disabled = true;
+          fillBtn.textContent = 'Quota Full';
+          fillBtn.style.opacity = '0.5';
+          fillBtn.style.cursor = 'not-allowed';
+        } else {
+          fillBtn.disabled = false;
+          fillBtn.textContent = 'Fill Storage (Trigger Quota Limit)';
+          fillBtn.style.opacity = '1';
+          fillBtn.style.cursor = 'pointer';
+        }
+      }
+
+      // Dynamic Preview Update
+      function updateCodePreview() {
+        const key = inputKey.value || 'key_name';
+        const rawVal = inputValue.value || 'value';
+
+        if (serializationMode.value === 'json') {
+          try {
+            // Check if user entered valid JSON, otherwise stringify the text
+            let parsed;
+            try {
+              parsed = JSON.parse(rawVal);
+            } catch (e) {
+              parsed = rawVal;
+            }
+            const serialized = JSON.stringify({ data: parsed });
+            codeSnippet.textContent = `// Structured Serialization\nconst data = ${JSON.stringify(parsed)};\nlocalStorage.setItem('${key}', JSON.stringify({ data }));`;
+          } catch (e) {
+            codeSnippet.textContent = `localStorage.setItem('${key}', JSON.stringify({ data: '${rawVal}' }));`;
+          }
+        } else {
+          // Raw Mode
+          codeSnippet.textContent = `// Raw String storage\nlocalStorage.setItem('${key}', '${rawVal}');`;
+        }
+      }
+
+      // Event Handlers for Code Input
+      inputKey.addEventListener('input', updateCodePreview);
+      inputValue.addEventListener('input', updateCodePreview);
+      serializationMode.addEventListener('change', updateCodePreview);
+
+      // Save Button
+      document.getElementById('btn-save').onclick = () => {
+        const key = inputKey.value.trim();
+        const val = inputValue.value;
+
+        if (!key) {
+          alert('Please enter a storage key name.');
+          return;
+        }
+
+        try {
+          let valueToStore = val;
+          if (serializationMode.value === 'json') {
+            try {
+              // Attempt to parse if it looks like an object/array, otherwise store as standard JSON wrapping
+              const parsed = JSON.parse(val);
+              valueToStore = JSON.stringify(parsed);
+            } catch (e) {
+              valueToStore = JSON.stringify(val);
+            }
+          }
+
+          localStorage.setItem(key, valueToStore);
+          refreshStorageTable();
+        } catch (err) {
+          alert(`Write operation failed: ${err.message}`);
+        }
+      };
+
+      // Read Button
+      document.getElementById('btn-read').onclick = () => {
+        const key = inputKey.value.trim();
+        if (!key) {
+          alert('Please specify a key to read.');
+          return;
+        }
+
+        const val = localStorage.getItem(key);
+        if (val === null) {
+          alert(`Key "${key}" does not exist in LocalStorage.`);
+          return;
+        }
+
+        if (serializationMode.value === 'json') {
+          try {
+            const parsed = JSON.parse(val);
+            alert(`Successfully read key: "${key}"\n\nParsed Data Structure:\n${JSON.stringify(parsed, null, 2)}`);
+          } catch (e) {
+            alert(`Read Raw Value (Failed to parse JSON):\n${val}`);
+          }
+        } else {
+          alert(`Read Raw Value for key "${key}":\n${val}`);
+        }
+      };
+
+      // Delete Button
+      document.getElementById('btn-delete').onclick = () => {
+        const key = inputKey.value.trim();
+        if (!key) {
+          alert('Please specify a key to delete.');
+          return;
+        }
+        localStorage.removeItem(key);
+        refreshStorageTable();
+      };
+
+      // Refresh Button
+      document.getElementById('btn-refresh').onclick = () => {
+        refreshStorageTable();
+      };
+
+      // Clear All Button
+      document.getElementById('btn-clear').onclick = () => {
+        if (confirm('Are you sure you want to clear all LocalStorage keys for this origin?')) {
+          localStorage.clear();
+          refreshStorageTable();
+        }
+      };
+
+      // Gotcha Trap - Write Button
+      btnTrapWrite.onclick = () => {
+        const selection = trapPrimitive.value;
+        let valToStore;
+
+        // Prepare value representing exact primitive coercion
+        if (selection === 'false') valToStore = false;
+        else if (selection === '0') valToStore = 0;
+        else if (selection === 'null') valToStore = null;
+        else if (selection === 'undefined') valToStore = undefined;
+
+        try {
+          // Under the hood, JS engine coerces false to "false", null to "null", etc.
+          localStorage.setItem('trap_demo_value', valToStore);
+          logMessage(trapLog, 'success', `Wrote: localStorage.setItem('trap_demo_value', ${selection});`);
+          const actualType = typeof localStorage.getItem('trap_demo_value');
+          const actualValue = localStorage.getItem('trap_demo_value');
+          logMessage(trapLog, 'info', `• Internal storage format value: "${actualValue}" (Type: ${actualType})`);
+          refreshStorageTable();
+        } catch (err) {
+          logMessage(trapLog, 'error', `Write failed: ${err.message}`);
+        }
+      };
+
+      // Gotcha Trap - Evaluate Button
+      btnTrapEval.onclick = () => {
+        const storedVal = localStorage.getItem('trap_demo_value');
+
+        if (storedVal === null) {
+          logMessage(trapLog, 'error', `No value stored under 'trap_demo_value'! Click Write first.`);
+          return;
+        }
+
+        logMessage(trapLog, 'info', `Evaluating: const val = localStorage.getItem('trap_demo_value');`);
+
+        // Simulate standard conditional check
+        if (storedVal) {
+          logMessage(trapLog, 'warning', `Result: if ("${storedVal}") evaluated to TRUTHY! ❌ (Logic Gotcha!)`);
+          logMessage(
+            trapLog,
+            'warning',
+            `Reason: In JS, non-empty strings are ALWAYS truthy, even if the content is "false", "0", or "null"!`,
+          );
+        } else {
+          logMessage(trapLog, 'success', `Result: if ("${storedVal}") evaluated to FALSY! ✅`);
+        }
+      };
+
+      // Evict Large Blobs
+      document.getElementById('btn-clean-quota').onclick = () => {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('quota_fill_')) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach((k) => localStorage.removeItem(k));
+        logMessage(eventLog, 'success', `Evicted all temporary quota fill keys (${keysToRemove.length} items).`);
+        refreshStorageTable();
+      };
+
+      // Fill Quota Simulator
+      document.getElementById('btn-fill-quota').onclick = () => {
+        logMessage(eventLog, 'warning', 'Initiating LocalStorage quota filling...');
+
+        // Let's create large strings: 256KB block
+        let block = 'X'.repeat(256 * 1024); // 256K chars = 512KB in UTF-16
+        let count = 0;
+
+        // We run inside an interval to let the browser update the UI layout bar dynamically
+        const intervalId = setInterval(() => {
+          try {
+            const key = `quota_fill_${count}`;
+            localStorage.setItem(key, block);
+            count++;
+            updateQuotaMeter();
+            logMessage(eventLog, 'info', `Wrote key "${key}" (+512 KB in memory).`);
+          } catch (error) {
+            clearInterval(intervalId);
+            logMessage(eventLog, 'error', `Quota limit reached! Caught Exception.`);
+            logMessage(eventLog, 'error', `Error Name: ${error.name}`);
+            logMessage(eventLog, 'error', `Error Message: ${error.message}`);
+            logMessage(eventLog, 'error', `DOMException Code: ${error.code}`);
+
+            // Educational gotcha explanation
+            logMessage(eventLog, 'warning', `💡 CAN YOU STILL WRITE NEW KEYS?`);
+            logMessage(
+              eventLog,
+              'warning',
+              `• No! Any setItem call for a new key or an increased-size value will fail and throw QuotaExceededError.`,
+            );
+            logMessage(
+              eventLog,
+              'warning',
+              `• You must delete items (e.g. click "Evict Large Blobs") to write new data.`,
+            );
+
+            refreshStorageTable();
+            alert(`Quota Exceeded!\n\nException: ${error.name}\nMessage: ${error.message}`);
+          }
+        }, 100);
+      };
+
+      // Synchronous Thread Blocking Simulator
+      document.getElementById('btn-block-thread').onclick = () => {
+        logMessage(perfLog, 'warning', 'Blocking the main thread for 3000ms using a CPU busy loop...');
+
+        // We schedule a timeout so the visual log finishes rendering before we lock the thread
+        setTimeout(() => {
+          const start = Date.now();
+          // Busy loop for 3 seconds
+          while (Date.now() - start < 3000) {
+            // Locking thread...
+          }
+          const duration = Date.now() - start;
+          logMessage(perfLog, 'success', `Main thread released after ${duration}ms! (Spinner was frozen)`);
+        }, 50);
+      };
+
+      // Worker Scope Verification
+      document.getElementById('btn-worker-check').onclick = () => {
+        logMessage(perfLog, 'info', 'Instantiating an inline Web Worker to query window.localStorage...');
+
+        // Creating Web Worker from Blob url
+        const workerCode = `
+        self.onmessage = function() {
+          try {
+            const hasLocalStorage = typeof localStorage !== 'undefined';
+            self.postMessage({ success: true, hasLocalStorage });
+          } catch(e) {
+            self.postMessage({ success: false, error: e.message });
+          }
+        };
+      `;
+        const blob = new Blob([workerCode], { type: 'application/javascript' });
+        const worker = new Worker(URL.createObjectURL(blob));
+
+        worker.onmessage = function (e) {
+          if (e.data.hasLocalStorage) {
+            logMessage(perfLog, 'success', 'Worker Response: LocalStorage is accessible.');
+          } else {
+            logMessage(
+              perfLog,
+              'error',
+              `Worker Response: LocalStorage is NOT accessible! (ReferenceError: localStorage is not defined)`,
+            );
+          }
+          worker.terminate();
+        };
+
+        worker.postMessage('check');
+      };
+
+      // Cross-Tab storage event listener
+      window.addEventListener('storage', (e) => {
+        logMessage(eventLog, 'success', `Storage event detected from another window!`);
+        logMessage(eventLog, 'info', `• Key mutated: "${e.key}"`);
+        logMessage(eventLog, 'info', `• Old value: "${e.oldValue}"`);
+        logMessage(eventLog, 'info', `• New value: "${e.newValue}"`);
+        logMessage(eventLog, 'info', `• Trigger URL: ${e.url}`);
+
+        // If theme changed in another tab, apply it dynamically in this tab
+        if (e.key === 'app_display_theme') {
+          updateThemeUI(e.newValue);
+          logMessage(perfLog, 'info', `Applied theme sync: "${e.newValue}"`);
+        }
+
+        refreshStorageTable();
+      });
+
+      // Initialize UI
+      refreshStorageTable();
+      updateCodePreview();
+    </script>
+  </body>
+</html>
