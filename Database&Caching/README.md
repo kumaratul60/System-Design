@@ -24,6 +24,8 @@ This module covers both backend distributed data strategies and frontend client-
       - [Denormalization (Read Optimization)](#denormalization-read-optimization)
     - [Client-Side Storage Landscape](#client-side-storage-landscape)
       - [Tabular Quick Lookup: Client-Side Caching \& Storage Landscape](#tabular-quick-lookup-client-side-caching--storage-landscape)
+      - [LocalStorage Architectural Core](#localstorage-architectural-core)
+      - [SessionStorage Architectural Core](#sessionstorage-architectural-core)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -219,6 +221,8 @@ To support offline access, dynamic UI states, and request performance, modern we
 
 - For the complete senior/staff architectural deep dive, see the **[LocalStorage Architecture & Mechanics Deep Dive](./localstorage/README.md)**.
 - For a fully interactive, browser-based demonstration illustrating quotas, thread-blocking, serialization quirks, and cross-tab storage events, see the **[Interactive LocalStorage Demo](./localstorage/index.html)**.
+- For the complete senior/staff architectural deep dive on session boundaries, see the **[SessionStorage Architecture & Mechanics Deep Dive](./sessionstorage/README.md)**.
+- For a fully interactive, browser-based demonstration illustrating tab cloning, copy-on-write decoupling, and session quotas, see the **[Interactive SessionStorage Demo](./sessionstorage/index.html)**.
 
 #### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
 
@@ -229,6 +233,36 @@ To support offline access, dynamic UI states, and request performance, modern we
 | **`Cookies`**        | ~4KB                       | Non-blocking                     | Strings only                            | Configurable via `Expires`/`Max-Age`                                      | Yes (sent on every network request matching scope) | Partially (Cookie Store API in Service Workers) | Yes (natively synced across same origin cookies) | Use `HttpOnly`, `Secure`, and `SameSite=Strict/Lax` flags.   | Session IDs, auth tokens, client-state correlation.     |
 | **`IndexedDB`**      | Limitless (up to 80% disk) | Asynchronous (non-blocking)      | Structured objects, Blobs, ArrayBuffers | Permanent (subject to global disk pressure eviction & Safari 7-day purge) | No                                                 | Yes                                             | Yes (via shared DB connections/events)           | Scoped to Origin. Sanitize values read to avoid XSS.         | Offline application databases, large datasets, assets.  |
 | **`Cache Storage`**  | Limitless (up to 80% disk) | Asynchronous (non-blocking)      | Request/Response pairs                  | Permanent (managed by SW lifecycle, subject to browser disk pressure)     | No                                                 | Yes                                             | Yes (accessible by all matching clients)         | Only accessible on HTTPS secure origins.                     | Progressive Web App (PWA) static assets, API responses. |
+
+#### LocalStorage Architectural Core
+
+LocalStorage provides simple key-value persistence but introduces major performance and operational trade-offs:
+
+- **Synchronous Thread Blocking**: Both read and write operations block the browser's single main thread. Large writes trigger disk I/O latency, while page startup loads the entire database into RAM, causing frame drops (jank) if used in high-frequency loops.
+- **Apple WebKit Eviction Rules**: Subject to Safari's 7-day Intelligent Tracking Prevention (ITP) eviction. If a website gets no user interaction for 7 days, Safari permanently purges all LocalStorage, SessionStorage, and IndexedDB data.
+- **Cross-Tab State Synchronization**: Mutating data in one tab automatically fires a window `storage` event across all other open tabs/windows of the same origin, enabling native synchronization.
+- **Type Coercion Gotchas**: Data is coerced to strings via `.toString()`. Storing primitives like `false` or `null` turns them into the string literals `"false"` and `"null"`, which evaluate as truthy on retrieval.
+
+> [!IMPORTANT]
+> Detailed deep dives and interactive examples for LocalStorage are available at:
+>
+> - **[LocalStorage Architecture & Mechanics Deep Dive](./localstorage/README.md)**
+> - **[Interactive LocalStorage Demo](./localstorage/index.html)**
+
+#### SessionStorage Architectural Core
+
+SessionStorage introduces strict context boundaries suited for transient, tab-isolated state:
+
+- **Tab-Bound Isolation**: Scoped exclusively to the creating tab context. Opening multiple tabs to the same URL creates separate, isolated SessionStorage instances.
+- **Tab Duplication (Copy-on-Write)**: Duplicating a tab (via browser menu or programmatically via `window.open`) copies the parent's SessionStorage to the child tab. Once cloned, the storage objects are fully decoupled; mutations do not sync. URL copy-pasting or manual tab entry opens an empty database.
+- **Protocol Partitioning**: Scheme differences isolate databases under Same-Origin Policy (SOP). Storing a key under `http://example.com` does not make it available to the `https://example.com` context.
+- **Security & Session Expiry**: Data survives reloads/restores but is purged on tab closure. Lacks time-based expiration; developers must programmatically implement sliding inactivity timers (TTL) to clear data.
+
+> [!IMPORTANT]
+> Detailed deep dives and interactive examples for SessionStorage are available at:
+> * **[SessionStorage Architecture & Mechanics Deep Dive](./sessionstorage/README.md)**
+> * **[Interactive SessionStorage Demo](./sessionstorage/index.html)**
+> * **[SessionStorage Todo CRUD Application](./sessionstorage/todo.html)**
 
 ---
 

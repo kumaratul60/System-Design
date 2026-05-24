@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive SessionStorage Architectural Demo & Playground</title>
+
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Blocking Inline Script to prevent FOUC (Flash of Unstyled Content) -->
+    <script>
+      (function () {
+        try {
+          const savedTheme = sessionStorage.getItem('app_display_theme_session');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+          if (theme === 'light') {
+            document.documentElement.classList.add('light-theme');
+          } else {
+            document.documentElement.classList.remove('light-theme');
+          }
+        } catch (e) {
+          console.warn('Blocking theme script failed:', e);
+        }
+      })();
+    </script>
+
+    <style>
+      :root {
+        /* Dark Theme Tokens (Default) */
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-tertiary: #334155;
+        --accent-color: #06b6d4; /* Teal accent to distinguish from LocalStorage indigo */
+        --accent-hover: #0891b2;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border-color: #334155;
+        --glow-glow: 0 0 15px rgba(6, 182, 212, 0.15);
+        --card-bg: rgba(30, 41, 59, 0.7);
+      }
+
+      /* Light Theme Tokens */
+      html.light-theme {
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #e2e8f0;
+        --accent-color: #0891b2;
+        --accent-hover: #0369a1;
+        --text-primary: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --success: #10b981;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --border-color: #cbd5e1;
+        --glow-glow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        --card-bg: rgba(255, 255, 255, 0.85);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        padding: 2rem 1.5rem;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Header styling */
+      header {
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      header .title-area {
+        flex: 1;
+        min-width: 280px;
+      }
+
+      h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 50%, #0891b2 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 800px;
+      }
+
+      .theme-controller {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+      }
+
+      /* Layout Grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 1.5rem;
+      }
+
+      @media (max-width: 960px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Card Panels */
+      .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--glow-glow);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background-color 0.3s ease,
+          border-color 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .card:hover {
+        box-shadow: 0 10px 30px rgba(6, 182, 212, 0.15);
+      }
+
+      .card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .card-title .tag {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 9999px;
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .tag-blue {
+        background: rgba(6, 182, 212, 0.2);
+        color: #22d3ee;
+        border: 1px solid rgba(6, 182, 212, 0.3);
+      }
+      .tag-green {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .tag-red {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .tag-yellow {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fde047;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+
+      /* Info Alerts */
+      .alert-info {
+        background: rgba(6, 182, 212, 0.08);
+        border: 1px solid rgba(6, 182, 212, 0.2);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+      }
+
+      .alert-info strong {
+        color: var(--text-primary);
+      }
+
+      /* Forms */
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+      }
+
+      input[type='text'],
+      textarea,
+      select {
+        width: 100%;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          background-color 0.3s,
+          color 0.3s;
+      }
+
+      input[type='text']:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--accent-color);
+      }
+
+      /* Buttons */
+      .btn-group {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+
+      .btn-primary {
+        background: var(--accent-color);
+        color: var(--bg-primary);
+        color: #0f172a;
+      }
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+      }
+      .btn-secondary:hover {
+        background: #475569;
+      }
+
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .btn-danger:hover {
+        background: var(--danger);
+        color: #ffffff;
+      }
+
+      /* Theme Toggle Button */
+      .btn-theme {
+        background: var(--accent-color);
+        color: #0f172a;
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 9999px;
+        box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
+        font-weight: 700;
+      }
+      .btn-theme:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      /* Code Preview and Logs */
+      code,
+      pre {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      pre {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        padding: 0.75rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+        color: #22d3ee;
+        max-height: 180px;
+      }
+
+      .log-panel {
+        background: #090d16;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        max-height: 250px;
+        overflow-y: auto;
+        margin-top: 1rem;
+        flex-grow: 1;
+      }
+
+      .log-entry {
+        margin-bottom: 0.4rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        word-break: break-all;
+      }
+
+      .log-time {
+        color: var(--text-muted);
+      }
+      .log-info {
+        color: #22d3ee;
+      }
+      .log-success {
+        color: var(--success);
+      }
+      .log-error {
+        color: var(--danger);
+      }
+      .log-warning {
+        color: var(--warning);
+      }
+
+      /* Interactive Table / Store Viewer */
+      .table-container {
+        margin-top: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        max-height: 250px;
+        overflow-y: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+      }
+
+      th {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        padding: 0.6rem 0.8rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+      }
+
+      td {
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        word-break: break-all;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .empty-state {
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      /* Live Quota Bar & Statistics */
+      .quota-meter-container {
+        margin-top: 1rem;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      .quota-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .quota-bar-outer {
+        height: 12px;
+        background: var(--bg-tertiary);
+        border-radius: 9999px;
+        overflow: hidden;
+      }
+
+      .quota-bar-inner {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--success) 0%, var(--warning) 70%, var(--danger) 100%);
+        transition: width 0.3s ease;
+      }
+
+      /* Footer styling */
+      footer {
+        margin-top: 3rem;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      footer a {
+        color: var(--accent-color);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="title-area">
+          <h1>SessionStorage Architectural Playground</h1>
+          <p class="subtitle">
+            An interactive browser workspace designed to demonstrate the context isolation, tab replication behaviors,
+            and quota boundaries of SessionStorage.
+          </p>
+        </div>
+
+        <!-- Theme controller block demonstrating dynamic session-caching of UI preference -->
+        <div class="theme-controller">
+          <button class="btn-theme" id="theme-toggle-btn">☀️ Switch to Light Mode</button>
+          <span class="spinner-text" style="font-size: 0.75rem"
+            >Persisted key: <code>app_display_theme_session</code></span
+          >
+        </div>
+      </header>
+
+      <!-- FOUC Explanation Section -->
+      <div class="alert-info">
+        <strong>Tab Context & Reload Stability:</strong> Unlike LocalStorage which is shared across all tabs,
+        SessionStorage is isolated strictly to this tab. It survives refreshes and reloads but is immediately wiped when
+        you close the tab.
+      </div>
+
+      <div class="grid">
+        <!-- Section 1: CRUD & Tab-Bound Tester -->
+        <div class="card">
+          <div class="card-title">
+            <span>Session CRUD Editor</span>
+            <span class="tag tag-blue">Feature Test</span>
+          </div>
+
+          <div class="form-group">
+            <label for="input-key">Storage Key</label>
+            <input type="text" id="input-key" placeholder="e.g., active_wizard_step" />
+          </div>
+
+          <div class="form-group" style="flex-grow: 1">
+            <label for="input-value">Value</label>
+            <textarea id="input-value" rows="3" placeholder="e.g., step_2_billing"></textarea>
+          </div>
+
+          <pre id="code-snippet">
+// API Code Syntax Preview
+sessionStorage.setItem('', '');</pre
+          >
+
+          <div class="btn-group">
+            <button class="btn-primary" id="btn-save">Write to Session</button>
+            <button class="btn-secondary" id="btn-read">Read / Print</button>
+            <button class="btn-danger" id="btn-delete">Remove Key</button>
+          </div>
+        </div>
+
+        <!-- Section 2: Live Session Viewer -->
+        <div class="card">
+          <div class="card-title">
+            <span>Real-time Session Viewer</span>
+            <span class="tag tag-green">Live Store</span>
+          </div>
+
+          <p class="spinner-text" style="margin-bottom: 0.5rem">
+            Displays the active `window.sessionStorage` contents for this specific tab context:
+          </p>
+
+          <div class="table-container" style="flex-grow: 1">
+            <table id="storage-table">
+              <thead>
+                <tr>
+                  <th style="width: 30%">Key</th>
+                  <th style="width: 50%">Value</th>
+                  <th style="text-align: right; width: 20%">Action</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+            <div id="table-empty" class="empty-state">No items found in this tab's SessionStorage.</div>
+          </div>
+
+          <div class="btn-group" style="margin-top: 1rem">
+            <button class="btn-secondary" id="btn-refresh">Refresh List</button>
+            <button class="btn-danger" id="btn-clear">Clear Session</button>
+          </div>
+        </div>
+
+        <!-- Section 3: Isolation & Duplication Experiments -->
+        <div class="card">
+          <div class="card-title">
+            <span>Tab Duplication & Context Isolation Sandbox</span>
+            <span class="tag tag-yellow">Replication Gotchas</span>
+          </div>
+
+          <p class="spinner-text" style="margin-bottom: 1rem">
+            Test the isolation boundaries of page sessions by trying the following steps:
+          </p>
+
+          <div class="alert-info" style="font-size: 0.8rem; line-height: 1.4; margin-bottom: 1rem">
+            <strong>Experiment Checklist:</strong><br />
+            1. Add a custom key-value pair in this tab.<br />
+            2. Click the <strong>Duplicate Tab Programmatically</strong> button below.<br />
+            3. Inspect the duplicated tab: the keys are copied! (Copy-on-write).<br />
+            4. Change/add a key in the new tab, then go back to the original tab: **they do not sync!** (Decoupled
+            contexts).<br />
+            5. Copy the URL and paste it in a brand new, manually opened tab: **it starts completely empty!**
+          </div>
+
+          <div class="btn-group" style="margin-top: auto">
+            <button class="btn-primary" id="btn-duplicate">Duplicate Tab Programmatically</button>
+            <button class="btn-secondary" id="btn-new-tab">Open Independent Tab</button>
+          </div>
+        </div>
+
+        <!-- Section 4: Quota & Cross-Tab Non-Sync Monitor -->
+        <div class="card">
+          <div class="card-title">
+            <span>Quota Fill & Storage Event Non-Sync Monitor</span>
+            <span class="tag tag-red">Boundary Limits</span>
+          </div>
+
+          <p class="spinner-text">
+            Like LocalStorage, SessionStorage is restricted to <strong>5MB per tab origin</strong>. Click below to write
+            large chunks until quota limits throw `QuotaExceededError`.
+          </p>
+
+          <div class="quota-meter-container">
+            <div class="quota-header">
+              <span>Estimated Session Used:</span>
+              <span id="quota-stats">0 KB / 5120 KB (0.00%)</span>
+            </div>
+            <div class="quota-bar-outer">
+              <div class="quota-bar-inner" id="quota-bar"></div>
+            </div>
+          </div>
+
+          <div class="btn-group" style="margin-bottom: 1rem">
+            <button class="btn-danger" id="btn-fill-quota">Fill Storage (Trigger Quota)</button>
+            <button class="btn-secondary" id="btn-clean-quota">Evict Large Blobs</button>
+          </div>
+
+          <p class="spinner-text">
+            <strong>Cross-Tab Sync Check:</strong> Open two separate tabs. Mutating keys in Tab A will **never** trigger
+            events in Tab B, proving contexts are completely isolated.
+          </p>
+
+          <div class="log-panel" id="event-log" style="height: 100px">
+            <div class="log-entry">
+              <span class="log-time">[Events]</span>
+              <span class="log-info">Waiting for mutations (Only fires if mutated in same tab's nested iframe)...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>
+          SessionStorage Architectural Playground • Read the complete documentation at
+          <a href="./README.md">sessionstorage/README.md</a>.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      // Theme Toggle Handler
+      const themeBtn = document.getElementById('theme-toggle-btn');
+
+      function updateThemeUI(theme) {
+        if (theme === 'light') {
+          document.documentElement.classList.add('light-theme');
+          themeBtn.textContent = '🌙 Switch to Dark Mode';
+        } else {
+          document.documentElement.classList.remove('light-theme');
+          themeBtn.textContent = '☀️ Switch to Light Mode';
+        }
+      }
+
+      // Toggle button action
+      themeBtn.onclick = () => {
+        const isLight = document.documentElement.classList.contains('light-theme');
+        const newTheme = isLight ? 'dark' : 'light';
+
+        try {
+          sessionStorage.setItem('app_display_theme_session', newTheme);
+          updateThemeUI(newTheme);
+          refreshStorageTable();
+        } catch (err) {
+          console.error('Failed to save theme in session:', err);
+          updateThemeUI(newTheme);
+        }
+      };
+
+      // Load initial theme on load
+      const initialTheme = document.documentElement.classList.contains('light-theme') ? 'light' : 'dark';
+      updateThemeUI(initialTheme);
+
+      // SessionStorage CRUD & UI logic
+      const inputKey = document.getElementById('input-key');
+      const inputValue = document.getElementById('input-value');
+      const codeSnippet = document.getElementById('code-snippet');
+
+      const tableBody = document.getElementById('table-body');
+      const tableEmpty = document.getElementById('table-empty');
+
+      const eventLog = document.getElementById('event-log');
+      const quotaStats = document.getElementById('quota-stats');
+      const quotaBar = document.getElementById('quota-bar');
+
+      // Logging helper
+      function logMessage(panel, type, msg) {
+        const time = new Date().toLocaleTimeString();
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-${type}">${msg}</span>`;
+        panel.appendChild(entry);
+        panel.scrollTop = panel.scrollHeight;
+      }
+
+      // Refresh UI Storage Table
+      function refreshStorageTable() {
+        tableBody.innerHTML = '';
+        const totalKeys = sessionStorage.length;
+        let usedBytes = 0;
+
+        if (totalKeys === 0) {
+          tableEmpty.style.display = 'block';
+        } else {
+          tableEmpty.style.display = 'none';
+          for (let i = 0; i < totalKeys; i++) {
+            const key = sessionStorage.key(i);
+            const val = sessionStorage.getItem(key);
+            usedBytes += (key.length + val.length) * 2;
+
+            const tr = document.createElement('tr');
+
+            const tdKey = document.createElement('td');
+            tdKey.textContent = key;
+
+            const tdVal = document.createElement('td');
+            tdVal.textContent = val.length > 80 ? val.substring(0, 80) + '...' : val;
+
+            const tdAction = document.createElement('td');
+            tdAction.style.textAlign = 'right';
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn-danger';
+            delBtn.style.padding = '0.2rem 0.5rem';
+            delBtn.style.fontSize = '0.75rem';
+            delBtn.textContent = 'Remove';
+            delBtn.onclick = () => {
+              sessionStorage.removeItem(key);
+              refreshStorageTable();
+              updateQuotaMeter();
+            };
+
+            tdAction.appendChild(delBtn);
+            tr.appendChild(tdKey);
+            tr.appendChild(tdVal);
+            tr.appendChild(tdAction);
+            tableBody.appendChild(tr);
+          }
+        }
+
+        updateQuotaMeter();
+      }
+
+      // Quota Meter calculations
+      function updateQuotaMeter() {
+        let totalBytes = 0;
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          const val = sessionStorage.getItem(key);
+          totalBytes += (key.length + val.length) * 2;
+        }
+
+        const kbUsed = (totalBytes / 1024).toFixed(2);
+        const limitKb = 5120;
+        const percentage = Math.min((kbUsed / limitKb) * 100, 100).toFixed(2);
+
+        quotaStats.textContent = `${kbUsed} KB / ${limitKb} KB (${percentage}%)`;
+        quotaBar.style.width = `${percentage}%`;
+
+        // Reactive button disabling
+        const fillBtn = document.getElementById('btn-fill-quota');
+        if (kbUsed >= limitKb - 100) {
+          fillBtn.disabled = true;
+          fillBtn.textContent = 'Quota Full';
+          fillBtn.style.opacity = '0.5';
+          fillBtn.style.cursor = 'not-allowed';
+        } else {
+          fillBtn.disabled = false;
+          fillBtn.textContent = 'Fill Storage (Trigger Quota)';
+          fillBtn.style.opacity = '1';
+          fillBtn.style.cursor = 'pointer';
+        }
+      }
+
+      // Dynamic Preview Update
+      function updateCodePreview() {
+        const key = inputKey.value || 'key_name';
+        const rawVal = inputValue.value || 'value';
+        codeSnippet.textContent = `// Write session key-value\nsessionStorage.setItem('${key}', '${rawVal}');`;
+      }
+
+      // Event Handlers for Code Input
+      inputKey.addEventListener('input', updateCodePreview);
+      inputValue.addEventListener('input', updateCodePreview);
+
+      // Save Button
+      document.getElementById('btn-save').onclick = () => {
+        const key = inputKey.value.trim();
+        const val = inputValue.value;
+
+        if (!key) {
+          alert('Please enter a key.');
+          return;
+        }
+
+        try {
+          sessionStorage.setItem(key, val);
+          refreshStorageTable();
+        } catch (err) {
+          alert(`Write failed: ${err.message}`);
+        }
+      };
+
+      // Read Button
+      document.getElementById('btn-read').onclick = () => {
+        const key = inputKey.value.trim();
+        if (!key) {
+          alert('Please specify a key to read.');
+          return;
+        }
+
+        const val = sessionStorage.getItem(key);
+        if (val === null) {
+          alert(`Key "${key}" does not exist in SessionStorage.`);
+          return;
+        }
+        alert(`Read Value for "${key}":\n${val}`);
+      };
+
+      // Delete Button
+      document.getElementById('btn-delete').onclick = () => {
+        const key = inputKey.value.trim();
+        if (!key) {
+          alert('Please specify a key.');
+          return;
+        }
+        sessionStorage.removeItem(key);
+        refreshStorageTable();
+      };
+
+      // Refresh Button
+      document.getElementById('btn-refresh').onclick = () => {
+        refreshStorageTable();
+      };
+
+      // Clear Session Button
+      document.getElementById('btn-clear').onclick = () => {
+        if (confirm('Clear all items in SessionStorage for this tab?')) {
+          sessionStorage.clear();
+          refreshStorageTable();
+        }
+      };
+
+      // Duplicate Tab Programmatically
+      document.getElementById('btn-duplicate').onclick = () => {
+        // Duplicating the current tab by opening the window with its location
+        // This instructs the browser to clone SessionStorage into the new window context
+        window.open(window.location.href, '_blank');
+        logMessage(eventLog, 'success', `Dispatched Programmatic Duplication window.open().`);
+        logMessage(eventLog, 'info', `• Duplicated tab clones the current SessionStorage database.`);
+        logMessage(eventLog, 'info', `• Try modifying keys in the new tab and check if this tab changes!`);
+      };
+
+      // Open Independent Tab
+      document.getElementById('btn-new-tab').onclick = () => {
+        // Opening a new tab using standard URL. Since it is opened in a new tab without window.open referencing context,
+        // it might start empty. Opening a tab independently mimics copy-pasting URL.
+        const newWin = window.open();
+        newWin.opener = null; // Decouples opener context fully
+        newWin.location.href = window.location.href;
+        logMessage(eventLog, 'success', `Opened independent browsing context tab.`);
+      };
+
+      // Evict Large Blobs
+      document.getElementById('btn-clean-quota').onclick = () => {
+        const keysToRemove = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key && key.startsWith('quota_fill_')) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach((k) => sessionStorage.removeItem(k));
+        logMessage(eventLog, 'success', `Evicted all temporary quota fill keys (${keysToRemove.length} items).`);
+        refreshStorageTable();
+      };
+
+      // Fill Quota Simulator
+      document.getElementById('btn-fill-quota').onclick = () => {
+        logMessage(eventLog, 'warning', 'Initiating SessionStorage quota filling...');
+        let block = 'S'.repeat(256 * 1024); // 256K chars = 512KB in UTF-16
+        let count = 0;
+
+        const intervalId = setInterval(() => {
+          try {
+            const key = `quota_fill_${count}`;
+            sessionStorage.setItem(key, block);
+            count++;
+            updateQuotaMeter();
+            logMessage(eventLog, 'info', `Wrote session key "${key}" (+512 KB in memory).`);
+          } catch (error) {
+            clearInterval(intervalId);
+            logMessage(eventLog, 'error', `Quota limit reached! Caught Exception.`);
+            logMessage(eventLog, 'error', `Error Name: ${error.name}`);
+            logMessage(eventLog, 'error', `Error Message: ${error.message}`);
+            logMessage(eventLog, 'error', `DOMException Code: ${error.code}`);
+            refreshStorageTable();
+            alert(`Quota Exceeded!\n\nException: ${error.name}\nMessage: ${error.message}`);
+          }
+        }, 100);
+      };
+
+      // Cross-Tab non-synchronization listener (For explanation)
+      window.addEventListener('storage', (e) => {
+        // Standard tabs with decoupled sessionStorage do not trigger this event.
+        // This will only fire if an iframe inside this exact tab mutates SessionStorage.
+        logMessage(eventLog, 'info', `Storage Event detected (same tab context)! Key: "${e.key}"`);
+      });
+
+      // Initialize UI
+      refreshStorageTable();
+      updateCodePreview();
+    </script>
+  </body>
+</html>
