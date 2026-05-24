@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IndexedDB To-Do List</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* Curated Terracotta / Coral Theme Palette */
+        --bg-gradient: linear-gradient(135deg, #f3a69f 0%, #e27d73 100%);
+        --card-bg: rgba(255, 255, 255, 0.22);
+        --card-border: rgba(255, 255, 255, 0.35);
+        --panel-bg: rgba(240, 140, 131, 0.95);
+        --panel-border: rgba(255, 255, 255, 0.45);
+
+        --text-dark: #3a1c17;
+        --text-light: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.8);
+        --input-bg: #ffffff;
+        --btn-primary: #ffffff;
+        --btn-primary-hover: #faecea;
+        --shadow: 0 12px 32px 0 rgba(139, 50, 42, 0.15);
+
+        --font-outfit: 'Outfit', sans-serif;
+        --font-mono: 'Fira Code', monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg-gradient);
+        font-family: var(--font-outfit);
+        color: var(--text-dark);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 1.5rem;
+      }
+
+      .app-container {
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        width: 100%;
+        max-width: 580px;
+        box-shadow: var(--shadow);
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      header {
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        letter-spacing: -0.03em;
+        text-transform: capitalize;
+      }
+
+      /* Tasks List Panel */
+      .tasks-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-height: 250px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+      }
+
+      /* Custom Scrollbar for tasks list */
+      .tasks-section::-webkit-scrollbar {
+        width: 6px;
+      }
+      .tasks-section::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+      }
+      .tasks-section::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 999px;
+      }
+
+      .task-item {
+        background: rgba(255, 255, 255, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(139, 50, 42, 0.05);
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .task-text {
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: var(--text-dark);
+      }
+
+      .task-date {
+        display: block;
+        font-size: 0.85rem;
+        color: rgba(90, 40, 32, 0.85);
+        margin-top: 0.15rem;
+        font-weight: 400;
+      }
+
+      .delete-btn {
+        background: var(--text-dark);
+        color: var(--text-light);
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.2s ease,
+          opacity 0.2s ease;
+      }
+
+      .delete-btn:hover {
+        transform: scale(1.08);
+        background: #000000;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: rgba(90, 40, 32, 0.7);
+        font-style: italic;
+        padding: 1.5rem 0;
+        font-weight: 400;
+      }
+
+      /* Add Task Panel */
+      .form-panel {
+        background: var(--panel-bg);
+        border: 1px solid var(--panel-border);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 24px rgba(139, 50, 42, 0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .form-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-align: center;
+        color: var(--text-dark);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1.5px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 0.75rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      input,
+      select {
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        color: var(--text-dark);
+        padding: 0.65rem 0.85rem;
+        border-radius: 8px;
+        font-family: var(--font-outfit);
+        font-size: 0.95rem;
+        font-weight: 500;
+        width: 100%;
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--text-dark);
+        box-shadow: 0 0 0 2px rgba(90, 40, 32, 0.15);
+      }
+
+      .time-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .date-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .submit-btn {
+        background-color: var(--btn-primary);
+        color: var(--text-dark);
+        border: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--font-outfit);
+        font-size: 1rem;
+        margin-top: 0.5rem;
+        box-shadow: 0 4px 12px rgba(139, 50, 42, 0.1);
+        transition:
+          background-color 0.2s ease,
+          transform 0.1s ease;
+      }
+
+      .submit-btn:hover {
+        background-color: var(--btn-primary-hover);
+        transform: translateY(-1px);
+      }
+
+      .submit-btn:active {
+        transform: translateY(0);
+      }
+
+      /* Bottom Status & Notification Console */
+      .bottom-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .log-panel {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--text-dark);
+        max-height: 85px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .log-line {
+        display: block;
+        font-weight: 500;
+      }
+
+      .notification-btn {
+        background: var(--text-dark);
+        color: var(--text-light);
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          background-color 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .notification-btn:hover {
+        background: #000000;
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <header>
+        <h1>To-do list</h1>
+      </header>
+
+      <!-- Displaying Tasks -->
+      <div class="tasks-section" id="tasksList">
+        <div class="empty-state">Loading tasks database...</div>
+      </div>
+
+      <!-- Add Task Form -->
+      <div class="form-panel">
+        <div class="form-title">Add new to-do item.</div>
+
+        <form id="todoForm" onsubmit="event.preventDefault()">
+          <div class="form-group" style="margin-bottom: 0.75rem">
+            <label for="taskTitle">Task title:</label>
+            <input type="text" id="taskTitle" required placeholder="Enter task name" />
+          </div>
+
+          <div class="time-grid" style="margin-bottom: 0.75rem">
+            <div class="form-group">
+              <label for="taskHour">Hours (hh):</label>
+              <input type="number" id="taskHour" min="0" max="23" placeholder="12" required />
+            </div>
+            <div class="form-group">
+              <label for="taskMinute">Mins (mm):</label>
+              <input type="number" id="taskMinute" min="0" max="59" placeholder="00" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem">
+            <label>Date:</label>
+            <div class="date-grid">
+              <select id="taskDay" required></select>
+              <select id="taskMonth" required>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+              <select id="taskYear" required></select>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="addTaskBtn">Add Task</button>
+        </form>
+      </div>
+
+      <!-- Bottom Status Log & Notifications -->
+      <div class="bottom-section">
+        <div class="log-panel" id="logConsole"></div>
+        <button class="notification-btn" id="notifyBtn">Enable notifications</button>
+      </div>
+    </div>
+
+    <script>
+      // --- Populate dropdown selects ---
+      const daySelect = document.getElementById('taskDay');
+      for (let i = 1; i <= 31; i++) {
+        const val = i < 10 ? `0${i}` : `${i}`;
+        daySelect.add(new Option(val, val));
+      }
+
+      const yearSelect = document.getElementById('taskYear');
+      const currentYear = new Date().getFullYear();
+      // Start options from 2025 (to match screenshot defaults) or current year, whichever is earlier
+      const startYear = Math.min(2025, currentYear);
+      for (let i = startYear; i <= currentYear + 10; i++) {
+        yearSelect.add(new Option(i, i));
+      }
+
+      // Set defaults matching the image sample
+      document.getElementById('taskDay').value = '01';
+      document.getElementById('taskMonth').value = 'January';
+      document.getElementById('taskYear').value = '2025';
+      document.getElementById('taskHour').value = '11';
+      document.getElementById('taskMinute').value = '11';
+
+      // --- Logger helper ---
+      function logEvent(message) {
+        const consoleEl = document.getElementById('logConsole');
+        const div = document.createElement('div');
+        div.className = 'log-line';
+        div.textContent = `• ${message}`;
+        consoleEl.appendChild(div);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      }
+
+      // --- Core IndexedDB Logic ---
+      let db = null;
+      const dbName = 'TodoAppDatabase';
+      const storeName = 'todos';
+
+      function initDatabase() {
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(dbName, 1);
+
+          req.onupgradeneeded = (e) => {
+            const database = req.result;
+            if (!database.objectStoreNames.contains(storeName)) {
+              database.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+            }
+          };
+
+          req.onsuccess = () => {
+            db = req.result;
+            logEvent('Database initialised.');
+            resolve(db);
+          };
+
+          req.onerror = () => {
+            logEvent(`Database error: ${req.error.message}`);
+            reject(req.error);
+          };
+        });
+      }
+
+      function fetchTasks() {
+        return new Promise((resolve, reject) => {
+          if (!db) return resolve([]);
+          const tx = db.transaction(storeName, 'readonly');
+          const store = tx.objectStore(storeName);
+          const req = store.getAll();
+
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      function writeTask(task) {
+        return new Promise((resolve, reject) => {
+          if (!db) return reject(new Error('DB not initialized'));
+          const tx = db.transaction(storeName, 'readwrite');
+          const store = tx.objectStore(storeName);
+          const req = store.add(task);
+
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      function removeTask(id) {
+        return new Promise((resolve, reject) => {
+          if (!db) return reject(new Error('DB not initialized'));
+          const tx = db.transaction(storeName, 'readwrite');
+          const store = tx.objectStore(storeName);
+          const req = store.delete(id);
+
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      // --- Task Rendering ---
+      async function displayAllTasks() {
+        const container = document.getElementById('tasksList');
+        try {
+          const list = await fetchTasks();
+          if (list.length === 0) {
+            container.innerHTML = `<div class="empty-state">No tasks created.</div>`;
+            return;
+          }
+
+          container.innerHTML = '';
+          list.forEach((task) => {
+            const item = document.createElement('div');
+            item.className = 'task-item';
+
+            // Formats suffix for days (e.g. 01 -> 01st, 02 -> 02nd)
+            let suffix = 'th';
+            const dayInt = parseInt(task.day);
+            if (dayInt === 1 || dayInt === 21 || dayInt === 31) suffix = 'st';
+            else if (dayInt === 2 || dayInt === 22) suffix = 'nd';
+            else if (dayInt === 3 || dayInt === 23) suffix = 'rd';
+
+            item.innerHTML = `
+            <div>
+              <span class="task-text">${escapeHTML(task.title)}</span>
+              <span class="task-date">${task.hour}:${task.minute}, ${task.month} ${task.day}${suffix} ${task.year}.</span>
+            </div>
+            <button class="delete-btn">X</button>
+          `;
+
+            // Programmatic listener avoids single-quote string escaping syntax errors
+            item.querySelector('.delete-btn').addEventListener('click', () => {
+              deleteTaskItem(task.id, task.title);
+            });
+
+            container.appendChild(item);
+          });
+          logEvent('Entries all displayed.');
+        } catch (e) {
+          container.innerHTML = `<div class="empty-state" style="color: red;">Failed to retrieve records: ${e.message}</div>`;
+        }
+      }
+
+      function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      async function deleteTaskItem(id, title) {
+        try {
+          await removeTask(id);
+          logEvent(`Task "${title}" deleted.`);
+          displayAllTasks();
+          triggerNotification(`Task Deleted`, `"${title}" has been successfully completed and deleted.`);
+        } catch (e) {
+          logEvent(`Delete failed: ${e.message}`);
+        }
+      }
+
+      // --- Form submit hook ---
+      document.getElementById('todoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('taskTitle').value.trim();
+        const hourVal = parseInt(document.getElementById('taskHour').value);
+        const minVal = parseInt(document.getElementById('taskMinute').value);
+
+        // Formatting time fields
+        const hour = hourVal < 10 ? `0${hourVal}` : `${hourVal}`;
+        const minute = minVal < 10 ? `0${minVal}` : `${minVal}`;
+
+        const day = document.getElementById('taskDay').value;
+        const month = document.getElementById('taskMonth').value;
+        const year = document.getElementById('taskYear').value;
+
+        const task = { title, hour, minute, day, month, year };
+
+        try {
+          await writeTask(task);
+          logEvent(`Task "${title}" added to database.`);
+
+          // Reset only the title field to let the user add multiple matching times
+          document.getElementById('taskTitle').value = '';
+          displayAllTasks();
+          triggerNotification('Task Added', `"${title}" is scheduled for ${hour}:${minute} on ${month} ${day}.`);
+        } catch (err) {
+          logEvent(`Insertion failed: ${err.message}`);
+        }
+      });
+
+      // --- Browser Notifications Integration ---
+      const notifyBtn = document.getElementById('notifyBtn');
+
+      // Update UI button based on current permission state
+      function updateNotifyBtnState() {
+        if (!('Notification' in window)) {
+          notifyBtn.textContent = 'Notifications Unsupported';
+          notifyBtn.disabled = true;
+          return;
+        }
+
+        if (Notification.permission === 'granted') {
+          notifyBtn.textContent = 'Notifications Active ✓';
+          notifyBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
+        } else if (Notification.permission === 'denied') {
+          notifyBtn.textContent = 'Notifications Blocked';
+          notifyBtn.style.backgroundColor = 'rgba(239, 68, 68, 0.3)';
+        }
+      }
+
+      notifyBtn.addEventListener('click', () => {
+        if (!('Notification' in window)) {
+          logEvent('System Notification API unsupported.');
+          return;
+        }
+
+        Notification.requestPermission().then((permission) => {
+          logEvent(`Notification status updated to: ${permission}`);
+          updateNotifyBtnState();
+          if (permission === 'granted') {
+            new Notification('Notifications Enabled', {
+              body: 'You will now receive alerts for task insertions and completions.',
+            });
+          }
+        });
+      });
+
+      function triggerNotification(title, body) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification(title, { body });
+        }
+      }
+
+      // --- Startup connection chain ---
+      logEvent('App initialised.');
+      initDatabase().then(() => {
+        displayAllTasks();
+        updateNotifyBtnState();
+      });
+    </script>
+  </body>
+</html>

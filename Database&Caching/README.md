@@ -227,6 +227,7 @@ To support offline access, dynamic UI states, and request performance, modern we
 - For a fully interactive, browser-based demonstration illustrating tab cloning, copy-on-write decoupling, and session quotas, see the **[Interactive SessionStorage Demo](./sessionstorage/index.html)**.
 - For the complete senior/staff architectural deep dive on structured client databases, see the **[IndexedDB Architecture & Mechanics Deep Dive](./indexeddb/README.md)**.
 - For a fully interactive, browser-based demonstration illustrating transactional CRUD, event loop auto-commit gotchas, and version upgrades blockages, see the **[Interactive IndexedDB Demo](./indexeddb/index.html)**.
+- For a standalone, premium-styled Todo application utilizing client-side IndexedDB transactions and browser alerts, see the **[IndexedDB Todo Application](./indexeddb/todo.html)**.
 
 #### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
 
@@ -294,10 +295,11 @@ IndexedDB serves as a full client-side transactional database suited for offline
 - **Large Capacity Limits**: Reaches up to 80% of disk space in standard browsers, but undergoes 7-day inactivity purge in Safari.
 
 > [!IMPORTANT]
-> A detailed deep dive and interactive playground for IndexedDB are available at:
+> A detailed deep dive, playground, and Todo app for IndexedDB are available at:
 >
 > - **[IndexedDB Architecture & Mechanics Deep Dive](./indexeddb/README.md)**
 > - **[Interactive IndexedDB Demo](./indexeddb/index.html)**
+> - **[IndexedDB Todo Application](./indexeddb/todo.html)**
 
 ---
 
