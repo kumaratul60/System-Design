@@ -218,7 +218,7 @@ Duplicating specific fields directly into records to prevent join operations dur
 > [!IMPORTANT]
 > A detailed deep dive into state massage, transformation rules, lookup complexity math ($O(N)$ vs $O(1)$), and React rendering pitfalls of client-side data normalization is available at:
 >
-> - **[State Normalization Architecture Deep Dive](./normalization/README.md)**
+> - **[State Normalization Architecture Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/normalization/README.md)**
 
 ---
 
