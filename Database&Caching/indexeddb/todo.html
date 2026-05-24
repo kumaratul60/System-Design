@@ -113,6 +113,59 @@
         animation: fadeIn 0.3s ease-out;
       }
 
+      .task-item.completed {
+        opacity: 0.6;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .task-item.completed .task-text {
+        text-decoration: line-through;
+        color: rgba(90, 40, 32, 0.65);
+      }
+
+      .task-item-content {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        flex: 1;
+      }
+
+      .task-checkbox {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--text-dark);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .task-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .edit-btn {
+        background: rgba(255, 255, 255, 0.5);
+        color: var(--text-dark);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.2s ease,
+          background-color 0.2s ease;
+      }
+
+      .edit-btn:hover {
+        transform: scale(1.08);
+        background: #ffffff;
+      }
+
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -319,12 +372,7 @@
         <h1>To-do list</h1>
       </header>
 
-      <!-- Displaying Tasks -->
-      <div class="tasks-section" id="tasksList">
-        <div class="empty-state">Loading tasks database...</div>
-      </div>
-
-      <!-- Add Task Form -->
+      <!-- Add Task Form (Positioned on Top for Better UI/UX Flow) -->
       <div class="form-panel">
         <div class="form-title">Add new to-do item.</div>
 
@@ -367,8 +415,29 @@
             </div>
           </div>
 
-          <button type="submit" class="submit-btn" id="addTaskBtn">Add Task</button>
+          <div style="display: flex; gap: 0.75rem">
+            <button type="submit" class="submit-btn" id="addTaskBtn" style="flex: 1; margin-top: 0">Add Task</button>
+            <button
+              type="button"
+              class="submit-btn"
+              id="cancelEditBtn"
+              style="
+                display: none;
+                margin-top: 0;
+                background: rgba(90, 40, 32, 0.15);
+                color: var(--text-dark);
+                border: 1px solid rgba(0, 0, 0, 0.15);
+              "
+            >
+              Cancel
+            </button>
+          </div>
         </form>
+      </div>
+
+      <!-- Displaying Tasks (Positioned below the form input) -->
+      <div class="tasks-section" id="tasksList">
+        <div class="empty-state">Loading tasks database...</div>
       </div>
 
       <!-- Bottom Status Log & Notifications -->
@@ -457,7 +526,7 @@
           if (!db) return reject(new Error('DB not initialized'));
           const tx = db.transaction(storeName, 'readwrite');
           const store = tx.objectStore(storeName);
-          const req = store.add(task);
+          const req = store.put(task); // put supports both insert and update
 
           req.onsuccess = () => resolve(req.result);
           req.onerror = () => reject(req.error);
@@ -476,8 +545,8 @@
         });
       }
 
-      // --- Task Rendering ---
-      async function displayAllTasks() {
+      // --- Task Rendering & CRUD Operations ---
+      async function displayAllTasks(isInitial = false) {
         const container = document.getElementById('tasksList');
         try {
           const list = await fetchTasks();
@@ -489,7 +558,7 @@
           container.innerHTML = '';
           list.forEach((task) => {
             const item = document.createElement('div');
-            item.className = 'task-item';
+            item.className = `task-item${task.completed ? ' completed' : ''}`;
 
             // Formats suffix for days (e.g. 01 -> 01st, 02 -> 02nd)
             let suffix = 'th';
@@ -499,21 +568,46 @@
             else if (dayInt === 3 || dayInt === 23) suffix = 'rd';
 
             item.innerHTML = `
-            <div>
-              <span class="task-text">${escapeHTML(task.title)}</span>
-              <span class="task-date">${task.hour}:${task.minute}, ${task.month} ${task.day}${suffix} ${task.year}.</span>
-            </div>
-            <button class="delete-btn">X</button>
-          `;
+              <div class="task-item-content">
+                <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
+                <div>
+                  <span class="task-text">${escapeHTML(task.title)}</span>
+                  <span class="task-date">${task.hour}:${task.minute}, ${task.month} ${task.day}${suffix} ${task.year}.</span>
+                </div>
+              </div>
+              <div class="task-actions">
+                <button class="edit-btn" title="Edit task">✏️</button>
+                <button class="delete-btn" title="Delete task">X</button>
+              </div>
+            `;
 
-            // Programmatic listener avoids single-quote string escaping syntax errors
+            // Complete check toggle programmatically
+            item.querySelector('.task-checkbox').addEventListener('change', async (e) => {
+              task.completed = e.target.checked;
+              try {
+                await writeTask(task);
+                logEvent(`Task "${task.title}" status: ${task.completed ? 'Completed' : 'Pending'}`);
+                displayAllTasks();
+              } catch (err) {
+                logEvent(`Failed to toggle task: ${err.message}`);
+              }
+            });
+
+            // Edit button handler
+            item.querySelector('.edit-btn').addEventListener('click', () => {
+              startEditTask(task);
+            });
+
+            // Delete button handler
             item.querySelector('.delete-btn').addEventListener('click', () => {
               deleteTaskItem(task.id, task.title);
             });
 
             container.appendChild(item);
           });
-          logEvent('Entries all displayed.');
+          if (isInitial) {
+            logEvent('Entries all displayed.');
+          }
         } catch (e) {
           container.innerHTML = `<div class="empty-state" style="color: red;">Failed to retrieve records: ${e.message}</div>`;
         }
@@ -528,12 +622,52 @@
         try {
           await removeTask(id);
           logEvent(`Task "${title}" deleted.`);
+          if (editingTaskId === id) {
+            cancelEdit();
+          }
           displayAllTasks();
           triggerNotification(`Task Deleted`, `"${title}" has been successfully completed and deleted.`);
         } catch (e) {
           logEvent(`Delete failed: ${e.message}`);
         }
       }
+
+      // --- Edit State Management ---
+      let editingTaskId = null;
+
+      function startEditTask(task) {
+        editingTaskId = task.id;
+        document.getElementById('taskTitle').value = task.title;
+        document.getElementById('taskHour').value = parseInt(task.hour);
+        document.getElementById('taskMinute').value = parseInt(task.minute);
+        document.getElementById('taskDay').value = task.day;
+        document.getElementById('taskMonth').value = task.month;
+        document.getElementById('taskYear').value = task.year;
+
+        document.getElementById('addTaskBtn').textContent = 'Update Task';
+        document.getElementById('cancelEditBtn').style.display = 'inline-block';
+        logEvent(`Editing task: "${task.title}"`);
+        document.getElementById('taskTitle').focus();
+      }
+
+      function cancelEdit() {
+        editingTaskId = null;
+        document.getElementById('todoForm').reset();
+
+        // Restore defaults
+        document.getElementById('taskDay').value = '01';
+        document.getElementById('taskMonth').value = 'January';
+
+        const currentYear = new Date().getFullYear();
+        document.getElementById('taskYear').value = Math.min(2025, currentYear);
+        document.getElementById('taskHour').value = '11';
+        document.getElementById('taskMinute').value = '11';
+
+        document.getElementById('addTaskBtn').textContent = 'Add Task';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+      }
+
+      document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
 
       // --- Form submit hook ---
       document.getElementById('todoForm').addEventListener('submit', async (e) => {
@@ -553,16 +687,24 @@
 
         const task = { title, hour, minute, day, month, year };
 
+        if (editingTaskId !== null) {
+          task.id = editingTaskId;
+        }
+
         try {
           await writeTask(task);
-          logEvent(`Task "${title}" added to database.`);
+          if (editingTaskId !== null) {
+            logEvent(`Task "${title}" updated.`);
+            triggerNotification('Task Updated', `"${title}" has been updated.`);
+          } else {
+            logEvent(`Task "${title}" added to database.`);
+            triggerNotification('Task Added', `"${title}" is scheduled for ${hour}:${minute} on ${month} ${day}.`);
+          }
 
-          // Reset only the title field to let the user add multiple matching times
-          document.getElementById('taskTitle').value = '';
+          cancelEdit();
           displayAllTasks();
-          triggerNotification('Task Added', `"${title}" is scheduled for ${hour}:${minute} on ${month} ${day}.`);
         } catch (err) {
-          logEvent(`Insertion failed: ${err.message}`);
+          logEvent(`Save failed: ${err.message}`);
         }
       });
 
@@ -612,7 +754,7 @@
       // --- Startup connection chain ---
       logEvent('App initialised.');
       initDatabase().then(() => {
-        displayAllTasks();
+        displayAllTasks(true); // Log initial entries display
         updateNotifyBtnState();
       });
     </script>
