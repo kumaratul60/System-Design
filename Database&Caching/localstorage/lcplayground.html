@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>LocalStorage Dev Playground</title>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #111827;
+        --card: #f3f4f6;
+        --border: #d1d5db;
+        --input: #ffffff;
+        --danger: #dc2626;
+        --success: #16a34a;
+      }
+
+      body.dark {
+        --bg: #111827;
+        --text: #f9fafb;
+        --card: #1f2937;
+        --border: #374151;
+        --input: #0f172a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition: 0.2s ease;
+        padding: 20px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      .topbar {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        margin-bottom: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--input);
+        color: var(--text);
+        outline: none;
+        resize: vertical;
+      }
+
+      button {
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
+
+      .danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .success {
+        background: var(--success);
+        color: white;
+      }
+
+      .storage-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 70vh;
+        overflow: auto;
+      }
+
+      .item {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .key {
+        font-weight: bold;
+        word-break: break-word;
+      }
+
+      .value {
+        margin-top: 10px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .meta {
+        margin-top: 12px;
+        font-size: 13px;
+        opacity: 0.75;
+      }
+
+      .search {
+        margin-bottom: 16px;
+      }
+
+      .usage-bar {
+        width: 100%;
+        height: 12px;
+        background: #374151;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 10px 0 16px;
+      }
+
+      .usage-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--success);
+        transition: 0.2s ease;
+      }
+
+      .logs {
+        max-height: 200px;
+        overflow: auto;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 12px;
+        margin-top: 8px;
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <h1>LocalStorage Dev Playground</h1>
+
+      <button id="themeBtn">Toggle Theme</button>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT -->
+      <div>
+        <div class="card">
+          <h2>Add / Edit Storage</h2>
+
+          <input id="keyInput" placeholder="Key" />
+
+          <textarea id="valueInput" rows="6" placeholder="Value"></textarea>
+
+          <select id="expirySelect">
+            <option value="">No Expiry</option>
+            <option value="60000">1 Minute</option>
+            <option value="3600000">1 Hour</option>
+            <option value="86400000">1 Day</option>
+          </select>
+
+          <button class="success" id="saveBtn">Save</button>
+
+          <button class="danger" id="clearBtn">Clear All</button>
+        </div>
+
+        <div class="card" style="margin-top: 20px">
+          <h2>Storage Stats</h2>
+
+          <div class="usage-bar">
+            <div class="usage-fill" id="usageFill"></div>
+          </div>
+
+          <p>
+            <strong>Used:</strong>
+            <span id="used"></span>
+          </p>
+
+          <p>
+            <strong>Estimated Left:</strong>
+            <span id="left"></span>
+          </p>
+
+          <p>
+            <strong>Total Keys:</strong>
+            <span id="count"></span>
+          </p>
+        </div>
+
+        <div class="card" style="margin-top: 20px">
+          <h2>Operation Logs</h2>
+
+          <div class="logs" id="logs"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <h2>Storage Contents</h2>
+
+        <input id="searchInput" class="search" placeholder="Search key..." />
+
+        <div id="storageList" class="storage-list"></div>
+      </div>
+    </div>
+
+    <script>
+      const THEME_KEY = 'theme-mode';
+      const LIMIT = 5 * 1024 * 1024;
+
+      const body = document.body;
+
+      const themeBtn = document.getElementById('themeBtn');
+
+      const keyInput = document.getElementById('keyInput');
+      const valueInput = document.getElementById('valueInput');
+      const expirySelect = document.getElementById('expirySelect');
+
+      const saveBtn = document.getElementById('saveBtn');
+      const clearBtn = document.getElementById('clearBtn');
+
+      const searchInput = document.getElementById('searchInput');
+
+      const storageList = document.getElementById('storageList');
+
+      const usedEl = document.getElementById('used');
+      const leftEl = document.getElementById('left');
+      const countEl = document.getElementById('count');
+
+      const usageFill = document.getElementById('usageFill');
+
+      const logsEl = document.getElementById('logs');
+
+      // ------------------------
+      // THEME
+      // ------------------------
+
+      const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+
+      applyTheme(savedTheme);
+
+      themeBtn.addEventListener('click', () => {
+        const next = body.classList.contains('dark') ? 'light' : 'dark';
+
+        applyTheme(next);
+
+        localStorage.setItem(THEME_KEY, next);
+
+        addLog(`Theme changed to ${next}`);
+      });
+
+      function applyTheme(theme) {
+        body.classList.toggle('dark', theme === 'dark');
+      }
+
+      // ------------------------
+      // SAVE
+      // ------------------------
+
+      saveBtn.addEventListener('click', saveData);
+
+      function saveData() {
+        const key = keyInput.value.trim();
+        const value = valueInput.value;
+
+        if (!key) {
+          alert('Key required');
+          return;
+        }
+
+        const expiryMs = expirySelect.value;
+
+        const payload = {
+          value,
+          createdAt: Date.now(),
+          expiry: expiryMs ? Date.now() + Number(expiryMs) : null,
+        };
+
+        try {
+          localStorage.setItem(key, JSON.stringify(payload));
+
+          addLog(`SET ${key}`);
+
+          keyInput.value = '';
+          valueInput.value = '';
+
+          renderStorage();
+        } catch (err) {
+          alert('Quota exceeded or storage unavailable.');
+        }
+      }
+
+      // ------------------------
+      // DELETE KEY
+      // ------------------------
+
+      function removeKey(key) {
+        localStorage.removeItem(key);
+
+        addLog(`REMOVE ${key}`);
+
+        renderStorage();
+      }
+
+      // ------------------------
+      // EDIT
+      // ------------------------
+
+      function editKey(key) {
+        const raw = localStorage.getItem(key);
+
+        try {
+          const parsed = JSON.parse(raw);
+
+          keyInput.value = key;
+          valueInput.value = parsed.value;
+        } catch {
+          keyInput.value = key;
+          valueInput.value = raw;
+        }
+      }
+
+      // ------------------------
+      // CLEAR
+      // ------------------------
+
+      clearBtn.addEventListener('click', () => {
+        const theme = localStorage.getItem(THEME_KEY);
+
+        localStorage.clear();
+
+        if (theme) {
+          localStorage.setItem(THEME_KEY, theme);
+        }
+
+        addLog('CLEAR ALL');
+
+        renderStorage();
+      });
+
+      // ------------------------
+      // RENDER
+      // ------------------------
+
+      function renderStorage() {
+        removeExpiredKeys();
+
+        storageList.innerHTML = '';
+
+        const search = searchInput.value.toLowerCase();
+
+        let totalBytes = 0;
+
+        const keys = Object.keys(localStorage);
+
+        if (!keys.length) {
+          storageList.innerHTML = '<p>No storage found</p>';
+        }
+
+        keys.forEach((key) => {
+          if (search && !key.toLowerCase().includes(search)) {
+            return;
+          }
+
+          const raw = localStorage.getItem(key);
+
+          totalBytes += getBytes(raw + key);
+
+          let value = raw;
+          let expiryText = 'No expiry';
+
+          try {
+            const parsed = JSON.parse(raw);
+
+            value = typeof parsed.value === 'object' ? JSON.stringify(parsed.value, null, 2) : parsed.value;
+
+            if (parsed.expiry) {
+              expiryText = new Date(parsed.expiry).toLocaleString();
+            }
+          } catch {}
+
+          const size = formatBytes(getBytes(raw + key));
+
+          const isSensitive = /token|auth|jwt|password/i.test(key);
+
+          const div = document.createElement('div');
+
+          div.className = 'item';
+
+          div.innerHTML = `
+          <div class="item-header">
+            <div>
+              <div class="key">
+                ${escapeHtml(key)}
+              </div>
+
+              ${isSensitive ? `<div class="tag">Sensitive Key</div>` : ''}
+            </div>
+
+            <div>
+              <button onclick="editKey('${key}')">
+                Edit
+              </button>
+
+              <button
+                class="danger"
+                onclick="removeKey('${key}')"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <div class="value">
+${escapeHtml(value)}
+          </div>
+
+          <div class="meta">
+            Size: ${size}
+            <br />
+            Expiry: ${expiryText}
+          </div>
+        `;
+
+          storageList.appendChild(div);
+        });
+
+        updateStats(totalBytes);
+      }
+
+      // ------------------------
+      // SEARCH
+      // ------------------------
+
+      searchInput.addEventListener('input', renderStorage);
+
+      // ------------------------
+      // STORAGE STATS
+      // ------------------------
+
+      function updateStats(bytes) {
+        const used = formatBytes(bytes);
+
+        const left = formatBytes(LIMIT - bytes);
+
+        const percent = (bytes / LIMIT) * 100;
+
+        usedEl.textContent = used;
+        leftEl.textContent = left;
+
+        countEl.textContent = localStorage.length;
+
+        usageFill.style.width = Math.min(percent, 100) + '%';
+      }
+
+      // ------------------------
+      // EXPIRED KEYS
+      // ------------------------
+
+      function removeExpiredKeys() {
+        Object.keys(localStorage).forEach((key) => {
+          try {
+            const raw = localStorage.getItem(key);
+
+            const parsed = JSON.parse(raw);
+
+            if (parsed.expiry && Date.now() > parsed.expiry) {
+              localStorage.removeItem(key);
+
+              addLog(`AUTO EXPIRED ${key}`);
+            }
+          } catch {}
+        });
+      }
+
+      setInterval(removeExpiredKeys, 3000);
+
+      // ------------------------
+      // MULTI TAB REACTIVITY
+      // ------------------------
+
+      window.addEventListener('storage', () => {
+        renderStorage();
+
+        const latestTheme = localStorage.getItem(THEME_KEY) || 'light';
+
+        applyTheme(latestTheme);
+
+        addLog('SYNC FROM OTHER TAB');
+      });
+
+      // ------------------------
+      // HELPERS
+      // ------------------------
+
+      function getBytes(str = '') {
+        return new Blob([str]).size;
+      }
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) {
+          return bytes + ' B';
+        }
+
+        if (bytes < 1024 * 1024) {
+          return (bytes / 1024).toFixed(2) + ' KB';
+        }
+
+        return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+      }
+
+      function escapeHtml(str = '') {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function addLog(message) {
+        const time = new Date().toLocaleTimeString();
+
+        logsEl.innerHTML = `<div>[${time}] ${message}</div>` + logsEl.innerHTML;
+      }
+
+      renderStorage();
+    </script>
+  </body>
+</html>

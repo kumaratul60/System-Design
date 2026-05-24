@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Light Dark + LocalStorage Explorer</title>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #111827;
+        --card: #f3f4f6;
+        --border: #d1d5db;
+        --input: #ffffff;
+      }
+
+      body.dark {
+        --bg: #111827;
+        --text: #f9fafb;
+        --card: #1f2937;
+        --border: #374151;
+        --input: #0f172a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition: 0.25s ease;
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      button {
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 18px;
+        border: 1px solid var(--border);
+      }
+
+      h2 {
+        margin-top: 0;
+        font-size: 18px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--input);
+        color: var(--text);
+        outline: none;
+        resize: vertical;
+      }
+
+      .storage-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 70vh;
+        overflow: auto;
+      }
+
+      .item {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .key {
+        font-weight: 700;
+        margin-bottom: 6px;
+        word-break: break-word;
+      }
+
+      .value {
+        opacity: 0.9;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .meta {
+        margin-top: 12px;
+        font-size: 14px;
+        opacity: 0.8;
+        line-height: 1.8;
+      }
+
+      .danger {
+        margin-top: 12px;
+        width: 100%;
+      }
+
+      .empty {
+        opacity: 0.6;
+      }
+
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <h1>LocalStorage Playground</h1>
+
+      <button id="themeBtn">Toggle Theme</button>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT -->
+      <div class="card">
+        <h2>Add Data</h2>
+
+        <input id="keyInput" type="text" placeholder="Enter key" />
+
+        <textarea id="valueInput" rows="6" placeholder="Enter value"></textarea>
+
+        <button id="saveBtn">Save to localStorage</button>
+
+        <button class="danger" id="clearBtn">Clear All Storage</button>
+
+        <div class="meta">
+          <div>
+            <strong>Used:</strong>
+            <span id="used"></span>
+          </div>
+
+          <div>
+            <strong>Estimated Left:</strong>
+            <span id="left"></span>
+          </div>
+
+          <div>
+            <strong>Total Keys:</strong>
+            <span id="count"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <h2>localStorage Contents</h2>
+
+        <div class="storage-list" id="storageList"></div>
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_THEME_KEY = 'theme-mode';
+
+      const body = document.body;
+      const themeBtn = document.getElementById('themeBtn');
+
+      const keyInput = document.getElementById('keyInput');
+      const valueInput = document.getElementById('valueInput');
+
+      const saveBtn = document.getElementById('saveBtn');
+      const clearBtn = document.getElementById('clearBtn');
+
+      const storageList = document.getElementById('storageList');
+
+      const usedEl = document.getElementById('used');
+      const leftEl = document.getElementById('left');
+      const countEl = document.getElementById('count');
+
+      // -------------------------
+      // THEME
+      // -------------------------
+
+      const savedTheme = localStorage.getItem(STORAGE_THEME_KEY) || 'light';
+
+      applyTheme(savedTheme);
+
+      themeBtn.addEventListener('click', () => {
+        const next = body.classList.contains('dark') ? 'light' : 'dark';
+
+        applyTheme(next);
+
+        localStorage.setItem(STORAGE_THEME_KEY, next);
+
+        renderStorage();
+      });
+
+      function applyTheme(theme) {
+        body.classList.toggle('dark', theme === 'dark');
+      }
+
+      // -------------------------
+      // SAVE STORAGE
+      // -------------------------
+
+      saveBtn.addEventListener('click', saveData);
+
+      valueInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          saveData();
+        }
+      });
+
+      function saveData() {
+        const key = keyInput.value.trim();
+        const value = valueInput.value;
+
+        if (!key) {
+          alert('Key required');
+          return;
+        }
+
+        try {
+          localStorage.setItem(key, value);
+
+          keyInput.value = '';
+          valueInput.value = '';
+
+          renderStorage();
+        } catch (err) {
+          alert('Storage failed. Possibly quota exceeded.');
+        }
+      }
+
+      // -------------------------
+      // CLEAR
+      // -------------------------
+
+      clearBtn.addEventListener('click', () => {
+        const keepTheme = localStorage.getItem(STORAGE_THEME_KEY);
+
+        localStorage.clear();
+
+        if (keepTheme) {
+          localStorage.setItem(STORAGE_THEME_KEY, keepTheme);
+        }
+
+        renderStorage();
+      });
+
+      // -------------------------
+      // RENDER STORAGE
+      // -------------------------
+
+      function renderStorage() {
+        storageList.innerHTML = '';
+
+        if (!localStorage.length) {
+          storageList.innerHTML = '<div class="empty">No localStorage data</div>';
+        }
+
+        let totalBytes = 0;
+
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          const value = localStorage.getItem(key);
+
+          totalBytes += getBytes(key + value);
+
+          const div = document.createElement('div');
+
+          div.className = 'item';
+
+          div.innerHTML = `
+          <div class="key">${escapeHtml(key)}</div>
+          <div class="value">${escapeHtml(value)}</div>
+        `;
+
+          storageList.appendChild(div);
+        }
+
+        updateStorageStats(totalBytes);
+      }
+
+      // -------------------------
+      // STORAGE STATS
+      // -------------------------
+
+      function updateStorageStats(bytes) {
+        const MB_LIMIT = 5 * 1024 * 1024;
+
+        const usedMB = (bytes / 1024 / 1024).toFixed(4);
+
+        const leftMB = ((MB_LIMIT - bytes) / 1024 / 1024).toFixed(4);
+
+        usedEl.textContent = `${usedMB} MB`;
+        leftEl.textContent = `${leftMB} MB`;
+        countEl.textContent = localStorage.length;
+      }
+
+      function getBytes(str) {
+        return new Blob([str]).size;
+      }
+
+      // -------------------------
+      // SAFE HTML
+      // -------------------------
+
+      function escapeHtml(str = '') {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      // -------------------------
+      // MULTI TAB REACTIVITY
+      // -------------------------
+
+      window.addEventListener('storage', () => {
+        renderStorage();
+
+        const latestTheme = localStorage.getItem(STORAGE_THEME_KEY) || 'light';
+
+        applyTheme(latestTheme);
+      });
+
+      renderStorage();
+    </script>
+  </body>
+</html>
