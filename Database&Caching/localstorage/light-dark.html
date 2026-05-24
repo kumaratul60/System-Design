@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Light / Dark Mode</title>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #111111;
+        --card: #f3f4f6;
+      }
+
+      body.dark {
+        --bg: #111827;
+        --text: #f9fafb;
+        --card: #1f2937;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+      }
+
+      .card {
+        background: var(--card);
+        padding: 24px;
+        border-radius: 16px;
+        text-align: center;
+        min-width: 280px;
+        transition: background 0.25s ease;
+      }
+
+      button {
+        border: none;
+        padding: 12px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <h1>Theme Toggle</h1>
+      <p id="modeText">Light Mode</p>
+
+      <button id="toggleBtn">Toggle Theme</button>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'theme-mode';
+
+      const body = document.body;
+      const toggleBtn = document.getElementById('toggleBtn');
+      const modeText = document.getElementById('modeText');
+
+      // Default = light
+      const savedTheme = localStorage.getItem(STORAGE_KEY) || 'light';
+
+      applyTheme(savedTheme);
+
+      toggleBtn.addEventListener('click', () => {
+        const nextTheme = body.classList.contains('dark') ? 'light' : 'dark';
+
+        applyTheme(nextTheme);
+
+        // preserve last action
+        localStorage.setItem(STORAGE_KEY, nextTheme);
+      });
+
+      function applyTheme(theme) {
+        body.classList.toggle('dark', theme === 'dark');
+
+        modeText.textContent = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
+      }
+    </script>
+  </body>
+</html>
