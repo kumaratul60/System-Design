@@ -246,9 +246,13 @@ The **Virtual DOM (VDOM)** is a lightweight, in-memory representation of the rea
 #### Q1: VDOM Diffing vs. Git Diff (The Algorithms)
 
 **Question:** Do Git Diff and DOM/VDOM Diff use the same algorithm under the hood? What are the key structural and mathematical differences?
+
 _or_
+
 **Question:** How does React's virtual DOM reconciliation differ from general tree diffing (e.g., the Zhang-Shasha algorithm) and sequence diffing (e.g., Myers' algorithm)? Why can't we use exact algorithms in real-time UI frameworks?
+
 _or_
+
 **Question:** Does React's DOM diffing algorithm utilize Myers' Diff Algorithm (like Git Diff) to find the absolute minimum changes?
 
 **Answer:**
