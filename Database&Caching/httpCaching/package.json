@@ -1,0 +1,16 @@
+{
+  "name": "httpcaching",
+  "version": "1.0.0",
+  "description": "HTTP Caching is one of the most critical performance and scalability levers in web architecture. By storing copies of server responses closer to the client (in the browser or at intermediate CDN edges), it reduces network latency, eliminates redundant bandwidth consumption, and shields origin databases from traffic spikes.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

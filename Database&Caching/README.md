@@ -28,6 +28,7 @@ This module covers both backend distributed data strategies and frontend client-
       - [SessionStorage Architectural Core](#sessionstorage-architectural-core)
       - [Cookie Architectural Core](#cookie-architectural-core)
       - [IndexedDB Architectural Core](#indexeddb-architectural-core)
+      - [HTTP Caching Architectural Core](#http-caching-architectural-core)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -226,13 +227,15 @@ Duplicating specific fields directly into records to prevent join operations dur
 
 To support offline access, dynamic UI states, and request performance, modern web applications leverage client-side storage mechanisms. These APIs execute directly in the user's browser but carry various constraints, security rules, and performance implications.
 
-- For the complete senior/staff architectural deep dive, see the **[LocalStorage Architecture & Mechanics Deep Dive](./localstorage/README.md)**.
-- For a fully interactive, browser-based demonstration illustrating quotas, thread-blocking, serialization quirks, and cross-tab storage events, see the **[Interactive LocalStorage Demo](./localstorage/index.html)**.
-- For the complete senior/staff architectural deep dive on session boundaries, see the **[SessionStorage Architecture & Mechanics Deep Dive](./sessionstorage/README.md)**.
-- For a fully interactive, browser-based demonstration illustrating tab cloning, copy-on-write decoupling, and session quotas, see the **[Interactive SessionStorage Demo](./sessionstorage/index.html)**.
-- For the complete senior/staff architectural deep dive on structured client databases, see the **[IndexedDB Architecture & Mechanics Deep Dive](./indexeddb/README.md)**.
-- For a fully interactive, browser-based demonstration illustrating transactional CRUD, event loop auto-commit gotchas, and version upgrades blockages, see the **[Interactive IndexedDB Demo](./indexeddb/index.html)**.
-- For a standalone, premium-styled Todo application utilizing client-side IndexedDB transactions and browser alerts, see the **[IndexedDB Todo Application](./indexeddb/todo.html)**.
+- For the complete senior/staff architectural deep dive, see the **[LocalStorage Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/localstorage/README.md)**.
+- For a fully interactive, browser-based demonstration illustrating quotas, thread-blocking, serialization quirks, and cross-tab storage events, see the **[Interactive LocalStorage Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/localstorage/index.html)**.
+- For the complete senior/staff architectural deep dive on session boundaries, see the **[SessionStorage Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/sessionstorage/README.md)**.
+- For a fully interactive, browser-based demonstration illustrating tab cloning, copy-on-write decoupling, and session quotas, see the **[Interactive SessionStorage Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/sessionstorage/index.html)**.
+- For the complete senior/staff architectural deep dive on structured client databases, see the **[IndexedDB Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/indexeddb/README.md)**.
+- For a fully interactive, browser-based demonstration illustrating transactional CRUD, event loop auto-commit gotchas, and version upgrades blockages, see the **[Interactive IndexedDB Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/indexeddb/index.html)**.
+- For a standalone, premium-styled Todo application utilizing client-side IndexedDB transactions and browser alerts, see the **[IndexedDB Todo Application](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/indexeddb/todo.html)**.
+- For the complete senior/staff architectural deep dive on HTTP Caching and revalidations, see the **[HTTP Caching Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/README.md)**.
+- For a fully interactive, local browser demonstration illustrating revalidation loops, ETags, Last-Modified, and stale-while-revalidate caches, see the **[Interactive HTTP Caching Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/index.html)**.
 
 #### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
 
@@ -299,12 +302,26 @@ IndexedDB serves as a full client-side transactional database suited for offline
 - **Schema & Version Upgrades**: Require versioned upgrades under `onupgradeneeded`, which can be blocked by other open tabs of the same origin.
 - **Large Capacity Limits**: Reaches up to 80% of disk space in standard browsers, but undergoes 7-day inactivity purge in Safari.
 
+> - **[IndexedDB Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/indexeddb/README.md)**
+> - **[Interactive IndexedDB Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/indexeddb/index.html)**
+> - **[IndexedDB Todo Application](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/indexeddb/todo.html)**
+
+#### HTTP Caching Architectural Core
+
+HTTP Caching controls transport-level resource reuse directly at the network boundary:
+
+- **Directives Precedence**: Freshness and security behaviors follow strict precedence checks: `no-store` (never cache) > `no-cache` / `must-revalidate` (must validate with server before use) > `max-age` / `Expires` (relative/absolute TTL freshness).
+- **Validation Handshakes**: Employs cryptographic hashes (`ETag` / `If-None-Match`) and timestamps (`Last-Modified` / `If-Modified-Since`) to revalidate stale assets via bandwidth-efficient `304 Not Modified` headers.
+- **Cache Invalidation Protocols**:
+  - _Cache Busting (URL Fingerprinting)_: Appending unique content hashes to file paths (e.g. `main.a7f9.js`), forcing the browser to fetch new asset names instantly when server code updates.
+  - _Response Clearances_: Using the `Clear-Site-Data: "cache"` HTTP header to programmatically wipe browser-cached data on the client.
+  - _Request Overrides_: User-initiated force-reloads (e.g. Ctrl+F5) injecting `Cache-Control: no-cache` in request headers to bypass local caches.
+
 > [!IMPORTANT]
-> A detailed deep dive, playground, and Todo app for IndexedDB are available at:
+> A detailed architectural deep dive and interactive playground for HTTP Caching are available at:
 >
-> - **[IndexedDB Architecture & Mechanics Deep Dive](./indexeddb/README.md)**
-> - **[Interactive IndexedDB Demo](./indexeddb/index.html)**
-> - **[IndexedDB Todo Application](./indexeddb/todo.html)**
+> - **[HTTP Caching Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/README.md)**
+> - **[Interactive HTTP Caching Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/index.html)**
 
 ---
 

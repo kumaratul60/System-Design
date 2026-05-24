@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTTP Caching Architecture Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #0d0f12;
+        --panel-bg: rgba(22, 27, 34, 0.7);
+        --border-color: rgba(48, 54, 61, 0.6);
+        --text-main: #f0f6fc;
+        --text-muted: #8b949e;
+        --primary: #58a6ff;
+        --success: #3fb950;
+        --warning: #d29922;
+        --danger: #f85149;
+        --glow-success: rgba(63, 185, 80, 0.15);
+        --glow-warning: rgba(210, 153, 34, 0.15);
+        --glow-primary: rgba(88, 166, 255, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
+        overflow-x: hidden;
+      }
+
+      /* Background decorative ambient glow */
+      body::before {
+        content: '';
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(88, 166, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+        top: -100px;
+        left: -100px;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      body::after {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(63, 185, 80, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+        bottom: -150px;
+        right: -150px;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      header {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        background: linear-gradient(90deg, #58a6ff, #50e3c2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 2rem;
+        flex-grow: 1;
+        align-items: start;
+      }
+
+      .card {
+        background: var(--panel-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      }
+
+      .card h2 {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.3);
+        padding-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      /* Control Deck Styles */
+      .control-deck {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .btn-group label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      button {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: rgba(33, 38, 45, 0.8);
+        color: var(--text-main);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+
+      button:hover {
+        background-color: rgba(56, 62, 71, 0.8);
+        border-color: #8b949e;
+        transform: translate3d(0, -1px, 0);
+      }
+
+      button:active {
+        transform: translate3d(0, 0, 0);
+      }
+
+      button .directive {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.7rem;
+        color: var(--primary);
+        background-color: rgba(88, 166, 255, 0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+      }
+
+      .btn-deploy {
+        background: linear-gradient(135deg, rgba(63, 185, 80, 0.1) 0%, rgba(33, 38, 45, 0.8) 100%);
+        border-color: var(--success);
+        color: var(--success);
+        font-weight: 600;
+        justify-content: center;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .btn-deploy:hover {
+        background: linear-gradient(135deg, rgba(63, 185, 80, 0.2) 0%, rgba(48, 54, 61, 0.8) 100%);
+        border-color: #4cd964;
+      }
+
+      /* Logs Panel */
+      .logs-panel {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 550px;
+      }
+
+      .log-table-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        max-height: 450px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: rgba(13, 17, 23, 0.8);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      th {
+        background-color: rgba(22, 27, 34, 0.9);
+        color: var(--text-muted);
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        border-bottom: 1px solid var(--border-color);
+        position: sticky;
+        top: 0;
+      }
+
+      td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.3);
+        vertical-align: middle;
+      }
+
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* Cache Hit Labels */
+      .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+
+      .badge-200 {
+        color: var(--success);
+        background-color: var(--glow-success);
+        border: 1px solid rgba(63, 185, 80, 0.3);
+      }
+      .badge-304 {
+        color: var(--warning);
+        background-color: var(--glow-warning);
+        border: 1px solid rgba(210, 153, 34, 0.3);
+      }
+
+      .hit-source {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 500;
+      }
+
+      .hit-network {
+        color: var(--primary);
+      }
+      .hit-cache {
+        color: var(--success);
+      }
+      .hit-validation {
+        color: var(--warning);
+      }
+
+      /* Interactive Explanation Deck */
+      .explain-deck {
+        margin-top: 2rem;
+        grid-column: 1 / -1;
+      }
+
+      .explain-content {
+        background-color: rgba(13, 17, 23, 0.6);
+        border: 1px dashed var(--border-color);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .explain-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .headers-inspect {
+        margin-top: 1rem;
+        background-color: #0d0f12;
+        border-radius: 6px;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        color: #7ee787;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .clear-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        background-color: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+
+      .clear-btn:hover {
+        color: var(--text-main);
+        border-color: var(--text-muted);
+      }
+
+      .image-layer {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 0.15s ease-in-out;
+      }
+
+      /* Responsive Layout Adjustments */
+      @media (max-width: 800px) {
+        body {
+          padding: 1rem;
+        }
+        .main-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        .logs-panel {
+          min-height: 400px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>HTTP Caching Architecture Playground</h1>
+        <div class="subtitle">
+          Simulating cache limits, revalidations, conditional handshakes, and stale-while-revalidate loops
+        </div>
+      </div>
+      <button class="clear-btn" onclick="clearLogs()">Clear Console</button>
+    </header>
+
+    <main class="main-grid">
+      <!-- Left Column Wrapper -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem">
+        <!-- Left Panel: Control Deck -->
+        <div class="card control-deck">
+          <h2>Control Deck</h2>
+
+          <div class="btn-group">
+            <label>Freshness Directives</label>
+            <button onclick="requestAsset('/static/immutable.js', 'Immutable Asset')">
+              Immutable Hash Cache
+              <span class="directive">immutable, max-age=1yr</span>
+            </button>
+            <button onclick="requestAsset('/static/no-store.js', 'No-Store Asset')">
+              No-Store (Sensitive)
+              <span class="directive">no-store, no-cache</span>
+            </button>
+          </div>
+
+          <div class="btn-group">
+            <label>Validation Directives</label>
+            <button onclick="requestAsset('/static/validation-etag.js', 'ETag Validation')">
+              ETag Validation
+              <span class="directive">no-cache (ETag)</span>
+            </button>
+            <button onclick="requestAsset('/static/validation-lastmod.js', 'Last-Modified Validation')">
+              Last-Modified Validation
+              <span class="directive">no-cache (Last-Mod)</span>
+            </button>
+          </div>
+
+          <div class="btn-group">
+            <label>Background Caching & Resilience</label>
+            <button onclick="requestAsset('/static/swr.js', 'Stale-While-Revalidate')">
+              Stale-While-Revalidate
+              <span class="directive">swr=5, max-age=5</span>
+            </button>
+            <button onclick="requestAsset('/static/stale-if-error.js', 'Stale-If-Error')">
+              Stale-If-Error
+              <span class="directive">stale-if-error=30</span>
+            </button>
+          </div>
+
+          <div class="btn-group">
+            <label>Scope, Legacy & Integrity</label>
+            <button onclick="requestAsset('/static/expires.js', 'Expires (Legacy TTL)')">
+              Expires Header Cache
+              <span class="directive">Expires: (1 Day Future)</span>
+            </button>
+            <button onclick="requestAsset('/static/private.js', 'Private Scope Cache')">
+              Private Browser Cache
+              <span class="directive">private, max-age=60</span>
+            </button>
+            <button onclick="requestAsset('/static/proxy-revalidate.js', 'Proxy Revalidate')">
+              Proxy-Revalidate (CDNs)
+              <span class="directive">public, max-age=10, proxy-revalidate</span>
+            </button>
+            <button onclick="requestAsset('/static/no-transform.js', 'No-Transform Asset')">
+              No-Transform (Payload)
+              <span class="directive">public, max-age=60, no-transform</span>
+            </button>
+          </div>
+
+          <div class="btn-group">
+            <label>Simulation Trigger</label>
+            <button class="btn-deploy" onclick="deployUpdates()">🚀 Update Server Files</button>
+          </div>
+
+          <div class="btn-group">
+            <label>Client-Side Options</label>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 0.75rem;
+                border-radius: 6px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                margin-top: 0.25rem;
+              "
+            >
+              <input
+                type="checkbox"
+                id="cache-bust-checkbox"
+                style="cursor: pointer; width: 16px; height: 16px; margin: 0"
+              />
+              <label
+                for="cache-bust-checkbox"
+                style="
+                  cursor: pointer;
+                  user-select: none;
+                  font-size: 0.8rem;
+                  color: var(--text-muted);
+                  line-height: 1.2;
+                "
+              >
+                Append Random Query Parameter Salt (e.g. <code>?cb=khk</code>)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Caching Demo Card -->
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem">
+          <h2>Image Caching Demo</h2>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+            <div
+              id="demo-image-container"
+              style="
+                width: 120px;
+                height: 120px;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                background-color: #050505;
+                background-size: cover;
+                background-position: center;
+                position: relative;
+                overflow: hidden;
+              "
+            >
+              <div
+                id="demo-image-placeholder"
+                style="
+                  position: absolute;
+                  inset: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 0.75rem;
+                  color: var(--text-muted);
+                  text-align: center;
+                  padding: 0.5rem;
+                  user-select: none;
+                "
+              >
+                No Image Loaded
+              </div>
+            </div>
+            <div
+              id="image-status"
+              style="
+                font-size: 0.85rem;
+                font-weight: 500;
+                text-align: center;
+                color: var(--text-muted);
+                height: 42px;
+                line-height: 1.35;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+              "
+            >
+              Click button to load
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem">
+            <button style="flex: 1; justify-content: center; text-align: center" onclick="loadImage(false)">
+              Fetch Image
+            </button>
+            <button
+              style="
+                flex: 1;
+                justify-content: center;
+                text-align: center;
+                border-color: var(--warning);
+                color: var(--warning);
+              "
+              onclick="loadImage(true)"
+            >
+              Bust Cache
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column Wrapper -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem; min-width: 0;">
+        <!-- Right Panel: Network Log -->
+        <div class="card logs-panel">
+          <h2>Network Monitor Log</h2>
+          <div class="log-table-container">
+            <table id="logs-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Asset Target</th>
+                  <th>Status</th>
+                  <th>Cache Source</th>
+                  <th>Latency</th>
+                  <th>Payload Size</th>
+                </tr>
+              </thead>
+              <tbody id="logs-body">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem">
+                    No requests issued yet. Click a control button to fetch an asset.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bottom Panel: Explanation Box -->
+        <div class="card explain-deck">
+          <h2>Architectural Trace Inspector</h2>
+          <div class="explain-content" id="explanation-box">
+            <div class="explain-title">🔍 System Status: Idle</div>
+            <p style="color: var(--text-muted)">
+              Select a caching control directive from the left deck to dispatch an asynchronous HTTP fetch. The monitor
+              will capture status codes, analyze performance, and display the headers. Click "Update Server Files" to
+              simulate code updates and see validations trigger.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let requestCount = 0;
+
+      async function requestAsset(url, assetName) {
+        const timestamp = new Date().toLocaleTimeString();
+
+        // Determine if cache-busting should be applied via query parameter salting
+        const bustCache = document.getElementById('cache-bust-checkbox').checked;
+        const targetUrl = bustCache
+          ? url + (url.includes('?') ? '&' : '?') + 'cb=' + Math.random().toString(36).substring(7)
+          : url;
+
+        const start = performance.now();
+        let response;
+        let headersText = '';
+        let errorOccurred = false;
+
+        try {
+          response = await fetch(targetUrl);
+
+          // Inspect headers
+          const headers = {};
+          for (let [key, value] of response.headers.entries()) {
+            headers[key] = value;
+          }
+          headersText = JSON.stringify(headers, null, 2);
+        } catch (err) {
+          errorOccurred = true;
+          console.error(err);
+        }
+
+        const latency = Math.round(performance.now() - start);
+
+        if (errorOccurred || !response) {
+          logError(timestamp, assetName);
+          return;
+        }
+
+        // Read content (triggers body consumption)
+        const text = await response.text();
+        const payloadSize = new Blob([text]).size;
+
+        // Extract Timing information via Performance API to detect browser-level hits
+        const perfEntries = performance.getEntriesByName(new URL(targetUrl, window.location.href).href);
+        const perf = perfEntries[perfEntries.length - 1]; // Get latest entry
+
+        let source = 'Network Download';
+        let sourceClass = 'hit-network';
+
+        if (perf) {
+          if (perf.transferSize === 0) {
+            // If response size was 0, but status returned 200, it was loaded from browser cache (direct hit)
+            source = 'Browser Cache (Direct Hit)';
+            sourceClass = 'hit-cache';
+          } else if (response.status === 200 && latency < 8) {
+            // Fallback heuristic for local hits
+            source = 'Browser Cache (Direct Hit)';
+            sourceClass = 'hit-cache';
+          } else if (perf.encodedBodySize === 0 && perf.transferSize > 0) {
+            // Validated via If-None-Match / If-Modified-Since
+            source = 'Server Revalidated (304)';
+            sourceClass = 'hit-validation';
+          }
+        }
+
+        // Hard override for no-store
+        if (url.includes('no-store')) {
+          source = 'Network (Cache Bypassed)';
+          sourceClass = 'hit-network';
+        }
+
+        updateLogsTable({
+          timestamp,
+          assetName,
+          url: targetUrl,
+          status: response.status,
+          source,
+          sourceClass,
+          latency,
+          payloadSize: source.includes('Cache') ? 0 : payloadSize,
+        });
+
+        renderExplanation(url, assetName, response.status, source, headersText, text);
+      }
+
+      function updateLogsTable(item) {
+        const logsBody = document.getElementById('logs-body');
+        requestCount++;
+
+        // Clear placeholder on first log
+        if (requestCount === 1) {
+          logsBody.innerHTML = '';
+        }
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td class="font-mono" style="color: var(--text-muted);">${item.timestamp}</td>
+        <td><strong>${item.assetName}</strong><br/><span style="font-size:0.75rem; color: var(--text-muted);">${item.url}</span></td>
+        <td><span class="status-badge badge-${item.status}">${item.status}</span></td>
+        <td><span class="hit-source ${item.sourceClass}">${item.source}</span></td>
+        <td class="font-mono">${item.latency}ms</td>
+        <td class="font-mono">${item.payloadSize} B</td>
+      `;
+
+        logsBody.insertBefore(row, logsBody.firstChild);
+      }
+
+      function renderExplanation(url, name, status, source, headers, content) {
+        const box = document.getElementById('explanation-box');
+        let title = `🔍 Caching Profile: ${name}`;
+        let description = '';
+
+        if (url.includes('immutable')) {
+          description = `
+          <p><strong>Immutable Caching:</strong> Served with <code>Cache-Control: public, max-age=31536000, immutable</code>.</p>
+          <p style="margin-top: 0.5rem;">Once downloaded, the browser caches this file on disk. Clicking the trigger again returns it instantly without sending a validation request to the server. The latency is near 0ms, and payload size is 0 bytes.</p>
+        `;
+        } else if (url.includes('no-store')) {
+          description = `
+          <p><strong>No-Store (No-Cache):</strong> Served with <code>Cache-Control: no-store, no-cache, must-revalidate</code>.</p>
+          <p style="margin-top: 0.5rem;">The browser is forbidden from caching this response. Every single request travels to the network and downloads the complete body size. Used for highly volatile or sensitive data.</p>
+        `;
+        } else if (url.includes('validation-etag')) {
+          if (source.includes('304')) {
+            description = `
+            <p><strong>ETag Validation (Cache Hit - 304):</strong> The client sent a conditional request with the <code>If-None-Match</code> header matching the server's current asset hash.</p>
+            <p style="margin-top: 0.5rem; color: var(--warning);">The server responded with <strong>304 Not Modified</strong>. No payload body was sent, saving bandwidth. The browser reconstituted the response locally from its cache.</p>
+          `;
+          } else {
+            description = `
+            <p><strong>ETag Validation (Cache Miss - 200):</strong> The client had no matching version, or the asset changed on the server. The server computed a fresh SHA-1 hash and returned it in the <code>ETag</code> header, along with the fresh payload body.</p>
+          `;
+          }
+        } else if (url.includes('validation-lastmod')) {
+          if (source.includes('304')) {
+            description = `
+            <p><strong>Last-Modified Validation (Cache Hit - 304):</strong> The browser sent a conditional request with <code>If-Modified-Since</code>. Since the server file date hasn't changed beyond that timestamp, the server responded with <strong>304 Not Modified</strong>.</p>
+          `;
+          } else {
+            description = `
+            <p><strong>Last-Modified Validation (Cache Miss - 200):</strong> The server files were updated, or this was the first request. The server returned a fresh <strong>200 OK</strong> with a newer <code>Last-Modified</code> header.</p>
+          `;
+          }
+        } else if (url.includes('swr')) {
+          description = `
+          <p><strong>Stale-While-Revalidate:</strong> Served with <code>Cache-Control: public, max-age=5, stale-while-revalidate=5</code>.</p>
+          <p style="margin-top: 0.5rem;">For the first 5 seconds, it is fully fresh. From 5s to 10s, it is stale but serves the cached copy instantly while firing a **background revalidation request** to update the cache. Click multiple times consecutively within 5s-10s to see SWR serve the older timestamp while the logger updates in the background.</p>
+        `;
+        } else if (url.includes('expires')) {
+          description = `
+          <p><strong>Expires Header (Legacy HTTP/1.0):</strong> Served with an absolute date/time timestamp header, e.g. <code>Expires: Sat, 23 Dec 2023 11:20:39 GMT</code>.</p>
+          <p style="margin-top: 0.5rem;">The browser caches this resource directly without checking the server until that absolute time passes. If a modern <code>Cache-Control: max-age</code> is also present, it overrides <code>Expires</code> in modern browsers.</p>
+        `;
+        } else if (url.includes('private')) {
+          description = `
+          <p><strong>Private Cache (Browser only):</strong> Served with <code>Cache-Control: private, max-age=60</code>.</p>
+          <p style="margin-top: 0.5rem;">Specifies that the response is tailored for a single user and <strong>must not</strong> be cached by intermediate shared caches (such as CDNs or reverse proxies). Browser caches are allowed to cache this resource locally.</p>
+        `;
+        } else if (url.includes('proxy-revalidate')) {
+          description = `
+          <p><strong>Proxy Revalidate:</strong> Served with <code>Cache-Control: public, max-age=10, proxy-revalidate</code>.</p>
+          <p style="margin-top: 0.5rem;">Instructs intermediate shared/edge caches (CDNs, proxies) that once the response becomes stale (after 10 seconds), they <strong>must not</strong> serve a stale copy under any condition and must validate with the origin server first. Private browser caches ignore this instruction.</p>
+        `;
+        } else if (url.includes('stale-if-error')) {
+          description = `
+          <p><strong>Stale-If-Error:</strong> Served with <code>Cache-Control: public, max-age=5, stale-if-error=30</code>.</p>
+          <p style="margin-top: 0.5rem;">Allows the browser (and intermediate CDNs) to serve the stale cached copy for up to an additional 30 seconds if the origin server returns a 5xx gateway error (500, 502, 503, 504) or is offline during revalidation. High resiliency pattern!</p>
+        `;
+        } else if (url.includes('no-transform')) {
+          description = `
+          <p><strong>No-Transform:</strong> Served with <code>Cache-Control: public, max-age=60, no-transform</code>.</p>
+          <p style="margin-top: 0.5rem;">Instructs intermediate caches, edge proxies, and CDNs that they <strong>must not</strong> alter the response body. This prevents edge nodes from dynamically minifying code, transcoding images to lower resolutions/formats, or changing content compression formats, ensuring complete payload body integrity.</p>
+        `;
+        }
+
+        box.innerHTML = `
+        <div class="explain-title">${title}</div>
+        ${description}
+        <div style="margin-top:0.75rem; font-weight:600; font-size:0.8rem; color: var(--text-muted);">Executed Asset Payload Content:</div>
+        <div class="headers-inspect" style="color: #61afef; border-color: rgba(48,54,61,0.4); margin-bottom: 0.5rem; max-height:60px;">${content}</div>
+        <div style="font-weight:600; font-size:0.8rem; color: var(--text-muted);">Inspected Response Headers:</div>
+        <pre class="headers-inspect">${headers}</pre>
+      `;
+      }
+
+      async function deployUpdates() {
+        try {
+          const res = await fetch('/api/modify-assets');
+          const data = await res.json();
+
+          const box = document.getElementById('explanation-box');
+          box.innerHTML = `
+          <div class="explain-title" style="color: var(--success);">🚀 Server Files Updated Successfully!</div>
+          <p>Asset files modified on the server.</p>
+          <p style="margin-top: 0.5rem;"><strong>New State Configurations:</strong></p>
+          <ul style="margin-left: 1.5rem; margin-top:0.25rem; font-size: 0.85rem; color: var(--text-muted);">
+            <li>ETag Version Hash: <code>v${data.version}</code></li>
+            <li>Last-Modified Header: <code>${data.lastModified}</code></li>
+          </ul>
+          <p style="margin-top: 0.5rem;">Any subsequent requests for <strong>ETag Validation</strong> or <strong>Last-Modified Validation</strong> assets will detect a mismatch and perform fresh <strong>200 OK</strong> downloads to synchronize the client cache.</p>
+        `;
+        } catch (err) {
+          alert('Error updating server files.');
+        }
+      }
+
+      function clearLogs() {
+        const logsBody = document.getElementById('logs-body');
+        logsBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No requests issued yet. Click a control button to fetch an asset.</td>
+        </tr>
+      `;
+        requestCount = 0;
+      }
+
+      function logError(timestamp, name) {
+        const logsBody = document.getElementById('logs-body');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td class="font-mono" style="color: var(--text-muted);">${timestamp}</td>
+        <td><strong>${name}</strong></td>
+        <td><span class="status-badge" style="background-color: var(--glow-warning); color: var(--danger); border: 1px solid var(--danger);">ERR</span></td>
+        <td><span class="hit-source" style="color: var(--danger);">Failed Request</span></td>
+        <td class="font-mono">-</td>
+        <td class="font-mono">-</td>
+      `;
+        logsBody.insertBefore(row, logsBody.firstChild);
+      }
+
+      async function loadImage(bust) {
+        const imgContainer = document.getElementById('demo-image-container');
+        const placeholder = document.getElementById('demo-image-placeholder');
+        const statusElement = document.getElementById('image-status');
+
+        // Show fetching state
+        statusElement.innerHTML = `<span style="color: var(--primary);">Fetching...</span>`;
+
+        const timestamp = new Date().toLocaleTimeString();
+        const baseUrl = '/static/cache_shield.png';
+        
+        // Respect the client-side options cache-bust checkbox OR the button parameter trigger
+        const bustCache = bust || document.getElementById('cache-bust-checkbox').checked;
+        const imgUrl = bustCache ? `${baseUrl}?cb=${Math.random().toString(36).substring(7)}` : baseUrl;
+
+        const start = performance.now();
+
+        try {
+          const imgObj = new Image();
+          const loadPromise = new Promise((resolve, reject) => {
+            imgObj.onload = () => resolve();
+            imgObj.onerror = (e) => reject(e);
+          });
+          imgObj.src = imgUrl;
+          await loadPromise;
+
+          // Crucial step: use HTMLImageElement.decode() to ensure the browser has fully decoded the image in memory.
+          // This avoids the typical sub-millisecond blank white/dark flash when applying it to the DOM.
+          if (typeof imgObj.decode === 'function') {
+            try {
+              await imgObj.decode();
+            } catch (e) {
+              console.warn("Image decode failed", e);
+            }
+          }
+
+          const latency = Math.round(performance.now() - start);
+
+          // Hide placeholder text
+          placeholder.style.display = 'none';
+
+          // Double buffering image layer swap to eliminate flickering/layout jumps
+          const newLayer = document.createElement('div');
+          newLayer.className = 'image-layer';
+          newLayer.style.backgroundImage = `url('${imgUrl}')`;
+          
+          // Capture current layers as old
+          const oldLayers = imgContainer.querySelectorAll('.image-layer');
+
+          // Append new layer
+          imgContainer.appendChild(newLayer);
+
+          // Trigger reflow to start opacity transition
+          newLayer.offsetHeight;
+          newLayer.style.opacity = '1';
+
+          // Clean up old layers after transition completes to prevent memory leaks
+          setTimeout(() => {
+            oldLayers.forEach(layer => {
+              if (layer !== newLayer) {
+                layer.remove();
+              }
+            });
+          }, 160);
+
+          // Inspect Timing API for cache hit assessment
+          const perfEntries = performance.getEntriesByName(imgObj.src);
+          const perf = perfEntries[perfEntries.length - 1];
+
+          let source = 'Network Download';
+          let sourceClass = 'hit-network';
+
+          if (bustCache) {
+            source = 'Network (Cache Busted)';
+          } else if (perf) {
+            if (perf.transferSize === 0) {
+              source = 'Browser Cache (Direct Hit)';
+              sourceClass = 'hit-cache';
+            } else if (latency < 8) {
+              source = 'Browser Cache (Direct Hit)';
+              sourceClass = 'hit-cache';
+            }
+          } else if (latency < 8) {
+            source = 'Browser Cache (Direct Hit)';
+            sourceClass = 'hit-cache';
+          }
+
+          statusElement.innerHTML = `<span class="${sourceClass}">${source}</span><br/><span style="font-size:0.75rem; color: var(--text-muted);">${latency}ms</span>`;
+
+          // Update logger table
+          updateLogsTable({
+            timestamp,
+            assetName: bustCache ? 'Image (Cache Busted)' : 'Image (Cache-Control)',
+            url: imgUrl,
+            status: 200,
+            source,
+            sourceClass,
+            latency,
+            payloadSize: source.includes('Cache') ? 0 : perf ? perf.decodedBodySize : 84100,
+          });
+
+          // Update Explanation card
+          const box = document.getElementById('explanation-box');
+          box.innerHTML = `
+          <div class="explain-title">🖼 Image Caching Demo: ${bustCache ? 'Cache Busted' : 'Normal Load'}</div>
+          <p><strong>URL Requested:</strong> <code>${imgUrl}</code></p>
+          <p style="margin-top: 0.5rem;"><strong>Cache Result:</strong> <span class="${sourceClass}">${source}</span> (${latency}ms)</p>
+          <p style="margin-top: 0.5rem;"><strong>How Browser Cache works for Images:</strong></p>
+          <p style="margin-top: 0.25rem; color: var(--text-muted);">
+            The image is served with <code>Cache-Control: public, max-age=60</code>.
+            When you click **Fetch Image** again within 60 seconds, the browser serves it instantly from its local disk cache (0ms latency, 0 bytes transferred over network).
+            Checking **Append Random Query Parameter Salt** on the options panel will append a dynamic query parameter to the URL, making it a completely new request to the browser, bypassing the cache.
+          </p>
+        `;
+        } catch (err) {
+          statusElement.innerHTML = `<span style="color: var(--danger);">Failed to load image</span>`;
+          logError(timestamp, 'Image Load');
+        }
+      }
+    </script>
+  </body>
+</html>
