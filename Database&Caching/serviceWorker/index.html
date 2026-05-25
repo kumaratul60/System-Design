@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Worker Architecture Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #0c0e11;
+        --panel-bg: rgba(22, 27, 34, 0.75);
+        --border-color: rgba(48, 54, 61, 0.6);
+        --text-main: #f0f6fc;
+        --text-muted: #8b949e;
+        --primary: #58a6ff;
+        --success: #3fb950;
+        --warning: #d29922;
+        --danger: #f85149;
+        --glow-success: rgba(63, 185, 80, 0.15);
+        --glow-warning: rgba(210, 153, 34, 0.15);
+        --glow-primary: rgba(88, 166, 255, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Ambient Background Glows */
+      body::before {
+        content: '';
+        position: absolute;
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(88, 166, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+        top: -150px;
+        left: -150px;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      body::after {
+        content: '';
+        position: absolute;
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(63, 185, 80, 0.06) 0%, rgba(0, 0, 0, 0) 70%);
+        bottom: -150px;
+        right: -150px;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      header {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        background: linear-gradient(90deg, #58a6ff, #50e3c2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 2rem;
+        flex-grow: 1;
+        align-items: start;
+      }
+
+      .card {
+        background: var(--panel-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      }
+
+      .card h2 {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.3);
+        padding-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      /* Form & Controller Styles */
+      .control-deck {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .control-group label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .status-panel {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .dot-active {
+        background-color: var(--success);
+        box-shadow: 0 0 10px var(--success);
+      }
+
+      .dot-inactive {
+        background-color: var(--danger);
+        box-shadow: 0 0 10px var(--danger);
+      }
+
+      .status-details {
+        font-size: 0.85rem;
+        color: var(--text-main);
+      }
+
+      select,
+      input[type='text'] {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: rgba(13, 17, 23, 0.8);
+        color: var(--text-main);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.9rem;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      button {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background-color: rgba(33, 38, 45, 0.8);
+        color: var(--text-main);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          background-color 0.2s ease,
+          border-color 0.2s ease,
+          transform 0.2s ease;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+
+      button:hover {
+        background-color: rgba(56, 62, 71, 0.8);
+        border-color: #8b949e;
+        transform: translate3d(0, -1px, 0);
+      }
+
+      button:active {
+        transform: translate3d(0, 0, 0);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(33, 38, 45, 0.8) 100%);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, rgba(88, 166, 255, 0.2) 0%, rgba(48, 54, 61, 0.8) 100%);
+        border-color: #79c0ff;
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, rgba(248, 81, 73, 0.1) 0%, rgba(33, 38, 45, 0.8) 100%);
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      .btn-danger:hover {
+        background: linear-gradient(135deg, rgba(248, 81, 73, 0.2) 0%, rgba(48, 54, 61, 0.8) 100%);
+        border-color: #ff7b72;
+      }
+
+      /* Toggle Switch */
+      .switch-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(248, 81, 73, 0.05);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px dashed var(--danger);
+      }
+
+      .switch-label {
+        font-size: 0.85rem;
+        color: var(--danger);
+        font-weight: 500;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 22px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #21262d;
+        transition: 0.3s;
+        border-radius: 22px;
+        border: 1px solid var(--border-color);
+      }
+
+      .slider::before {
+        position: absolute;
+        content: '';
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: var(--text-muted);
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--danger);
+      }
+
+      input:checked + .slider::before {
+        transform: translateX(22px);
+        background-color: var(--text-main);
+      }
+
+      .outage-banner {
+        background-color: rgba(248, 81, 73, 0.15);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 1rem;
+        text-align: center;
+        display: none;
+      }
+
+      /* Fetch Button Grids */
+      .fetch-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+
+      /* Monitor Logs Panel */
+      .logs-panel {
+        display: flex;
+        flex-direction: column;
+        min-height: 480px;
+        height: 100%;
+      }
+
+      .log-table-container {
+        flex-grow: 1;
+        overflow-y: auto;
+        max-height: 380px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: rgba(13, 17, 23, 0.85);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      th {
+        background-color: rgba(22, 27, 34, 0.95);
+        color: var(--text-muted);
+        text-align: left;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        border-bottom: 1px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(48, 54, 61, 0.3);
+        vertical-align: middle;
+      }
+
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* Status Badge Styles */
+      .status-badge {
+        display: inline-block;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.7rem;
+      }
+
+      .badge-200 {
+        color: var(--success);
+        background-color: var(--glow-success);
+        border: 1px solid rgba(63, 185, 80, 0.3);
+      }
+
+      .badge-304 {
+        color: var(--warning);
+        background-color: var(--glow-warning);
+        border: 1px solid rgba(210, 153, 34, 0.3);
+      }
+
+      .hit-source {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 500;
+        font-size: 0.8rem;
+      }
+
+      .hit-network {
+        color: var(--primary);
+      }
+
+      .hit-cache {
+        color: var(--success);
+      }
+
+      .hit-validation {
+        color: var(--warning);
+      }
+
+      /* Inspector Deck */
+      .explain-deck {
+        margin-top: 1.5rem;
+      }
+
+      .explain-content {
+        background-color: rgba(13, 17, 23, 0.65);
+        border: 1px dashed var(--border-color);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      .explain-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .headers-inspect {
+        margin-top: 0.5rem;
+        background-color: #0d0f12;
+        border-radius: 6px;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        color: #7ee787;
+        max-height: 150px;
+        overflow-y: auto;
+      }
+
+      .clear-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        background-color: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+
+      .clear-btn:hover {
+        color: var(--text-main);
+        border-color: var(--text-muted);
+      }
+
+      /* Active Strategy Indicator badge in header */
+      .active-badge-header {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--success);
+        background-color: var(--glow-success);
+        border: 1px solid rgba(63, 185, 80, 0.3);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+
+      /* Right column layout container to prevent shifting */
+      .right-column-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        min-width: 0;
+      }
+
+      /* Responsive Layout overrides */
+      @media (max-width: 900px) {
+        body {
+          padding: 1rem;
+        }
+        .main-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        .logs-panel {
+          min-height: 380px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Service Worker Architecture Playground</h1>
+        <div class="subtitle">
+          Interactively intercepting HTTP fetches, dynamic storage updates, and testing offline fail-safes
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem">
+        <span class="active-badge-header" id="active-strategy-badge">LOADING</span>
+        <button class="clear-btn" onclick="clearLogs()">Clear Logs</button>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <!-- Left Column: Controls Deck -->
+      <div class="control-deck">
+        <!-- Panel 1: Worker Thread Registration -->
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem">
+          <h2>Worker Thread Controls</h2>
+          <div class="status-panel">
+            <div class="status-dot dot-inactive" id="sw-status-indicator"></div>
+            <div class="status-details" id="sw-status-text">Checking status...</div>
+          </div>
+          <div style="display: flex; gap: 0.5rem">
+            <button class="btn-primary" id="reg-btn" style="flex: 1" onclick="registerSW()">Register Worker</button>
+            <button class="btn-danger" id="unreg-btn" style="flex: 1; display: none" onclick="unregisterSW()">
+              Unregister Worker
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel 2: Interception & Outage Simulator -->
+        <div class="card" style="display: flex; flex-direction: column; gap: 1.2rem">
+          <h2>Interception Settings</h2>
+
+          <div class="control-group">
+            <label>Caching Strategy</label>
+            <select id="strategy-select" onchange="updateStrategy()">
+              <option value="cache-first" selected>Cache-First (Offline Asset App-Shell)</option>
+              <option value="network-first">Network-First (Live Data Fallback)</option>
+              <option value="stale-while-revalidate">Stale-While-Revalidate (Speed & Freshness)</option>
+            </select>
+          </div>
+
+          <div class="switch-container">
+            <span class="switch-label">Simulate Outage (Offline)</span>
+            <label class="switch">
+              <input type="checkbox" id="offline-toggle" onchange="toggleOffline()" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="outage-banner" id="outage-banner">
+            ⚠️ Network Outage Simulated. Client queries are blocked by Service Worker.
+          </div>
+        </div>
+
+        <!-- Panel 3: Asset Request Triggers -->
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem">
+          <h2>Request Trigger Deck</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4">
+            Send requests to verify how the active worker intercepts resources and populates Caches.
+          </p>
+          <div class="fetch-grid">
+            <button onclick="loadAsset('/index.html', 'HTML Shell')">Fetch HTML</button>
+            <button onclick="loadAsset('/styles.css', 'Stylesheet')">Fetch CSS</button>
+            <button onclick="loadAsset('/app.js', 'Client Script')">Fetch JS</button>
+            <button onclick="loadAsset('/image.png', 'Test Image')">Fetch Image</button>
+          </div>
+          <button class="btn-primary" style="width: 100%" onclick="loadAsset('/api/time', 'Time API (Dynamic)')">
+            Fetch Dynamic API (/api/time)
+          </button>
+        </div>
+
+        <!-- Panel 4: Caching Strategy Explanations -->
+        <div class="card" id="strategy-explanation">
+          <p><strong>Active Strategy: Cache-First (Offline Optimization)</strong></p>
+          <p style="margin-top: 0.25rem; font-size: 0.85rem; color: var(--text-muted)">
+            The Service Worker queries the local Cache first. On a Cache Hit, it returns the resource immediately. On a
+            Cache Miss, it downloads it from the network, stores it, and returns it.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Column: Monitor & Inspector -->
+      <div class="right-column-container">
+        <!-- Panel 1: Table log monitor -->
+        <div class="card logs-panel">
+          <h2>Network Interception Monitor</h2>
+          <div class="log-table-container">
+            <table id="logs-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Target URL</th>
+                  <th>Status</th>
+                  <th>Delivery Source</th>
+                  <th>Latency</th>
+                  <th>Size</th>
+                </tr>
+              </thead>
+              <tbody id="logs-body">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 4rem">
+                    No requests intercepted yet. Click an asset fetch button on the left to trace requests.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panel 2: Trace Inspector -->
+        <div class="card explain-deck" id="inspector-output">
+          <div class="explain-title">🔍 Request Trace Inspector</div>
+          <p style="color: var(--text-muted); font-size: 0.9rem">
+            Select a fetch trigger on the left deck. The inspector will trace performance timing, capture custom
+            response headers injected by the Service Worker thread, and display payload preview structures.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

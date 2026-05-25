@@ -29,6 +29,7 @@ This module covers both backend distributed data strategies and frontend client-
       - [Cookie Architectural Core](#cookie-architectural-core)
       - [IndexedDB Architectural Core](#indexeddb-architectural-core)
       - [HTTP Caching Architectural Core](#http-caching-architectural-core)
+      - [Service Worker Architectural Core](#service-worker-architectural-core)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -236,6 +237,7 @@ To support offline access, dynamic UI states, and request performance, modern we
 - For a standalone, premium-styled Todo application utilizing client-side IndexedDB transactions and browser alerts, see the **[IndexedDB Todo Application](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/indexeddb/todo.html)**.
 - For the complete senior/staff architectural deep dive on HTTP Caching and revalidations, see the **[HTTP Caching Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/README.md)**.
 - For a fully interactive, local browser demonstration illustrating revalidation loops, ETags, Last-Modified, and stale-while-revalidate caches, see the **[Interactive HTTP Caching Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/index.html)**.
+- For the complete senior/staff architectural deep dive on Service Workers and cache interception patterns, see the **[Service Worker Architecture & Implementation Patterns](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/serviceWorker/README.md)**.
 
 #### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
 
@@ -322,6 +324,20 @@ HTTP Caching controls transport-level resource reuse directly at the network bou
 >
 > - **[HTTP Caching Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/README.md)**
 > - **[Interactive HTTP Caching Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/index.html)**
+
+#### Service Worker Architectural Core
+
+Service Workers act as client-side network proxies running in an independent background execution context:
+
+- **Thread Isolation & DOM Restrictions**: Execute in a separate thread from the page's UI thread, completely isolated from direct DOM access. All communications with client pages must use asynchronous messaging (`postMessage`).
+- **Programmable Interception Flow**: Intercept all outgoing HTTP fetch requests from pages in their registered scope, choosing to serve them from the Cache API or forwarding them to the network.
+- **Event-Driven Lifecycle**: Follow a stateful execution lifecycle (`install` -> `waiting` -> `activate` -> `active`). Assets are typically pre-cached during installation, and obsolete caches are cleaned during activation.
+- **Immediate Claims & Updates**: The new worker script stays in a waiting state until all tabs running the older worker are closed, unless bypassed via `self.skipWaiting()` and `self.clients.claim()`.
+
+> [!IMPORTANT]
+> A detailed architectural deep dive and code example template implementations for Service Workers are available at:
+>
+> - **[Service Worker Architecture & Implementation Patterns](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/serviceWorker/README.md)**
 
 ---
 
