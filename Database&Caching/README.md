@@ -30,6 +30,7 @@ This module covers both backend distributed data strategies and frontend client-
       - [IndexedDB Architectural Core](#indexeddb-architectural-core)
       - [HTTP Caching Architectural Core](#http-caching-architectural-core)
       - [Service Worker Architectural Core](#service-worker-architectural-core)
+      - [API Caching \& Fetch Policies Core](#api-caching--fetch-policies-core)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -238,6 +239,7 @@ To support offline access, dynamic UI states, and request performance, modern we
 - For the complete senior/staff architectural deep dive on HTTP Caching and revalidations, see the **[HTTP Caching Architecture & Mechanics Deep Dive](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/README.md)**.
 - For a fully interactive, local browser demonstration illustrating revalidation loops, ETags, Last-Modified, and stale-while-revalidate caches, see the **[Interactive HTTP Caching Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/index.html)**.
 - For the complete senior/staff architectural deep dive on Service Workers and cache interception patterns, see the **[Service Worker Architecture & Implementation Patterns](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/serviceWorker/README.md)**.
+- For the complete senior/staff architectural deep dive on client-side memory caches, data-fetching libraries, and fetch policies, see the **[API Caching & Fetch Policies Architecture Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/apiCaching/README.md)**.
 
 #### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
 
@@ -338,6 +340,19 @@ Service Workers act as client-side network proxies running in an independent bac
 > A detailed architectural deep dive and code example template implementations for Service Workers are available at:
 >
 > - **[Service Worker Architecture & Implementation Patterns](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/serviceWorker/README.md)**
+
+#### API Caching & Fetch Policies Core
+
+API Caching manages runtime data state directly inside the client application's JavaScript Heap memory context, rather than the browser network layer:
+
+- **Fetch Policies**: Dictate the query execution path via standard strategies: `cache-first` (serve cached copy, query API only on miss), `network-only` (always call server, update cache), `cache-and-network` (serve stale cache immediately, refetch in background), `cache-last` (query network first, fallback to cache on offline failure), and `no-cache` (fetch from network, do not store result).
+- **Normalized vs Document Caches**: GraphQL libraries (like Apollo Client) normalizes payloads into flat entity registers based on type and ID to prevent data out-of-sync bugs, whereas React Query or SWR act as key-document stores mapped by array query keys.
+- **Eviction & Staleness Controls**: Stale state revalidations are managed via expiration limits (`staleTime` vs `gcTime` in React Query) and automatic refetches on window focus or network reconnect.
+
+> [!IMPORTANT]
+> A detailed architectural deep dive on client-side memory caching and fetch policies is available at:
+>
+> - **[API Caching & Fetch Policies Architecture Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/apiCaching/README.md)**
 
 ---
 
