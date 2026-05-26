@@ -230,6 +230,115 @@ export function ArchitecturalDashboard() {
 }
 ```
 
+##### The FSM Way (`XState` V5)
+
+For comparison, here is the same dashboard logic implemented using an XState V5 machine. The machine registers context schema, events, and mutation actions in `setup()`, and handles updates cleanly via a single event dispatch channel (`send`) in the React component.
+
+```typescript
+import React from 'react';
+import { setup, assign } from 'xstate';
+import { useMachine } from '@xstate/react';
+
+const dashboardSetup = setup({
+  types: {
+    context: {} as {
+      query: string;
+      category: string;
+      minPrice: number;
+      maxPrice: number;
+      sortBy: string;
+      page: number;
+      isLoading: boolean;
+    },
+    events: {} as
+      | { type: 'SET_QUERY'; query: string }
+      | { type: 'SET_CATEGORY'; category: string }
+      | { type: 'SET_PRICE_RANGE'; min: number; max: number }
+      | { type: 'SET_SORT'; sortBy: string }
+      | { type: 'SET_PAGE'; page: number }
+      | { type: 'RESET_ALL' }
+      | { type: 'START_FETCH' }
+      | { type: 'FINISH_FETCH' }
+  },
+  actions: {
+    setQuery: assign({
+      query: ({ event }) => event.type === 'SET_QUERY' ? event.query : '',
+      page: 1
+    }),
+    setCategory: assign({
+      category: ({ event }) => event.type === 'SET_CATEGORY' ? event.category : 'All',
+      page: 1
+    }),
+    setPriceRange: assign({
+      minPrice: ({ event }) => event.type === 'SET_PRICE_RANGE' ? event.min : 0,
+      maxPrice: ({ event }) => event.type === 'SET_PRICE_RANGE' ? event.max : 1000,
+      page: 1
+    }),
+    setSort: assign({
+      sortBy: ({ event }) => event.type === 'SET_SORT' ? event.sortBy : 'name'
+    }),
+    setPage: assign({
+      page: ({ event }) => event.type === 'SET_PAGE' ? event.page : 1
+    }),
+    startFetch: assign({ isLoading: true }),
+    finishFetch: assign({ isLoading: false }),
+    resetAll: assign({
+      query: '',
+      category: 'All',
+      minPrice: 0,
+      maxPrice: 1000,
+      sortBy: 'name',
+      page: 1,
+      isLoading: false
+    })
+  }
+});
+
+const dashboardMachine = dashboardSetup.createMachine({
+  id: 'dashboard',
+  initial: 'active',
+  context: {
+    query: '',
+    category: 'All',
+    minPrice: 0,
+    maxPrice: 1000,
+    sortBy: 'name',
+    page: 1,
+    isLoading: false
+  },
+  states: {
+    active: {
+      on: {
+        SET_QUERY: { actions: 'setQuery' },
+        SET_CATEGORY: { actions: 'setCategory' },
+        SET_PRICE_RANGE: { actions: 'setPriceRange' },
+        SET_SORT: { actions: 'setSort' },
+        SET_PAGE: { actions: 'setPage' },
+        START_FETCH: { actions: 'startFetch' },
+        FINISH_FETCH: { actions: 'finishFetch' },
+        RESET_ALL: { actions: 'resetAll' }
+      }
+    }
+  }
+});
+
+export function FsmDashboard() {
+  const [state, send] = useMachine(dashboardMachine);
+
+  return (
+    <div>
+      <h3>Page: {state.context.page}</h3>
+      <button onClick={() => send({ type: 'SET_CATEGORY', category: 'Electronics' })}>
+        Electronics
+      </button>
+      <button onClick={() => send({ type: 'RESET_ALL' })}>
+        Reset All
+      </button>
+    </div>
+  );
+}
+```
+
 ---
 
 ### 2.3 Advanced: Statecharts & Finite State Machines (XState)
