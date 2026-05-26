@@ -30,6 +30,15 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 ├── Logging-Monitoring/         # Telemetry, Log Collection & Monitoring
 │   └── CorrelationID/           # Distributed tracing & Correlation ID setup
 ├── Database&Caching/           # Distributed & Client-side Storage & Caching
+│   ├── apiCaching/             # Client-side heap caches & fetch policies
+│   ├── cookie/                 # Secure cookie policies & transmission
+│   ├── httpCaching/            # Browser network caching & validation
+│   ├── indexeddb/              # Transactional client databases & upgrades
+│   ├── localstorage/           # Persistent synchronous client storage
+│   ├── normalization/          # Normalized client-side state maps
+│   ├── serviceWorker/          # Custom proxy interceptors & offline assets
+│   ├── sessionstorage/         # Tab-isolated session storage
+│   └── stateManagement/        # Client state libraries & hook paradigms
 ├── Communication/               # Real-time & Event-driven patterns
 │   ├── ShortPolling/            # Basic interval-based polling
 │   ├── LongPolling/             # Optimized hanging requests
@@ -95,7 +104,7 @@ A deep dive into data collection and telemetry. Covers capturing user interactio
 
 ### 3. [Database & Caching](./Database&Caching/README.md)
 
-Full-stack storage and caching strategies. Covers PACELC database selection, distributed caching (Cache-Aside, Write-Through/Back), cache coherency, message idempotency, HTTP caching, and client-side database options (IndexedDB, localStorage).
+Full-stack storage and caching strategies. Covers PACELC database selection, distributed caching (Cache-Aside, Write-Through/Back), cache coherency, message idempotency, HTTP caching, client-side databases (IndexedDB, localStorage, sessionStorage, cookies), service worker proxy routing, API cache policies, state normalization, and client-side state management libraries (Redux, MobX, Context, Vuex, NgRx, Zustand, XState).
 
 ### 4. [Communication Strategies](./Communication/README.md)
 
