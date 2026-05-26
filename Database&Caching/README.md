@@ -31,6 +31,7 @@ This module covers both backend distributed data strategies and frontend client-
       - [HTTP Caching Architectural Core](#http-caching-architectural-core)
       - [Service Worker Architectural Core](#service-worker-architectural-core)
       - [API Caching \& Fetch Policies Core](#api-caching--fetch-policies-core)
+      - [State Management \& Lifecycle Guide](#state-management--lifecycle-guide)
   - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
@@ -240,6 +241,7 @@ To support offline access, dynamic UI states, and request performance, modern we
 - For a fully interactive, local browser demonstration illustrating revalidation loops, ETags, Last-Modified, and stale-while-revalidate caches, see the **[Interactive HTTP Caching Demo](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/httpCaching/index.html)**.
 - For the complete senior/staff architectural deep dive on Service Workers and cache interception patterns, see the **[Service Worker Architecture & Implementation Patterns](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/serviceWorker/README.md)**.
 - For the complete senior/staff architectural deep dive on client-side memory caches, data-fetching libraries, and fetch policies, see the **[API Caching & Fetch Policies Architecture Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/apiCaching/README.md)**.
+- For the complete senior/staff architectural deep dive on frontend state management paradigms, hooks (useState, useReducer), finite state machines (XState), and client state libraries (Redux, MobX, Context, Vuex, NgRx, Zustand), see the **[State Management & Lifecycle Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/stateManagement/README.md)**.
 
 #### Tabular Quick Lookup: Client-Side Caching & Storage Landscape
 
@@ -353,6 +355,19 @@ API Caching manages runtime data state directly inside the client application's 
 > A detailed architectural deep dive on client-side memory caching and fetch policies is available at:
 >
 > - **[API Caching & Fetch Policies Architecture Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/apiCaching/README.md)**
+
+#### State Management & Lifecycle Guide
+
+Managing global application data states requires selecting appropriate library patterns and matching hook paradigms:
+
+- **Local Primitives**: Standardize on `useState` for standalone primitives, and `useReducer` for complex/nested schemas requiring atomic transitions.
+- **Statecharts (XState)**: Build declarative finite state machines for complex workflow systems (like checkout multi-step processes) to prevent impossible states.
+- **Global Stores**: Leverage appropriate architectures: Redux (unidirectional), MobX (fine-grained reactive), Context API (dependency injection), Vuex (Vue unidirectional mutations), NgRx (Angular RxJS effects), and Zustand (lightweight hook selector stores).
+
+> [!IMPORTANT]
+> The full comprehensive guide on frontend state management paradigms, comparison matrices, and detailed architectural flowcharts is available at:
+>
+> - **[State Management & Lifecycle Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Database&Caching/stateManagement/README.md)**
 
 ---
 
