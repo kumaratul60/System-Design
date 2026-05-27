@@ -51,9 +51,18 @@ Component Composition is the act of combining smaller, simple components/element
   - **Wrapper / Decorator:** Adding behavior to an existing component by wrapping it in another.
   - **Dependency Injection (DI):** Passing a component's dependencies through its constructor or setter, allowing loose coupling and easy unit testing.
 
-### 5. Config-Driven UI (CDUI)
+### 5. Config-Driven UI (CDUI) / Server-Driven UI (Dynamic UI)
 
-**Config-Driven UI** is an architectural low-level design pattern where the user interface's layout, components, interactions, and validation rules are determined dynamically by a metadata configuration (typically a JSON schema) served by a backend API, rather than being hardcoded on the client.
+**Config-Driven UI** (also frequently referred to as **Server-Driven UI (SDUI)** or **Dynamic UI**) is an architectural low-level design pattern where the user interface's layout, component tree structure, styling, actions, and validation rules are computed dynamically by a backend API and served as metadata (typically a JSON schema), rather than being hardcoded inside the client application bundle.
+
+#### 🔄 "Dynamic UI" & Hyper-Personalization
+
+When a system is built using Dynamic UI, the **exact same website or native application** can render in completely different ways for different users, depending on runtime contexts evaluated by the server:
+
+- **Role-Based Layouts:** A manager sees a dashboard composed of analytical charts, approval lists, and configuration widgets, whereas a field employee sees a simplified checklist and camera scanning interface.
+- **Geographic Personalization:** A user logging in from Brazil is served a payment layout centered around Pix transfer components, while a user in Germany sees an IBAN input, and a US user sees a credit card and Apple Pay layout.
+- **Experimentation / A/B Testing:** The server resolves that User A is in cohort `checkout_redesign_v2` and serves a JSON config with a compact single-page layout. User B is in the control group and is served the traditional multi-step layout. Neither client needs code logic for the split.
+- **Risk & Compliance Adaptability:** If a user triggers a fraud warning at runtime, the backend can instantly swap the next screen config to inject an additional verification input field (e.g. dynamic biometric or SMS input element) before they proceed, without modifying app code.
 
 #### 🎯 Critical Pain Points Solved by CDUI
 
