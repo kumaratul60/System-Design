@@ -19,6 +19,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [7. Performance Optimization](#7-performance-optimization)
     - [8. Interview \& Concept Deep Dives](#8-interview--concept-deep-dives)
     - [9. Web Fundamentals](#9-web-fundamentals)
+    - [10. Low-Level Design (LLD) \& Object-Oriented Design](#10-low-level-design-lld--object-oriented-design)
   - [🔗 Useful Resources](#-useful-resources)
 
 ---
@@ -79,6 +80,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   │   └── Security_Architect.md
 │   ├── machine_code.md          # Machine coding round preparation
 │   └── Interviewer_Reference.md # Key concepts for interviews
+├── LLD/                         # Low-Level Design & Object-Oriented Design
 └── Web/                         # Fundamentals & Web Infrastructure
     ├── Headers.md               # Deep dive into HTTP Headers
     ├── Scalability.md           # Horizontal vs Vertical scaling
@@ -155,6 +157,15 @@ Exhaustive documentation on the building blocks of the web:
 - **Protocols & Headers:** HTTP internals and header management.
 - **Infrastructure:** Scalability patterns and terminal mastery.
 - **Workflow:** Git internals and tech acronyms for industry-standard communication.
+
+### 10. [Low-Level Design (LLD) & Object-Oriented Design](./LLD/README.md)
+
+A comprehensive guide to writing clean, modular, extensible, and high-performance software. Covers the progression from Beginner OOP fundamentals to Staff-level lock-free design:
+
+- **Core Elements:** Distinguishing Elements, Components, Documents, and Composition mechanisms.
+- **SOLID & GoF Design Patterns:** Creational, Structural, and Behavioral patterns with real-world scenarios.
+- **Advanced Concurrency & DDD:** Thread-safe architectures, object pooling, and domain boundary isolation.
+- **High-Performance Primitives:** Lock-free structures (CAS), CPU cache lines, custom DSL engines, and LLD governance.
 
 ---
 
