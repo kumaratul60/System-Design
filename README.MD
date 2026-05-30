@@ -76,6 +76,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   │   ├── Design_Patterns.md
 │   │   ├── Misc.md
 │   │   ├── Performance_Optimization.md
+│   │   ├── REACT_DEEP.md
 │   │   ├── React_Deep_Dive_Internals.md
 │   │   └── Security_Architect.md
 │   ├── machine_code.md          # Machine coding round preparation
@@ -141,6 +142,7 @@ A deep dive into the 8 pillars of web performance:
 
 A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles. Directly jump to detailed topics:
 
+- **[React Evolution: Stack to Fiber](./Questions/Detailed/REACT_DEEP.md)**: Synchronous stack reconciler, interruptible Fiber reconciler, the 3-stage rendering pipeline (Render/Commit/Paint), Lanes prioritization, time-slicing work loops, and DevTools/Memory Heap profiling.
 - **[React Deep Dive Internals](./Questions/Detailed/React_Deep_Dive_Internals.md)**: State management quirks, Fiber architecture, hooks lifecycle, render props, context, and JSX internals.
 - **[Security Architecture](./Questions/Detailed/Security_Architect.md)**: Zero Trust, OAuth2/OIDC, XSS/CSRF mitigations, SSRF, SQLi, and compliance (GDPR, SOC 2, HIPAA).
 - **[Architecture & Scaling](./Questions/Detailed/Architecture_Scaling.md)**: Scaling patterns, database sharding, CAP/PACELC theorems, and distributed caching.
