@@ -22,6 +22,10 @@
     - [Q13: Explain the "children as props" rendering bailout optimization. Why does passing a child element as a prop (e.g., `children` or `content={<Child />}`) prevent re-renders, even when the parent component re-renders and the child is NOT wrapped in `React.memo`?](#q13-explain-the-children-as-props-rendering-bailout-optimization-why-does-passing-a-child-element-as-a-prop-eg-children-or-contentchild--prevent-re-renders-even-when-the-parent-component-re-renders-and-the-child-is-not-wrapped-in-reactmemo)
     - [Q14: How does wrapping a function in `useCallback` prevent unnecessary execution loops in `useEffect` hooks?](#q14-how-does-wrapping-a-function-in-usecallback-prevent-unnecessary-execution-loops-in-useeffect-hooks)
   - [20. System Cheat Sheet: Core React Internals \& Timing APIs](#20-system-cheat-sheet-core-react-internals--timing-apis)
+    - [Quick Summary: Rendering Phases \& Commit Sub-Phases](#quick-summary-rendering-phases--commit-sub-phases)
+      - [The Three Macro-Phases of Rendering](#the-three-macro-phases-of-rendering)
+      - [The Four Sub-Phases of the Commit Phase (One-Liners)](#the-four-sub-phases-of-the-commit-phase-one-liners)
+        - [Detailed Execution:](#detailed-execution)
     - [Core React Internals \& Flags](#core-react-internals--flags)
     - [Timing Mechanisms: Why React Relies on a Custom MessageChannel Loop](#timing-mechanisms-why-react-relies-on-a-custom-messagechannel-loop)
   - [21. Practical Guide: Deferring Work \& Browser Event Loop Orchestration](#21-practical-guide-deferring-work--browser-event-loop-orchestration)
@@ -266,7 +270,34 @@ How does wrapping a function in `useCallback` prevent unnecessary execution loop
 
 ## 20. System Cheat Sheet: Core React Internals & Timing APIs
 
-To help system architects navigate and audit React's codebase and telemetry patterns, this reference maps every critical runtime concept, utility function, and browser API to its exact role and architectural use case.
+### Quick Summary: Rendering Phases & Commit Sub-Phases
+
+To verify execution pathways during profiling or system design discussions, refer to this high-level lifecycle blueprint:
+
+#### The Three Macro-Phases of Rendering
+
+- **Render Phase:** React evaluates components, runs reconciliation (diffing), and computes changes. (Interruptible & asynchronous, zero DOM writes).
+- **Commit Phase:** React applies computed changes to the DOM. (Synchronous & uninterruptible, where React finally touches the real DOM).
+- **Painting Phase:** The browser calculates styles, runs layout rules, and paints/rasterizes pixels onto the screen.
+
+#### The Four Sub-Phases of the Commit Phase (One-Liners)
+
+- **Before Mutation Phase:** Capturing the DOM snapshot.
+- **Mutation Phase:** Deletions, placements, and updates in order.
+- **Layout Phase:** Why `useLayoutEffect` runs before paint.
+- **Passive Effects Phase:** Why `useEffect` runs after paint.
+
+##### Detailed Execution:
+
+- **Before Mutation Phase:** Walks the effects list to execute class component snapshot captures (such as `getSnapshotBeforeUpdate()`). This runs before any DOM modifications and is the final chance to read layout state directly from the DOM.
+- **Mutation Phase:** React applies calculated updates directly to the physical DOM in a strict sequence:
+  1. **Deletions:** Detaches deleted elements and executes unmount/cleanup hooks.
+  2. **Placements:** Inserts new DOM elements in their target positions.
+  3. **Updates:** Updates attributes, styles, and text properties of existing elements.
+- **Layout Phase:** React synchronously runs layout effects (`useLayoutEffect`) and binds DOM references (`refs`). Running before browser repaint ensures any layout adjustments occur in the same paint frame, avoiding visible layout shifts or UI flickering.
+- **Passive Effects Phase:** Schedules standard passive effects (`useEffect`) asynchronously through the Scheduler using a `MessageChannel` macro-task. Running after the paint completes ensures heavy side effects (e.g. tracking, subscriptions, fetching) do not block browser paints or degrade UI fluidity.
+
+---
 
 ### Core React Internals & Flags
 
