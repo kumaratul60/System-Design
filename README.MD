@@ -76,7 +76,8 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   │   ├── Design_Patterns.md
 │   │   ├── Misc.md
 │   │   ├── Performance_Optimization.md
-│   │   ├── REACT_DEEP.md
+│   │   ├── React_Deep_Dive_Advanced.md
+│   │   ├── React_Deep_Dive_Cheat_Sheet.md
 │   │   ├── React_Deep_Dive_Internals.md
 │   │   └── Security_Architect.md
 │   ├── machine_code.md          # Machine coding round preparation
@@ -142,8 +143,9 @@ A deep dive into the 8 pillars of web performance:
 
 A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles. Directly jump to detailed topics:
 
-- **[React Evolution: Stack to Fiber](./Questions/Detailed/REACT_DEEP.md)**: Synchronous stack reconciler, interruptible Fiber reconciler, the 3-stage rendering pipeline (Render/Commit/Paint), Lanes prioritization, time-slicing work loops, and DevTools/Memory Heap profiling.
-- **[React Deep Dive Internals](./Questions/Detailed/React_Deep_Dive_Internals.md)**: State management quirks, Fiber architecture, hooks lifecycle, render props, context, and JSX internals.
+- **[React Deep Dive: Core Engine & Architecture (Part 1)](./Questions/Detailed/React_Deep_Dive_Internals.md)**: useRef stable instance storage, Virtual DOM reconciliation (Myers vs Zhang-Shasha algorithms), recursive Stack vs Concurrent Fiber, rendering pipeline (Render/Commit/Paint), state management quirks, `useSyncExternalStore` subscription tearing, and tricky hooks.
+- **[React Deep Dive: Advanced Concurrency & Hooks (Part 2)](./Questions/Detailed/React_Deep_Dive_Advanced.md)**: Deep hook mechanics (circular update queue, eager bailouts, WorkTags), transition interruption, 32-bit bitmask Lanes priorities, bubbled-up `childLanes`, React 19 compiler integration, Actions and `useOptimistic` engine, selective hydration, and system telemetry auditing.
+- **[React Deep Dive: Grill Questions & Timing Cheat Sheet (Part 3)](./Questions/Detailed/React_Deep_Dive_Cheat_Sheet.md)**: 14 Consolidated Senior/Staff level "Grill" questions, Internals quick-reference flags matrix, timing API differences, Event Loop execution stages, and high-performance Double-rAF animation synchronization pattern.
 - **[Security Architecture](./Questions/Detailed/Security_Architect.md)**: Zero Trust, OAuth2/OIDC, XSS/CSRF mitigations, SSRF, SQLi, and compliance (GDPR, SOC 2, HIPAA).
 - **[Architecture & Scaling](./Questions/Detailed/Architecture_Scaling.md)**: Scaling patterns, database sharding, CAP/PACELC theorems, and distributed caching.
 - **[Performance Optimization](./Questions/Detailed/Performance_Optimization.md)**: Core Web Vitals diagnostic breakdown, image/font optimizations, and rendering patterns.
