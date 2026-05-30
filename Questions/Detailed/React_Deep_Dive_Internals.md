@@ -1,5 +1,15 @@
 # React Deep Dive: Core Engine & Architecture
 
+Most React developers can build components, manage state, and wire up effects, but few understand what React is actually doing beneath the surface.
+
+- **Why does a deeply nested component tree sometimes make your UI feel sluggish?**
+- **Why does `useEffect` fire after the browser paints, but `useLayoutEffect` fires before?**
+- **Why does `React.memo` skip a re-render in one situation but not another?**
+
+The answers to all of these questions live in React's internals—specifically, in the **Fiber architecture** that was introduced in React 16 and has been the foundation of every major React feature since, including Concurrent Mode, Suspense, `startTransition`, and the React Compiler introduced in React 19.
+
+This guide takes you on a complete journey through React's rendering engine. We start with why the original Stack Reconciler had to be replaced, move through every stage of the Fiber architecture, and end with a deep understanding of the Commit Phase and how effects are run. By the end, you'll have a mental model that makes React's behaviour feel predictable and not magical.
+
 ---
 
 ## Table of Contents
@@ -68,6 +78,10 @@
       - [Phase 2: Commit (Synchronous \& Uninterruptible)](#phase-2-commit-synchronous--uninterruptible)
         - [1. How the Effects List is Compiled (Bottom-Up)](#1-how-the-effects-list-is-compiled-bottom-up)
         - [2. The Commit Phase Execution Loops](#2-the-commit-phase-execution-loops)
+          - [2.1 Before Mutation Phase — Capturing the DOM Snapshot](#21-before-mutation-phase--capturing-the-dom-snapshot)
+          - [2.2 Mutation Phase — Deletions, Placements, and Updates in Order](#22-mutation-phase--deletions-placements-and-updates-in-order)
+          - [2.3 Layout Phase — Why `useLayoutEffect` Runs Before Paint](#23-layout-phase--why-uselayouteffect-runs-before-paint)
+          - [2.4 Passive Effects — Why `useEffect` Runs After Paint](#24-passive-effects--why-useeffect-runs-after-paint)
         - [3. Why the Effects List is Important](#3-why-the-effects-list-is-important)
       - [Phase 3: Browser Paint](#phase-3-browser-paint)
         - [Why This 3-Phase Split Matters to Architects:](#why-this-3-phase-split-matters-to-architects)
@@ -1127,17 +1141,37 @@ graph TD
 
 ##### 2. The Commit Phase Execution Loops
 
-The Commit phase walks the completed **Effects List** and executes updates across three sequential loops (sub-phases):
+The Commit phase walks the completed **Effects List** (or traverses the subtree using `subtreeFlags` in React 18+) and executes updates across three sequential loops. To understand why certain hooks execute when they do, we must examine each sub-phase:
 
-1. **Before Mutation Phase:** Walks the list to execute pre-commit side effects, such as reading the current DOM layout via `getSnapshotBeforeUpdate()`.
-2. **Mutation Phase (DOM Writes):** Walks the list to perform the actual imperative DOM mutations. Unlike the Render Phase where processing order is determined by node visit sequences, the Commit Phase applies mutations in a strict, segregated order:
-   - **`Deletions` Happen First:** Walks the list to detach deleted DOM elements and trigger component unmount cleanup hooks first. Removing old nodes clears the layout space before placing new elements.
-   - **`Placements` Happen Second:** Inserts new DOM nodes (created during `completeWork` in memory) into their correct layout positions in the live tree.
-   - **`Updates` Happen Third:** Applies updates (property modifications, attribute updates, text content changes) to existing elements.
-3. **Layout Phase:** Walks the list to execute layout and post-mutation effects:
-   - Synchronously executes **Layout Effects (`useLayoutEffect`)**. Because these run synchronously before repaint, they block browser painting, allowing layout measurements to occur without visual flickering.
-   - Registers and schedules **Passive Effects (`useEffect`)** to run asynchronously in a post-paint macro-task.
-   - Binds component DOM references (`refs`).
+###### 2.1 Before Mutation Phase — Capturing the DOM Snapshot
+
+Before React changes a single pixel in the actual browser DOM, it runs the **Before Mutation Phase**:
+
+- **Work Performed:** Walks the effects list to execute class component lifecycle methods like `getSnapshotBeforeUpdate()`. This is the last chance for React to read the current layout dimensions (e.g. scroll position) from the real browser DOM before it is altered.
+- **Hook Executions:** None for standard hooks (this phase is primarily for class-based snapshoting or early ref bindings).
+
+###### 2.2 Mutation Phase — Deletions, Placements, and Updates in Order
+
+Next, React enters the **Mutation Phase** where it performs the actual imperative DOM mutations. Unlike the Render Phase, React applies mutations in a strict, segregated order:
+
+1. **Deletions Happen First:** React detaches deleted DOM elements and recursively runs component unmount cleanup functions (`useEffect` cleanups and class `componentWillUnmount` hooks). Detaching nodes first frees up parent layout resources before new components mount.
+2. **Placements Happen Second:** React takes the DOM nodes created in-memory during the `completeWork` phase and inserts them into their correct physical locations in the DOM tree.
+3. **Updates Happen Third:** React updates DOM attributes, values, classes, text node contents, and style properties on existing nodes to match the new state.
+
+###### 2.3 Layout Phase — Why `useLayoutEffect` Runs Before Paint
+
+Once the DOM is updated, React runs the **Layout Phase**:
+
+- **Synchronous Execution:** React synchronously walks the effects list to run the callbacks and cleanup hooks of **`useLayoutEffect`**.
+- **Ref Binding:** React attaches actual DOM node references to your `.current` properties of `useRef`.
+- **Blocking Nature:** Because these callbacks run synchronously _before_ the browser gets to paint the screen, any state updates triggered inside `useLayoutEffect` are flushed in the same tick. The browser will not paint the intermediate state, preventing visual flickering when positioning tooltips, measuring dimensions, or correcting layout shifts.
+
+###### 2.4 Passive Effects — Why `useEffect` Runs After Paint
+
+Finally, React schedules the execution of **Passive Effects (`useEffect`)**:
+
+- **Why After Paint:** If `useEffect` ran synchronously like `useLayoutEffect`, heavy side-effects (like tracking analytics, syncing data, or initiating fetches) would block the main thread and delay the browser paint. This would violate the 16.67ms frame budget and cause visible UI stuttering.
+- **Asynchronous Scheduling:** Instead, React registers the passive effects during the layout phase and hands them over to its custom Scheduler. The Scheduler uses a `MessageChannel` macro-task to queue them to execute asynchronously on the _very next tick_ after the browser has completed its style recalculation, layout reflow, and paint cycles.
 
 ---
 
