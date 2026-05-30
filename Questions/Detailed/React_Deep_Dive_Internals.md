@@ -151,10 +151,6 @@ Here is a quick architectural recap of the key systems that make this rendering 
 
 ---
 
----
-
----
-
 ## 1. What is `useRef` and its deeper role in React?
 
 **Question:** Beyond simple autofocus, what is the core purpose of `useRef`, when should we use it, and how does it relate to the component lifecycle?
@@ -729,10 +725,6 @@ A constructive algorithm can also be heuristic.
 
 ---
 
----
-
----
-
 ## 3. React Fiber Architecture & The Rendering Pipeline
 
 **Question:** What is the significance of React Fiber, and how does it differ from the old stack reconciler?
@@ -1291,10 +1283,6 @@ The Scheduler runs a loop that breaks large tasks into **Time Slices** (normally
 
 ---
 
----
-
----
-
 ## 4. Controlled vs Uncontrolled Components
 
 **Question:** Explain the difference between controlled and uncontrolled components. When would you use each?
@@ -1311,10 +1299,6 @@ Controlled components follow the "Declarative" pattern of React. Uncontrolled co
 
 ---
 
----
-
----
-
 ## 5. React Strict Mode
 
 **Question:** What is the purpose of `<React.StrictMode>` and how does it affect development?
@@ -1327,10 +1311,6 @@ Controlled components follow the "Declarative" pattern of React. Uncontrolled co
 1.  **Double Invocation:** In development, React intentionally double-invokes certain functions (constructor, render, functional component body, `useState` updaters, etc.) to help find side effects that shouldn't be there (i.e., making sure functions are pure).
 2.  **Warning about Legacy APIs:** Warns about `string refs`, `findDOMNode`, and legacy context.
 3.  **Detecting Unexpected Side Effects:** Helps identify code that might cause issues in future Concurrent Mode features.
-
----
-
----
 
 ---
 
@@ -1390,10 +1370,6 @@ No, you should **not** create a separate state variable for `total`.
    const total = todos.length;
    ```
    If the computation is very expensive, you can optimize it using `useMemo` (though a simple `.length` property lookup is extremely cheap and does not need it).
-
----
-
----
 
 ---
 
@@ -1507,10 +1483,6 @@ function useStore(selector) {
 
 ---
 
----
-
----
-
 ## 8. Tricky React Hook & State Scenarios (Senior/Staff Level)
 
 ### Q1: Lazy State Initialization (Function vs. Direct Execution)
@@ -1594,10 +1566,6 @@ React developers removed the warning because:
 
 ---
 
----
-
----
-
 ## 9. The Effect Quiz
 
 ### Q1: The Timing
@@ -1657,10 +1625,6 @@ This prevents race conditions. For example, if an effect fetches data based on `
 1. React first runs the cleanup function of the previous render (where it has access to the _old_ `userId` to abort the old request).
 2. React then runs the new effect (with access to the _new_ `userId` to initiate the new request).
 3. Upon unmounting, the final cleanup runs with the latest rendered state.
-
----
-
----
 
 ---
 
@@ -1749,10 +1713,6 @@ In React, every item returned in a loop must have a unique `key` prop so the rec
 
 ---
 
----
-
----
-
 ## 11. Senior/Staff Level Deep Dive: Context Performance, Suspense Internals, RSC vs. SSR, & Dynamic Chunk Loading
 
 ### Q1: The Context API Re-render Problem & Staff-Level Optimization
@@ -1830,10 +1790,6 @@ In modern frameworks like Next.js, RSCs and Client Components can be mixed. SSR 
 
 ---
 
----
-
----
-
 ## 12. Component Logic Reuse: Custom Hooks vs. HOCs vs. Render Props & Callback Refs
 
 ### Q1: The Evolution of Logic Reuse (Why Hooks Replaced HOCs & Render Props)
@@ -1898,10 +1854,6 @@ Wrapping everything in memoization hooks is a common anti-pattern because **memo
   1. The value or callback is passed to a child component that is wrapped in `React.memo` (so the reference stability actually prevents a render).
   2. The value or callback is used as a dependency in another hook (e.g., in a `useEffect` or `useMemo` dependency array).
   3. The computation is genuinely expensive (e.g., filtering/sorting a large array of objects). A simple map or basic mathematical calculation is faster to calculate than comparing dependencies.
-
----
-
----
 
 ---
 

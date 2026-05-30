@@ -264,10 +264,6 @@ How does wrapping a function in `useCallback` prevent unnecessary execution loop
 
 ---
 
----
-
----
-
 ## 20. System Cheat Sheet: Core React Internals & Timing APIs
 
 To help system architects navigate and audit React's codebase and telemetry patterns, this reference maps every critical runtime concept, utility function, and browser API to its exact role and architectural use case.

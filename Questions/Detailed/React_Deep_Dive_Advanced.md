@@ -394,10 +394,6 @@ On the initial mount of a custom component (e.g., `<MyComponent />`), React does
 
 ---
 
----
-
----
-
 ## 14. Concurrent Transitions & The Fiber Lanes Model
 
 With Fiber acting as the foundation, React 18 introduced **Concurrent Rendering**, enabling the framework to render multiple versions of the UI simultaneously in memory.
@@ -584,10 +580,6 @@ Both hooks utilize the same underlying Lanes model to defer rendering, but they 
 
 ---
 
----
-
----
-
 ## 15. React 19: Compiler, Actions & The `useOptimistic` Rollback Engine
 
 Prior to React 19, devs had to manually manage memoization using `React.memo`, `useMemo`, and `useCallback` to avoid unnecessary rendering overhead.
@@ -685,10 +677,6 @@ In React 19, if a transition callback returns a `Promise`, React treats it as an
 
 ---
 
----
-
----
-
 ## 16. The React 19 `use` Hook (Rules of Hooks Bypass)
 
 ### Q1: What makes the `use` hook unique, and how does it bypass the standard "Rules of Hooks"?
@@ -720,10 +708,6 @@ The React 19 `use` hook avoids this limitation because it **does not store state
   1. It checks the Promise object's attached properties.
   2. Because the Promise is already marked as `"fulfilled"`, it immediately returns the `value` directly from the Promise instance.
   3. No state is stored inside the Fiber's hooks linked list—the data is stored on the Promise object itself, making the hook order irrelevant and permitting conditional calls.
-
----
-
----
 
 ---
 
@@ -865,10 +849,6 @@ graph TD
   4. Record a second heap snapshot.
   5. Use the class filter search to locate **`Detached HTMLDivElement`** (or other elements). If you find detached DOM nodes, it means elements have been deleted from the visible tree but JavaScript variables are still retaining references to them.
   6. Inspect the **Retainers Tree** at the bottom of the pane. Trace the retention path upward. Often, you will find references pointing back to a `FiberNode` via its `memoizedState` (hooks) or from a stale callback closure in a global event listener/subscription (`window.addEventListener`) that was never cleaned up.
-
----
-
----
 
 ---
 
