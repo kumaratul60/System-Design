@@ -63,6 +63,9 @@ This guide provides an in-depth exploration of React's internal architecture, tr
     - [Q7: Why does passing a reference-stable callback via `useCallback` do nothing to prevent child component re-renders if the child is not wrapped in `React.memo`?](#q7-why-does-passing-a-reference-stable-callback-via-usecallback-do-nothing-to-prevent-child-component-re-renders-if-the-child-is-not-wrapped-in-reactmemo)
     - [Q8: Explain the "children as props" rendering bailout optimization. Why does passing a child element as a prop (e.g., `children` or `content={<Child />}`) prevent re-renders, even when the parent component re-renders and the child is NOT wrapped in `React.memo`?](#q8-explain-the-children-as-props-rendering-bailout-optimization-why-does-passing-a-child-element-as-a-prop-eg-children-or-contentchild--prevent-re-renders-even-when-the-parent-component-re-renders-and-the-child-is-not-wrapped-in-reactmemo)
     - [Q9: How does wrapping a function in `useCallback` prevent unnecessary execution loops in `useEffect` hooks?](#q9-how-does-wrapping-a-function-in-usecallback-prevent-unnecessary-execution-loops-in-useeffect-hooks)
+  - [9. System Cheat Sheet: Core React Internals \& Timing APIs](#9-system-cheat-sheet-core-react-internals--timing-apis)
+    - [Core React Internals \& Flags](#core-react-internals--flags)
+    - [Timing Mechanisms: Why React Relies on a Custom MessageChannel Loop](#timing-mechanisms-why-react-relies-on-a-custom-messagechannel-loop)
 
 ## Executive Summary: React's Rendering Engine at a Glance
 
@@ -743,7 +746,7 @@ For a systems architect, theoretical understanding is insufficient. You must ver
 ```mermaid
 graph TD
     A[Audit React Performance] --> B[DevTools Profiling]
-    A --> C[Production Monitoring (RUM)]
+    A --> C["Production Monitoring (RUM)"]
     A --> D[Memory Leak Auditing]
 
     B --> B1[Identify Sync vs. Time-Sliced tasks in Flame Graph]
@@ -944,3 +947,39 @@ graph TD
 >
 > 1. **`useCallback`:** Wrap the function in `useCallback` to preserve its reference across renders, making it safe to put in the dependency array.
 > 2. **In-Effect Definition:** Define the function _inside_ the body of the `useEffect` itself. This removes the function from the component body closure scope, eliminating it from the dependency array entirely.
+
+---
+
+## 9. System Cheat Sheet: Core React Internals & Timing APIs
+
+To help system architects navigate and audit React's codebase and telemetry patterns, this reference maps every critical runtime concept, utility function, and browser API to its exact role and architectural use case.
+
+### Core React Internals & Flags
+
+| Internal Concept / Symbol                   | What It Is                                                                                    | Architectural Purpose & Use Case                                                                        |
+| :------------------------------------------ | :-------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ |
+| **React Reconciler**                        | The engine that calculates Virtual DOM diffs and schedules DOM tree commits.                  | Orchestrates state updates across platforms (React DOM, React Native, React Three Fiber).               |
+| **React Fiber / Fiber Node**                | A heap-allocated object representing a component instance, props, state, and traversal links. | Serves as a virtual stack frame to allow rendering to pause, yield, resume, or be aborted.              |
+| **Lane**                                    | A 32-bit bitmask integer assigning priority levels to specific state updates on a Fiber.      | Enables prioritizing urgent tasks (SyncLane for text inputs) over background loads (TransitionLane).    |
+| **childLanes**                              | A 32-bit bitmask integer aggregating pending updates across a Fiber's descendant subtree.     | Allows the reconciler to skip traversing un-updated subtrees in $O(1)$ time or trace context consumers. |
+| **shouldYield()**                           | A Scheduler utility checking if the current time slice (default 5ms) has expired.             | Protects browser UI responsiveness by pausing the reconciler work loop when the budget is exhausted.    |
+| **Yielding (Yield)**                        | Pausing execution, saving the `workInProgress` pointer, and queuing a resume macro-task.      | Prevents main thread monopolization, allowing the browser to paint and process events mid-render.       |
+| **beginWork(current, WIP, renderLanes)**    | Pre-Order traversal function run on descent (top-down) for each Fiber node.                   | Determines if props/state changed, runs render functions, and creates/reuses child Fibers.              |
+| **completeWork(current, WIP, renderLanes)** | Post-Order traversal function run on ascent (bottom-up) from leaf nodes.                      | Instantiates host DOM elements off-screen, attaches listeners, and compiles effect flags.               |
+| **fiber.flags** _(formerly effectTag)_      | A bitmask flag tracking pending side-effects (e.g., Placement, Update, Deletion) on a Fiber.  | Serves as the precise execution instruction list for the synchronous Commit Phase.                      |
+| **subtreeFlags** _(bubble-up Effects)_      | A bitmask flag compiling all pending descendant side-effects into the parent node.            | Bypasses traversing clean sibling branches during the Commit Phase, targeting only dirty nodes.         |
+| **startTransition**                         | An API that schedules state updates on a low-priority `TransitionLane`.                       | Marks updates as non-urgent so that rendering loops yield instantly to any high-priority updates.       |
+| **PerformanceObserver / observer**          | A native browser API that captures Real-User Monitoring (RUM) performance metrics.            | Programmatically audits Interaction to Next Paint (INP) and First Input Delay (FID) in production.      |
+
+---
+
+### Timing Mechanisms: Why React Relies on a Custom MessageChannel Loop
+
+To support cooperative rendering, React must yield to the browser's main thread to allow layout, painting, and user input processing. The table below details why React rejected native timing functions in favor of a custom scheduling loop:
+
+| API / Mechanism                   | How It Schedules Work                                                             | Limitations for Concurrent React                                                                                                                   | Why React Rejected or Chose It                                                                                                                                        |
+| :-------------------------------- | :-------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`requestIdleCallback` (rIC)**   | Runs low-priority callbacks during the browser's idle periods at the frame's end. | - No Safari support.<br>- Fires infrequently during animations/scrolling, capping FPS at 20fps.<br>- Coarse timing control.                        | **REJECTED:** Too inconsistent across browsers and lacks fine-grained timing resolution.                                                                              |
+| **`setTimeout(fn, 0)`**           | Queues a macro-task at the end of the browser's event queue.                      | - Browsers throttle nested `setTimeout` calls to a **minimum 4ms clamp** (HTML5 spec).<br>- Adds 4ms of wasted delay per yield, creating huge lag. | **REJECTED:** The 4ms penalty adds up to massive overhead over multiple consecutive render slices.                                                                    |
+| **`requestAnimationFrame` (rAF)** | Runs code exactly once per frame, right before style/layout and paint.            | - Tied strictly to frame painting (16.67ms at 60Hz).<br>- Blocks the paint cycle if JS takes too long, causing visual stuttering.                  | **REJECTED:** Cannot be used to schedule intermediate JS chunks within a single frame's execution.                                                                    |
+| **`MessageChannel`**              | Creates dual-port communication. Posting a message schedules a macro-task.        | - Must be carefully wrapped to avoid scheduling overhead.                                                                                          | **CHOSEN:** Schedules macro-tasks immediately without the 4ms clamping penalty, allowing the browser to paint and process user input before executing the next slice. |
