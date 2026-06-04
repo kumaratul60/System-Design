@@ -1,0 +1,207 @@
+import React, { useState, useEffect } from "react";
+import { usePropDrillingState } from "@statelab/state-engines";
+import { translate } from "@statelab/theme";
+import { CheckCircle2, Circle, ClipboardList, Plus, RefreshCw, Trash2, Lock } from "lucide-react";
+import type { Todo, AppUser } from "@statelab/state-engines";
+
+// --- Types & Interfaces for Prop Drilling ---
+interface TodoItemProps {
+  todo: Todo;
+  user: AppUser | null;
+  language: string;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
+}
+
+interface TodoListProps {
+  todos: Todo[];
+  user: AppUser | null;
+  language: string;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
+}
+
+interface TodoFormProps {
+  language: string;
+  onAdd: (title: string) => void;
+}
+
+// --- Data Layer: Custom Hook ---
+export function usePropDrillingTodo() {
+  const state = usePropDrillingState();
+  const [newTodoTitle, setNewTodoTitle] = useState("");
+
+  // Fetch initial todos if empty
+  useEffect(() => {
+    if (state.todos.length === 0) {
+      state.fetchTodos();
+    }
+  }, [state]);
+
+  const handleAddTodo = (title: string) => {
+    state.addTodo(title);
+  };
+
+  const welcomeMessage = state.user
+    ? translate(state.language, "welcomeUser", {
+        username: state.user.username,
+        role: state.user.role === "ADMIN" ? translate(state.language, "roleAdmin") : translate(state.language, "roleUser"),
+      })
+    : "";
+
+  return {
+    state,
+    newTodoTitle,
+    setNewTodoTitle,
+    handleAddTodo,
+    welcomeMessage,
+  };
+}
+
+// --- UI Presentation Components ---
+
+// Leaf Node: TodoItem
+const TodoItem: React.FC<TodoItemProps> = ({ todo, user, language, onToggle, onDelete }) => {
+  const isAdmin = user?.role === "ADMIN";
+
+  return (
+    <li className={`todo-item ${todo.completed ? "completed" : ""}`}>
+      <button
+        onClick={() => onToggle(todo.id)}
+        className="todo-toggle-btn"
+        aria-label="Toggle task completion status"
+      >
+        {todo.completed ? (
+          <CheckCircle2 className="todo-toggle-icon completed-icon" size={22} />
+        ) : (
+          <Circle className="todo-toggle-icon pending-icon" size={22} />
+        )}
+      </button>
+      <span className="todo-title-text">{todo.title}</span>
+      {isAdmin ? (
+        <button
+          onClick={() => onDelete(todo.id)}
+          className="todo-delete-btn"
+          title={translate(language as any, "deleteButton")}
+          aria-label="Delete task"
+        >
+          <Trash2 size={18} />
+        </button>
+      ) : (
+        <button
+          className="todo-delete-btn disabled"
+          disabled
+          title={translate(language as any, "deleteRestricted")}
+          aria-label="Delete task restricted"
+        >
+          <Lock size={16} />
+        </button>
+      )}
+    </li>
+  );
+};
+
+// Intermediate Component: TodoList
+const TodoList: React.FC<TodoListProps> = ({ todos, user, language, onToggle, onDelete }) => {
+  if (todos.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>No tasks inside the active state engine registry. Create some above!</p>
+      </div>
+    );
+  }
+
+  return (
+    <ul className="todos-list">
+      {todos.map((todo) => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          user={user}
+          language={language}
+          onToggle={onToggle}
+          onDelete={onDelete}
+        />
+      ))}
+    </ul>
+  );
+};
+
+// Component: TodoForm
+const TodoForm: React.FC<TodoFormProps> = ({ language, onAdd }) => {
+  const [title, setTitle] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    onAdd(title.trim());
+    setTitle("");
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="add-todo-form">
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder={translate(language as any, "addTodoPlaceholder")}
+        className="text-input todo-input"
+        required
+      />
+      <button type="submit" className="btn btn-primary add-btn">
+        <Plus size={18} />
+        <span>{translate(language as any, "addButton")}</span>
+      </button>
+    </form>
+  );
+};
+
+// Main Feature Wrapper
+export const PropDrillingTodo: React.FC = () => {
+  const { state, handleAddTodo, welcomeMessage } = usePropDrillingTodo();
+
+  return (
+    <div className="page-container todos-page">
+      <div className="welcome-banner">
+        <h2 className="welcome-text">{welcomeMessage}</h2>
+      </div>
+
+      <div className="todos-card-wrapper">
+        <div className="todos-card-header">
+          <div className="todos-header-title">
+            <ClipboardList className="todos-title-icon" />
+            <h3>Engine 1: Prop Drilling</h3>
+          </div>
+          <button
+            onClick={() => state.fetchTodos()}
+            className="btn btn-secondary fetch-btn"
+            disabled={state.isLoadingTodos}
+            title={translate(state.language, "refreshApiData")}
+          >
+            <RefreshCw className={`fetch-icon ${state.isLoadingTodos ? "spinning" : ""}`} size={16} />
+            <span className="btn-text">{translate(state.language, "refreshApiData")}</span>
+          </button>
+        </div>
+
+        <TodoForm language={state.language} onAdd={handleAddTodo} />
+
+        {state.isLoadingTodos ? (
+          <div className="loading-state">
+            <RefreshCw className="loading-spinner spinning" size={32} />
+            <p>{translate(state.language, "loading")}</p>
+          </div>
+        ) : (
+          <div className="todos-list-container">
+            <TodoList
+              todos={state.todos}
+              user={state.user}
+              language={state.language}
+              onToggle={state.toggleTodo}
+              onDelete={state.deleteTodo}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

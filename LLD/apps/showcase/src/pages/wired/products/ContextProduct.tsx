@@ -1,0 +1,170 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { translate } from "@statelab/theme";
+import { Trash2, Lock, ShoppingBag, RefreshCw } from "lucide-react";
+import type { AppUser } from "@statelab/state-engines";
+
+// --- Types & Interfaces ---
+interface Product {
+  id: number;
+  title: string;
+  category: string;
+  price: number;
+  thumbnail: string;
+}
+
+interface ProductContextType {
+  products: Product[];
+  isLoading: boolean;
+  error: string | null;
+  deleteProduct: (id: number) => void;
+  fetchProducts: () => Promise<void>;
+}
+
+// Create the Context
+const ProductContext = createContext<ProductContextType | undefined>(undefined);
+
+// --- Custom Provider Component ---
+const ProductProvider: React.FC<{ language: string; children: React.ReactNode }> = ({
+  language,
+  children,
+}) => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProducts = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("https://dummyjson.com/products?limit=5");
+      if (!response.ok) throw new Error("Failed to load products");
+      const data = await response.json();
+      setProducts(data.products || []);
+    } catch {
+      setError(translate(language as any, "fetchProductsError"));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [language]);
+
+  const deleteProduct = (id: number) => {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  return (
+    <ProductContext.Provider value={{ products, isLoading, error, deleteProduct, fetchProducts }}>
+      {children}
+    </ProductContext.Provider>
+  );
+};
+
+// --- Data Layer: Custom Hook ---
+export function useContextProductLogic() {
+  const context = useContext(ProductContext);
+  if (!context) {
+    throw new Error("useContextProductLogic must be used within a ProductProvider");
+  }
+  return context;
+}
+
+// Inner presentation layout
+const ContextProductInner: React.FC<{ user: AppUser | null; language: string }> = ({
+  user,
+  language,
+}) => {
+  const navigate = useNavigate();
+  const { products, isLoading, error, deleteProduct, fetchProducts } = useContextProductLogic();
+  const isAdmin = user?.role === "ADMIN";
+
+  return (
+    <div className="page-container products-page">
+      <div className="todos-card-header">
+        <div className="todos-header-title">
+          <ShoppingBag className="todos-title-icon" />
+          <h3>Products Catalog (Engine 3: Context API Bus)</h3>
+        </div>
+        <button onClick={fetchProducts} className="btn btn-secondary fetch-btn" disabled={isLoading}>
+          <RefreshCw className={`fetch-icon ${isLoading ? "spinning" : ""}`} size={16} />
+          <span className="btn-text">Reset Feed</span>
+        </button>
+      </div>
+
+      {isLoading ? (
+        <div className="loading-state">
+          <RefreshCw className="loading-spinner spinning" size={32} />
+          <p>{translate(language as any, "loading")}</p>
+        </div>
+      ) : error ? (
+        <div className="empty-state">
+          <p className="danger-text">{error}</p>
+          <button onClick={fetchProducts} className="btn btn-secondary mt-2">
+            Retry Load
+          </button>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="empty-state">
+          <p>No products found in catalog feed.</p>
+        </div>
+      ) : (
+        <div className="products-grid">
+          {products.map((prod) => (
+            <div key={prod.id} className="product-card">
+              <div onClick={() => navigate(`/products/${prod.id}`)} className="product-card-clickable-area">
+                <img src={prod.thumbnail} alt={prod.title} className="product-image" />
+                <div className="product-info-top">
+                  <span className="product-category">{prod.category}</span>
+                  <h4 className="product-title" title={prod.title}>
+                    {prod.title}
+                  </h4>
+                </div>
+              </div>
+
+              <div className="product-card-footer-area">
+                <div className="product-footer">
+                  <span className="product-price">${prod.price}</span>
+
+                  {isAdmin ? (
+                    <button
+                      onClick={() => deleteProduct(prod.id)}
+                      className="todo-delete-btn"
+                      title={translate(language as any, "deleteButton")}
+                      aria-label="Delete product"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  ) : (
+                    <button
+                      className="todo-delete-btn disabled"
+                      disabled
+                      title={translate(language as any, "deleteRestricted")}
+                      aria-label="Delete product blocked"
+                    >
+                      <Lock size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Exported component wrapped with Provider
+export const ContextProduct: React.FC<{ user: AppUser | null; language: string }> = ({
+  user,
+  language,
+}) => {
+  return (
+    <ProductProvider language={language}>
+      <ContextProductInner user={user} language={language} />
+    </ProductProvider>
+  );
+};

@@ -1,0 +1,16 @@
+{
+  "name": "showcase",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@statelab/theme": "*",
+    "@statelab/state-engines": "*",
+    "@statelab/ui": "*"
+  }
+}
