@@ -89,7 +89,7 @@ graph TD
     StateMgr -->|5. Apply Dynamic Conditions| UI
 ```
 
-#### Practical CDUI Implementation Example
+#### 💻 Practical CDUI Implementation Example
 
 Here is a real-world scenario modeling a dynamic checkout payment selector. Depending on the `payment_method` selected, the UI should conditionally show either a `Card Number` text input or an `IBAN` text input.
 
@@ -251,9 +251,10 @@ class FormRenderer {
         const comp = ComponentRegistry.resolve(child.type, child.properties, child.style || {});
         return comp.render(this.state, (val) => this.onFieldUpdate(child.id, val));
       })
-      .join("\n");
+      .join('\n');
   }
 }
+```
 
 #### ⚠️ BDUI Grill-Hardened Edge Cases & Failure Modes (Staff Nuance)
 
@@ -290,13 +291,30 @@ When designing a production-grade Backend-Driven UI platform, senior and staff e
 
 ## 🗺️ The LLD Learning Roadmap
 
----
+Here is the structured roadmap to master Low-Level Design (LLD) and Object-Oriented Design (OOD), progressing from core principles to high-throughput, staff-level execution:
 
-## 🟢 1. The Beginner (Bigi) Level
+```mermaid
+graph TD
+    classDef begin fill:#e6f9ec,stroke:#2ecc71,stroke-width:2px;
+    classDef mid fill:#fffde6,stroke:#f1c40f,stroke-width:2px;
+    classDef senior fill:#fff0e6,stroke:#e67e22,stroke-width:2px;
+    classDef staff fill:#fae6fa,stroke:#9b59b6,stroke-width:2px;
+
+    P1["🟢 Phase 1: Beginner Level (OOP, Clean Code)"]:::begin
+    P2["🟡 Phase 2: Mid-Level (SOLID, GoF Patterns)"]:::mid
+    P3["🟠 Phase 3: Senior Level (Concurrency, DDD, API Design)"]:::senior
+    P4["🟣 Phase 4: Staff Level (Lock-Free, DSLs, Plugin Arch)"]:::staff
+
+    P1 --> P2
+    P2 --> P3
+    P3 --> P4
+```
+
+### 🟢 Phase 1: Beginner Level
 
 _Focus: Mastering syntax, basic Object-Oriented principles, and clean-coding fundamentals._
 
-### Key Concepts
+#### Key Concepts
 
 - **The 4 Pillars of OOP:**
   - **Encapsulation:** Hiding internal state via private fields and exposing control via public methods (getters/setters).
@@ -307,25 +325,25 @@ _Focus: Mastering syntax, basic Object-Oriented principles, and clean-coding fun
 - **Basic Class Relationships:** Association, Aggregation, and Composition.
 - **Unit Testing Intro:** Writing basic test cases using assertions.
 
-### How to Learn & Practice
+#### How to Learn & Practice
 
 - **Read:** _Clean Code_ (Chapters 1–5) by Robert C. Martin.
 - **Exercise:** Write a program and force yourself to keep functions under 15 lines and classes under 150 lines.
 - **Tools:** Configure a linter and formatter (e.g., Prettier, ESLint, or your IDE's auto-format rules).
 
-### Implementation Projects
+#### Implementation Projects
 
-1.  **Parking Lot (Basic):** Model a parking lot with spots for motorcycles, cars, and buses. Keep track of occupied spots.
-2.  **Library Management System:** Model books, members, librarians, and basic borrowing operations.
-3.  **Tic-Tac-Toe Console Game:** Model the board, players, and win-checking logic using strict OOP principles.
+1. **Parking Lot (Basic):** Model a parking lot with spots for motorcycles, cars, and buses. Keep track of occupied spots.
+2. **Library Management System:** Model books, members, librarians, and basic borrowing operations.
+3. **Tic-Tac-Toe Console Game:** Model the board, players, and win-checking logic using strict OOP principles.
 
 ---
 
-## 🟡 2. The Mid-level
+### 🟡 Phase 2: Mid-Level
 
 _Focus: Writing extensible, maintainable, and testable code using SOLID principles and Design Patterns._
 
-### Key Concepts
+#### Key Concepts
 
 - **SOLID Principles:**
   - **SRP (Single Responsibility):** A class should have one, and only one, reason to change.
@@ -340,25 +358,25 @@ _Focus: Writing extensible, maintainable, and testable code using SOLID principl
 - **Refactoring & Code Smells:** Identifying long methods, duplicate code, switch statement abuse, and applying refactoring recipes.
 - **Mocking & Stubbing:** Writing unit tests with isolated external dependencies.
 
-### How to Learn & Practice
+#### How to Learn & Practice
 
 - **Read:** _Head First Design Patterns_ (great for practical examples) or _Refactoring_ by Martin Fowler.
 - **Exercise:** Pick a legacy block of code containing nested `if/else` or `switch` statements and refactor it using the **Strategy** or **State** pattern.
 - **Study:** Study how standard libraries use patterns (e.g., Java's `InputStream` decorator pattern, JavaScript's event listener observer pattern).
 
-### Implementation Projects
+#### Implementation Projects
 
-1.  **Vending Machine:** Implement a vending machine state machine (Idle, HasMoney, Dispensing, OutOfStock) using the **State Pattern**.
-2.  **Splitwise (Basic Expense Sharing):** Design classes for Users, Groups, and Expenses (Equal, Exact, Percent) using the **Strategy Pattern**.
-3.  **Movie Ticket Booking System:** Design the booking flow, seat configurations, and pricing engines.
+1. **Vending Machine:** Implement a vending machine state machine (Idle, HasMoney, Dispensing, OutOfStock) using the **State Pattern**.
+2. **Splitwise (Basic Expense Sharing):** Design classes for Users, Groups, and Expenses (Equal, Exact, Percent) using the **Strategy Pattern**.
+3. **Movie Ticket Booking System:** Design the booking flow, seat configurations, and pricing engines.
 
 ---
 
-## 🟠 3. The Senior Level
+### 🟠 Phase 3: Senior Level
 
 _Focus: Designing for high concurrency, robust API contracts, domain boundaries, and runtime performance._
 
-### Key Concepts
+#### Key Concepts
 
 - **Low-Level Concurrency:**
   - **Thread Safety:** Race conditions, critical sections, and mutual exclusion.
@@ -376,26 +394,26 @@ _Focus: Designing for high concurrency, robust API contracts, domain boundaries,
   - Object pooling (reusing objects to reduce Garbage Collection pressure).
   - Data Locality & CPU Cache-friendly layouts (structs vs. classes in memory).
 
-### How to Learn & Practice
+#### How to Learn & Practice
 
 - **Read:** _Effective Java_ (Joshua Bloch), _Domain-Driven Design_ (Eric Evans), or language-specific concurrency manuals.
 - **Exercise:** Write a highly concurrent program and run thread-sanitizers to detect race conditions.
 - **Study:** Look at the source code of production-grade libraries (e.g., the internals of Redux, Spring Container, or a Web Server router).
 
-### Implementation Projects
+#### Implementation Projects
 
-1.  **In-Memory Cache Library:** Design a thread-safe cache with eviction policies (LRU, LFU, TTL) supporting concurrent reads and writes without global locks.
-2.  **Distributed Message Queue (Local Internals):** Model topics, partitions, producers, and consumers with offsets, ensuring correct concurrent access.
-3.  **Log Aggregator Framework:** Design an extensible logging framework that asynchronously flushes logs to console, file, and network endpoints using a thread-safe ring buffer.
-4.  **Config-Driven Form Engine:** Model a schema parser, dependency resolver (conditions like `visibleIf`), validation engine, and component renderer for custom forms defined by a dynamic JSON structure.
+1. **In-Memory Cache Library:** Design a thread-safe cache with eviction policies (LRU, LFU, TTL) supporting concurrent reads and writes without global locks.
+2. **Distributed Message Queue (Local Internals):** Model topics, partitions, producers, and consumers with offsets, ensuring correct concurrent access.
+3. **Log Aggregator Framework:** Design an extensible logging framework that asynchronously flushes logs to console, file, and network endpoints using a thread-safe ring buffer.
+4. **Config-Driven Form Engine:** Model a schema parser, dependency resolver (conditions like `visibleIf`), validation engine, and component renderer for custom forms defined by a dynamic JSON structure.
 
 ---
 
-## 🟣 4. The Staff Level
+### 🟣 Phase 4: Staff Level
 
 _Focus: Setting architectural standards, lock-free engine design, metamodeling, and runtime environments._
 
-### Key Concepts
+#### Key Concepts
 
 - **Lock-Free & Wait-Free Algorithms:**
   - **CAS (Compare-And-Swap) operations:** Using atomic CPU primitives instead of OS-level locks.
@@ -411,17 +429,17 @@ _Focus: Setting architectural standards, lock-free engine design, metamodeling, 
   - Drafting **Architecture Decision Records (ADRs)** and RFCs for low-level library updates.
   - Defining automated static analysis rules (e.g., ArchUnit) to enforce package structure boundaries.
 
-### How to Learn & Practice
+#### How to Learn & Practice
 
 - **Read:** _Enterprise Integration Patterns_ (Gregor Hohpe) and studies on lock-free structures (e.g., Maurice Herlihy's _The Art of Multiprocessor Programming_).
 - **Exercise:** Build a high-throughput queue using CAS (Compare-And-Swap) and benchmark it against synchronized locks.
 - **Study:** Read the source code of high-performance libraries like Netty, LMAX Disruptor, or Go's Scheduler.
 
-### Implementation Projects
+#### Implementation Projects
 
-1.  **Custom DSL Rules Engine:** Design a text-based rules parser (e.g., `IF user.age > 18 AND user.country == 'US' THEN ALLOW`) that compiles into executable AST nodes.
-2.  **Lock-Free Concurrent Queue:** Write a lock-free queue using CAS, and verify its correctness under high thread contention.
-3.  **Plugin-Driven Extensible Web Gateway:** Design a gateway where routing, logging, and rate-limiting modules are dynamically loaded, isolated, and updated at runtime.
+1. **Custom DSL Rules Engine:** Design a text-based rules parser (e.g., `IF user.age > 18 AND user.country == 'US' THEN ALLOW`) that compiles into executable AST nodes.
+2. **Lock-Free Concurrent Queue:** Write a lock-free queue using CAS, and verify its correctness under high thread contention.
+3. **Plugin-Driven Extensible Web Gateway:** Design a gateway where routing, logging, and rate-limiting modules are dynamically loaded, isolated, and updated at runtime.
 
 ---
 
