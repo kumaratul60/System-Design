@@ -22,6 +22,7 @@ import {
   LockKeyhole,
   Activity,
   Palette,
+  Plus,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Home } from "./pages/Home";
@@ -55,6 +56,7 @@ import { Notepad } from "./pages/interview/Notepad";
 import { PasswordChecker } from "./pages/interview/PasswordChecker";
 import { ScrollTracker } from "./pages/interview/ScrollTracker";
 import { ThemeSwitchShowcase } from "./pages/interview/ThemeSwitchShowcase";
+import Counter from "./pages/Counter";
 
 import type { translations } from "@statelab/theme";
 
@@ -262,6 +264,14 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navThemeSwitch",
     icon: Palette,
+  },
+  {
+    path: "/interview/counter",
+    element: Counter,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navCounter",
+    icon: Plus,
   },
   {
     path: "/admin",

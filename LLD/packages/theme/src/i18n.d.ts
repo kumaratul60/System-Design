@@ -23,6 +23,7 @@ export declare const translations: {
         navTimer: string;
         navVirtualization: string;
         navCalculator: string;
+        navCounter: string;
         navNotepad: string;
         navPasswordChecker: string;
         navScrollTracker: string;
@@ -82,6 +83,7 @@ export declare const translations: {
         navTimer: string;
         navVirtualization: string;
         navCalculator: string;
+        navCounter: string;
         navNotepad: string;
         navPasswordChecker: string;
         navScrollTracker: string;
@@ -141,6 +143,7 @@ export declare const translations: {
         navTimer: string;
         navVirtualization: string;
         navCalculator: string;
+        navCounter: string;
         navNotepad: string;
         navPasswordChecker: string;
         navScrollTracker: string;
