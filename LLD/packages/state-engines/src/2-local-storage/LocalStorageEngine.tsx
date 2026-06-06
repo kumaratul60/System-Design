@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import type { AppState, AppUser, Theme, Language, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
+import {
+  getInitialTheme,
+  getInitialLanguage,
+  getInitialUser
+} from "../storageHelpers";
 
 export const useLocalStorageState = (): AppState => {
   // Helper to load from localStorage
@@ -16,9 +21,9 @@ export const useLocalStorageState = (): AppState => {
     return defaultValue;
   };
 
-  const [theme, setThemeState] = useState<Theme>(() => getStorageValue<Theme>("lld_theme", "light"));
-  const [language, setLanguageState] = useState<Language>(() => getStorageValue<Language>("lld_language", "en"));
-  const [user, setUserState] = useState<AppUser | null>(() => getStorageValue<AppUser | null>("lld_user", null));
+  const [theme, setThemeState] = useState<Theme>(() => getInitialTheme());
+  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
+  const [user, setUserState] = useState<AppUser | null>(() => getInitialUser());
   const [todos, setTodosState] = useState<Todo[]>(() => getStorageValue<Todo[]>("lld_todos", []));
   const [isLoadingTodos, setIsLoadingTodos] = useState<boolean>(false);
 
@@ -41,7 +46,7 @@ export const useLocalStorageState = (): AppState => {
 
   const logout = () => {
     setUserState(null);
-    localStorage.removeItem("lld_user");
+    localStorage.setItem("lld_user", "null");
   };
 
   const addTodo = (title: string) => {

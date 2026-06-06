@@ -23,6 +23,7 @@ import {
   Activity,
   Palette,
   Plus,
+  Network,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Home } from "./pages/Home";
@@ -57,6 +58,7 @@ import { PasswordChecker } from "./pages/interview/PasswordChecker";
 import { ScrollTracker } from "./pages/interview/ScrollTracker";
 import { ThemeSwitchShowcase } from "./pages/interview/ThemeSwitchShowcase";
 import Counter from "./pages/Counter";
+import { FiberWorkloop } from "./pages/interview/FiberWorkloop";
 
 import type { translations } from "@statelab/theme";
 
@@ -272,6 +274,14 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navCounter",
     icon: Plus,
+  },
+  {
+    path: "/interview/fiber-workloop",
+    element: FiberWorkloop,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navFiberWorkloop",
+    icon: Network,
   },
   {
     path: "/admin",

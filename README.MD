@@ -20,6 +20,9 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [8. Interview \& Concept Deep Dives](#8-interview--concept-deep-dives)
     - [9. Web Fundamentals](#9-web-fundamentals)
     - [10. Low-Level Design (LLD) \& Object-Oriented Design](#10-low-level-design-lld--object-oriented-design)
+  - [🛠️ Quick Start \& Local Development](#️-quick-start--local-development)
+    - [Development scripts:](#development-scripts)
+  - [🤝 Contributing](#-contributing)
   - [🔗 Useful Resources](#-useful-resources)
 
 ---
@@ -170,6 +173,42 @@ A comprehensive guide to writing clean, modular, extensible, and high-performanc
 - **SOLID & GoF Design Patterns:** Creational, Structural, and Behavioral patterns with real-world scenarios.
 - **Advanced Concurrency & DDD:** Thread-safe architectures, object pooling, and domain boundary isolation.
 - **High-Performance Primitives:** Lock-free structures (CAS), CPU cache lines, custom DSL engines, and LLD governance.
+
+---
+
+## 🛠️ Quick Start & Local Development
+
+This repository contains both theoretical documentation and an interactive, real-time **State Management & LLD Showcase Application** under the `LLD` directory.
+
+To run the interactive laboratory and feature showcase locally:
+
+1. **Prerequisites:** Make sure you have [Node.js](https://nodejs.org/) (v18+) and `npm` installed.
+2. **Navigate to the LLD project folder:**
+   ```bash
+   cd LLD
+   ```
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+4. **Start the local development server:**
+   ```bash
+   npm run dev
+   ```
+5. **Open your browser:** Visit `http://localhost:5173` (or the port specified in your terminal, e.g. `http://localhost:5174`) to interact with the showcase!
+
+### Development scripts:
+
+- `npm run dev` - Start local development server (Vite-powered showcase app).
+- `npm run lint` - Run ESLint checks across the codebase.
+- `npm run typecheck` - Run TypeScript compiler checks.
+- `npm run build` - Compile production-ready bundles for all apps and packages in the monorepo workspace.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Whether you are fixing bugs, improving documentation, adding new design patterns, or introducing new interactive modules, please check out our [CONTRIBUTING.md](./CONTRIBUTING.md) guide to get started.
 
 ---
 

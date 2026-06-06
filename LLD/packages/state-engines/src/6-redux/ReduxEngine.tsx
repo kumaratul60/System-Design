@@ -3,6 +3,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppState, AppUser, Theme, Language, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
+import {
+  getInitialTheme,
+  getInitialLanguage,
+  getInitialUser,
+  setStorageTheme,
+  setStorageLanguage,
+  setStorageUser
+} from "../storageHelpers";
 
 interface ReduxState {
   theme: Theme;
@@ -13,9 +21,9 @@ interface ReduxState {
 }
 
 const initialState: ReduxState = {
-  theme: "light",
-  language: "en",
-  user: null,
+  theme: getInitialTheme(),
+  language: getInitialLanguage(),
+  user: getInitialUser(),
   todos: [],
   isLoadingTodos: false
 };
@@ -83,10 +91,23 @@ export const useReduxEngine = (): AppState => {
   const todos = useSelector((state: RootState) => state.app.todos);
   const isLoadingTodos = useSelector((state: RootState) => state.app.isLoadingTodos);
 
-  const setTheme = (t: Theme) => dispatch(appActions.setTheme(t));
-  const setLanguage = (l: Language) => dispatch(appActions.setLanguage(l));
-  const login = (username: string, role: "USER" | "ADMIN") => dispatch(appActions.login({ username, role }));
-  const logout = () => dispatch(appActions.logout());
+  const setTheme = (t: Theme) => {
+    dispatch(appActions.setTheme(t));
+    setStorageTheme(t);
+  };
+  const setLanguage = (l: Language) => {
+    dispatch(appActions.setLanguage(l));
+    setStorageLanguage(l);
+  };
+  const login = (username: string, role: "USER" | "ADMIN") => {
+    const newUser = { username, role };
+    dispatch(appActions.login(newUser));
+    setStorageUser(newUser);
+  };
+  const logout = () => {
+    dispatch(appActions.logout());
+    setStorageUser(null);
+  };
   const addTodo = (title: string) => dispatch(appActions.addTodo(title));
   const toggleTodo = (id: number) => dispatch(appActions.toggleTodo(id));
   const deleteTodo = (id: number) => dispatch(appActions.deleteTodo(id));

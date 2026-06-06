@@ -1,15 +1,23 @@
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
-import type { AppState, AppUser, Theme, Language, Todo } from "../types";
+import type { AppState, Theme, Language, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
+import {
+  getInitialTheme,
+  getInitialLanguage,
+  getInitialUser,
+  setStorageTheme,
+  setStorageLanguage,
+  setStorageUser
+} from "../storageHelpers";
 
 export const appMachine = createMachine({
   id: "app",
   initial: "idle",
   context: {
-    theme: "light" as Theme,
-    language: "en" as Language,
-    user: null as AppUser | null,
+    theme: getInitialTheme(),
+    language: getInitialLanguage(),
+    user: getInitialUser(),
     todos: [] as Todo[],
     isLoadingTodos: false
   },
@@ -108,10 +116,22 @@ export const useXStateEngine = (): AppState => {
   const [state, send] = useMachine(appMachine);
   const context = state.context;
 
-  const setTheme = (theme: Theme) => send({ type: "SET_THEME", theme });
-  const setLanguage = (language: Language) => send({ type: "SET_LANGUAGE", language });
-  const login = (username: string, role: "USER" | "ADMIN") => send({ type: "LOGIN", username, role });
-  const logout = () => send({ type: "LOGOUT" });
+  const setTheme = (theme: Theme) => {
+    send({ type: "SET_THEME", theme });
+    setStorageTheme(theme);
+  };
+  const setLanguage = (language: Language) => {
+    send({ type: "SET_LANGUAGE", language });
+    setStorageLanguage(language);
+  };
+  const login = (username: string, role: "USER" | "ADMIN") => {
+    send({ type: "LOGIN", username, role });
+    setStorageUser({ username, role });
+  };
+  const logout = () => {
+    send({ type: "LOGOUT" });
+    setStorageUser(null);
+  };
   const addTodo = (title: string) => send({ type: "ADD_TODO", title });
   const toggleTodo = (id: number) => send({ type: "TOGGLE_TODO", id });
   const deleteTodo = (id: number) => send({ type: "DELETE_TODO", id });

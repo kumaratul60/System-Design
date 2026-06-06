@@ -59,9 +59,22 @@ const EngineManagerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const activeState = getActiveState();
 
+  console.log("[EngineManager] Render. ActiveEngine:", activeEngine, {
+    "activeState.theme": activeState.theme,
+    "activeState.language": activeState.language,
+    "activeState.user": activeState.user,
+    "propDrillingState.theme": propDrillingState.theme,
+    "localStorageState.theme": localStorageState.theme,
+    "contextApiState.theme": contextApiState.theme,
+    "xstateEngineState.theme": xstateEngineState.theme,
+    "zustandEngineState.theme": zustandEngineState.theme,
+    "reduxEngineState.theme": reduxEngineState.theme,
+  });
+
   // Synchronize CSS custom properties (Theme) dynamically on the document root
   useEffect(() => {
     const root = document.documentElement;
+    console.log("[EngineManager] Syncing theme class to documentRoot. Theme:", activeState.theme);
     if (activeState.theme === "dark") {
       root.classList.add("dark");
       root.style.setProperty("--bg", "#121214");
@@ -84,19 +97,27 @@ const EngineManagerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const syncTheme = activeState.theme;
     const syncLang = activeState.language;
 
+    console.log("[EngineManager] Sync theme/language effect triggered. Target theme:", syncTheme, "Target lang:", syncLang);
+
     // Direct mutators to keep UI consistent during engine switching
     const states = [
-      propDrillingState,
-      localStorageState,
-      contextApiState,
-      xstateEngineState,
-      zustandEngineState,
-      reduxEngineState
+      { name: "propDrillingState", s: propDrillingState },
+      { name: "localStorageState", s: localStorageState },
+      { name: "contextApiState", s: contextApiState },
+      { name: "xstateEngineState", s: xstateEngineState },
+      { name: "zustandEngineState", s: zustandEngineState },
+      { name: "reduxEngineState", s: reduxEngineState }
     ];
 
-    states.forEach((s) => {
-      if (s.theme !== syncTheme) s.setTheme(syncTheme);
-      if (s.language !== syncLang) s.setLanguage(syncLang);
+    states.forEach(({ name, s }) => {
+      if (s.theme !== syncTheme) {
+        console.log(`[EngineManager] Sync mismatch. Setting ${name} theme to:`, syncTheme);
+        s.setTheme(syncTheme);
+      }
+      if (s.language !== syncLang) {
+        console.log(`[EngineManager] Sync mismatch. Setting ${name} language to:`, syncLang);
+        s.setLanguage(syncLang);
+      }
     });
   }, [
     activeEngine,
@@ -113,23 +134,26 @@ const EngineManagerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Synchronize the authenticated user state across all stores
   useEffect(() => {
     const syncUser = activeState.user;
+    console.log("[EngineManager] Sync user effect triggered. Target user:", syncUser);
 
     const states = [
-      propDrillingState,
-      localStorageState,
-      contextApiState,
-      xstateEngineState,
-      zustandEngineState,
-      reduxEngineState
+      { name: "propDrillingState", s: propDrillingState },
+      { name: "localStorageState", s: localStorageState },
+      { name: "contextApiState", s: contextApiState },
+      { name: "xstateEngineState", s: xstateEngineState },
+      { name: "zustandEngineState", s: zustandEngineState },
+      { name: "reduxEngineState", s: reduxEngineState }
     ];
 
-    states.forEach((s) => {
+    states.forEach(({ name, s }) => {
       if (syncUser) {
         if (!s.user || s.user.username !== syncUser.username || s.user.role !== syncUser.role) {
+          console.log(`[EngineManager] Sync mismatch. Logging in ${name} with:`, syncUser);
           s.login(syncUser.username, syncUser.role);
         }
       } else {
         if (s.user !== null) {
+          console.log(`[EngineManager] Sync mismatch. Logging out ${name}`);
           s.logout();
         }
       }

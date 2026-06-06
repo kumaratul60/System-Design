@@ -5,6 +5,34 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>lld</title>
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem("lld_theme");
+          let theme = "light";
+          if (savedTheme) {
+            try {
+              const parsed = JSON.parse(savedTheme);
+              if (parsed === "dark" || parsed === "light") {
+                theme = parsed;
+              }
+            } catch (e) {
+              if (savedTheme === "dark" || savedTheme === "light") {
+                theme = savedTheme;
+              }
+            }
+          }
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+            document.documentElement.style.setProperty("--bg", "#121214");
+            document.documentElement.style.setProperty("--text", "#e4e4e7");
+            document.documentElement.style.setProperty("--text-h", "#ffffff");
+            document.documentElement.style.setProperty("--border", "#27272a");
+            document.documentElement.style.setProperty("--card-bg", "rgba(39, 39, 42, 0.5)");
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

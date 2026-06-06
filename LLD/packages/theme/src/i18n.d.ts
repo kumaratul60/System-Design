@@ -28,6 +28,7 @@ export declare const translations: {
         navPasswordChecker: string;
         navScrollTracker: string;
         navThemeSwitch: string;
+        navFiberWorkloop: string;
         welcomeUser: string;
         roleUser: string;
         roleAdmin: string;
@@ -88,6 +89,7 @@ export declare const translations: {
         navPasswordChecker: string;
         navScrollTracker: string;
         navThemeSwitch: string;
+        navFiberWorkloop: string;
         welcomeUser: string;
         roleUser: string;
         roleAdmin: string;
@@ -148,6 +150,7 @@ export declare const translations: {
         navPasswordChecker: string;
         navScrollTracker: string;
         navThemeSwitch: string;
+        navFiberWorkloop: string;
         welcomeUser: string;
         roleUser: string;
         roleAdmin: string;
