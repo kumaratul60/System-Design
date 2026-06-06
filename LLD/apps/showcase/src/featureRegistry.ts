@@ -24,6 +24,29 @@ import {
   Palette,
   Plus,
   Network,
+  Type,
+  List,
+  Search,
+  Cookie,
+  Percent,
+  Clock,
+  User,
+  Folder,
+  Key,
+  Calendar,
+  DollarSign,
+  Video,
+  Mail,
+  Quote,
+  Gamepad2,
+  Tags,
+  MousePointer,
+  Table,
+  Braces,
+  GitCompare,
+  Link,
+  Globe,
+  Grid,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Home } from "./pages/Home";
@@ -59,6 +82,40 @@ import { ScrollTracker } from "./pages/interview/ScrollTracker";
 import { ThemeSwitchShowcase } from "./pages/interview/ThemeSwitchShowcase";
 import Counter from "./pages/Counter";
 import { FiberWorkloop } from "./pages/interview/FiberWorkloop";
+
+// New Standalone LLD Interview components
+import { SmartTextarea } from "./pages/interview/SmartTextarea";
+import { Dropdown } from "./pages/interview/Dropdown";
+import { Autosuggest } from "./pages/interview/Autosuggest";
+import { CookieConsent } from "./pages/interview/CookieConsent";
+import { ProgressBar } from "./pages/interview/ProgressBar";
+import { CountdownTimer } from "./pages/interview/CountdownTimer";
+import { FeedbackModal } from "./pages/interview/FeedbackModal";
+import { MultistepForm } from "./pages/interview/MultistepForm";
+import { ToastNotification } from "./pages/interview/ToastNotification";
+import { ProfileCard } from "./pages/interview/ProfileCard";
+import { AccordionComponent } from "./pages/interview/AccordionComponent";
+import { OtpVerification } from "./pages/interview/OtpVerification";
+import { CalendarViewer } from "./pages/interview/CalendarViewer";
+import { PricingCardPage } from "./pages/interview/PricingCardPage";
+import { TypeaheadSearch } from "./pages/interview/TypeaheadSearch";
+import { VideoPlayer } from "./pages/interview/VideoPlayer";
+import { ContactUsForm } from "./pages/interview/ContactUsForm";
+import { RandomQuoteGenerator } from "./pages/interview/RandomQuoteGenerator";
+
+import { FileExplorer } from "./pages/interview/FileExplorer";
+import { GuessNumber } from "./pages/interview/GuessNumber";
+import { TicTacToe } from "./pages/interview/TicTacToe";
+import { ChessBoard } from "./pages/interview/ChessBoard";
+import { ChipsInput } from "./pages/interview/ChipsInput";
+import { AreaSelector } from "./pages/interview/AreaSelector";
+import { ColumnTable } from "./pages/interview/ColumnTable";
+import { ColumnGrid } from "./pages/interview/ColumnGrid";
+import { StringTransformers } from "./pages/interview/StringTransformers";
+import { JsonViewer } from "./pages/interview/JsonViewer";
+import { DiffChecker } from "./pages/interview/DiffChecker";
+import { UrlStateSync } from "./pages/interview/UrlStateSync";
+import { UrlInspector } from "./pages/interview/UrlInspector";
 
 import type { translations } from "@statelab/theme";
 
@@ -282,6 +339,254 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navFiberWorkloop",
     icon: Network,
+  },
+  {
+    path: "/interview/smart-textarea",
+    element: SmartTextarea,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navSmartTextarea",
+    icon: Type,
+  },
+  {
+    path: "/interview/dropdown",
+    element: Dropdown,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navDropdown",
+    icon: List,
+  },
+  {
+    path: "/interview/autosuggest",
+    element: Autosuggest,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navAutosuggest",
+    icon: Search,
+  },
+  {
+    path: "/interview/cookie-consent",
+    element: CookieConsent,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navCookieConsent",
+    icon: Cookie,
+  },
+  {
+    path: "/interview/progress-bar",
+    element: ProgressBar,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navProgressBar",
+    icon: Percent,
+  },
+  {
+    path: "/interview/countdown-timer",
+    element: CountdownTimer,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navCountdownTimer",
+    icon: Clock,
+  },
+  {
+    path: "/interview/feedback-modal",
+    element: FeedbackModal,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navFeedbackModal",
+    icon: MessageSquare,
+  },
+  {
+    path: "/interview/multistep-form",
+    element: MultistepForm,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navMultistepForm",
+    icon: List,
+  },
+  {
+    path: "/interview/toast-notification",
+    element: ToastNotification,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navToastNotification",
+    icon: Activity,
+  },
+  {
+    path: "/interview/profile-card",
+    element: ProfileCard,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navProfileCard",
+    icon: User,
+  },
+  {
+    path: "/interview/accordion-component",
+    element: AccordionComponent,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navAccordionComponent",
+    icon: Folder,
+  },
+  {
+    path: "/interview/otp-verification",
+    element: OtpVerification,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navOtpVerification",
+    icon: Key,
+  },
+  {
+    path: "/interview/calendar-viewer",
+    element: CalendarViewer,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navCalendarViewer",
+    icon: Calendar,
+  },
+  {
+    path: "/interview/pricing-card",
+    element: PricingCardPage,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navPricingCard",
+    icon: DollarSign,
+  },
+  {
+    path: "/interview/typeahead-search",
+    element: TypeaheadSearch,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navTypeaheadSearch",
+    icon: Search,
+  },
+  {
+    path: "/interview/video-player",
+    element: VideoPlayer,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navVideoPlayer",
+    icon: Video,
+  },
+  {
+    path: "/interview/contact-us",
+    element: ContactUsForm,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navContactUs",
+    icon: Mail,
+  },
+  {
+    path: "/interview/quote-generator",
+    element: RandomQuoteGenerator,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navQuoteGenerator",
+    icon: Quote,
+  },
+  {
+    path: "/interview/file-explorer",
+    element: FileExplorer,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navFileExplorer",
+    icon: Folder,
+  },
+  {
+    path: "/interview/guess-number",
+    element: GuessNumber,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navGuessNumber",
+    icon: Gamepad2,
+  },
+  {
+    path: "/interview/tic-tac-toe",
+    element: TicTacToe,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navTicTacToe",
+    icon: LayoutGrid,
+  },
+  {
+    path: "/interview/chess-board",
+    element: ChessBoard,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navChessBoard",
+    icon: Grid,
+  },
+  {
+    path: "/interview/chips-input",
+    element: ChipsInput,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navChipsInput",
+    icon: Tags,
+  },
+  {
+    path: "/interview/area-selector",
+    element: AreaSelector,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navAreaSelector",
+    icon: MousePointer,
+  },
+  {
+    path: "/interview/column-table",
+    element: ColumnTable,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navColumnTable",
+    icon: Table,
+  },
+  {
+    path: "/interview/column-grid",
+    element: ColumnGrid,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navColumnGrid",
+    icon: Grid,
+  },
+  {
+    path: "/interview/string-transformers",
+    element: StringTransformers,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navStringTransformers",
+    icon: Type,
+  },
+  {
+    path: "/interview/json-viewer",
+    element: JsonViewer,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navJsonViewer",
+    icon: Braces,
+  },
+  {
+    path: "/interview/diff-checker",
+    element: DiffChecker,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navDiffChecker",
+    icon: GitCompare,
+  },
+  {
+    path: "/interview/url-sync",
+    element: UrlStateSync,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navUrlSync",
+    icon: Link,
+  },
+  {
+    path: "/interview/url-inspector",
+    element: UrlInspector,
+    access: "protected",
+    sidebar: true,
+    labelKey: "navUrlInspector",
+    icon: Globe,
   },
   {
     path: "/admin",

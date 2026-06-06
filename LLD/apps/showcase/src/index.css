@@ -15,6 +15,7 @@
   --accent-light: #f4f4f5;
   --success: #16a34a;
   --danger: #dc2626;
+  --primary: #2563eb;
   
   --border-radius: 6px;
   --transition: background-color 0.2s ease, border-color 0.2s ease;
@@ -39,6 +40,7 @@ html.dark {
   --accent-light: #27272a;
   --success: #22c55e;
   --danger: #ef4444;
+  --primary: #3b82f6;
 }
 
 body {
