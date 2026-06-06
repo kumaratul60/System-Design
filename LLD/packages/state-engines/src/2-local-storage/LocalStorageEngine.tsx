@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import type { AppState, AppUser, Theme, Language, Todo } from "../types";
+import type { AppState, AppUser, Theme, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
 import {
   getInitialTheme,
-  getInitialLanguage,
   getInitialUser
 } from "../storageHelpers";
 
@@ -22,7 +21,6 @@ export const useLocalStorageState = (): AppState => {
   };
 
   const [theme, setThemeState] = useState<Theme>(() => getInitialTheme());
-  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
   const [user, setUserState] = useState<AppUser | null>(() => getInitialUser());
   const [todos, setTodosState] = useState<Todo[]>(() => getStorageValue<Todo[]>("lld_todos", []));
   const [isLoadingTodos, setIsLoadingTodos] = useState<boolean>(false);
@@ -31,11 +29,6 @@ export const useLocalStorageState = (): AppState => {
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     localStorage.setItem("lld_theme", JSON.stringify(newTheme));
-  };
-
-  const setLanguage = (newLang: Language) => {
-    setLanguageState(newLang);
-    localStorage.setItem("lld_language", JSON.stringify(newLang));
   };
 
   const login = (username: string, role: "USER" | "ADMIN") => {
@@ -90,8 +83,6 @@ export const useLocalStorageState = (): AppState => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "lld_theme" && e.newValue) {
         setThemeState(JSON.parse(e.newValue));
-      } else if (e.key === "lld_language" && e.newValue) {
-        setLanguageState(JSON.parse(e.newValue));
       } else if (e.key === "lld_user") {
         setUserState(e.newValue ? JSON.parse(e.newValue) : null);
       } else if (e.key === "lld_todos" && e.newValue) {
@@ -107,12 +98,10 @@ export const useLocalStorageState = (): AppState => {
 
   return {
     theme,
-    language,
     user,
     todos,
     isLoadingTodos,
     setTheme,
-    setLanguage,
     login,
     logout,
     addTodo,

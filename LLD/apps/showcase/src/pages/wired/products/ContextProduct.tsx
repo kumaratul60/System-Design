@@ -25,8 +25,7 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 // --- Custom Provider Component ---
-const ProductProvider: React.FC<{ language: string; children: React.ReactNode }> = ({
-  language,
+const ProductProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -42,11 +41,11 @@ const ProductProvider: React.FC<{ language: string; children: React.ReactNode }>
       const data = await response.json();
       setProducts(data.products || []);
     } catch {
-      setError(translate(language as any, "fetchProductsError"));
+      setError(translate("fetchProductsError"));
     } finally {
       setIsLoading(false);
     }
-  }, [language]);
+  }, []);
 
   const deleteProduct = (id: number) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
@@ -73,9 +72,8 @@ export function useContextProductLogic() {
 }
 
 // Inner presentation layout
-const ContextProductInner: React.FC<{ user: AppUser | null; language: string }> = ({
+const ContextProductInner: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   const navigate = useNavigate();
   const { products, isLoading, error, deleteProduct, fetchProducts } = useContextProductLogic();
@@ -97,7 +95,7 @@ const ContextProductInner: React.FC<{ user: AppUser | null; language: string }> 
       {isLoading ? (
         <div className="loading-state">
           <RefreshCw className="loading-spinner spinning" size={32} />
-          <p>{translate(language as any, "loading")}</p>
+          <p>{translate("loading")}</p>
         </div>
       ) : error ? (
         <div className="empty-state">
@@ -132,7 +130,7 @@ const ContextProductInner: React.FC<{ user: AppUser | null; language: string }> 
                     <button
                       onClick={() => deleteProduct(prod.id)}
                       className="todo-delete-btn"
-                      title={translate(language as any, "deleteButton")}
+                      title={translate("deleteButton")}
                       aria-label="Delete product"
                     >
                       <Trash2 size={18} />
@@ -141,7 +139,7 @@ const ContextProductInner: React.FC<{ user: AppUser | null; language: string }> 
                     <button
                       className="todo-delete-btn disabled"
                       disabled
-                      title={translate(language as any, "deleteRestricted")}
+                      title={translate("deleteRestricted")}
                       aria-label="Delete product blocked"
                     >
                       <Lock size={16} />
@@ -158,13 +156,12 @@ const ContextProductInner: React.FC<{ user: AppUser | null; language: string }> 
 };
 
 // Exported component wrapped with Provider
-export const ContextProduct: React.FC<{ user: AppUser | null; language: string }> = ({
+export const ContextProduct: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   return (
-    <ProductProvider language={language}>
-      <ContextProductInner user={user} language={language} />
+    <ProductProvider>
+      <ContextProductInner user={user} />
     </ProductProvider>
   );
 };

@@ -9,22 +9,22 @@ import { ReduxProduct } from "./wired/products/ReduxProduct";
 
 export const Products: React.FC = () => {
   const { activeEngine } = useEngine();
-  const { user, language } = useAppState();
+  const { user } = useAppState();
 
   switch (activeEngine) {
     case "prop-drilling":
-      return <PropDrillingProduct user={user} language={language} />;
+      return <PropDrillingProduct user={user} />;
     case "local-storage":
-      return <LocalStorageProduct user={user} language={language} />;
+      return <LocalStorageProduct user={user} />;
     case "context":
-      return <ContextProduct user={user} language={language} />;
+      return <ContextProduct user={user} />;
     case "xstate":
-      return <XStateProduct user={user} language={language} />;
+      return <XStateProduct user={user} />;
     case "zustand":
-      return <ZustandProduct user={user} language={language} />;
+      return <ZustandProduct user={user} />;
     case "redux":
-      return <ReduxProduct user={user} language={language} />;
+      return <ReduxProduct user={user} />;
     default:
-      return <PropDrillingProduct user={user} language={language} />;
+      return <PropDrillingProduct user={user} />;
   }
 };

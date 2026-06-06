@@ -13,7 +13,7 @@ In this strategy:
 // Root Component
 const state = usePropDrillingState();
 return (
-  <Layout theme={state.theme} setTheme={state.setTheme} language={state.language}>
+  <Layout theme={state.theme} setTheme={state.setTheme}>
     <Routes>
       <Route path="/todos" element={<Todos todos={state.todos} toggleTodo={state.toggleTodo} />} />
     </Routes>

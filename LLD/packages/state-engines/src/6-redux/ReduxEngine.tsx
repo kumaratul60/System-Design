@@ -1,20 +1,17 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppState, AppUser, Theme, Language, Todo } from "../types";
+import type { AppState, AppUser, Theme, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
 import {
   getInitialTheme,
-  getInitialLanguage,
   getInitialUser,
   setStorageTheme,
-  setStorageLanguage,
   setStorageUser
 } from "../storageHelpers";
 
 interface ReduxState {
   theme: Theme;
-  language: Language;
   user: AppUser | null;
   todos: Todo[];
   isLoadingTodos: boolean;
@@ -22,7 +19,6 @@ interface ReduxState {
 
 const initialState: ReduxState = {
   theme: getInitialTheme(),
-  language: getInitialLanguage(),
   user: getInitialUser(),
   todos: [],
   isLoadingTodos: false
@@ -34,9 +30,6 @@ const appSlice = createSlice({
   reducers: {
     setTheme(state, action: PayloadAction<Theme>) {
       state.theme = action.payload;
-    },
-    setLanguage(state, action: PayloadAction<Language>) {
-      state.language = action.payload;
     },
     login(state, action: PayloadAction<AppUser>) {
       state.user = action.payload;
@@ -86,7 +79,6 @@ export type RootState = ReturnType<typeof reduxStore.getState>;
 export const useReduxEngine = (): AppState => {
   const dispatch = useDispatch();
   const theme = useSelector((state: RootState) => state.app.theme);
-  const language = useSelector((state: RootState) => state.app.language);
   const user = useSelector((state: RootState) => state.app.user);
   const todos = useSelector((state: RootState) => state.app.todos);
   const isLoadingTodos = useSelector((state: RootState) => state.app.isLoadingTodos);
@@ -94,10 +86,6 @@ export const useReduxEngine = (): AppState => {
   const setTheme = (t: Theme) => {
     dispatch(appActions.setTheme(t));
     setStorageTheme(t);
-  };
-  const setLanguage = (l: Language) => {
-    dispatch(appActions.setLanguage(l));
-    setStorageLanguage(l);
   };
   const login = (username: string, role: "USER" | "ADMIN") => {
     const newUser = { username, role };
@@ -124,12 +112,10 @@ export const useReduxEngine = (): AppState => {
 
   return {
     theme,
-    language,
     user,
     todos,
     isLoadingTodos,
     setTheme,
-    setLanguage,
     login,
     logout,
     addTodo,

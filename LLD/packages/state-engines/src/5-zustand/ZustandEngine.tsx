@@ -1,18 +1,15 @@
 import { create } from "zustand";
-import type { AppState, Theme, Language } from "../types";
+import type { AppState, Theme } from "../types";
 import { fetchDummyTodos } from "../api";
 import {
   getInitialTheme,
-  getInitialLanguage,
   getInitialUser,
   setStorageTheme,
-  setStorageLanguage,
   setStorageUser
 } from "../storageHelpers";
 
 export const useZustandStore = create<AppState>((set) => ({
   theme: getInitialTheme(),
-  language: getInitialLanguage(),
   user: getInitialUser(),
   todos: [],
   isLoadingTodos: false,
@@ -20,10 +17,6 @@ export const useZustandStore = create<AppState>((set) => ({
   setTheme: (theme: Theme) => {
     set({ theme });
     setStorageTheme(theme);
-  },
-  setLanguage: (language: Language) => {
-    set({ language });
-    setStorageLanguage(language);
   },
 
   login: (username: string, role: "USER" | "ADMIN") => {

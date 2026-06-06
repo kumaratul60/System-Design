@@ -21,7 +21,7 @@ const EngineContext = createContext<EngineContextType | undefined>(undefined);
 const EngineManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeEngine, setActiveEngineState] = useState<EngineType>(() => {
     const saved = localStorage.getItem("lld_active_engine");
-    return (saved as EngineType) || "prop-drilling";
+    return (saved as EngineType) || "zustand";
   });
 
   const setActiveEngine = (engine: EngineType) => {
@@ -61,7 +61,6 @@ const EngineManagerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   console.log("[EngineManager] Render. ActiveEngine:", activeEngine, {
     "activeState.theme": activeState.theme,
-    "activeState.language": activeState.language,
     "activeState.user": activeState.user,
     "propDrillingState.theme": propDrillingState.theme,
     "localStorageState.theme": localStorageState.theme,
@@ -92,12 +91,11 @@ const EngineManagerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [activeState.theme]);
 
-  // Synchronize the Theme and Language settings across all stores when user changes activeEngine
+  // Synchronize the Theme settings across all stores when user changes activeEngine
   useEffect(() => {
     const syncTheme = activeState.theme;
-    const syncLang = activeState.language;
 
-    console.log("[EngineManager] Sync theme/language effect triggered. Target theme:", syncTheme, "Target lang:", syncLang);
+    console.log("[EngineManager] Sync theme effect triggered. Target theme:", syncTheme);
 
     // Direct mutators to keep UI consistent during engine switching
     const states = [
@@ -114,15 +112,10 @@ const EngineManagerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         console.log(`[EngineManager] Sync mismatch. Setting ${name} theme to:`, syncTheme);
         s.setTheme(syncTheme);
       }
-      if (s.language !== syncLang) {
-        console.log(`[EngineManager] Sync mismatch. Setting ${name} language to:`, syncLang);
-        s.setLanguage(syncLang);
-      }
     });
   }, [
     activeEngine,
     activeState.theme,
-    activeState.language,
     propDrillingState,
     localStorageState,
     contextApiState,

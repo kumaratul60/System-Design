@@ -40,8 +40,7 @@ stateDiagram-v2
     
     note right of idle
       Handles events:
-      SET_THEME, SET_LANGUAGE,
-      LOGIN, LOGOUT,
+      SET_THEME, LOGIN, LOGOUT,
       ADD_TODO, TOGGLE_TODO, DELETE_TODO
     end note
 ```

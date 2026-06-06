@@ -5,7 +5,7 @@ import { translate } from "@statelab/theme";
 import { UserCheck, ShieldAlert, Key } from "lucide-react";
 
 export const Login: React.FC = () => {
-  const { login, language } = useAppState();
+  const { login } = useAppState();
   const [username, setUsername] = useState("");
   const [role, setRole] = useState<"USER" | "ADMIN">("USER");
   const navigate = useNavigate();
@@ -29,8 +29,8 @@ export const Login: React.FC = () => {
           <div className="login-icon-circle">
             <Key className="login-header-icon" />
           </div>
-          <h2 className="login-title">{translate(language, "loginTitle")}</h2>
-          <p className="login-subtitle">{translate(language, "loginSubtitle")}</p>
+          <h2 className="login-title">{translate("loginTitle")}</h2>
+          <p className="login-subtitle">{translate("loginSubtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -43,7 +43,7 @@ export const Login: React.FC = () => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder={translate(language, "usernamePlaceholder")}
+              placeholder={translate("usernamePlaceholder")}
               className="text-input"
               required
               autoFocus
@@ -63,7 +63,7 @@ export const Login: React.FC = () => {
                   className="sr-only"
                 />
                 <UserCheck className="role-icon" />
-                <span className="role-name">{translate(language, "roleUser")}</span>
+                <span className="role-name">{translate("roleUser")}</span>
                 <span className="role-badge badge-user">USER</span>
               </label>
 
@@ -77,14 +77,14 @@ export const Login: React.FC = () => {
                   className="sr-only"
                 />
                 <ShieldAlert className="role-icon" />
-                <span className="role-name">{translate(language, "roleAdmin")}</span>
+                <span className="role-name">{translate("roleAdmin")}</span>
                 <span className="role-badge badge-admin">ADMIN</span>
               </label>
             </div>
           </div>
 
           <button type="submit" className="btn btn-primary btn-block submit-login-btn">
-            {translate(language, "loginButton")}
+            {translate("loginButton")}
           </button>
         </form>
       </div>

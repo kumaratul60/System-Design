@@ -4,7 +4,7 @@ import { translate } from "@statelab/theme";
 import { ShieldCheck, Server, ShieldCheck as SafeIcon } from "lucide-react";
 
 export const Admin: React.FC = () => {
-  const { language, user } = useAppState();
+  const { user } = useAppState();
 
   return (
     <div className="page-container admin-page">
@@ -13,12 +13,12 @@ export const Admin: React.FC = () => {
           <div className="admin-icon-circle">
             <ShieldCheck className="admin-header-icon" />
           </div>
-          <h2 className="admin-title">{translate(language, "adminPanelTitle")}</h2>
+          <h2 className="admin-title">{translate("adminPanelTitle")}</h2>
         </div>
 
         <div className="admin-card-body">
           <p className="admin-alert-message">
-            {translate(language, "adminMessage")}
+            {translate("adminMessage")}
           </p>
 
           <div className="admin-status-grid">
@@ -47,7 +47,6 @@ export const Admin: React.FC = () => {
                 {
                   timestamp: new Date().toISOString(),
                   engineUser: user,
-                  activeClientLanguage: language,
                   gatewayValidation: "SUCCESS_ROLE_VERIFIED",
                   accessAllowed: true
                 },

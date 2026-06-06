@@ -50,7 +50,6 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Home } from "./pages/Home";
-import { Login } from "./pages/Login";
 import { Todos } from "./pages/Todos";
 import { Products } from "./pages/Products";
 import { Memes } from "./pages/Memes";
@@ -122,7 +121,7 @@ import type { translations } from "@statelab/theme";
 export interface FeatureRoute {
   path: string;
   element: React.ComponentType;
-  access: "public" | "public-redirect-login" | "protected" | "private";
+  access: "public" | "protected" | "private";
   sidebar: boolean;
   labelKey?: keyof typeof translations.en;
   icon?: LucideIcon;
@@ -138,15 +137,9 @@ export const featureRegistry: FeatureRoute[] = [
     icon: LayoutGrid,
   },
   {
-    path: "/login",
-    element: Login,
-    access: "public-redirect-login",
-    sidebar: false,
-  },
-  {
     path: "/todos",
     element: Todos,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navTodos",
     icon: CheckSquare,
@@ -154,7 +147,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/products",
     element: Products,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navProducts",
     icon: ShoppingBag,
@@ -162,19 +155,19 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/products/:id",
     element: ProductDetail,
-    access: "protected",
+    access: "public",
     sidebar: false,
   },
   {
     path: "/checkout",
     element: Checkout,
-    access: "protected",
+    access: "public",
     sidebar: false,
   },
   {
     path: "/memes",
     element: Memes,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navMemes",
     icon: Image,
@@ -182,7 +175,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/infinite-scroll",
     element: InfiniteScroll,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navInfinite",
     icon: InfinityIcon,
@@ -190,7 +183,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/traffic-light",
     element: TrafficLight,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navTrafficLight",
     icon: TrafficCone,
@@ -198,7 +191,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/trello",
     element: Trello,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navTrello",
     icon: Kanban,
@@ -207,7 +200,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/accordions",
     element: Accordions,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navAccordions",
     icon: FolderClosed,
@@ -215,7 +208,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/autocomplete",
     element: Autocomplete,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navAutocomplete",
     icon: Compass,
@@ -223,7 +216,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/carousel",
     element: Carousel,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navCarousel",
     icon: Image,
@@ -231,7 +224,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/movies",
     element: Movies,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navMovies",
     icon: Film,
@@ -239,7 +232,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/nested-comments",
     element: NestedComments,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navNestedComments",
     icon: MessageSquare,
@@ -247,7 +240,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/stack",
     element: Stack,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navStack",
     icon: Binary,
@@ -255,7 +248,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/star-rating",
     element: StarRating,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navStarRating",
     icon: Star,
@@ -263,7 +256,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/stock-watch",
     element: StockWatch,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navStockWatch",
     icon: BarChart3,
@@ -271,7 +264,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/timer",
     element: Timer,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navTimer",
     icon: TimerIcon,
@@ -279,7 +272,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/virtualization",
     element: Virtualization,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navVirtualization",
     icon: ScrollText,
@@ -287,7 +280,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/calculator",
     element: Calculator,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navCalculator",
     icon: CalculatorIcon,
@@ -295,7 +288,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/notepad",
     element: Notepad,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navNotepad",
     icon: FileText,
@@ -303,7 +296,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/password-checker",
     element: PasswordChecker,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navPasswordChecker",
     icon: LockKeyhole,
@@ -311,7 +304,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/scroll-tracker",
     element: ScrollTracker,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navScrollTracker",
     icon: Activity,
@@ -319,7 +312,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/theme-switch",
     element: ThemeSwitchShowcase,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navThemeSwitch",
     icon: Palette,
@@ -327,7 +320,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/counter",
     element: Counter,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navCounter",
     icon: Plus,
@@ -335,7 +328,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/fiber-workloop",
     element: FiberWorkloop,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navFiberWorkloop",
     icon: Network,
@@ -343,7 +336,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/smart-textarea",
     element: SmartTextarea,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navSmartTextarea",
     icon: Type,
@@ -351,7 +344,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/dropdown",
     element: Dropdown,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navDropdown",
     icon: List,
@@ -359,7 +352,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/autosuggest",
     element: Autosuggest,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navAutosuggest",
     icon: Search,
@@ -367,7 +360,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/cookie-consent",
     element: CookieConsent,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navCookieConsent",
     icon: Cookie,
@@ -375,7 +368,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/progress-bar",
     element: ProgressBar,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navProgressBar",
     icon: Percent,
@@ -383,7 +376,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/countdown-timer",
     element: CountdownTimer,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navCountdownTimer",
     icon: Clock,
@@ -391,7 +384,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/feedback-modal",
     element: FeedbackModal,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navFeedbackModal",
     icon: MessageSquare,
@@ -399,7 +392,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/multistep-form",
     element: MultistepForm,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navMultistepForm",
     icon: List,
@@ -407,7 +400,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/toast-notification",
     element: ToastNotification,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navToastNotification",
     icon: Activity,
@@ -415,7 +408,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/profile-card",
     element: ProfileCard,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navProfileCard",
     icon: User,
@@ -423,7 +416,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/accordion-component",
     element: AccordionComponent,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navAccordionComponent",
     icon: Folder,
@@ -431,7 +424,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/otp-verification",
     element: OtpVerification,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navOtpVerification",
     icon: Key,
@@ -439,7 +432,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/calendar-viewer",
     element: CalendarViewer,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navCalendarViewer",
     icon: Calendar,
@@ -447,7 +440,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/pricing-card",
     element: PricingCardPage,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navPricingCard",
     icon: DollarSign,
@@ -455,7 +448,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/typeahead-search",
     element: TypeaheadSearch,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navTypeaheadSearch",
     icon: Search,
@@ -463,7 +456,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/video-player",
     element: VideoPlayer,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navVideoPlayer",
     icon: Video,
@@ -471,7 +464,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/contact-us",
     element: ContactUsForm,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navContactUs",
     icon: Mail,
@@ -479,7 +472,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/quote-generator",
     element: RandomQuoteGenerator,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navQuoteGenerator",
     icon: Quote,
@@ -487,7 +480,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/file-explorer",
     element: FileExplorer,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navFileExplorer",
     icon: Folder,
@@ -495,7 +488,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/guess-number",
     element: GuessNumber,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navGuessNumber",
     icon: Gamepad2,
@@ -503,7 +496,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/tic-tac-toe",
     element: TicTacToe,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navTicTacToe",
     icon: LayoutGrid,
@@ -511,7 +504,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/chess-board",
     element: ChessBoard,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navChessBoard",
     icon: Grid,
@@ -519,7 +512,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/chips-input",
     element: ChipsInput,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navChipsInput",
     icon: Tags,
@@ -527,7 +520,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/area-selector",
     element: AreaSelector,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navAreaSelector",
     icon: MousePointer,
@@ -535,7 +528,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/column-table",
     element: ColumnTable,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navColumnTable",
     icon: Table,
@@ -543,7 +536,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/column-grid",
     element: ColumnGrid,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navColumnGrid",
     icon: Grid,
@@ -551,7 +544,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/string-transformers",
     element: StringTransformers,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navStringTransformers",
     icon: Type,
@@ -559,7 +552,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/json-viewer",
     element: JsonViewer,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navJsonViewer",
     icon: Braces,
@@ -567,7 +560,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/diff-checker",
     element: DiffChecker,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navDiffChecker",
     icon: GitCompare,
@@ -575,7 +568,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/url-sync",
     element: UrlStateSync,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navUrlSync",
     icon: Link,
@@ -583,7 +576,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/interview/url-inspector",
     element: UrlInspector,
-    access: "protected",
+    access: "public",
     sidebar: true,
     labelKey: "navUrlInspector",
     icon: Globe,
@@ -591,7 +584,7 @@ export const featureRegistry: FeatureRoute[] = [
   {
     path: "/admin",
     element: Admin,
-    access: "private",
+    access: "public",
     sidebar: true,
     labelKey: "navAdmin",
     icon: ShieldAlert,

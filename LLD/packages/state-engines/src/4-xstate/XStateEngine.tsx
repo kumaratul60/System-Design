@@ -1,13 +1,11 @@
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
-import type { AppState, Theme, Language, Todo } from "../types";
+import type { AppState, Theme, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
 import {
   getInitialTheme,
-  getInitialLanguage,
   getInitialUser,
   setStorageTheme,
-  setStorageLanguage,
   setStorageUser
 } from "../storageHelpers";
 
@@ -16,7 +14,6 @@ export const appMachine = createMachine({
   initial: "idle",
   context: {
     theme: getInitialTheme(),
-    language: getInitialLanguage(),
     user: getInitialUser(),
     todos: [] as Todo[],
     isLoadingTodos: false
@@ -27,11 +24,6 @@ export const appMachine = createMachine({
         SET_THEME: {
           actions: assign({
             theme: ({ event }) => (event as unknown as { theme: Theme }).theme
-          })
-        },
-        SET_LANGUAGE: {
-          actions: assign({
-            language: ({ event }) => (event as unknown as { language: Language }).language
           })
         },
         LOGIN: {
@@ -80,11 +72,6 @@ export const appMachine = createMachine({
             theme: ({ event }) => (event as unknown as { theme: Theme }).theme
           })
         },
-        SET_LANGUAGE: {
-          actions: assign({
-            language: ({ event }) => (event as unknown as { language: Language }).language
-          })
-        },
         LOGIN: {
           actions: assign({
             user: ({ event }) => {
@@ -120,10 +107,6 @@ export const useXStateEngine = (): AppState => {
     send({ type: "SET_THEME", theme });
     setStorageTheme(theme);
   };
-  const setLanguage = (language: Language) => {
-    send({ type: "SET_LANGUAGE", language });
-    setStorageLanguage(language);
-  };
   const login = (username: string, role: "USER" | "ADMIN") => {
     send({ type: "LOGIN", username, role });
     setStorageUser({ username, role });
@@ -148,12 +131,10 @@ export const useXStateEngine = (): AppState => {
 
   return {
     theme: context.theme,
-    language: context.language,
     user: context.user,
     todos: context.todos,
     isLoadingTodos: context.isLoadingTodos,
     setTheme,
-    setLanguage,
     login,
     logout,
     addTodo,

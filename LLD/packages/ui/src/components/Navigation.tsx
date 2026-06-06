@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useEngine, useAppState } from "@statelab/state-engines";
-import type { EngineType, Language } from "@statelab/state-engines";
+import { useAppState } from "@statelab/state-engines";
 import { translate, translations } from "@statelab/theme";
 import { Sun, Moon, LogOut, Cpu, Key, ChevronLeft, ChevronRight, Search, ExternalLink } from "lucide-react";
 
@@ -16,8 +15,7 @@ export interface NavigationProps {
 }
 
 export const Navigation: React.FC<NavigationProps> = ({ links }) => {
-  const { activeEngine, setActiveEngine } = useEngine();
-  const { theme, setTheme, language, setLanguage, user, logout } = useAppState();
+  const { theme, setTheme, user, logout } = useAppState();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,16 +23,8 @@ export const Navigation: React.FC<NavigationProps> = ({ links }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const handleEngineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setActiveEngine(e.target.value as EngineType);
-  };
-
   const handleThemeToggle = () => {
     setTheme(theme === "light" ? "dark" : "light");
-  };
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setLanguage(e.target.value as Language);
   };
 
   const handleLogout = () => {
@@ -56,12 +46,9 @@ export const Navigation: React.FC<NavigationProps> = ({ links }) => {
   // Filter links dynamically
   const filteredLinks = links.filter((link) => {
     if (!searchQuery.trim()) return true;
-    const label = link.labelKey ? translate(language, link.labelKey) : "";
+    const label = link.labelKey ? translate(link.labelKey) : "";
     return label.toLowerCase().includes(searchQuery.toLowerCase());
   });
-
-  // Language dropdown is locked (disabled) for standard logged-in USER role, unlocked for ADMIN and guests.
-  const isLangDisabled = user !== null && user.role !== "ADMIN";
 
   return (
     <aside className={`app-sidebar ${isCollapsed ? "collapsed" : ""}`}>
@@ -125,52 +112,11 @@ export const Navigation: React.FC<NavigationProps> = ({ links }) => {
               className={location.pathname === link.path ? "active" : ""}
             >
               {Icon && <Icon size={18} />}
-              {!isCollapsed && <span>{link.labelKey ? translate(language, link.labelKey) : ""}</span>}
+              {!isCollapsed && <span>{link.labelKey ? translate(link.labelKey) : ""}</span>}
             </Link>
           );
         })}
       </nav>
-
-      {/* Sidebar Controls (Hidden when collapsed) */}
-      {!isCollapsed && (
-        <div className="sidebar-controls">
-          {/* Active Engine */}
-          <div className="control-group">
-            <label className="control-label">{translate(language, "engineSelectorLabel")}</label>
-            <select
-              value={activeEngine}
-              onChange={handleEngineChange}
-              className="select-input engine-select select-block"
-            >
-              <option value="prop-drilling">1. Prop Drilling</option>
-              <option value="local-storage">2. LocalStorage Sync</option>
-              <option value="context">3. Context API</option>
-              <option value="xstate">4. XState (FSM)</option>
-              <option value="zustand">5. Zustand</option>
-              <option value="redux">6. Redux Toolkit</option>
-            </select>
-          </div>
-
-          {/* Language */}
-          <div className="control-group">
-            <label className="control-label">
-              {translate(language, "language")} 
-              {isLangDisabled && <span className="locked-badge"> ({translate(language, "langLockedTip")})</span>}
-            </label>
-            <select
-              value={language}
-              onChange={handleLanguageChange}
-              disabled={isLangDisabled}
-              className={`select-input lang-select select-block ${isLangDisabled ? "disabled-lock" : ""}`}
-              title={isLangDisabled ? translate(language, "langLockedTip") : ""}
-            >
-              <option value="en">English (EN)</option>
-              <option value="es">Español (ES)</option>
-              <option value="hi">हिन्दी (HI)</option>
-            </select>
-          </div>
-        </div>
-      )}
 
       {/* Sidebar Footer */}
       <div className="sidebar-footer">
@@ -186,16 +132,11 @@ export const Navigation: React.FC<NavigationProps> = ({ links }) => {
                 <span className="user-role-badge">{user.role}</span>
               </div>
             )}
-            <button onClick={handleLogout} className="logout-btn" title={translate(language, "navLogout")}>
+            <button onClick={handleLogout} className="logout-btn" title={translate("navLogout")}>
               <LogOut size={16} />
             </button>
           </div>
-        ) : (
-          <Link to="/login" className="btn btn-secondary login-btn-sidebar" title={translate(language, "navLogin")}>
-            <Key size={16} />
-            {!isCollapsed && <span>{translate(language, "navLogin")}</span>}
-          </Link>
-        )}
+        ) : null}
       </div>
     </aside>
   );

@@ -58,7 +58,7 @@ const productMachine = createMachine({
 });
 
 // --- Data Layer: Custom Hook ---
-export function useXStateProductLogic(language: string) {
+export function useXStateProductLogic() {
   const [state, send] = useMachine(productMachine);
   const { products, error } = state.context;
   const isLoading = state.matches("fetching");
@@ -71,9 +71,9 @@ export function useXStateProductLogic(language: string) {
       const data = await response.json();
       send({ type: "FETCH_SUCCESS", products: data.products || [] });
     } catch {
-      send({ type: "FETCH_FAILURE", error: translate(language as any, "fetchProductsError") });
+      send({ type: "FETCH_FAILURE", error: translate("fetchProductsError") });
     }
-  }, [send, language]);
+  }, [send]);
 
   useEffect(() => {
     if (products.length === 0) {
@@ -95,12 +95,11 @@ export function useXStateProductLogic(language: string) {
 }
 
 // --- UI Presentation Component ---
-export const XStateProduct: React.FC<{ user: AppUser | null; language: string }> = ({
+export const XStateProduct: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   const navigate = useNavigate();
-  const { products, isLoading, error, loadProducts, deleteProduct } = useXStateProductLogic(language);
+  const { products, isLoading, error, loadProducts, deleteProduct } = useXStateProductLogic();
   const isAdmin = user?.role === "ADMIN";
 
   return (
@@ -119,7 +118,7 @@ export const XStateProduct: React.FC<{ user: AppUser | null; language: string }>
       {isLoading ? (
         <div className="loading-state">
           <RefreshCw className="loading-spinner spinning" size={32} />
-          <p>{translate(language as any, "loading")}</p>
+          <p>{translate("loading")}</p>
         </div>
       ) : error ? (
         <div className="empty-state">
@@ -154,7 +153,7 @@ export const XStateProduct: React.FC<{ user: AppUser | null; language: string }>
                     <button
                       onClick={() => deleteProduct(prod.id)}
                       className="todo-delete-btn"
-                      title={translate(language as any, "deleteButton")}
+                      title={translate("deleteButton")}
                       aria-label="Delete product"
                     >
                       <Trash2 size={18} />
@@ -163,7 +162,7 @@ export const XStateProduct: React.FC<{ user: AppUser | null; language: string }>
                     <button
                       className="todo-delete-btn disabled"
                       disabled
-                      title={translate(language as any, "deleteRestricted")}
+                      title={translate("deleteRestricted")}
                       aria-label="Delete product blocked"
                     >
                       <Lock size={16} />

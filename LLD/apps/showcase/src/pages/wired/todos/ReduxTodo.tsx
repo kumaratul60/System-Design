@@ -11,7 +11,6 @@ export function useReduxTodoLogic() {
   const {
     todos,
     isLoadingTodos,
-    language,
     user,
     addTodo,
     toggleTodo,
@@ -34,16 +33,15 @@ export function useReduxTodoLogic() {
   };
 
   const welcomeMessage = user
-    ? translate(language, "welcomeUser", {
+    ? translate("welcomeUser", {
         username: user.username,
-        role: user.role === "ADMIN" ? translate(language, "roleAdmin") : translate(language, "roleUser"),
+        role: user.role === "ADMIN" ? translate("roleAdmin") : translate("roleUser"),
       })
     : "";
 
   return {
     todos,
     isLoadingTodos,
-    language,
     user,
     newTodoTitle,
     setNewTodoTitle,
@@ -60,7 +58,6 @@ export const ReduxTodo: React.FC = () => {
   const {
     todos,
     isLoadingTodos,
-    language,
     user,
     newTodoTitle,
     setNewTodoTitle,
@@ -89,10 +86,10 @@ export const ReduxTodo: React.FC = () => {
             onClick={() => fetchTodos()}
             className="btn btn-secondary fetch-btn"
             disabled={isLoadingTodos}
-            title={translate(language, "refreshApiData")}
+            title={translate("refreshApiData")}
           >
             <RefreshCw className={`fetch-icon ${isLoadingTodos ? "spinning" : ""}`} size={16} />
-            <span className="btn-text">{translate(language, "refreshApiData")}</span>
+            <span className="btn-text">{translate("refreshApiData")}</span>
           </button>
         </div>
 
@@ -101,20 +98,20 @@ export const ReduxTodo: React.FC = () => {
             type="text"
             value={newTodoTitle}
             onChange={(e) => setNewTodoTitle(e.target.value)}
-            placeholder={translate(language, "addTodoPlaceholder")}
+            placeholder={translate("addTodoPlaceholder")}
             className="text-input todo-input"
             required
           />
           <button type="submit" className="btn btn-primary add-btn">
             <Plus size={18} />
-            <span>{translate(language, "addButton")}</span>
+            <span>{translate("addButton")}</span>
           </button>
         </form>
 
         {isLoadingTodos ? (
           <div className="loading-state">
             <RefreshCw className="loading-spinner spinning" size={32} />
-            <p>{translate(language, "loading")}</p>
+            <p>{translate("loading")}</p>
           </div>
         ) : (
           <div className="todos-list-container">
@@ -142,7 +139,7 @@ export const ReduxTodo: React.FC = () => {
                       <button
                         onClick={() => deleteTodo(todo.id)}
                         className="todo-delete-btn"
-                        title={translate(language, "deleteButton")}
+                        title={translate("deleteButton")}
                         aria-label="Delete task"
                       >
                         <Trash2 size={18} />
@@ -151,7 +148,7 @@ export const ReduxTodo: React.FC = () => {
                       <button
                         className="todo-delete-btn disabled"
                         disabled
-                        title={translate(language, "deleteRestricted")}
+                        title={translate("deleteRestricted")}
                         aria-label="Delete task restricted"
                       >
                         <Lock size={16} />

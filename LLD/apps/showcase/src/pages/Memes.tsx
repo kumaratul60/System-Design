@@ -10,7 +10,6 @@ interface Meme {
 }
 
 export const Memes: React.FC = () => {
-  const { language } = useAppState();
   const [memes, setMemes] = useState<Meme[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,11 +25,11 @@ export const Memes: React.FC = () => {
       // Select the first 5 memes
       setMemes(allMemes.slice(0, 5));
     } catch {
-      setError(translate(language, "fetchMemesError"));
+      setError(translate("fetchMemesError"));
     } finally {
       setIsLoading(false);
     }
-  }, [language]);
+  }, []);
 
   useEffect(() => {
     fetchMemes();
@@ -41,7 +40,7 @@ export const Memes: React.FC = () => {
       <div className="todos-card-header">
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" />
-          <h3>{translate(language, "navMemes")}</h3>
+          <h3>{translate("navMemes")}</h3>
         </div>
         <button
           onClick={fetchMemes}
@@ -56,7 +55,7 @@ export const Memes: React.FC = () => {
       {isLoading ? (
         <div className="loading-state">
           <RefreshCw className="loading-spinner spinning" size={32} />
-          <p>{translate(language, "loading")}</p>
+          <p>{translate("loading")}</p>
         </div>
       ) : error ? (
         <div className="empty-state">

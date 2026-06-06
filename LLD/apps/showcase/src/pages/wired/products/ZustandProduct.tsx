@@ -18,7 +18,7 @@ interface ProductState {
   products: Product[];
   isLoading: boolean;
   error: string | null;
-  fetchProducts: (language: string) => Promise<void>;
+  fetchProducts: () => Promise<void>;
   deleteProduct: (id: number) => void;
 }
 
@@ -27,7 +27,7 @@ const useLocalProductStore = create<ProductState>((set) => ({
   products: [],
   isLoading: false,
   error: null,
-  fetchProducts: async (language: string) => {
+  fetchProducts: async () => {
     set({ isLoading: true, error: null });
     try {
       const response = await fetch("https://dummyjson.com/products?limit=5");
@@ -35,7 +35,7 @@ const useLocalProductStore = create<ProductState>((set) => ({
       const data = await response.json();
       set({ products: data.products || [] });
     } catch {
-      set({ error: translate(language as any, "fetchProductsError") });
+      set({ error: translate("fetchProductsError") });
     } finally {
       set({ isLoading: false });
     }
@@ -47,7 +47,7 @@ const useLocalProductStore = create<ProductState>((set) => ({
 }));
 
 // --- Data Layer: Custom Hook ---
-export function useZustandProductLogic(language: string) {
+export function useZustandProductLogic() {
   const products = useLocalProductStore((state) => state.products);
   const isLoading = useLocalProductStore((state) => state.isLoading);
   const error = useLocalProductStore((state) => state.error);
@@ -56,9 +56,9 @@ export function useZustandProductLogic(language: string) {
 
   useEffect(() => {
     if (products.length === 0) {
-      fetchProducts(language);
+      fetchProducts();
     }
-  }, [fetchProducts, language, products.length]);
+  }, [fetchProducts, products.length]);
 
   return {
     products,
@@ -70,12 +70,11 @@ export function useZustandProductLogic(language: string) {
 }
 
 // --- UI Presentation Component ---
-export const ZustandProduct: React.FC<{ user: AppUser | null; language: string }> = ({
+export const ZustandProduct: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   const navigate = useNavigate();
-  const { products, isLoading, error, fetchProducts, deleteProduct } = useZustandProductLogic(language);
+  const { products, isLoading, error, fetchProducts, deleteProduct } = useZustandProductLogic();
   const isAdmin = user?.role === "ADMIN";
 
   return (
@@ -85,7 +84,7 @@ export const ZustandProduct: React.FC<{ user: AppUser | null; language: string }
           <ShoppingBag className="todos-title-icon" />
           <h3>Products Catalog (Engine 5: Zustand Store)</h3>
         </div>
-        <button onClick={() => fetchProducts(language)} className="btn btn-secondary fetch-btn" disabled={isLoading}>
+        <button onClick={() => fetchProducts()} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading ? "spinning" : ""}`} size={16} />
           <span className="btn-text">Reset Feed</span>
         </button>
@@ -94,12 +93,12 @@ export const ZustandProduct: React.FC<{ user: AppUser | null; language: string }
       {isLoading ? (
         <div className="loading-state">
           <RefreshCw className="loading-spinner spinning" size={32} />
-          <p>{translate(language as any, "loading")}</p>
+          <p>{translate("loading")}</p>
         </div>
       ) : error ? (
         <div className="empty-state">
           <p className="danger-text">{error}</p>
-          <button onClick={() => fetchProducts(language)} className="btn btn-secondary mt-2">
+          <button onClick={() => fetchProducts()} className="btn btn-secondary mt-2">
             Retry Load
           </button>
         </div>
@@ -129,7 +128,7 @@ export const ZustandProduct: React.FC<{ user: AppUser | null; language: string }
                     <button
                       onClick={() => deleteProduct(prod.id)}
                       className="todo-delete-btn"
-                      title={translate(language as any, "deleteButton")}
+                      title={translate("deleteButton")}
                       aria-label="Delete product"
                     >
                       <Trash2 size={18} />
@@ -138,7 +137,7 @@ export const ZustandProduct: React.FC<{ user: AppUser | null; language: string }
                     <button
                       className="todo-delete-btn disabled"
                       disabled
-                      title={translate(language as any, "deleteRestricted")}
+                      title={translate("deleteRestricted")}
                       aria-label="Delete product blocked"
                     >
                       <Lock size={16} />

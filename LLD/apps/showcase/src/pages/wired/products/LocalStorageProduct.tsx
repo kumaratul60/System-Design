@@ -14,7 +14,7 @@ interface Product {
 }
 
 // --- Data Layer: Custom Hook ---
-export function useLocalStorageProductLogic(user: AppUser | null, language: string) {
+export function useLocalStorageProductLogic(user: AppUser | null) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,11 +53,11 @@ export function useLocalStorageProductLogic(user: AppUser | null, language: stri
       const data = await response.json();
       setProducts(data.products || []);
     } catch {
-      setError(translate(language as any, "fetchProductsError"));
+      setError(translate("fetchProductsError"));
     } finally {
       setIsLoading(false);
     }
-  }, [language]);
+  }, []);
 
   useEffect(() => {
     fetchProducts();
@@ -91,9 +91,8 @@ export function useLocalStorageProductLogic(user: AppUser | null, language: stri
 }
 
 // --- UI Presentation Component ---
-export const LocalStorageProduct: React.FC<{ user: AppUser | null; language: string }> = ({
+export const LocalStorageProduct: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   const navigate = useNavigate();
   const {
@@ -103,7 +102,7 @@ export const LocalStorageProduct: React.FC<{ user: AppUser | null; language: str
     isAdmin,
     handleDeleteSimulate,
     resetCatalog,
-  } = useLocalStorageProductLogic(user, language);
+  } = useLocalStorageProductLogic(user);
 
   return (
     <div className="page-container products-page">
@@ -121,7 +120,7 @@ export const LocalStorageProduct: React.FC<{ user: AppUser | null; language: str
       {isLoading ? (
         <div className="loading-state">
           <RefreshCw className="loading-spinner spinning" size={32} />
-          <p>{translate(language as any, "loading")}</p>
+          <p>{translate("loading")}</p>
         </div>
       ) : error ? (
         <div className="empty-state">
@@ -156,7 +155,7 @@ export const LocalStorageProduct: React.FC<{ user: AppUser | null; language: str
                     <button
                       onClick={() => handleDeleteSimulate(prod.id)}
                       className="todo-delete-btn"
-                      title={translate(language as any, "deleteButton")}
+                      title={translate("deleteButton")}
                       aria-label="Delete product"
                     >
                       <Trash2 size={18} />
@@ -165,7 +164,7 @@ export const LocalStorageProduct: React.FC<{ user: AppUser | null; language: str
                     <button
                       className="todo-delete-btn disabled"
                       disabled
-                      title={translate(language as any, "deleteRestricted")}
+                      title={translate("deleteRestricted")}
                       aria-label="Delete product blocked"
                     >
                       <Lock size={16} />

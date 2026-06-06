@@ -16,7 +16,6 @@ interface Product {
 interface ProductCardProps {
   product: Product;
   user: AppUser | null;
-  language: string;
   isAdmin: boolean;
   onNavigateToDetail: (id: number) => void;
   onDeleteSimulate: (id: number) => void;
@@ -25,14 +24,13 @@ interface ProductCardProps {
 interface ProductGridProps {
   products: Product[];
   user: AppUser | null;
-  language: string;
   isAdmin: boolean;
   onNavigateToDetail: (id: number) => void;
   onDeleteSimulate: (id: number) => void;
 }
 
 // --- Data Layer: Custom Hook ---
-export function usePropDrillingProductLogic(user: AppUser | null, language: string) {
+export function usePropDrillingProductLogic(user: AppUser | null) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,11 +44,11 @@ export function usePropDrillingProductLogic(user: AppUser | null, language: stri
       const data = await response.json();
       setProducts(data.products || []);
     } catch {
-      setError(translate(language as any, "fetchProductsError"));
+      setError(translate("fetchProductsError"));
     } finally {
       setIsLoading(false);
     }
-  }, [language]);
+  }, []);
 
   useEffect(() => {
     fetchProducts();
@@ -76,7 +74,6 @@ export function usePropDrillingProductLogic(user: AppUser | null, language: stri
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
-  language,
   isAdmin,
   onNavigateToDetail,
   onDeleteSimulate,
@@ -101,7 +98,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <button
               onClick={() => onDeleteSimulate(product.id)}
               className="todo-delete-btn"
-              title={translate(language as any, "deleteButton")}
+              title={translate("deleteButton")}
               aria-label="Delete product"
             >
               <Trash2 size={18} />
@@ -110,7 +107,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <button
               className="todo-delete-btn disabled"
               disabled
-              title={translate(language as any, "deleteRestricted")}
+              title={translate("deleteRestricted")}
               aria-label="Delete product blocked"
             >
               <Lock size={16} />
@@ -125,7 +122,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 const ProductGrid: React.FC<ProductGridProps> = ({
   products,
   user,
-  language,
   isAdmin,
   onNavigateToDetail,
   onDeleteSimulate,
@@ -137,7 +133,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           key={prod.id}
           product={prod}
           user={user}
-          language={language}
           isAdmin={isAdmin}
           onNavigateToDetail={onNavigateToDetail}
           onDeleteSimulate={onDeleteSimulate}
@@ -148,9 +143,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 };
 
 // Main Component
-export const PropDrillingProduct: React.FC<{ user: AppUser | null; language: string }> = ({
+export const PropDrillingProduct: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   const navigate = useNavigate();
   const {
@@ -160,7 +154,7 @@ export const PropDrillingProduct: React.FC<{ user: AppUser | null; language: str
     isAdmin,
     fetchProducts,
     handleDeleteSimulate,
-  } = usePropDrillingProductLogic(user, language);
+  } = usePropDrillingProductLogic(user);
 
   return (
     <div className="page-container products-page">
@@ -182,7 +176,7 @@ export const PropDrillingProduct: React.FC<{ user: AppUser | null; language: str
       {isLoading ? (
         <div className="loading-state">
           <RefreshCw className="loading-spinner spinning" size={32} />
-          <p>{translate(language as any, "loading")}</p>
+          <p>{translate("loading")}</p>
         </div>
       ) : error ? (
         <div className="empty-state">
@@ -199,7 +193,6 @@ export const PropDrillingProduct: React.FC<{ user: AppUser | null; language: str
         <ProductGrid
           products={products}
           user={user}
-          language={language}
           isAdmin={isAdmin}
           onNavigateToDetail={(id) => navigate(`/products/${id}`)}
           onDeleteSimulate={handleDeleteSimulate}

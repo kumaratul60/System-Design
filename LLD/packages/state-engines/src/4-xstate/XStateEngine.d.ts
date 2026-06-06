@@ -1,7 +1,6 @@
-import type { AppState, Theme, Language, Todo } from "../types";
+import type { AppState, Theme, Todo } from "../types";
 export declare const appMachine: import("xstate").StateMachine<{
     theme: Theme;
-    language: Language;
     user: import("..").AppUser | null;
     todos: Todo[];
     isLoadingTodos: boolean;

@@ -1,4 +1,4 @@
-import type { Theme, Language, AppUser } from "./types";
+import type { Theme, AppUser } from "./types";
 
 export const getInitialTheme = (): Theme => {
   const saved = localStorage.getItem("lld_theme");
@@ -20,28 +20,6 @@ export const getInitialTheme = (): Theme => {
   }
   console.log("[storageHelpers] Falling back to default theme: light");
   return "light";
-};
-
-export const getInitialLanguage = (): Language => {
-  const saved = localStorage.getItem("lld_language");
-  console.log("[storageHelpers] Loading language from localStorage. Raw value:", saved);
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      if (parsed === "en" || parsed === "es" || parsed === "hi") {
-        console.log("[storageHelpers] Parsed JSON language successfully:", parsed);
-        return parsed as Language;
-      }
-    } catch {
-      // Fallback to raw string comparison if JSON parsing fails
-      if (saved === "en" || saved === "es" || saved === "hi") {
-        console.log("[storageHelpers] Read raw string language successfully:", saved);
-        return saved as Language;
-      }
-    }
-  }
-  console.log("[storageHelpers] Falling back to default language: en");
-  return "en";
 };
 
 export const getInitialUser = (): AppUser | null => {
@@ -73,11 +51,6 @@ export const getInitialUser = (): AppUser | null => {
 export const setStorageTheme = (theme: Theme) => {
   console.log("[storageHelpers] Writing theme to localStorage:", theme);
   localStorage.setItem("lld_theme", JSON.stringify(theme));
-};
-
-export const setStorageLanguage = (lang: Language) => {
-  console.log("[storageHelpers] Writing language to localStorage:", lang);
-  localStorage.setItem("lld_language", JSON.stringify(lang));
 };
 
 export const setStorageUser = (user: AppUser | null) => {

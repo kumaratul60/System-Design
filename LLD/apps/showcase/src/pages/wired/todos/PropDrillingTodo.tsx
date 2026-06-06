@@ -8,7 +8,6 @@ import type { Todo, AppUser } from "@statelab/state-engines";
 interface TodoItemProps {
   todo: Todo;
   user: AppUser | null;
-  language: string;
   onToggle: (id: number) => void;
   onDelete: (id: number) => void;
 }
@@ -16,13 +15,11 @@ interface TodoItemProps {
 interface TodoListProps {
   todos: Todo[];
   user: AppUser | null;
-  language: string;
   onToggle: (id: number) => void;
   onDelete: (id: number) => void;
 }
 
 interface TodoFormProps {
-  language: string;
   onAdd: (title: string) => void;
 }
 
@@ -43,9 +40,9 @@ export function usePropDrillingTodo() {
   };
 
   const welcomeMessage = state.user
-    ? translate(state.language, "welcomeUser", {
+    ? translate("welcomeUser", {
         username: state.user.username,
-        role: state.user.role === "ADMIN" ? translate(state.language, "roleAdmin") : translate(state.language, "roleUser"),
+        role: state.user.role === "ADMIN" ? translate("roleAdmin") : translate("roleUser"),
       })
     : "";
 
@@ -61,7 +58,7 @@ export function usePropDrillingTodo() {
 // --- UI Presentation Components ---
 
 // Leaf Node: TodoItem
-const TodoItem: React.FC<TodoItemProps> = ({ todo, user, language, onToggle, onDelete }) => {
+const TodoItem: React.FC<TodoItemProps> = ({ todo, user, onToggle, onDelete }) => {
   const isAdmin = user?.role === "ADMIN";
 
   return (
@@ -82,7 +79,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, user, language, onToggle, onD
         <button
           onClick={() => onDelete(todo.id)}
           className="todo-delete-btn"
-          title={translate(language as any, "deleteButton")}
+          title={translate("deleteButton")}
           aria-label="Delete task"
         >
           <Trash2 size={18} />
@@ -91,7 +88,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, user, language, onToggle, onD
         <button
           className="todo-delete-btn disabled"
           disabled
-          title={translate(language as any, "deleteRestricted")}
+          title={translate("deleteRestricted")}
           aria-label="Delete task restricted"
         >
           <Lock size={16} />
@@ -102,7 +99,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, user, language, onToggle, onD
 };
 
 // Intermediate Component: TodoList
-const TodoList: React.FC<TodoListProps> = ({ todos, user, language, onToggle, onDelete }) => {
+const TodoList: React.FC<TodoListProps> = ({ todos, user, onToggle, onDelete }) => {
   if (todos.length === 0) {
     return (
       <div className="empty-state">
@@ -118,7 +115,6 @@ const TodoList: React.FC<TodoListProps> = ({ todos, user, language, onToggle, on
           key={todo.id}
           todo={todo}
           user={user}
-          language={language}
           onToggle={onToggle}
           onDelete={onDelete}
         />
@@ -128,7 +124,7 @@ const TodoList: React.FC<TodoListProps> = ({ todos, user, language, onToggle, on
 };
 
 // Component: TodoForm
-const TodoForm: React.FC<TodoFormProps> = ({ language, onAdd }) => {
+const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
   const [title, setTitle] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -144,13 +140,13 @@ const TodoForm: React.FC<TodoFormProps> = ({ language, onAdd }) => {
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder={translate(language as any, "addTodoPlaceholder")}
+        placeholder={translate("addTodoPlaceholder")}
         className="text-input todo-input"
         required
       />
       <button type="submit" className="btn btn-primary add-btn">
         <Plus size={18} />
-        <span>{translate(language as any, "addButton")}</span>
+        <span>{translate("addButton")}</span>
       </button>
     </form>
   );
@@ -176,26 +172,25 @@ export const PropDrillingTodo: React.FC = () => {
             onClick={() => state.fetchTodos()}
             className="btn btn-secondary fetch-btn"
             disabled={state.isLoadingTodos}
-            title={translate(state.language, "refreshApiData")}
+            title={translate("refreshApiData")}
           >
             <RefreshCw className={`fetch-icon ${state.isLoadingTodos ? "spinning" : ""}`} size={16} />
-            <span className="btn-text">{translate(state.language, "refreshApiData")}</span>
+            <span className="btn-text">{translate("refreshApiData")}</span>
           </button>
         </div>
 
-        <TodoForm language={state.language} onAdd={handleAddTodo} />
+        <TodoForm onAdd={handleAddTodo} />
 
         {state.isLoadingTodos ? (
           <div className="loading-state">
             <RefreshCw className="loading-spinner spinning" size={32} />
-            <p>{translate(state.language, "loading")}</p>
+            <p>{translate("loading")}</p>
           </div>
         ) : (
           <div className="todos-list-container">
             <TodoList
               todos={state.todos}
               user={state.user}
-              language={state.language}
               onToggle={state.toggleTodo}
               onDelete={state.deleteTodo}
             />

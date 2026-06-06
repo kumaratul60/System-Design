@@ -22,9 +22,9 @@ export function useXStateTodoLogic() {
   };
 
   const welcomeMessage = state.user
-    ? translate(state.language, "welcomeUser", {
+    ? translate("welcomeUser", {
         username: state.user.username,
-        role: state.user.role === "ADMIN" ? translate(state.language, "roleAdmin") : translate(state.language, "roleUser"),
+        role: state.user.role === "ADMIN" ? translate("roleAdmin") : translate("roleUser"),
       })
     : "";
 
@@ -58,10 +58,10 @@ export const XStateTodo: React.FC = () => {
             onClick={() => state.fetchTodos()}
             className="btn btn-secondary fetch-btn"
             disabled={state.isLoadingTodos}
-            title={translate(state.language, "refreshApiData")}
+            title={translate("refreshApiData")}
           >
             <RefreshCw className={`fetch-icon ${state.isLoadingTodos ? "spinning" : ""}`} size={16} />
-            <span className="btn-text">{translate(state.language, "refreshApiData")}</span>
+            <span className="btn-text">{translate("refreshApiData")}</span>
           </button>
         </div>
 
@@ -70,20 +70,20 @@ export const XStateTodo: React.FC = () => {
             type="text"
             value={newTodoTitle}
             onChange={(e) => setNewTodoTitle(e.target.value)}
-            placeholder={translate(state.language, "addTodoPlaceholder")}
+            placeholder={translate("addTodoPlaceholder")}
             className="text-input todo-input"
             required
           />
           <button type="submit" className="btn btn-primary add-btn">
             <Plus size={18} />
-            <span>{translate(state.language, "addButton")}</span>
+            <span>{translate("addButton")}</span>
           </button>
         </form>
 
         {state.isLoadingTodos ? (
           <div className="loading-state">
             <RefreshCw className="loading-spinner spinning" size={32} />
-            <p>{translate(state.language, "loading")}</p>
+            <p>{translate("loading")}</p>
           </div>
         ) : (
           <div className="todos-list-container">
@@ -111,7 +111,7 @@ export const XStateTodo: React.FC = () => {
                       <button
                         onClick={() => state.deleteTodo(todo.id)}
                         className="todo-delete-btn"
-                        title={translate(state.language, "deleteButton")}
+                        title={translate("deleteButton")}
                         aria-label="Delete task"
                       >
                         <Trash2 size={18} />
@@ -120,7 +120,7 @@ export const XStateTodo: React.FC = () => {
                       <button
                         className="todo-delete-btn disabled"
                         disabled
-                        title={translate(state.language, "deleteRestricted")}
+                        title={translate("deleteRestricted")}
                         aria-label="Delete task restricted"
                       >
                         <Lock size={16} />

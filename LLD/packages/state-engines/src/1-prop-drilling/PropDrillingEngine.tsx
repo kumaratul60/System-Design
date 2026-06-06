@@ -1,18 +1,15 @@
 import { useState } from "react";
-import type { AppState, AppUser, Theme, Language, Todo } from "../types";
+import type { AppState, AppUser, Theme, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
 import {
   getInitialTheme,
-  getInitialLanguage,
   getInitialUser,
   setStorageTheme,
-  setStorageLanguage,
   setStorageUser
 } from "../storageHelpers";
 
 export const usePropDrillingState = (): AppState => {
   const [theme, setThemeState] = useState<Theme>(() => getInitialTheme());
-  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
   const [user, setUser] = useState<AppUser | null>(() => getInitialUser());
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoadingTodos, setIsLoadingTodos] = useState<boolean>(false);
@@ -20,11 +17,6 @@ export const usePropDrillingState = (): AppState => {
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     setStorageTheme(newTheme);
-  };
-
-  const setLanguage = (newLang: Language) => {
-    setLanguageState(newLang);
-    setStorageLanguage(newLang);
   };
 
   const login = (username: string, role: "USER" | "ADMIN") => {
@@ -71,12 +63,10 @@ export const usePropDrillingState = (): AppState => {
 
   return {
     theme,
-    language,
     user,
     todos,
     isLoadingTodos,
     setTheme,
-    setLanguage,
     login,
     logout,
     addTodo,

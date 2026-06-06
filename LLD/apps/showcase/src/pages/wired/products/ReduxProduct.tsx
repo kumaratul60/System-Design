@@ -30,14 +30,14 @@ const initialState: ProductSliceState = {
 // Async Thunk
 export const fetchReduxProducts = createAsyncThunk(
   "products/fetchReduxProducts",
-  async (language: string, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await fetch("https://dummyjson.com/products?limit=5");
       if (!response.ok) throw new Error("Failed to load products");
       const data = await response.json();
       return data.products || [];
     } catch {
-      return rejectWithValue(translate(language as any, "fetchProductsError"));
+      return rejectWithValue(translate("fetchProductsError"));
     }
   }
 );
@@ -78,7 +78,7 @@ const localProductStore = configureStore({
 type LocalProductRootState = ReturnType<typeof localProductStore.getState>;
 
 // --- Data Layer: Custom Hook ---
-export function useReduxProductLogic(language: string) {
+export function useReduxProductLogic() {
   const dispatch = useDispatch();
   const products = useSelector((state: LocalProductRootState) => state.productsStore.products);
   const isLoading = useSelector((state: LocalProductRootState) => state.productsStore.isLoading);
@@ -86,16 +86,16 @@ export function useReduxProductLogic(language: string) {
 
   useEffect(() => {
     if (products.length === 0) {
-      dispatch(fetchReduxProducts(language) as any);
+      dispatch(fetchReduxProducts() as any);
     }
-  }, [dispatch, language, products.length]);
+  }, [dispatch, products.length]);
 
   const handleDelete = (id: number) => {
     dispatch(productSlice.actions.deleteProduct(id));
   };
 
   const handleReset = () => {
-    dispatch(fetchReduxProducts(language) as any);
+    dispatch(fetchReduxProducts() as any);
   };
 
   return {
@@ -108,12 +108,11 @@ export function useReduxProductLogic(language: string) {
 }
 
 // --- UI Presentation Component ---
-const ReduxProductInner: React.FC<{ user: AppUser | null; language: string }> = ({
+const ReduxProductInner: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   const navigate = useNavigate();
-  const { products, isLoading, error, handleDelete, handleReset } = useReduxProductLogic(language);
+  const { products, isLoading, error, handleDelete, handleReset } = useReduxProductLogic();
   const isAdmin = user?.role === "ADMIN";
 
   return (
@@ -132,7 +131,7 @@ const ReduxProductInner: React.FC<{ user: AppUser | null; language: string }> = 
       {isLoading ? (
         <div className="loading-state">
           <RefreshCw className="loading-spinner spinning" size={32} />
-          <p>{translate(language as any, "loading")}</p>
+          <p>{translate("loading")}</p>
         </div>
       ) : error ? (
         <div className="empty-state">
@@ -167,7 +166,7 @@ const ReduxProductInner: React.FC<{ user: AppUser | null; language: string }> = 
                     <button
                       onClick={() => handleDelete(prod.id)}
                       className="todo-delete-btn"
-                      title={translate(language as any, "deleteButton")}
+                      title={translate("deleteButton")}
                       aria-label="Delete product"
                     >
                       <Trash2 size={18} />
@@ -176,7 +175,7 @@ const ReduxProductInner: React.FC<{ user: AppUser | null; language: string }> = 
                     <button
                       className="todo-delete-btn disabled"
                       disabled
-                      title={translate(language as any, "deleteRestricted")}
+                      title={translate("deleteRestricted")}
                       aria-label="Delete product blocked"
                     >
                       <Lock size={16} />
@@ -192,13 +191,12 @@ const ReduxProductInner: React.FC<{ user: AppUser | null; language: string }> = 
   );
 };
 
-export const ReduxProduct: React.FC<{ user: AppUser | null; language: string }> = ({
+export const ReduxProduct: React.FC<{ user: AppUser | null }> = ({
   user,
-  language,
 }) => {
   return (
     <Provider store={localProductStore}>
-      <ReduxProductInner user={user} language={language} />
+      <ReduxProductInner user={user} />
     </Provider>
   );
 };

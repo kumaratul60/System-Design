@@ -1,12 +1,10 @@
 import React, { createContext, useContext, useState } from "react";
-import type { AppState, AppUser, Theme, Language, Todo } from "../types";
+import type { AppState, AppUser, Theme, Todo } from "../types";
 import { fetchDummyTodos } from "../api";
 import {
   getInitialTheme,
-  getInitialLanguage,
   getInitialUser,
   setStorageTheme,
-  setStorageLanguage,
   setStorageUser
 } from "../storageHelpers";
 
@@ -14,7 +12,6 @@ const AppStateContext = createContext<AppState | undefined>(undefined);
 
 export const ContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => getInitialTheme());
-  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
   const [user, setUser] = useState<AppUser | null>(() => getInitialUser());
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoadingTodos, setIsLoadingTodos] = useState<boolean>(false);
@@ -22,11 +19,6 @@ export const ContextProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     setStorageTheme(newTheme);
-  };
-
-  const setLanguage = (newLang: Language) => {
-    setLanguageState(newLang);
-    setStorageLanguage(newLang);
   };
 
   const login = (username: string, role: "USER" | "ADMIN") => {
@@ -73,12 +65,10 @@ export const ContextProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const value: AppState = {
     theme,
-    language,
     user,
     todos,
     isLoadingTodos,
     setTheme,
-    setLanguage,
     login,
     logout,
     addTodo,

@@ -1,24 +1,27 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize, HelpCircle, Film, Minimize2, Bookmark } from "lucide-react";
 
-const VIDEO_URL = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+const VIDEO_URL = "https://media.w3.org/2010/05/sintel/trailer_hd.mp4";
 
 interface VideoChapter {
   time: number; // in seconds
   title: string;
+  color: string;
 }
 
 const VIDEO_CHAPTERS: VideoChapter[] = [
-  { time: 0, title: "Introduction" },
-  { time: 15, title: "Bunny appears" },
-  { time: 45, title: "Butterfly scene" },
-  { time: 90, title: "Bird antics" },
+  { time: 0, title: "Introduction", color: "#3b82f6" },       // Blue
+  { time: 10, title: "Sintel's Quest", color: "#8b5cf6" },     // Violet
+  { time: 22, title: "Meeting the Dragon", color: "#ec4899" }, // Pink
+  { time: 35, title: "The Battle Begins", color: "#f59e0b" },  // Amber
+  { time: 45, title: "Credits & Outro", color: "#10b981" },    // Emerald
 ];
 
 export const VideoPlayer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const previewVideoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Play/Pause state
@@ -27,6 +30,12 @@ export const VideoPlayer: React.FC = () => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
+
+  // Timeline hover states
+  const [hoverTime, setHoverTime] = useState<number | null>(null);
+  const [hoverX, setHoverX] = useState<number>(0);
+  const [hoverChapter, setHoverChapter] = useState<string>("");
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   // Shared play/pause trigger
   const togglePlay = useCallback(() => {
@@ -177,6 +186,45 @@ export const VideoPlayer: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isPlaying, volume, duration, activeTab, isMuted, togglePlay, toggleMute]);
 
+  // Seek timeline and show previews on mouse movement over the segment tracks
+  const handleTimelineMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressBarRef.current || !duration) return;
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    const time = pct * duration;
+    setHoverTime(time);
+    setHoverX(x);
+
+    // Identify active chapter under cursor hover
+    let currentChap = VIDEO_CHAPTERS[0];
+    for (let i = 1; i < VIDEO_CHAPTERS.length; i++) {
+      if (time >= VIDEO_CHAPTERS[i].time) {
+        currentChap = VIDEO_CHAPTERS[i];
+      }
+    }
+    setHoverChapter(currentChap.title);
+
+    // Seek the hidden preview video element to update the tooltip preview thumbnail
+    if (previewVideoRef.current) {
+      previewVideoRef.current.currentTime = time;
+    }
+  };
+
+  const handleTimelineMouseLeave = () => {
+    setHoverTime(null);
+  };
+
+  const handleTimelineClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressBarRef.current || !duration || !videoRef.current) return;
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    const time = pct * duration;
+    videoRef.current.currentTime = time;
+    setCurrentTime(time);
+  };
+
   return (
     <div className="page-container">
       {/* Header */}
@@ -250,48 +298,120 @@ export const VideoPlayer: React.FC = () => {
                 pointerEvents: "auto",
               }}
             >
-              {/* Progress Slider (Linear) */}
+              {/* Progress Slider (Linear for Basic, Custom Chunked for Mid/Advance) */}
               <div style={{ position: "relative", width: "100%" }}>
-                <input
-                  type="range"
-                  min="0"
-                  max={duration || 100}
-                  value={currentTime}
-                  onChange={handleProgressChange}
-                  style={{
-                    width: "100%",
-                    cursor: "pointer",
-                    height: "4px",
-                    borderRadius: "2px",
-                  }}
-                />
+                {activeTab === "basic" ? (
+                  <input
+                    type="range"
+                    min="0"
+                    max={duration || 100}
+                    value={currentTime}
+                    onChange={handleProgressChange}
+                    style={{
+                      width: "100%",
+                      cursor: "pointer",
+                      height: "4px",
+                      borderRadius: "2px",
+                    }}
+                  />
+                ) : (
+                  <div
+                    ref={progressBarRef}
+                    onMouseMove={handleTimelineMouseMove}
+                    onMouseLeave={handleTimelineMouseLeave}
+                    onClick={handleTimelineClick}
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "12px",
+                      cursor: "pointer",
+                      display: "flex",
+                      gap: "4px",
+                      alignItems: "center",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    {/* Segments loop */}
+                    {VIDEO_CHAPTERS.map((chap, idx) => {
+                      const start = chap.time;
+                      const end = idx === VIDEO_CHAPTERS.length - 1 ? duration : VIDEO_CHAPTERS[idx + 1].time;
+                      
+                      const segmentDuration = end - start;
+                      const widthPct = duration > 0 ? (segmentDuration / duration) * 100 : (100 / VIDEO_CHAPTERS.length);
+                      
+                      let fillPct = 0;
+                      if (currentTime >= end) {
+                        fillPct = 100;
+                      } else if (currentTime >= start && currentTime < end) {
+                        fillPct = ((currentTime - start) / segmentDuration) * 100;
+                      }
 
-                {/* Chapter marker tags on timeline (Only in Advance) */}
-                {activeTab === "advance" && duration > 0 && (
-                  <>
-                    {VIDEO_CHAPTERS.map((chap) => {
-                      const offsetPct = (chap.time / duration) * 100;
                       return (
                         <div
                           key={chap.title}
                           style={{
-                            position: "absolute",
-                            top: "-4px",
-                            left: `${offsetPct}%`,
-                            width: "8px",
-                            height: "8px",
-                            borderRadius: "50%",
-                            background: "#f59e0b",
-                            cursor: "pointer",
+                            width: `${widthPct}%`,
+                            height: "6px",
+                            background: "rgba(255, 255, 255, 0.25)",
+                            borderRadius: "3px",
+                            overflow: "hidden",
+                            position: "relative",
                           }}
-                          title={chap.title}
-                          onClick={() => {
-                            if (videoRef.current) videoRef.current.currentTime = chap.time;
-                          }}
-                        />
+                        >
+                          <div
+                            style={{
+                              width: `${fillPct}%`,
+                              height: "100%",
+                              background: chap.color,
+                            }}
+                          />
+                        </div>
                       );
                     })}
-                  </>
+
+                    {/* Floating Hover Tooltip with Live Preview Video Thumbnail */}
+                    {hoverTime !== null && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "24px",
+                          left: `${hoverX}px`,
+                          transform: "translateX(-50%)",
+                          background: "#09090b",
+                          border: "1px solid #27272a",
+                          borderRadius: "8px",
+                          padding: "6px",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "4px",
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
+                          zIndex: 100,
+                          pointerEvents: "none",
+                        }}
+                      >
+                        <video
+                          ref={previewVideoRef}
+                          src={VIDEO_URL}
+                          muted
+                          style={{
+                            width: "110px",
+                            height: "62px",
+                            borderRadius: "4px",
+                            background: "#000",
+                            objectFit: "cover",
+                            display: "block",
+                          }}
+                        />
+                        <span style={{ fontSize: "0.75rem", color: "#ffffff", fontWeight: "bold", textAlign: "center", whiteSpace: "nowrap" }}>
+                          {hoverChapter}
+                        </span>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                          {formatTime(hoverTime)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 

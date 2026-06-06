@@ -1,63 +1,59 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
-import { Navigation } from "./Navigation";
+import { Outlet, Link } from "react-router-dom";
+import { useAppState } from "@statelab/state-engines";
 import type { SidebarLinkConfig } from "./Navigation";
-import { useEngine } from "@statelab/state-engines";
-import { Info, ExternalLink } from "lucide-react";
+import { FlaskConical, Sun, Moon, ExternalLink } from "lucide-react";
 
-export const Layout: React.FC<{ links: SidebarLinkConfig[] }> = ({ links }) => {
-  const { activeEngine } = useEngine();
+const GithubIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.332-5.466-5.93 0-1.31.465-2.381 1.235-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23a11.51 11.51 0 0 1 3.003-.404c1.02.005 2.047.138 3.003.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.233 1.911 1.233 3.221 0 4.61-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.015 2.898-.015 3.293 0 .322.218.694.825.576C20.565 21.796 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
+  </svg>
+);
 
-  // Engine information descriptions mapped dynamically
-  const getEngineDescription = () => {
-    switch (activeEngine) {
-      case "prop-drilling":
-        return {
-          title: "Engine 1: Prop Drilling Approach",
-          desc: "Raw React state (`useState`) resides in the root manager. State and callbacks are explicitly threaded down through props. Shows high structural coupling but requires zero external packages.",
-          diagram: "Root App -> Layout -> Routes -> Page -> Components"
-        };
-      case "local-storage":
-        return {
-          title: "Engine 2: LocalStorage Persist & Sync",
-          desc: "Synchronizes internal React states with browser localStore. Employs window storage listeners to automatically replicate and update state changes across different open tabs/windows in real time.",
-          diagram: "UI Event -> Write to LocalStorage -> Window Storage Event -> Synced across Tabs"
-        };
-      case "context":
-        return {
-          title: "Engine 3: React Context API",
-          desc: "Employs native React Context Providers to distribute states directly to consumer hooks. Eliminates prop drilling, but updates to any context value will trigger re-renders in all subscribing consumers.",
-          diagram: "Context Provider -> Context Bus -> direct consumer hook hookups"
-        };
-      case "xstate":
-        return {
-          title: "Engine 4: XState Finite State Machine (FSM)",
-          desc: "Enforces strict mathematical state boundaries. The application transitions between discrete states (idle, fetching) in response to strict event actions, avoiding invalid runtime configurations.",
-          diagram: "State [idle] -> Event [FETCH_START] -> State [fetching] -> Event [FETCH_SUCCESS]"
-        };
-      case "zustand":
-        return {
-          title: "Engine 5: Zustand Atomic Store",
-          desc: "Creates a fast, atomic Flux-based state container in a closure outside the React render cycle. Uses hook selectors to subscribe only to specific state changes, avoiding unnecessary renders.",
-          diagram: "Action Dispatcher -> Zustand State Closure -> Selector Observer -> Direct Component Re-render"
-        };
-      case "redux":
-        return {
-          title: "Engine 6: Redux Toolkit (RTK)",
-          desc: "The industry standard for clean unidirectional data flow. Dispatches payload actions to slices, recalculating next state trees using pure reducers and broadcasting via hook selectors.",
-          diagram: "Component -> Action Creator -> Dispatch -> Reducer Slices -> Store -> useSelector"
-        };
-      default:
-        return { title: "", desc: "", diagram: "" };
-    }
+export const Layout: React.FC<{ links: SidebarLinkConfig[] }> = () => {
+  const { theme, setTheme } = useAppState();
+
+  const handleThemeToggle = () => {
+    setTheme(theme === "light" ? "dark" : "light");
   };
-
-  const info = getEngineDescription();
 
   return (
     <div className="monorepo-shell">
-      {/* Sidebar Navigation */}
-      <Navigation links={links} />
+      {/* Top Header Navbar */}
+      <header className="shell-header">
+        <div className="header-container">
+          <Link to="/" className="header-brand">
+            <FlaskConical className="brand-icon animated-spin" />
+            <span className="brand-text">Frontend Lab</span>
+          </Link>
+          
+          <div className="header-actions">
+            {/* Theme Toggle */}
+            <button onClick={handleThemeToggle} className="theme-toggle-btn" aria-label="Toggle theme">
+              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+
+            {/* GitHub Link */}
+            <a
+              href="https://github.com/kumaratul60"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="theme-toggle-btn"
+              title="GitHub Profile"
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
+            >
+              <GithubIcon size={18} />
+            </a>
+          </div>
+        </div>
+      </header>
 
       {/* Main Content Area */}
       <div className="shell-main-wrapper">
@@ -66,20 +62,8 @@ export const Layout: React.FC<{ links: SidebarLinkConfig[] }> = ({ links }) => {
         </main>
 
         <footer className="shell-footer">
-          <div className="engine-info-banner">
-            <div className="banner-content">
-              <h4 className="banner-title">
-                <Info size={16} />{info.title}
-              </h4>
-              <p className="banner-desc">{info.desc}</p>
-              <div className="banner-diagram">
-                <span className="diagram-label">Data Flow Outline:</span>
-                <code>{info.diagram}</code>
-              </div>
-            </div>
-          </div>
           <div className="footer-copyright">
-            <span>© {new Date().getFullYear()} LLD StateLab. Developed under SystemDesign laboratory context.</span>
+            <span>© 2026 Frontend Lab. All rights reserved.</span>
             <a
               href="https://runlet.vercel.app"
               target="_blank"
@@ -95,3 +79,4 @@ export const Layout: React.FC<{ links: SidebarLinkConfig[] }> = ({ links }) => {
     </div>
   );
 };
+

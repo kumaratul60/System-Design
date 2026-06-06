@@ -1,4 +1,4 @@
-export type { AppState, AppUser, Theme, Language, Todo } from "./types";
+export type { AppState, AppUser, Theme, Todo } from "./types";
 export { EngineProvider, useEngine, useAppState } from "./EngineManager";
 export type { EngineType } from "./EngineManager";
 export { usePropDrillingState } from "./1-prop-drilling/PropDrillingEngine";
