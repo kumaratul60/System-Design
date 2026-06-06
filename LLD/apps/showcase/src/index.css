@@ -312,15 +312,31 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 32px;
 }
 
+@keyframes vertical-float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
 .framework-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease;
+  animation: vertical-float 3s ease-in-out infinite;
+}
+
+.framework-badge:nth-child(2n) {
+  animation-delay: 0.5s;
+}
+
+.framework-badge:nth-child(3n) {
+  animation-delay: 1s;
 }
 
 .framework-badge:hover {
   transform: translateY(-2px);
+  animation-play-state: paused;
 }
 
 /* Why Section */

@@ -173,24 +173,31 @@ const METADATA: Record<string, ComponentMeta> = {
 const FrameworkLogos: React.FC = () => (
   <div style={{ display: "flex", gap: "16px", justifyContent: "center", alignItems: "center", marginTop: "24px", flexWrap: "wrap" }}>
     {/* HTML5 */}
-    <div className="framework-badge html5" title="HTML5" style={{ background: "rgba(227, 79, 38, 0.08)", padding: "4px 8px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "6px", border: "1px solid rgba(227, 79, 38, 0.2)" }}>
-      <svg viewBox="0 0 512 512" width="16" height="16">
+    <div className="framework-badge html5" title="HTML5" style={{ background: "rgba(227, 79, 38, 0.08)", padding: "4px 10px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", border: "1px solid rgba(227, 79, 38, 0.2)" }}>
+      <svg viewBox="0 0 512 512" width="18" height="18">
         <path fill="#E34F26" d="M108.4 0h295.2l-26.6 447.8-121 33.6-121-33.6z"/>
         <path fill="#EF652A" d="M256 36v398.4l87 24.2 19.8-333.6z"/>
         <path fill="#EBEBEB" d="M256 161.4H192v48.6h64v50.4h-64v48.6h128l-6 100.8-58 16.2-58-16.2-3.8-64.8h48.6l2 32.4 20.8 5.6 20.8-5.6 3-50H157.6l-11.2-192h219.2V161.4z"/>
       </svg>
-      <span style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#E34F26" }}>HTML5</span>
+      <span style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#E34F26" }}>HTML5</span>
     </div>
     {/* JavaScript */}
-    <div className="framework-badge js" title="JavaScript" style={{ background: "rgba(247, 223, 30, 0.08)", padding: "4px 8px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "6px", border: "1px solid rgba(247, 223, 30, 0.2)" }}>
-      <div style={{ width: 14, height: 14, background: "#f7df1e", color: "#000000", fontWeight: "bold", fontFamily: "sans-serif", fontSize: "9px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", padding: "1px", borderRadius: "2px" }}>
+    <div className="framework-badge js" title="JavaScript" style={{ background: "rgba(247, 223, 30, 0.08)", padding: "4px 10px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", border: "1px solid rgba(247, 223, 30, 0.2)" }}>
+      <div style={{ width: 16, height: 16, background: "#f7df1e", color: "#000000", fontWeight: "bold", fontFamily: "sans-serif", fontSize: "10px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", padding: "1px", borderRadius: "2px" }}>
         JS
       </div>
-      <span style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#d6be00" }}>JavaScript</span>
+      <span style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#d6be00" }}>JavaScript</span>
+    </div>
+    {/* TypeScript */}
+    <div className="framework-badge ts" title="TypeScript" style={{ background: "rgba(49, 120, 198, 0.08)", padding: "4px 10px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", border: "1px solid rgba(49, 120, 198, 0.2)" }}>
+      <div style={{ width: 16, height: 16, background: "#3178c6", color: "#ffffff", fontWeight: "bold", fontFamily: "sans-serif", fontSize: "10px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", padding: "1px", borderRadius: "2px" }}>
+        TS
+      </div>
+      <span style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#3178c6" }}>TypeScript</span>
     </div>
     {/* React */}
-    <div className="framework-badge react" title="React" style={{ background: "rgba(97, 218, 251, 0.08)", padding: "4px 8px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "6px", border: "1px solid rgba(97, 218, 251, 0.2)" }}>
-      <svg viewBox="-11.5 -10.23174 23 20.46348" width="16" height="16">
+    <div className="framework-badge react" title="React" style={{ background: "rgba(97, 218, 251, 0.08)", padding: "4px 10px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", border: "1px solid rgba(97, 218, 251, 0.2)" }}>
+      <svg viewBox="-11.5 -10.23174 23 20.46348" width="18" height="18">
         <circle cx="0" cy="0" r="2.05" fill="#61dafb"/>
         <g stroke="#61dafb" strokeWidth="1" fill="none">
           <ellipse rx="11" ry="4.2"/>
@@ -198,18 +205,19 @@ const FrameworkLogos: React.FC = () => (
           <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
         </g>
       </svg>
-      <span style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#00b4d8" }}>React</span>
+      <span style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#00b4d8" }}>React</span>
     </div>
     {/* Zustand */}
-    <div className="framework-badge zustand" title="Zustand" style={{ background: "rgba(59, 130, 246, 0.08)", padding: "4px 8px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "6px", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
-      <span style={{ fontSize: "0.75rem", fontWeight: "bold", color: "var(--primary)" }}>🐻 Zustand</span>
+    <div className="framework-badge zustand" title="Zustand" style={{ background: "rgba(59, 130, 246, 0.08)", padding: "4px 10px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
+      <span style={{ fontSize: "16px" }}>🐻</span>
+      <span style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--primary)" }}>Zustand</span>
     </div>
     {/* Redux */}
-    <div className="framework-badge redux" title="Redux" style={{ background: "rgba(118, 74, 188, 0.08)", padding: "4px 8px", borderRadius: "6px", display: "flex", alignItems: "center", gap: "6px", border: "1px solid rgba(118, 74, 188, 0.2)" }}>
-      <svg viewBox="0 0 512 512" width="16" height="16">
+    <div className="framework-badge redux" title="Redux" style={{ background: "rgba(118, 74, 188, 0.08)", padding: "4px 10px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", border: "1px solid rgba(118, 74, 188, 0.2)" }}>
+      <svg viewBox="0 0 512 512" width="18" height="18">
         <path fill="#764abc" d="M358.4 128C320 128 297.6 150.4 297.6 188.8v64H358.4c38.4 0 60.8-22.4 60.8-60.8V128zM153.6 384c38.4 0 60.8-22.4 60.8-60.8V259.2H153.6c-38.4 0-60.8 22.4-60.8 60.8V384zM358.4 259.2H297.6V323.2c0 38.4 22.4 60.8 60.8 60.8H419.2V323.2C419.2 284.8 396.8 259.2 358.4 259.2zM153.6 128H92.8V192c0 38.4 22.4 60.8 60.8 60.8H214.4V192c0-38.4-22.4-64-60.8-64z"/>
       </svg>
-      <span style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#764abc" }}>Redux Toolkit</span>
+      <span style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#764abc" }}>Redux Toolkit</span>
     </div>
   </div>
 );
