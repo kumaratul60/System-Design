@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useAppState } from "@statelab/state-engines";
 import { translate } from "@statelab/theme";
-import { Image as ImageIcon, RefreshCw } from "lucide-react";
+import { Image as ImageIcon, RefreshCw, Code} from "lucide-react";
 
 interface Meme {
   id: string;
@@ -41,6 +41,16 @@ export const Memes: React.FC = () => {
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" />
           <h3>{translate("navMemes")}</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/Memes.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button
           onClick={fetchMemes}

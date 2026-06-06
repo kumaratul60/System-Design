@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { HelpCircle, RefreshCw, Trophy, Heart, Activity, CheckCircle, AlertCircle } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { HelpCircle, RefreshCw, Trophy, Heart, Activity, CheckCircle, AlertCircle, Code} from "lucide-react";
 
 interface LeaderboardEntry {
   name: string;
@@ -113,8 +114,7 @@ export const GuessNumber: React.FC = () => {
       name: username,
       attempts: attemptsList.length,
       difficulty,
-      timestamp: new Date().toLocaleDateString(),
-    };
+      timestamp: new Date().toLocaleDateString()};
 
     setLeaderboard((prev) => {
       const updated = [...prev, entry].sort((a, b) => a.attempts - b.attempts).slice(0, 5);
@@ -140,6 +140,16 @@ export const GuessNumber: React.FC = () => {
         <div className="todos-header-title">
           <HelpCircle className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Number Guess Sandbox</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/GuessNumber.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -200,8 +210,7 @@ export const GuessNumber: React.FC = () => {
                     width: `${getNarrowingPercentage()}%`,
                     height: "100%",
                     background: "var(--primary)",
-                    transition: "width 0.3s ease",
-                  }}
+                    transition: "width 0.3s ease"}}
                 />
               </div>
             )}
@@ -238,8 +247,7 @@ export const GuessNumber: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px",
-              }}
+                gap: "8px"}}
             >
               {hasWon ? <CheckCircle size={18} /> : isGameOver ? <AlertCircle size={18} /> : <Activity size={18} />}
               {feedback}
@@ -290,8 +298,7 @@ export const GuessNumber: React.FC = () => {
                       padding: "4px 8px",
                       borderRadius: "6px",
                       fontSize: "0.85rem",
-                      color: "var(--text-h)",
-                    }}
+                      color: "var(--text-h)"}}
                   >
                     #{i + 1}: {att}
                   </span>

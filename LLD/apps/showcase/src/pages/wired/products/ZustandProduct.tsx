@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { create } from "zustand";
 import { translate } from "@statelab/theme";
-import { Trash2, Lock, ShoppingBag, RefreshCw } from "lucide-react";
+import { Trash2, Lock, ShoppingBag, RefreshCw, Code} from "lucide-react";
 import type { AppUser } from "@statelab/state-engines";
 
 // --- Types & Interfaces ---
@@ -42,9 +42,7 @@ const useLocalProductStore = create<ProductState>((set) => ({
   },
   deleteProduct: (id: number) =>
     set((state) => ({
-      products: state.products.filter((p) => p.id !== id),
-    })),
-}));
+      products: state.products.filter((p) => p.id !== id)}))}));
 
 // --- Data Layer: Custom Hook ---
 export function useZustandProductLogic() {
@@ -65,14 +63,12 @@ export function useZustandProductLogic() {
     isLoading,
     error,
     fetchProducts,
-    deleteProduct,
-  };
+    deleteProduct};
 }
 
 // --- UI Presentation Component ---
 export const ZustandProduct: React.FC<{ user: AppUser | null }> = ({
-  user,
-}) => {
+  user}) => {
   const navigate = useNavigate();
   const { products, isLoading, error, fetchProducts, deleteProduct } = useZustandProductLogic();
   const isAdmin = user?.role === "ADMIN";
@@ -83,6 +79,16 @@ export const ZustandProduct: React.FC<{ user: AppUser | null }> = ({
         <div className="todos-header-title">
           <ShoppingBag className="todos-title-icon" />
           <h3>Products Catalog (Engine 5: Zustand Store)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/products/ZustandProduct.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={() => fetchProducts()} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading ? "spinning" : ""}`} size={16} />

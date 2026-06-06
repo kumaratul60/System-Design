@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { RefreshCw, Table, ChevronDown, ChevronUp } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { RefreshCw, Table, ChevronDown, ChevronUp, Code} from "lucide-react";
 
 type SortOrder = "asc" | "desc" | null;
 
@@ -15,8 +16,7 @@ export const ColumnTable: React.FC = () => {
     "0-0": "Apple", "0-1": "10", "0-2": "15",
     "1-0": "Banana", "1-1": "20", "1-2": "25",
     "2-0": "Cherry", "2-1": "5",  "2-2": "10",
-    "3-0": "Orange", "3-1": "15", "3-2": "30",
-  });
+    "3-0": "Orange", "3-1": "15", "3-2": "30"});
 
   // Sorting columns state
   const [sortCol, setSortCol] = useState<number | null>(null);
@@ -33,8 +33,7 @@ export const ColumnTable: React.FC = () => {
       "0-0": "Apple", "0-1": "10", "0-2": "15",
       "1-0": "Banana", "1-1": "20", "1-2": "25",
       "2-0": "Cherry", "2-1": "5",  "2-2": "10",
-      "3-0": "Orange", "3-1": "15", "3-2": "30",
-    });
+      "3-0": "Orange", "3-1": "15", "3-2": "30"});
     setSortCol(null);
     setSortOrder(null);
     setShowGridLines(true);
@@ -53,8 +52,7 @@ export const ColumnTable: React.FC = () => {
   const handleCellEdit = (r: number, c: number, val: string) => {
     setGridData((prev) => ({
       ...prev,
-      [`${r}-${c}`]: val,
-    }));
+      [`${r}-${c}`]: val}));
   };
 
   // ----------------------------------------------------
@@ -179,6 +177,16 @@ export const ColumnTable: React.FC = () => {
         <div className="todos-header-title">
           <Table className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Dynamic spreadsheet Column Table</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ColumnTable.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -254,8 +262,7 @@ export const ColumnTable: React.FC = () => {
             style={{
               width: "100%",
               borderCollapse: "collapse",
-              border: showGridLines ? "1px solid var(--border)" : "none",
-            }}
+              border: showGridLines ? "1px solid var(--border)" : "none"}}
           >
             <thead>
               <tr style={{ background: "var(--input-bg)" }}>
@@ -274,8 +281,7 @@ export const ColumnTable: React.FC = () => {
                         padding: "6px 10px",
                         textAlign: "left",
                         cursor: activeTab === "advance" ? "pointer" : "default",
-                        userSelect: "none",
-                      }}
+                        userSelect: "none"}}
                     >
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <span>{getColLetter(cIdx)}</span>
@@ -307,8 +313,7 @@ export const ColumnTable: React.FC = () => {
                         key={cIdx}
                         style={{
                           borderRight: showGridLines ? "1px solid var(--border)" : "none",
-                          padding: "2px",
-                        }}
+                          padding: "2px"}}
                       >
                         {activeTab === "basic" ? (
                           <span style={{ display: "block", padding: "6px", fontSize: "0.85rem", color: "var(--text-h)" }}>
@@ -326,8 +331,7 @@ export const ColumnTable: React.FC = () => {
                               background: "transparent",
                               padding: "4px 8px",
                               fontSize: "0.85rem",
-                              color: rawVal.startsWith("=") && activeTab === "advance" ? "var(--primary)" : "var(--text-h)",
-                            }}
+                              color: rawVal.startsWith("=") && activeTab === "advance" ? "var(--primary)" : "var(--text-h)"}}
                             title={rawVal.startsWith("=") && activeTab === "advance" ? `Formula: ${rawVal} (evaluates to ${displayVal})` : undefined}
                           />
                         )}

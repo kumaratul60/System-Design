@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
-import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon, Code} from "lucide-react";
 
 interface Photo {
   id: string;
@@ -80,8 +81,7 @@ const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         page,
         fetchPhotos,
         incrementPage,
-        resetGallery,
-      }}
+        resetGallery}}
     >
       {children}
     </GalleryContext.Provider>
@@ -107,8 +107,7 @@ const ContextInfiniteScrollInner: React.FC = () => {
     page,
     fetchPhotos,
     incrementPage,
-    resetGallery,
-  } = useGalleryContext();
+    resetGallery} = useGalleryContext();
 
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -136,6 +135,16 @@ const ContextInfiniteScrollInner: React.FC = () => {
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" />
           <h3>Infinite Gallery (Engine 3: Context API Bus)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/infinite-scroll/ContextInfiniteScroll.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={resetGallery} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading && photos.length === 0 ? "spinning" : ""}`} size={16} />

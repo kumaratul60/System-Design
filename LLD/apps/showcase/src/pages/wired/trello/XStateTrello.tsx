@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
+import { translate } from "@statelab/theme";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
-import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban } from "lucide-react";
+import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban, Code} from "lucide-react";
 import type { TrelloCardData, TrelloColumnData } from "./PropDrillingTrello";
 
 // --- XState FSM Machine Configuration ---
@@ -13,8 +14,7 @@ const trelloFsmMachine = createMachine({
       { id: "1", title: "Review system architecture design", columnId: "todo" },
       { id: "2", title: "Implement global theme system", columnId: "in-progress" },
       { id: "3", title: "Verify package build references", columnId: "done" },
-    ] as TrelloCardData[],
-  },
+    ] as TrelloCardData[]},
   states: {
     active: {
       on: {
@@ -29,20 +29,15 @@ const trelloFsmMachine = createMachine({
                 {
                   id: Math.random().toString(36).substring(2, 9),
                   title: clean,
-                  columnId: colId,
-                },
+                  columnId: colId},
               ];
-            },
-          }),
-        },
+            }})},
         DELETE_CARD: {
           actions: assign({
             cards: ({ context, event }) => {
               const { id } = event as unknown as { id: string };
               return context.cards.filter((c) => c.id !== id);
-            },
-          }),
-        },
+            }})},
         MOVE_CARD: {
           actions: assign({
             cards: ({ context, event }) => {
@@ -57,9 +52,7 @@ const trelloFsmMachine = createMachine({
 
                 return { ...c, columnId: nextColId };
               });
-            },
-          }),
-        },
+            }})},
         UPDATE_COLUMN: {
           actions: assign({
             cards: ({ context, event }) => {
@@ -67,13 +60,7 @@ const trelloFsmMachine = createMachine({
               return context.cards.map((c) =>
                 c.id === cardId ? { ...c, columnId: targetColId } : c
               );
-            },
-          }),
-        },
-      },
-    },
-  },
-});
+            }})}}}}});
 
 // --- Data Layer: Custom Hook ---
 export function useXStateTrelloLogic() {
@@ -126,8 +113,7 @@ export function useXStateTrelloLogic() {
     moveCard,
     handleDragStart,
     handleDragOver,
-    handleDrop,
-  };
+    handleDrop};
 }
 
 // --- UI Presentation Component ---
@@ -140,8 +126,7 @@ export const XStateTrello: React.FC = () => {
     moveCard,
     handleDragStart,
     handleDragOver,
-    handleDrop,
-  } = useXStateTrelloLogic();
+    handleDrop} = useXStateTrelloLogic();
 
   return (
     <div className="page-container trello-page">
@@ -149,6 +134,16 @@ export const XStateTrello: React.FC = () => {
         <div className="todos-header-title">
           <Kanban className="todos-title-icon" />
           <h3>Kanban Trello Board (Engine 4: XState FSM)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/trello/XStateTrello.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

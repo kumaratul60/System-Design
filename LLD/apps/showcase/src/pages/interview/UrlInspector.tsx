@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Globe, Plus, Trash2, Lock, Unlock, AlertTriangle, CheckCircle, Copy, Check, Info } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Globe, Plus, Trash2, Lock, Unlock, AlertTriangle, CheckCircle, Copy, Check, Info, Code} from "lucide-react";
 
 // Predefined initial mock URL for testing
 const INITIAL_URL = "https://api.statelab.dev:443/v1/search/items?category=software&inStock=true&token=ZXlKaGJHY2lPaUpTVXpJMU5pSjkmcGFnZT0y&utm_source=dashboard#results-section";
@@ -264,8 +265,7 @@ const CopyButton: React.FC<{ text: string }> = ({ text }) => {
         justifyContent: "center",
         marginLeft: "6px",
         borderRadius: "3px",
-        transition: "all 0.15s ease",
-      }}
+        transition: "all 0.15s ease"}}
       title="Copy value"
     >
       {copied ? <Check size={11} /> : <Copy size={11} />}
@@ -301,8 +301,7 @@ const NestedBreakdown: React.FC<{ structure: ParsedNestedStructure; level?: numb
         marginLeft: `${level > 1 ? 12 : 4}px`,
         borderLeft: `2px solid ${styles.text}`,
         paddingLeft: "12px",
-        fontSize: "0.8rem",
-      }}
+        fontSize: "0.8rem"}}
     >
       <div
         onClick={() => setIsOpen(!isOpen)}
@@ -317,8 +316,7 @@ const NestedBreakdown: React.FC<{ structure: ParsedNestedStructure; level?: numb
           padding: "2px 8px",
           borderRadius: "4px",
           border: "1px solid var(--border)",
-          transition: "all 0.2s ease",
-        }}
+          transition: "all 0.2s ease"}}
       >
         <span
           style={{
@@ -329,8 +327,7 @@ const NestedBreakdown: React.FC<{ structure: ParsedNestedStructure; level?: numb
             border: `1px solid ${styles.border}`,
             color: styles.text,
             padding: "1px 4px",
-            borderRadius: "3px",
-          }}
+            borderRadius: "3px"}}
         >
           {structure.label}
         </span>
@@ -342,8 +339,7 @@ const NestedBreakdown: React.FC<{ structure: ParsedNestedStructure; level?: numb
             maxWidth: "180px",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
+            whiteSpace: "nowrap"}}
         >
           {structure.displayValue}
         </span>
@@ -361,8 +357,7 @@ const NestedBreakdown: React.FC<{ structure: ParsedNestedStructure; level?: numb
                 background: "rgba(255, 255, 255, 0.01)",
                 padding: "6px 10px",
                 borderRadius: "6px",
-                border: "1px dashed var(--border)",
-              }}
+                border: "1px dashed var(--border)"}}
             >
               <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", alignItems: "center" }}>
                 <span style={{ fontWeight: "bold", fontFamily: "var(--font-mono)", color: "var(--text-h)" }}>
@@ -374,8 +369,7 @@ const NestedBreakdown: React.FC<{ structure: ParsedNestedStructure; level?: numb
                     fontFamily: "var(--font-mono)",
                     color: "var(--primary)",
                     wordBreak: "break-all",
-                    fontSize: "0.75rem",
-                  }}
+                    fontSize: "0.75rem"}}
                 >
                   {child.value || "(empty)"}
                 </span>
@@ -453,8 +447,7 @@ export const UrlInspector: React.FC = () => {
         pathname: parsedUrl.pathname,
         search: parsedUrl.search,
         hash: parsedUrl.hash,
-        params: paramsArray,
-      });
+        params: paramsArray});
       setParseError(null);
     } else {
       setParseError("Invalid URL. Please ensure it is a valid format.");
@@ -614,6 +607,16 @@ export const UrlInspector: React.FC = () => {
         <div className="todos-header-title">
           <Globe className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>URL Query Inspector & Editor</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/UrlInspector.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

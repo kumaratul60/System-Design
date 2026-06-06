@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { User, Share2, Clipboard, Grid, Compass, ArrowDown, ArrowUp } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { User, Share2, Clipboard, Grid, Compass, ArrowDown, ArrowUp, Code} from "lucide-react";
 
 interface ProfileSection {
   id: string;
@@ -97,6 +98,16 @@ export const ProfileCard: React.FC = () => {
         <div className="todos-header-title">
           <User className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Profile Card</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ProfileCard.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -135,8 +146,7 @@ export const ProfileCard: React.FC = () => {
                 borderRadius: "16px",
                 width: "320px",
                 overflow: "hidden",
-                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.15)",
-              }}
+                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.15)"}}
             >
               {/* Cover header */}
               <div style={{ height: "80px", background: "var(--primary)" }} />
@@ -157,8 +167,7 @@ export const ProfileCard: React.FC = () => {
                     justifyContent: "center",
                     color: "var(--text-h)",
                     fontSize: "2rem",
-                    fontWeight: "bold",
-                  }}
+                    fontWeight: "bold"}}
                 >
                   AK
                 </div>
@@ -189,8 +198,7 @@ export const ProfileCard: React.FC = () => {
                 borderRadius: "16px",
                 width: "320px",
                 overflow: "hidden",
-                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.15)",
-              }}
+                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.15)"}}
             >
               {/* Cover header */}
               <div style={{ height: "80px", background: "var(--primary)", display: "flex", justifyContent: "flex-end", padding: "10px" }}>
@@ -206,8 +214,7 @@ export const ProfileCard: React.FC = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
-                    color: "#fff",
-                  }}
+                    color: "#fff"}}
                   title="Share profile link"
                 >
                   <Share2 size={16} />
@@ -230,8 +237,7 @@ export const ProfileCard: React.FC = () => {
                     justifyContent: "center",
                     color: "var(--text-h)",
                     fontSize: "2rem",
-                    fontWeight: "bold",
-                  }}
+                    fontWeight: "bold"}}
                 >
                   AK
                 </div>
@@ -277,8 +283,7 @@ export const ProfileCard: React.FC = () => {
                 borderRadius: "16px",
                 width: "320px",
                 overflow: "hidden",
-                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.15)",
-              }}
+                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.15)"}}
             >
               {/* Header */}
               <div style={{ height: "80px", background: bgColor, transition: "background-color 0.3s ease" }} />
@@ -344,8 +349,7 @@ export const ProfileCard: React.FC = () => {
                         borderRadius: "50%",
                         background: c,
                         cursor: "pointer",
-                        border: bgColor === c ? "2px solid var(--text-h)" : "none",
-                      }}
+                        border: bgColor === c ? "2px solid var(--text-h)" : "none"}}
                     />
                   ))}
                 </div>

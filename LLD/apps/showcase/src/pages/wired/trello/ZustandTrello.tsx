@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
+import { translate } from "@statelab/theme";
 import { create } from "zustand";
-import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban } from "lucide-react";
+import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban, Code} from "lucide-react";
 import type { TrelloCardData, TrelloColumnData } from "./PropDrillingTrello";
 
 interface TrelloStoreState {
@@ -30,8 +31,7 @@ const useLocalTrelloStore = create<TrelloStoreState>((set) => ({
     const newCard: TrelloCardData = {
       id: Math.random().toString(36).substring(2, 9),
       title: clean,
-      columnId: colId,
-    };
+      columnId: colId};
     set((state) => ({ cards: [...state.cards, newCard] }));
   },
   deleteCard: (id) =>
@@ -47,13 +47,10 @@ const useLocalTrelloStore = create<TrelloStoreState>((set) => ({
         } else if (c.columnId === "done" && dir === "left") nextColId = "in-progress";
 
         return { ...c, columnId: nextColId };
-      }),
-    })),
+      })})),
   updateCardColumn: (cardId, targetColId) =>
     set((state) => ({
-      cards: state.cards.map((c) => (c.id === cardId ? { ...c, columnId: targetColId } : c)),
-    })),
-}));
+      cards: state.cards.map((c) => (c.id === cardId ? { ...c, columnId: targetColId } : c))}))}));
 
 // --- Data Layer: Custom Hook ---
 export function useZustandTrelloLogic() {
@@ -88,8 +85,7 @@ export function useZustandTrelloLogic() {
     moveCard,
     handleDragStart,
     handleDragOver,
-    handleDrop,
-  };
+    handleDrop};
 }
 
 // --- UI Presentation Component ---
@@ -102,8 +98,7 @@ export const ZustandTrello: React.FC = () => {
     moveCard,
     handleDragStart,
     handleDragOver,
-    handleDrop,
-  } = useZustandTrelloLogic();
+    handleDrop} = useZustandTrelloLogic();
 
   return (
     <div className="page-container trello-page">
@@ -111,6 +106,16 @@ export const ZustandTrello: React.FC = () => {
         <div className="todos-header-title">
           <Kanban className="todos-title-icon" />
           <h3>Kanban Trello Board (Engine 5: Zustand Atomic Store)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/trello/ZustandTrello.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

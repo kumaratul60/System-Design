@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Sparkles, Play, Pause, ChevronRight, Settings } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Sparkles, Play, Pause, ChevronRight, Settings, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export type LightColor = "green" | "yellow" | "red";
@@ -74,8 +75,7 @@ export function usePropDrillingTrafficLightLogic() {
     handleToggle,
     handleNext,
     handleSelectColor,
-    getDuration,
-  };
+    getDuration};
 }
 
 // --- UI Presentation Components ---
@@ -140,8 +140,7 @@ export const PropDrillingTrafficLight: React.FC = () => {
     timeLeft,
     handleToggle,
     handleNext,
-    handleSelectColor,
-  } = usePropDrillingTrafficLightLogic();
+    handleSelectColor} = usePropDrillingTrafficLightLogic();
 
   return (
     <div className="page-container traffic-light-page">
@@ -149,6 +148,16 @@ export const PropDrillingTrafficLight: React.FC = () => {
         <div className="todos-header-title">
           <Settings className="todos-title-icon" />
           <h3>Traffic Light Controller (Engine 1: Prop Drilling)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/traffic-light/PropDrillingTrafficLight.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

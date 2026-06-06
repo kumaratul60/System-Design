@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link, RefreshCw, Terminal, Copy, Check, Info } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Link, RefreshCw, Terminal, Copy, Check, Info, Code} from "lucide-react";
 
 // Types for Mid filters
 interface FilterState {
@@ -250,6 +251,16 @@ export const UrlStateSync: React.FC = () => {
         <div className="todos-header-title">
           <Link className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>URL State Synchronizer</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/UrlStateSync.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

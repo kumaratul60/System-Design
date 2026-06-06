@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { MessageSquare, AlertCircle, Save, HelpCircle, ArrowRight, ArrowLeft } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { MessageSquare, AlertCircle, Save, HelpCircle, ArrowRight, ArrowLeft, Code} from "lucide-react";
 
 export const MultistepForm: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -81,8 +82,7 @@ export const MultistepForm: React.FC = () => {
     profileType: "developer", // "developer" or "manager"
     languageChoice: "typescript",
     projectCount: 0,
-    teamSize: 0,
-  });
+    teamSize: 0});
 
   const getAdvStepsList = () => {
     // Conditional Branching Steps list mapping
@@ -103,6 +103,16 @@ export const MultistepForm: React.FC = () => {
         <div className="todos-header-title">
           <MessageSquare className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Multi-step Form Sandbox</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/MultistepForm.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -244,8 +254,7 @@ export const MultistepForm: React.FC = () => {
                       background: advStep === idx + 1 ? "var(--primary)" : "var(--input-bg)",
                       color: advStep === idx + 1 ? "var(--bg)" : "var(--text-muted)",
                       padding: "2px 8px",
-                      borderRadius: "10px",
-                    }}
+                      borderRadius: "10px"}}
                   >
                     {label}
                   </span>

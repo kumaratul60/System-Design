@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
+import { translate } from "@statelab/theme";
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import { Sparkles, Play, Pause, ChevronRight, Settings } from "lucide-react";
+import { Sparkles, Play, Pause, ChevronRight, Settings, Code} from "lucide-react";
 import type { LightColor } from "./PropDrillingTrafficLight";
 
 interface TrafficLightSliceState {
@@ -13,8 +14,7 @@ interface TrafficLightSliceState {
 const initialState: TrafficLightSliceState = {
   activeColor: "red",
   isRunning: true,
-  timeLeft: 4,
-};
+  timeLeft: 4};
 
 const getDuration = (color: LightColor): number => {
   if (color === "red") return 4;
@@ -52,16 +52,12 @@ const trafficLightSlice = createSlice({
       } else {
         state.timeLeft -= 1;
       }
-    },
-  },
-});
+    }}});
 
 // Configure Store
 const localTrafficStore = configureStore({
   reducer: {
-    trafficStore: trafficLightSlice.reducer,
-  },
-});
+    trafficStore: trafficLightSlice.reducer}});
 
 type LocalTrafficRootState = ReturnType<typeof localTrafficStore.getState>;
 
@@ -89,8 +85,7 @@ export function useReduxTrafficLightLogic() {
     timeLeft,
     handleToggle,
     handleNext,
-    handleSelectColor,
-  };
+    handleSelectColor};
 }
 
 // --- UI Presentation Component ---
@@ -101,8 +96,7 @@ const ReduxTrafficLightInner: React.FC = () => {
     timeLeft,
     handleToggle,
     handleNext,
-    handleSelectColor,
-  } = useReduxTrafficLightLogic();
+    handleSelectColor} = useReduxTrafficLightLogic();
 
   return (
     <div className="page-container traffic-light-page">
@@ -110,6 +104,16 @@ const ReduxTrafficLightInner: React.FC = () => {
         <div className="todos-header-title">
           <Settings className="todos-title-icon" />
           <h3>Traffic Light Controller (Engine 6: Redux Toolkit)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/traffic-light/ReduxTrafficLight.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

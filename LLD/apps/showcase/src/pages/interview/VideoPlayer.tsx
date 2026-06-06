@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Play, Pause, Volume2, VolumeX, Maximize, HelpCircle, Film, Minimize2, Bookmark } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Play, Pause, Volume2, VolumeX, Maximize, HelpCircle, Film, Minimize2, Bookmark, Code} from "lucide-react";
 
 const VIDEO_URL = "https://media.w3.org/2010/05/sintel/trailer_hd.mp4";
 
@@ -232,6 +233,16 @@ export const VideoPlayer: React.FC = () => {
         <div className="todos-header-title">
           <Film className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Video Player</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/VideoPlayer.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -268,8 +279,7 @@ export const VideoPlayer: React.FC = () => {
               border: "1px solid var(--border)",
               borderRadius: "12px",
               overflow: "hidden",
-              background: "#000",
-            }}
+              background: "#000"}}
           >
             {/* HTML5 Video Element */}
             <video
@@ -281,8 +291,7 @@ export const VideoPlayer: React.FC = () => {
               style={{
                 width: "100%",
                 display: "block",
-                maxHeight: "360px",
-              }}
+                maxHeight: "360px"}}
             />
 
             {/* Custom controls overlay bar */}
@@ -295,8 +304,7 @@ export const VideoPlayer: React.FC = () => {
                 display: "flex",
                 flexDirection: "column",
                 gap: "10px",
-                pointerEvents: "auto",
-              }}
+                pointerEvents: "auto"}}
             >
               {/* Progress Slider (Linear for Basic, Custom Chunked for Mid/Advance) */}
               <div style={{ position: "relative", width: "100%" }}>
@@ -311,8 +319,7 @@ export const VideoPlayer: React.FC = () => {
                       width: "100%",
                       cursor: "pointer",
                       height: "4px",
-                      borderRadius: "2px",
-                    }}
+                      borderRadius: "2px"}}
                   />
                 ) : (
                   <div
@@ -328,8 +335,7 @@ export const VideoPlayer: React.FC = () => {
                       display: "flex",
                       gap: "4px",
                       alignItems: "center",
-                      borderRadius: "6px",
-                    }}
+                      borderRadius: "6px"}}
                   >
                     {/* Segments loop */}
                     {VIDEO_CHAPTERS.map((chap, idx) => {
@@ -355,15 +361,13 @@ export const VideoPlayer: React.FC = () => {
                             background: "rgba(255, 255, 255, 0.25)",
                             borderRadius: "3px",
                             overflow: "hidden",
-                            position: "relative",
-                          }}
+                            position: "relative"}}
                         >
                           <div
                             style={{
                               width: `${fillPct}%`,
                               height: "100%",
-                              background: chap.color,
-                            }}
+                              background: chap.color}}
                           />
                         </div>
                       );
@@ -387,8 +391,7 @@ export const VideoPlayer: React.FC = () => {
                           gap: "4px",
                           boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
                           zIndex: 100,
-                          pointerEvents: "none",
-                        }}
+                          pointerEvents: "none"}}
                       >
                         <video
                           ref={previewVideoRef}
@@ -400,8 +403,7 @@ export const VideoPlayer: React.FC = () => {
                             borderRadius: "4px",
                             background: "#000",
                             objectFit: "cover",
-                            display: "block",
-                          }}
+                            display: "block"}}
                         />
                         <span style={{ fontSize: "0.75rem", color: "#ffffff", fontWeight: "bold", textAlign: "center", whiteSpace: "nowrap" }}>
                           {hoverChapter}
@@ -460,8 +462,7 @@ export const VideoPlayer: React.FC = () => {
                             padding: "2px 6px",
                             fontSize: "0.65rem",
                             color: "#fff",
-                            cursor: "pointer",
-                          }}
+                            cursor: "pointer"}}
                         >
                           {s}x
                         </button>

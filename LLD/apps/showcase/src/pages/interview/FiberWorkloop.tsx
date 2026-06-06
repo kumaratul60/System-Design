@@ -8,8 +8,7 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Workflow,
-} from 'lucide-react';
+  Workflow, Code} from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface WorkloopStep {
@@ -26,388 +25,333 @@ const workloopSteps: WorkloopStep[] = [
     flowNodeLabel: 'Render Phase Starts',
     wipNode: 'App',
     completedNodes: [],
-    description: 'Reconciliation begins at the root component (App). We allocate the first workInProgress Fiber.',
-  },
+    description: 'Reconciliation begins at the root component (App). We allocate the first workInProgress Fiber.'},
   {
     flowNode: 'WorkLoop',
     flowNodeLabel: 'WORKLOOP CORE',
     wipNode: 'App',
     completedNodes: [],
-    description: 'The workLoop retrieves the current workInProgress. workInProgress is pointing to App.',
-  },
+    description: 'The workLoop retrieves the current workInProgress. workInProgress is pointing to App.'},
   {
     flowNode: 'YieldCheck',
     flowNodeLabel: 'Should yield? No',
     wipNode: 'App',
     completedNodes: [],
     description:
-      'Check if the browser has urgent events (user inputs, repaint tasks). We have remaining frame budget (5ms), so continue.',
-  },
+      'Check if the browser has urgent events (user inputs, repaint tasks). We have remaining frame budget (5ms), so continue.'},
   {
     flowNode: 'BeginWork',
     flowNodeLabel: 'beginWork(App)',
     wipNode: 'App',
     completedNodes: [],
-    description: 'beginWork is executed on App. It evaluates state/props and creates/reconciles child fibers.',
-  },
+    description: 'beginWork is executed on App. It evaluates state/props and creates/reconciles child fibers.'},
   {
     flowNode: 'ChildCheck',
     flowNodeLabel: 'Child exists? Yes',
     wipNode: 'App',
     completedNodes: [],
-    description: 'App has a child node (Header). The tree traversal prepares to go deeper.',
-  },
+    description: 'App has a child node (Header). The tree traversal prepares to go deeper.'},
   {
     flowNode: 'SetChild',
     flowNodeLabel: 'workInProgress = child',
     wipNode: 'Header',
     completedNodes: [],
-    description: 'workInProgress points to Header. We loop back to process the child node next.',
-  },
+    description: 'workInProgress points to Header. We loop back to process the child node next.'},
   {
     flowNode: 'WorkLoop',
     flowNodeLabel: 'WORKLOOP CORE',
     wipNode: 'Header',
     completedNodes: [],
-    description: 'workLoop tick: workInProgress is Header.',
-  },
+    description: 'workLoop tick: workInProgress is Header.'},
   {
     flowNode: 'YieldCheck',
     flowNodeLabel: 'Should yield? No',
     wipNode: 'Header',
     completedNodes: [],
-    description: 'Remaining frame time is sufficient. Proceed to execute work on Header.',
-  },
+    description: 'Remaining frame time is sufficient. Proceed to execute work on Header.'},
   {
     flowNode: 'BeginWork',
     flowNodeLabel: 'beginWork(Header)',
     wipNode: 'Header',
     completedNodes: [],
-    description: 'beginWork executes on Header. It runs Header functional component and returns JSX.',
-  },
+    description: 'beginWork executes on Header. It runs Header functional component and returns JSX.'},
   {
     flowNode: 'ChildCheck',
     flowNodeLabel: 'Child exists? No',
     wipNode: 'Header',
     completedNodes: [],
-    description: 'Header has no child nodes. It is a leaf in the component tree.',
-  },
+    description: 'Header has no child nodes. It is a leaf in the component tree.'},
   {
     flowNode: 'CompleteWork',
     flowNodeLabel: 'completeWork(Header)',
     wipNode: 'Header',
     completedNodes: ['Header'],
-    description: 'completeWork compiles properties, creates host DOM node references, and gathers side effect flags.',
-  },
+    description: 'completeWork compiles properties, creates host DOM node references, and gathers side effect flags.'},
   {
     flowNode: 'SiblingCheck',
     flowNodeLabel: 'Sibling exists? Yes',
     wipNode: 'Header',
     completedNodes: ['Header'],
-    description: 'Header has a sibling node (Main) to evaluate.',
-  },
+    description: 'Header has a sibling node (Main) to evaluate.'},
   {
     flowNode: 'SetSibling',
     flowNodeLabel: 'workInProgress = sibling',
     wipNode: 'Main',
     completedNodes: ['Header'],
-    description: 'workInProgress is updated to Main. We return to the main loop to process it.',
-  },
+    description: 'workInProgress is updated to Main. We return to the main loop to process it.'},
   {
     flowNode: 'WorkLoop',
     flowNodeLabel: 'WORKLOOP CORE',
     wipNode: 'Main',
     completedNodes: ['Header'],
-    description: 'workLoop tick: workInProgress is Main.',
-  },
+    description: 'workLoop tick: workInProgress is Main.'},
   {
     flowNode: 'YieldCheck',
     flowNodeLabel: 'Should yield? No',
     wipNode: 'Main',
     completedNodes: ['Header'],
-    description: 'Frame deadline not exceeded. Continue executing.',
-  },
+    description: 'Frame deadline not exceeded. Continue executing.'},
   {
     flowNode: 'BeginWork',
     flowNodeLabel: 'beginWork(Main)',
     wipNode: 'Main',
     completedNodes: ['Header'],
-    description: "beginWork executes on Main. It reconciles Main's child: List.",
-  },
+    description: "beginWork executes on Main. It reconciles Main's child: List."},
   {
     flowNode: 'ChildCheck',
     flowNodeLabel: 'Child exists? Yes',
     wipNode: 'Main',
     completedNodes: ['Header'],
-    description: 'Main has a child node (List). We prepare to traverse down.',
-  },
+    description: 'Main has a child node (List). We prepare to traverse down.'},
   {
     flowNode: 'SetChild',
     flowNodeLabel: 'workInProgress = child',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'workInProgress is updated to List.',
-  },
+    description: 'workInProgress is updated to List.'},
   {
     flowNode: 'WorkLoop',
     flowNodeLabel: 'WORKLOOP CORE',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'workLoop tick: workInProgress is List.',
-  },
+    description: 'workLoop tick: workInProgress is List.'},
   {
     flowNode: 'YieldCheck',
     flowNodeLabel: 'Should yield? YES',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'Frame deadline hit! React yields control to the browser so the UI remains responsive.',
-  },
+    description: 'Frame deadline hit! React yields control to the browser so the UI remains responsive.'},
   {
     flowNode: 'EndOrPause',
     flowNodeLabel: 'Is WIP null? No',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'workInProgress is still List (not null), meaning the render phase is suspended, not completed.',
-  },
+    description: 'workInProgress is still List (not null), meaning the render phase is suspended, not completed.'},
   {
     flowNode: 'PauseBrowser',
     flowNodeLabel: 'Yield to Browser Loop',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'React yields thread. Browser performs layout, paint, and events. React schedules resume task.',
-  },
+    description: 'React yields thread. Browser performs layout, paint, and events. React schedules resume task.'},
   {
     flowNode: 'WorkLoop',
     flowNodeLabel: 'WORKLOOP CORE (Resume)',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'Browser yields back. Scheduler restarts workLoop from where it left off, on List.',
-  },
+    description: 'Browser yields back. Scheduler restarts workLoop from where it left off, on List.'},
   {
     flowNode: 'YieldCheck',
     flowNodeLabel: 'Should yield? No',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'Fresh frame budget (5ms). We continue processing List.',
-  },
+    description: 'Fresh frame budget (5ms). We continue processing List.'},
   {
     flowNode: 'BeginWork',
     flowNodeLabel: 'beginWork(List)',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'beginWork runs on List. It evaluates list items and reconciles children.',
-  },
+    description: 'beginWork runs on List. It evaluates list items and reconciles children.'},
   {
     flowNode: 'ChildCheck',
     flowNodeLabel: 'Child exists? Yes',
     wipNode: 'List',
     completedNodes: ['Header'],
-    description: 'List has child node ItemA. Traversing down.',
-  },
+    description: 'List has child node ItemA. Traversing down.'},
   {
     flowNode: 'SetChild',
     flowNodeLabel: 'workInProgress = child',
     wipNode: 'ItemA',
     completedNodes: ['Header'],
-    description: 'workInProgress is updated to ItemA.',
-  },
+    description: 'workInProgress is updated to ItemA.'},
   {
     flowNode: 'WorkLoop',
     flowNodeLabel: 'WORKLOOP CORE',
     wipNode: 'ItemA',
     completedNodes: ['Header'],
-    description: 'workLoop tick: workInProgress is ItemA.',
-  },
+    description: 'workLoop tick: workInProgress is ItemA.'},
   {
     flowNode: 'YieldCheck',
     flowNodeLabel: 'Should yield? No',
     wipNode: 'ItemA',
     completedNodes: ['Header'],
-    description: 'Budget is fine, proceeding.',
-  },
+    description: 'Budget is fine, proceeding.'},
   {
     flowNode: 'BeginWork',
     flowNodeLabel: 'beginWork(ItemA)',
     wipNode: 'ItemA',
     completedNodes: ['Header'],
-    description: 'beginWork evaluates ItemA (leaf node).',
-  },
+    description: 'beginWork evaluates ItemA (leaf node).'},
   {
     flowNode: 'ChildCheck',
     flowNodeLabel: 'Child exists? No',
     wipNode: 'ItemA',
     completedNodes: ['Header'],
-    description: 'ItemA has no child. We prepare to complete its work.',
-  },
+    description: 'ItemA has no child. We prepare to complete its work.'},
   {
     flowNode: 'CompleteWork',
     flowNodeLabel: 'completeWork(ItemA)',
     wipNode: 'ItemA',
     completedNodes: ['Header', 'ItemA'],
-    description: 'completeWork finishes ItemA, compiling DOM property updates.',
-  },
+    description: 'completeWork finishes ItemA, compiling DOM property updates.'},
   {
     flowNode: 'SiblingCheck',
     flowNodeLabel: 'Sibling exists? Yes',
     wipNode: 'ItemA',
     completedNodes: ['Header', 'ItemA'],
-    description: 'ItemA has a sibling node: ItemB.',
-  },
+    description: 'ItemA has a sibling node: ItemB.'},
   {
     flowNode: 'SetSibling',
     flowNodeLabel: 'workInProgress = sibling',
     wipNode: 'ItemB',
     completedNodes: ['Header', 'ItemA'],
-    description: 'workInProgress updates to ItemB.',
-  },
+    description: 'workInProgress updates to ItemB.'},
   {
     flowNode: 'WorkLoop',
     flowNodeLabel: 'WORKLOOP CORE',
     wipNode: 'ItemB',
     completedNodes: ['Header', 'ItemA'],
-    description: 'workLoop ticks on ItemB.',
-  },
+    description: 'workLoop ticks on ItemB.'},
   {
     flowNode: 'YieldCheck',
     flowNodeLabel: 'Should yield? No',
     wipNode: 'ItemB',
     completedNodes: ['Header', 'ItemA'],
-    description: 'Continuing.',
-  },
+    description: 'Continuing.'},
   {
     flowNode: 'BeginWork',
     flowNodeLabel: 'beginWork(ItemB)',
     wipNode: 'ItemB',
     completedNodes: ['Header', 'ItemA'],
-    description: 'beginWork evaluates ItemB (leaf node).',
-  },
+    description: 'beginWork evaluates ItemB (leaf node).'},
   {
     flowNode: 'ChildCheck',
     flowNodeLabel: 'Child exists? No',
     wipNode: 'ItemB',
     completedNodes: ['Header', 'ItemA'],
-    description: 'ItemB has no child. Preparing to complete.',
-  },
+    description: 'ItemB has no child. Preparing to complete.'},
   {
     flowNode: 'CompleteWork',
     flowNodeLabel: 'completeWork(ItemB)',
     wipNode: 'ItemB',
     completedNodes: ['Header', 'ItemA', 'ItemB'],
-    description: 'completeWork runs on ItemB.',
-  },
+    description: 'completeWork runs on ItemB.'},
   {
     flowNode: 'SiblingCheck',
     flowNodeLabel: 'Sibling exists? No',
     wipNode: 'ItemB',
     completedNodes: ['Header', 'ItemA', 'ItemB'],
-    description: 'ItemB has no sibling. We begin walking up the parent scope chain.',
-  },
+    description: 'ItemB has no sibling. We begin walking up the parent scope chain.'},
   {
     flowNode: 'SetParent',
     flowNodeLabel: 'workInProgress = parent',
     wipNode: 'List',
     completedNodes: ['Header', 'ItemA', 'ItemB'],
-    description: 'Since siblings are exhausted, workInProgress retreats back up to parent (List).',
-  },
+    description: 'Since siblings are exhausted, workInProgress retreats back up to parent (List).'},
   {
     flowNode: 'ParentNullCheck',
     flowNodeLabel: 'Is parent null? No',
     wipNode: 'List',
     completedNodes: ['Header', 'ItemA', 'ItemB'],
-    description: 'Parent (List) is valid. Complete work on List.',
-  },
+    description: 'Parent (List) is valid. Complete work on List.'},
   {
     flowNode: 'CompleteWork',
     flowNodeLabel: 'completeWork(List)',
     wipNode: 'List',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List'],
-    description: 'completeWork compiles List properties and consolidates hooks/effect lists.',
-  },
+    description: 'completeWork compiles List properties and consolidates hooks/effect lists.'},
   {
     flowNode: 'SiblingCheck',
     flowNodeLabel: 'Sibling exists? No',
     wipNode: 'List',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List'],
-    description: 'List has no sibling. Retreating to parent Main.',
-  },
+    description: 'List has no sibling. Retreating to parent Main.'},
   {
     flowNode: 'SetParent',
     flowNodeLabel: 'workInProgress = parent',
     wipNode: 'Main',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List'],
-    description: 'workInProgress is set to Main.',
-  },
+    description: 'workInProgress is set to Main.'},
   {
     flowNode: 'ParentNullCheck',
     flowNodeLabel: 'Is parent null? No',
     wipNode: 'Main',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List'],
-    description: 'Parent (Main) is valid. Complete Main.',
-  },
+    description: 'Parent (Main) is valid. Complete Main.'},
   {
     flowNode: 'CompleteWork',
     flowNodeLabel: 'completeWork(Main)',
     wipNode: 'Main',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main'],
-    description: 'completeWork completes Main.',
-  },
+    description: 'completeWork completes Main.'},
   {
     flowNode: 'SiblingCheck',
     flowNodeLabel: 'Sibling exists? No',
     wipNode: 'Main',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main'],
-    description: 'Main has no sibling. Retreating to parent App.',
-  },
+    description: 'Main has no sibling. Retreating to parent App.'},
   {
     flowNode: 'SetParent',
     flowNodeLabel: 'workInProgress = parent',
     wipNode: 'App',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main'],
-    description: 'workInProgress is set to App.',
-  },
+    description: 'workInProgress is set to App.'},
   {
     flowNode: 'ParentNullCheck',
     flowNodeLabel: 'Is parent null? No',
     wipNode: 'App',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main'],
-    description: 'Parent (App) is valid. Complete App.',
-  },
+    description: 'Parent (App) is valid. Complete App.'},
   {
     flowNode: 'CompleteWork',
     flowNodeLabel: 'completeWork(App)',
     wipNode: 'App',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main', 'App'],
-    description: 'completeWork completes App. Root reconciliation finishes.',
-  },
+    description: 'completeWork completes App. Root reconciliation finishes.'},
   {
     flowNode: 'SiblingCheck',
     flowNodeLabel: 'Sibling exists? No',
     wipNode: 'App',
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main', 'App'],
-    description: 'App has no sibling. Final retreat.',
-  },
+    description: 'App has no sibling. Final retreat.'},
   {
     flowNode: 'SetParent',
     flowNodeLabel: 'workInProgress = parent',
     wipNode: null,
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main', 'App'],
-    description: "workInProgress retreats to App's parent (null).",
-  },
+    description: "workInProgress retreats to App's parent (null)."},
   {
     flowNode: 'ParentNullCheck',
     flowNodeLabel: 'Is parent null? Yes',
     wipNode: null,
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main', 'App'],
-    description: 'Parent is null. The tree has been completely reconciled!',
-  },
+    description: 'Parent is null. The tree has been completely reconciled!'},
   {
     flowNode: 'EndRender',
     flowNodeLabel: 'End Render: Enter Commit',
     wipNode: null,
     completedNodes: ['Header', 'ItemA', 'ItemB', 'List', 'Main', 'App'],
     description:
-      'Render phase ends. React takes the final fiber tree and enters the synchronous Commit Phase to flush updates to the real DOM.',
-  },
+      'Render phase ends. React takes the final fiber tree and enters the synchronous Commit Phase to flush updates to the real DOM.'},
 ];
 
 export const FiberWorkloop: React.FC = () => {
@@ -558,8 +502,7 @@ export const FiberWorkloop: React.FC = () => {
                 style={{
                   filter: isActive ? 'drop-shadow(0 0 8px rgba(251, 113, 133, 0.7))' : 'none',
                   transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                }}
+                  cursor: 'pointer'}}
               />
               <text textAnchor="middle" dy="4" fontSize="9" fontWeight="bold" fill="var(--text-h)">
                 {node.label}
@@ -585,8 +528,7 @@ export const FiberWorkloop: React.FC = () => {
     SiblingCheck: { x: 220, y: 550, type: 'diamond', fill: '#fce4d6', stroke: '#c65911', label: 'Sibling exists?' },
     SetSibling: { x: 80, y: 550, type: 'rect', fill: '#e2f0d9', stroke: '#385723', label: 'wip = sibling' },
     SetParent: { x: 400, y: 550, type: 'rect', fill: '#e2f0d9', stroke: '#385723', label: 'wip = parent' },
-    ParentNullCheck: { x: 400, y: 465, type: 'diamond', fill: '#fce4d6', stroke: '#c65911', label: 'Is parent null?' },
-  };
+    ParentNullCheck: { x: 400, y: 465, type: 'diamond', fill: '#fce4d6', stroke: '#c65911', label: 'Is parent null?' }};
 
   return (
     <div className="page-container fiber-workloop-page">
@@ -595,6 +537,16 @@ export const FiberWorkloop: React.FC = () => {
         <div className="todos-header-title">
           <Workflow className="todos-title-icon" style={{ color: 'var(--primary)' }} />
           <h3>React Fiber WorkLoop Visual Animator</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/FiberWorkloop.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <span className="info-badge font-mono" style={{ fontSize: '0.8rem' }}>
           Reconciliation Engine
@@ -613,8 +565,7 @@ export const FiberWorkloop: React.FC = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '12px',
-          }}
+            gap: '12px'}}
         >
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button
@@ -683,8 +634,7 @@ export const FiberWorkloop: React.FC = () => {
               padding: '20px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '16px',
-            }}
+              gap: '16px'}}
           >
             <div>
               <h4 style={{ margin: '0 0 4px 0', fontSize: '0.95rem' }}>Fiber Tree Pointers</h4>
@@ -704,8 +654,7 @@ export const FiberWorkloop: React.FC = () => {
                 flexWrap: 'wrap',
                 fontSize: '0.7rem',
                 borderTop: '1px solid var(--border)',
-                paddingTop: '12px',
-              }}
+                paddingTop: '12px'}}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span
@@ -715,8 +664,7 @@ export const FiberWorkloop: React.FC = () => {
                     borderRadius: '50%',
                     background: 'var(--card-bg)',
                     border: '2px solid var(--border)',
-                    display: 'inline-block',
-                  }}
+                    display: 'inline-block'}}
                 ></span>
                 <span>Unvisited</span>
               </div>
@@ -729,8 +677,7 @@ export const FiberWorkloop: React.FC = () => {
                     background: 'var(--card-bg)',
                     border: '2px solid #fb7185',
                     display: 'inline-block',
-                    boxShadow: '0 0 4px rgba(251, 113, 133, 0.6)',
-                  }}
+                    boxShadow: '0 0 4px rgba(251, 113, 133, 0.6)'}}
                 ></span>
                 <span>workInProgress</span>
               </div>
@@ -742,8 +689,7 @@ export const FiberWorkloop: React.FC = () => {
                     borderRadius: '50%',
                     background: 'var(--input-bg)',
                     border: '2px solid #10b981',
-                    display: 'inline-block',
-                  }}
+                    display: 'inline-block'}}
                 ></span>
                 <span>completedWork</span>
               </div>
@@ -763,8 +709,7 @@ export const FiberWorkloop: React.FC = () => {
               padding: '20px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '16px',
-            }}
+              gap: '16px'}}
           >
             <div>
               <h4 style={{ margin: '0 0 4px 0', fontSize: '0.95rem' }}>WorkInProgress Traversal Loop</h4>
@@ -780,8 +725,7 @@ export const FiberWorkloop: React.FC = () => {
                 border: '1px solid var(--border)',
                 borderRadius: 'var(--border-radius)',
                 padding: '16px',
-                overflow: 'hidden',
-              }}
+                overflow: 'hidden'}}
             >
               <svg viewBox="0 0 720 620" style={{ width: '100%', height: 'auto' }}>
                 <defs>
@@ -1049,8 +993,7 @@ export const FiberWorkloop: React.FC = () => {
                 border: '1px solid var(--border)',
                 borderRadius: 'var(--border-radius)',
                 background: 'var(--input-bg)',
-                padding: '16px',
-              }}
+                padding: '16px'}}
             >
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
                 <Activity size={16} style={{ color: '#ec4899' }} />
@@ -1074,8 +1017,7 @@ export const FiberWorkloop: React.FC = () => {
                   marginTop: '12px',
                   paddingTop: '12px',
                   fontSize: '0.75rem',
-                  fontFamily: 'monospace',
-                }}
+                  fontFamily: 'monospace'}}
               >
                 <div>
                   <span style={{ color: 'var(--text-muted)', display: 'flex', gap: '4px', alignItems: 'center' }}>
@@ -1092,8 +1034,7 @@ export const FiberWorkloop: React.FC = () => {
                   <span
                     style={{
                       color: activeStep.flowNode === 'PauseBrowser' ? '#fb7185' : '#10b981',
-                      fontWeight: 'bold',
-                    }}
+                      fontWeight: 'bold'}}
                   >
                     {activeStep.flowNode === 'YieldCheck' && activeStep.flowNodeLabel.includes('YES')
                       ? '0 ms (yielding)'
@@ -1118,8 +1059,7 @@ export const FiberWorkloop: React.FC = () => {
               border: '1px solid var(--border)',
               borderRadius: 'var(--border-radius)',
               padding: '16px',
-              background: 'var(--card-bg)',
-            }}
+              background: 'var(--card-bg)'}}
           >
             <h5 style={{ margin: '0 0 8px 0', color: 'var(--text-h)' }}>DFS LinkedList Traversal</h5>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
@@ -1134,8 +1074,7 @@ export const FiberWorkloop: React.FC = () => {
               border: '1px solid var(--border)',
               borderRadius: 'var(--border-radius)',
               padding: '16px',
-              background: 'var(--card-bg)',
-            }}
+              background: 'var(--card-bg)'}}
           >
             <h5 style={{ margin: '0 0 8px 0', color: 'var(--text-h)' }}>beginWork Phase</h5>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
@@ -1149,8 +1088,7 @@ export const FiberWorkloop: React.FC = () => {
               border: '1px solid var(--border)',
               borderRadius: 'var(--border-radius)',
               padding: '16px',
-              background: 'var(--card-bg)',
-            }}
+              background: 'var(--card-bg)'}}
           >
             <h5 style={{ margin: '0 0 8px 0', color: 'var(--text-h)' }}>completeWork Phase</h5>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
@@ -1165,8 +1103,7 @@ export const FiberWorkloop: React.FC = () => {
               border: '1px solid var(--border)',
               borderRadius: 'var(--border-radius)',
               padding: '16px',
-              background: 'var(--card-bg)',
-            }}
+              background: 'var(--card-bg)'}}
           >
             <h5 style={{ margin: '0 0 8px 0', color: 'var(--text-h)' }}>Time Slicing Yields</h5>
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>

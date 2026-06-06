@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Calendar, ChevronLeft, ChevronRight, Plus, AlertCircle, Layers } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Calendar, ChevronLeft, ChevronRight, Plus, AlertCircle, Layers, Code} from "lucide-react";
 
 interface CalendarEvent {
   id: string;
@@ -94,8 +95,7 @@ export const CalendarViewer: React.FC = () => {
       title: newEventTitle,
       dateStr,
       startHour: newEventHour,
-      duration: newEventDuration,
-    };
+      duration: newEventDuration};
 
     setEvents((prev) => [...prev, newEvent]);
     setNewEventTitle("");
@@ -138,6 +138,16 @@ export const CalendarViewer: React.FC = () => {
         <div className="todos-header-title">
           <Calendar className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Calendar Viewer</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/CalendarViewer.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -206,8 +216,7 @@ export const CalendarViewer: React.FC = () => {
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
-                      transition: "all 0.15s ease",
-                    }}
+                      transition: "all 0.15s ease"}}
                   >
                     {day ? (
                       <>

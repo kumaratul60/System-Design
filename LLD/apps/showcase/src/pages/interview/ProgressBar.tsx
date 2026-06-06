@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Activity, Play, Pause, RotateCcw, Check, TrendingUp, HelpCircle } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Activity, Play, Pause, RotateCcw, Check, TrendingUp, HelpCircle, Code} from "lucide-react";
 
 export const ProgressBar: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -132,6 +133,16 @@ export const ProgressBar: React.FC = () => {
         <div className="todos-header-title">
           <Activity className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Progress Bar Visualizer Suite</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ProgressBar.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -233,8 +244,7 @@ export const ProgressBar: React.FC = () => {
                     right: "40px",
                     height: "4px",
                     background: "var(--border)",
-                    zIndex: 1,
-                  }}
+                    zIndex: 1}}
                 />
 
                 {/* Active connector fill */}
@@ -247,8 +257,7 @@ export const ProgressBar: React.FC = () => {
                     height: "4px",
                     background: "var(--primary)",
                     zIndex: 2,
-                    transition: "width 0.3s ease",
-                  }}
+                    transition: "width 0.3s ease"}}
                 />
 
                 {steps.map((label, idx) => {
@@ -271,8 +280,7 @@ export const ProgressBar: React.FC = () => {
                           fontWeight: "bold",
                           fontSize: "0.85rem",
                           color: isCompleted ? "var(--bg)" : isActive ? "var(--text-h)" : "var(--text-muted)",
-                          transition: "all 0.3s ease",
-                        }}
+                          transition: "all 0.3s ease"}}
                       >
                         {isCompleted ? <Check size={16} /> : stepNum}
                       </div>
@@ -282,8 +290,7 @@ export const ProgressBar: React.FC = () => {
                           textAlign: "center",
                           marginTop: "8px",
                           fontWeight: isActive ? "bold" : "normal",
-                          color: isActive ? "var(--text-h)" : "var(--text-muted)",
-                        }}
+                          color: isActive ? "var(--text-h)" : "var(--text-muted)"}}
                       >
                         {label}
                       </span>

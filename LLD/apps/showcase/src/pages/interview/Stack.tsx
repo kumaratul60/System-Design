@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { ArrowUp, ArrowDown, Eye, Trash2, ListMinus, Plus, RefreshCw } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { ArrowUp, ArrowDown, Eye, Trash2, ListMinus, Plus, RefreshCw, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface StackFrame {
@@ -44,8 +45,7 @@ export function useStackLogic({ maxCapacity = 8 }: UseStackParams = {}) {
       const newFrame: StackFrame = {
         id: Math.random().toString(36).substring(2, 9),
         value: cleanVal,
-        timestamp: new Date().toLocaleTimeString(),
-      };
+        timestamp: new Date().toLocaleTimeString()};
 
       setStack((prev) => [newFrame, ...prev]); // Visual top is index 0
       addLog(`PUSH: "${cleanVal}" added to Stack Top`);
@@ -102,8 +102,7 @@ export function useStackLogic({ maxCapacity = 8 }: UseStackParams = {}) {
     peek,
     clear,
     capacityUsed: stack.length,
-    maxCapacity,
-  };
+    maxCapacity};
 }
 
 // --- UI Layer: Presentation Component ---
@@ -118,8 +117,7 @@ export const Stack: React.FC = () => {
     pop,
     peek,
     clear,
-    capacityUsed,
-  } = useStackLogic({ maxCapacity });
+    capacityUsed} = useStackLogic({ maxCapacity });
 
   const [inputVal, setInputVal] = useState<string>("");
 
@@ -144,6 +142,16 @@ export const Stack: React.FC = () => {
         <div className="todos-header-title">
           <ListMinus className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Stack Visualizer (LIFO)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Stack.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -157,8 +165,7 @@ export const Stack: React.FC = () => {
             padding: "20px",
             display: "flex",
             flexDirection: "column",
-            gap: "20px",
-          }}
+            gap: "20px"}}
         >
           <h4>Stack Control Panel</h4>
 
@@ -202,8 +209,7 @@ export const Stack: React.FC = () => {
                 padding: "10px 14px",
                 borderLeft: "3px solid var(--danger)",
                 borderRadius: "var(--border-radius)",
-                fontSize: "0.85rem",
-              }}
+                fontSize: "0.85rem"}}
             >
               {errorMsg}
             </div>
@@ -216,8 +222,7 @@ export const Stack: React.FC = () => {
               fontSize: "0.9rem",
               color: "var(--text-muted)",
               borderTop: "1px solid var(--border)",
-              paddingTop: "12px",
-            }}
+              paddingTop: "12px"}}
           >
             <span>
               Stack Height: <strong>{capacityUsed}</strong> / {maxCapacity}
@@ -242,8 +247,7 @@ export const Stack: React.FC = () => {
               flexDirection: "column",
               justifyContent: "flex-end",
               gap: "8px",
-              position: "relative",
-            }}
+              position: "relative"}}
           >
             {stack.length === 0 ? (
               <div
@@ -254,8 +258,7 @@ export const Stack: React.FC = () => {
                   justifyContent: "center",
                   alignItems: "center",
                   color: "var(--text-muted)",
-                  fontSize: "0.9rem",
-                }}
+                  fontSize: "0.9rem"}}
               >
                 No frames allocated. Push data to visualize structure.
               </div>
@@ -284,8 +287,7 @@ export const Stack: React.FC = () => {
                       alignItems: "center",
                       boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
                       transform: isTop ? "scale(1.02)" : "scale(1)",
-                      transition: "all 0.25s ease",
-                    }}
+                      transition: "all 0.25s ease"}}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <span
@@ -294,8 +296,7 @@ export const Stack: React.FC = () => {
                           padding: "2px 6px",
                           background: "var(--input-bg)",
                           borderRadius: "4px",
-                          fontWeight: "bold",
-                        }}
+                          fontWeight: "bold"}}
                       >
                         Idx {stack.length - 1 - index}
                       </span>
@@ -313,8 +314,7 @@ export const Stack: React.FC = () => {
                             padding: "2px 6px",
                             borderRadius: "3px",
                             fontWeight: "bold",
-                            letterSpacing: "0.5px",
-                          }}
+                            letterSpacing: "0.5px"}}
                         >
                           TOP
                         </span>
@@ -336,8 +336,7 @@ export const Stack: React.FC = () => {
             padding: "20px",
             display: "flex",
             flexDirection: "column",
-            gap: "12px",
-          }}
+            gap: "12px"}}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h4 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -358,8 +357,7 @@ export const Stack: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-              maxHeight: "360px",
-            }}
+              maxHeight: "360px"}}
           >
             {activityLog.map((log, idx) => (
               <div
@@ -373,8 +371,7 @@ export const Stack: React.FC = () => {
                     ? "#ef4444"
                     : log.startsWith("PEEK")
                     ? "#3b82f6"
-                    : "#a1a1aa",
-                }}
+                    : "#a1a1aa"}}
               >
                 &gt; {log}
               </div>

@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
+import { translate } from "@statelab/theme";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
-import { Sparkles, Play, Pause, ChevronRight, Settings } from "lucide-react";
+import { Sparkles, Play, Pause, ChevronRight, Settings, Code} from "lucide-react";
 import type { LightColor } from "./PropDrillingTrafficLight";
 
 const getDuration = (color: LightColor): number => {
@@ -16,8 +17,7 @@ const tlFsmMachine = createMachine({
   initial: "red",
   context: {
     timeLeft: 4,
-    isRunning: true,
-  },
+    isRunning: true},
   states: {
     red: {
       on: {
@@ -25,83 +25,59 @@ const tlFsmMachine = createMachine({
           {
             guard: ({ context }) => context.isRunning && context.timeLeft <= 1,
             target: "green",
-            actions: assign({ timeLeft: () => getDuration("green") }),
-          },
+            actions: assign({ timeLeft: () => getDuration("green") })},
           {
             guard: ({ context }) => context.isRunning,
-            actions: assign({ timeLeft: ({ context }) => context.timeLeft - 1 }),
-          },
+            actions: assign({ timeLeft: ({ context }) => context.timeLeft - 1 })},
         ],
         FORCE_NEXT: {
           target: "green",
-          actions: assign({ timeLeft: () => getDuration("green") }),
-        },
+          actions: assign({ timeLeft: () => getDuration("green") })},
         TOGGLE: {
-          actions: assign({ isRunning: ({ context }) => !context.isRunning }),
-        },
-      },
-    },
+          actions: assign({ isRunning: ({ context }) => !context.isRunning })}}},
     yellow: {
       on: {
         TICK: [
           {
             guard: ({ context }) => context.isRunning && context.timeLeft <= 1,
             target: "red",
-            actions: assign({ timeLeft: () => getDuration("red") }),
-          },
+            actions: assign({ timeLeft: () => getDuration("red") })},
           {
             guard: ({ context }) => context.isRunning,
-            actions: assign({ timeLeft: ({ context }) => context.timeLeft - 1 }),
-          },
+            actions: assign({ timeLeft: ({ context }) => context.timeLeft - 1 })},
         ],
         FORCE_NEXT: {
           target: "red",
-          actions: assign({ timeLeft: () => getDuration("red") }),
-        },
+          actions: assign({ timeLeft: () => getDuration("red") })},
         TOGGLE: {
-          actions: assign({ isRunning: ({ context }) => !context.isRunning }),
-        },
-      },
-    },
+          actions: assign({ isRunning: ({ context }) => !context.isRunning })}}},
     green: {
       on: {
         TICK: [
           {
             guard: ({ context }) => context.isRunning && context.timeLeft <= 1,
             target: "yellow",
-            actions: assign({ timeLeft: () => getDuration("yellow") }),
-          },
+            actions: assign({ timeLeft: () => getDuration("yellow") })},
           {
             guard: ({ context }) => context.isRunning,
-            actions: assign({ timeLeft: ({ context }) => context.timeLeft - 1 }),
-          },
+            actions: assign({ timeLeft: ({ context }) => context.timeLeft - 1 })},
         ],
         FORCE_NEXT: {
           target: "yellow",
-          actions: assign({ timeLeft: () => getDuration("yellow") }),
-        },
+          actions: assign({ timeLeft: () => getDuration("yellow") })},
         TOGGLE: {
-          actions: assign({ isRunning: ({ context }) => !context.isRunning }),
-        },
-      },
-    },
-  },
+          actions: assign({ isRunning: ({ context }) => !context.isRunning })}}}},
   // Global transitions to override specific colors manually
   on: {
     SELECT_RED: {
       target: ".red",
-      actions: assign({ timeLeft: () => getDuration("red") }),
-    },
+      actions: assign({ timeLeft: () => getDuration("red") })},
     SELECT_YELLOW: {
       target: ".yellow",
-      actions: assign({ timeLeft: () => getDuration("yellow") }),
-    },
+      actions: assign({ timeLeft: () => getDuration("yellow") })},
     SELECT_GREEN: {
       target: ".green",
-      actions: assign({ timeLeft: () => getDuration("green") }),
-    },
-  },
-});
+      actions: assign({ timeLeft: () => getDuration("green") })}}});
 
 // --- Data Layer: Custom Hook ---
 export function useXStateTrafficLightLogic() {
@@ -130,8 +106,7 @@ export function useXStateTrafficLightLogic() {
     timeLeft,
     handleToggle,
     handleNext,
-    handleSelectColor,
-  };
+    handleSelectColor};
 }
 
 // --- UI Presentation Component ---
@@ -142,8 +117,7 @@ export const XStateTrafficLight: React.FC = () => {
     timeLeft,
     handleToggle,
     handleNext,
-    handleSelectColor,
-  } = useXStateTrafficLightLogic();
+    handleSelectColor} = useXStateTrafficLightLogic();
 
   return (
     <div className="page-container traffic-light-page">
@@ -151,6 +125,16 @@ export const XStateTrafficLight: React.FC = () => {
         <div className="todos-header-title">
           <Settings className="todos-title-icon" />
           <h3>Traffic Light Controller (Engine 4: XState FSM)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/traffic-light/XStateTrafficLight.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Play, Pause, RotateCcw, Timer as TimerIcon, Plus, Flag, Hourglass, Coffee, Brain } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Play, Pause, RotateCcw, Timer as TimerIcon, Plus, Flag, Hourglass, Coffee, Brain, Code} from "lucide-react";
 
 // --- Stopwatch Hook (Data Layer 1) ---
 // Accurate Timer Delta (Date.now() - startTime) is used to avoid cumulative interval drift.
@@ -53,8 +54,7 @@ export function useStopwatch() {
     start,
     pause,
     reset,
-    addLap,
-  };
+    addLap};
 }
 
 // --- Countdown Hook (Data Layer 2) ---
@@ -126,8 +126,7 @@ export function useCountdown(defaultSeconds = 60) {
     pause,
     reset,
     setDuration,
-    progress,
-  };
+    progress};
 }
 
 // --- Pomodoro Hook (Data Layer 3) ---
@@ -223,8 +222,7 @@ export function usePomodoro() {
     updateDurations,
     progress,
     workDuration,
-    breakDuration,
-  };
+    breakDuration};
 }
 
 // --- Formatting Helpers ---
@@ -281,6 +279,16 @@ export const Timer: React.FC = () => {
         <div className="todos-header-title">
           <TimerIcon className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Chronometer & Timing Suite</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Timer.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -301,8 +309,7 @@ export const Timer: React.FC = () => {
               cursor: "pointer",
               fontWeight: 600,
               outline: "none",
-              textTransform: "capitalize",
-            }}
+              textTransform: "capitalize"}}
           >
             {tab === "pomodoro" ? "Pomodoro Timer" : `${tab} Mode`}
           </button>
@@ -322,8 +329,7 @@ export const Timer: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "24px",
-            }}
+              gap: "24px"}}
           >
             <div style={{ fontSize: "3.5rem", fontFamily: "var(--font-mono)", fontWeight: "bold", color: "var(--text-h)" }}>
               {formatStopwatchTime(sw.time)}
@@ -360,8 +366,7 @@ export const Timer: React.FC = () => {
               minHeight: "220px",
               display: "flex",
               flexDirection: "column",
-              gap: "12px",
-            }}
+              gap: "12px"}}
           >
             <h4>Lap Records ({sw.laps.length})</h4>
             {sw.laps.length === 0 ? (
@@ -374,8 +379,7 @@ export const Timer: React.FC = () => {
                   color: "var(--text-muted)",
                   fontSize: "0.95rem",
                   border: "1px dashed var(--border)",
-                  borderRadius: "var(--border-radius)",
-                }}
+                  borderRadius: "var(--border-radius)"}}
               >
                 No lap intervals marked yet.
               </div>
@@ -386,8 +390,7 @@ export const Timer: React.FC = () => {
                   flexDirection: "column-reverse",
                   gap: "8px",
                   maxHeight: "240px",
-                  overflowY: "auto",
-                }}
+                  overflowY: "auto"}}
               >
                 {sw.laps.map((lap, idx) => {
                   const diff = idx === 0 ? lap : lap - sw.laps[idx - 1];
@@ -402,8 +405,7 @@ export const Timer: React.FC = () => {
                         borderRadius: "var(--border-radius)",
                         border: "1px solid var(--border)",
                         fontFamily: "var(--font-mono)",
-                        fontSize: "0.9rem",
-                      }}
+                        fontSize: "0.9rem"}}
                     >
                       <span style={{ fontWeight: "bold" }}>Lap {idx + 1}</span>
                       <span style={{ color: "var(--text-h)" }}>{formatStopwatchTime(lap)}</span>
@@ -430,8 +432,7 @@ export const Timer: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "24px",
-            }}
+              gap: "24px"}}
           >
             <div style={{ position: "relative", width: "160px", height: "160px" }}>
               <svg width="160" height="160" viewBox="0 0 160 160">
@@ -449,8 +450,7 @@ export const Timer: React.FC = () => {
                   style={{
                     transform: "rotate(-90deg)",
                     transformOrigin: "center",
-                    transition: "stroke-dashoffset 0.3s ease",
-                  }}
+                    transition: "stroke-dashoffset 0.3s ease"}}
                 />
               </svg>
               <div
@@ -460,8 +460,7 @@ export const Timer: React.FC = () => {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center",
-                }}
+                  justifyContent: "center"}}
               >
                 <span style={{ fontSize: "2.2rem", fontFamily: "var(--font-mono)", fontWeight: "bold", color: "var(--text-h)" }}>
                   {formatCountdownTime(cd.timeLeft)}
@@ -498,8 +497,7 @@ export const Timer: React.FC = () => {
               minHeight: "220px",
               display: "flex",
               flexDirection: "column",
-              gap: "16px",
-            }}
+              gap: "16px"}}
           >
             <h4 style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <Hourglass size={18} /> Configure Duration
@@ -573,8 +571,7 @@ export const Timer: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "24px",
-            }}
+              gap: "24px"}}
           >
             {/* Visual Header */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", color: pomo.mode === "work" ? "var(--danger)" : "var(--success)" }}>
@@ -599,8 +596,7 @@ export const Timer: React.FC = () => {
                   style={{
                     transform: "rotate(-90deg)",
                     transformOrigin: "center",
-                    transition: "stroke-dashoffset 0.3s ease",
-                  }}
+                    transition: "stroke-dashoffset 0.3s ease"}}
                 />
               </svg>
               <div
@@ -610,8 +606,7 @@ export const Timer: React.FC = () => {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center",
-                }}
+                  justifyContent: "center"}}
               >
                 <span style={{ fontSize: "2.2rem", fontFamily: "var(--font-mono)", fontWeight: "bold", color: "var(--text-h)" }}>
                   {formatCountdownTime(pomo.timeLeft)}
@@ -653,8 +648,7 @@ export const Timer: React.FC = () => {
               minHeight: "220px",
               display: "flex",
               flexDirection: "column",
-              gap: "16px",
-            }}
+              gap: "16px"}}
           >
             <h4>Pomodoro Configuration</h4>
 

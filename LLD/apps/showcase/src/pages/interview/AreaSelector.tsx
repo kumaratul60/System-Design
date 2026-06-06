@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { RefreshCw, Grid, CheckCircle, Info } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { RefreshCw, Grid, CheckCircle, Info, Code} from "lucide-react";
 
 interface CellCoordinate {
   row: number;
@@ -121,6 +122,16 @@ export const AreaSelector: React.FC = () => {
         <div className="todos-header-title">
           <Grid className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Dynamic Area Selector</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/AreaSelector.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -156,8 +167,7 @@ export const AreaSelector: React.FC = () => {
             padding: "24px",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-          }}
+            alignItems: "center"}}
         >
           
           {/* Dynamic Row/Column adjustment controls (Advance) */}
@@ -202,8 +212,7 @@ export const AreaSelector: React.FC = () => {
               borderRadius: "8px",
               border: "1px solid var(--border)",
               userSelect: "none",
-              cursor: activeTab === "basic" ? "default" : "crosshair",
-            }}
+              cursor: activeTab === "basic" ? "default" : "crosshair"}}
           >
             {Array.from({ length: rowsCount }).map((_, r) =>
               Array.from({ length: colsCount }).map((_, c) => {
@@ -238,8 +247,7 @@ export const AreaSelector: React.FC = () => {
                       background: bgVal,
                       border: borderVal,
                       borderRadius: "4px",
-                      transition: "background-color 0.15s ease",
-                    }}
+                      transition: "background-color 0.15s ease"}}
                   />
                 );
               })
@@ -275,8 +283,7 @@ export const AreaSelector: React.FC = () => {
                   background: "var(--input-bg)",
                   padding: "10px",
                   borderRadius: "6px",
-                  border: "1px solid var(--border)",
-                }}
+                  border: "1px solid var(--border)"}}
               >
                 {Array.from(selectedCells).map((coord) => (
                   <span
@@ -288,8 +295,7 @@ export const AreaSelector: React.FC = () => {
                       padding: "2px 6px",
                       borderRadius: "4px",
                       color: "var(--text-h)",
-                      fontFamily: "var(--font-mono)",
-                    }}
+                      fontFamily: "var(--font-mono)"}}
                   >
                     ({coord.replace("-", ", ")})
                   </span>

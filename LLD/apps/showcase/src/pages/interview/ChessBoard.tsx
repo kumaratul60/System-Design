@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { HelpCircle, RefreshCw, Clock, Download, Play, Pause } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { HelpCircle, RefreshCw, Clock, Download, Play, Pause, Code} from "lucide-react";
 
 // Chess Piece Types
 type PieceType = "p" | "r" | "n" | "b" | "q" | "k"; // Pawn, Rook, Knight, Bishop, Queen, King
@@ -13,8 +14,7 @@ interface ChessPiece {
 // Visual piece map symbols
 const PIECE_SYMBOLS: Record<Color, Record<PieceType, string>> = {
   w: { p: "♙", r: "♖", n: "♘", b: "♗", q: "♕", k: "♔" },
-  b: { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" },
-};
+  b: { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" }};
 
 // Initial Chess Board Grid Layout setup (8x8)
 const createInitialBoard = (): (ChessPiece | null)[][] => {
@@ -254,8 +254,7 @@ export const ChessBoard: React.FC = () => {
           const captureColor = targetPiece.color;
           setCapturedPieces((prev) => ({
             ...prev,
-            [captureColor]: [...prev[captureColor], targetPiece],
-          }));
+            [captureColor]: [...prev[captureColor], targetPiece]}));
         }
 
         // Keep PGN notations
@@ -305,6 +304,16 @@ export const ChessBoard: React.FC = () => {
         <div className="todos-header-title">
           <HelpCircle className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Chess Board Arena</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ChessBoard.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -349,8 +358,7 @@ export const ChessBoard: React.FC = () => {
               gridTemplateRows: "repeat(8, 1fr)",
               gridTemplateColumns: "repeat(8, 1fr)",
               width: "360px",
-              height: "360px",
-            }}
+              height: "360px"}}
           >
             {board.map((row, r) =>
               row.map((piece, c) => {
@@ -383,8 +391,7 @@ export const ChessBoard: React.FC = () => {
                       userSelect: "none",
                       color: piece?.color === "w" ? "#fff" : "#000",
                       textShadow: piece?.color === "w" ? "0 0 3px #000" : "none",
-                      transition: "background-color 0.1s",
-                    }}
+                      transition: "background-color 0.1s"}}
                   >
                     {piece ? PIECE_SYMBOLS[piece.color][piece.type] : ""}
                   </div>
@@ -458,8 +465,7 @@ export const ChessBoard: React.FC = () => {
                   fontSize: "0.75rem",
                   fontFamily: "var(--font-mono)",
                   whiteSpace: "pre-wrap",
-                  marginBottom: "12px",
-                }}
+                  marginBottom: "12px"}}
               >
                 {getPgnString() || "No moves registered."}
               </pre>

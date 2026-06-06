@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Search, Loader, HelpCircle, Globe, ShoppingCart, BookOpen } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Search, Loader, HelpCircle, Globe, ShoppingCart, BookOpen, Code} from "lucide-react";
 
 // Mock Database of Multi-source records
 interface TypeaheadRecord {
@@ -171,6 +172,16 @@ export const TypeaheadSearch: React.FC = () => {
         <div className="todos-header-title">
           <Search className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Typeahead Search Sandbox</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/TypeaheadSearch.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -223,8 +234,7 @@ export const TypeaheadSearch: React.FC = () => {
                     border: "1px solid transparent",
                     background: "var(--input-bg)",
                     color: "rgba(255, 255, 255, 0.35)",
-                    fontSize: "0.95rem",
-                  }}
+                    fontSize: "0.95rem"}}
                 />
 
                 {/* 2. Frontend active input */}
@@ -243,8 +253,7 @@ export const TypeaheadSearch: React.FC = () => {
                     background: "transparent",
                     color: "var(--text-h)",
                     fontSize: "0.95rem",
-                    outline: "none",
-                  }}
+                    outline: "none"}}
                 />
               </div>
             </div>
@@ -262,8 +271,7 @@ export const TypeaheadSearch: React.FC = () => {
                   border: isOpen ? "2px solid var(--text-h)" : "1px solid var(--border)",
                   height: "42px",
                   padding: "0 12px",
-                  marginBottom: 0,
-                }}
+                  marginBottom: 0}}
               >
                 <Search size={16} />
                 <input
@@ -307,8 +315,7 @@ export const TypeaheadSearch: React.FC = () => {
                   border: "1px solid var(--border)",
                   height: "42px",
                   padding: "0 12px",
-                  marginBottom: 0,
-                }}
+                  marginBottom: 0}}
               >
                 <Search size={16} />
                 <input
@@ -357,8 +364,7 @@ export const TypeaheadSearch: React.FC = () => {
                                   background: isHighlighted ? "var(--input-bg)" : "transparent",
                                   display: "flex",
                                   justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
+                                  alignItems: "center"}}
                               >
                                 <span style={{ fontSize: "0.85rem", color: isHighlighted ? "var(--text-h)" : "var(--text)" }}>{item.title}</span>
                                 <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{item.meta}</span>

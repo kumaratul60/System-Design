@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Search, Star, Bookmark, BookmarkCheck, Film, ListFilter, RotateCcw } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Search, Star, Bookmark, BookmarkCheck, Film, ListFilter, RotateCcw, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface Movie {
@@ -114,8 +115,7 @@ export function useMoviesLogic({ initialMovies }: UseMoviesParams) {
     resetFilters,
     processedMovies,
     showBookmarksOnly,
-    setShowBookmarksOnly,
-  };
+    setShowBookmarksOnly};
 }
 
 // --- Dummy Movies Data ---
@@ -126,64 +126,56 @@ const MOVIE_DATABASE: Movie[] = [
     category: "Sci-Fi",
     rating: 8.8,
     year: 2010,
-    thumbnail: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&q=80"},
   {
     id: "m2",
     title: "The Dark Knight",
     category: "Action",
     rating: 9.0,
     year: 2008,
-    thumbnail: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=400&q=80"},
   {
     id: "m3",
     title: "Pulp Fiction",
     category: "Crime",
     rating: 8.9,
     year: 1994,
-    thumbnail: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&w=400&q=80"},
   {
     id: "m4",
     title: "Spirited Away",
     category: "Anime",
     rating: 8.6,
     year: 2001,
-    thumbnail: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=400&q=80"},
   {
     id: "m5",
     title: "Interstellar",
     category: "Sci-Fi",
     rating: 8.6,
     year: 2014,
-    thumbnail: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80"},
   {
     id: "m6",
     title: "The Godfather",
     category: "Crime",
     rating: 9.2,
     year: 1972,
-    thumbnail: "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=400&q=80"},
   {
     id: "m7",
     title: "Parasite",
     category: "Drama",
     rating: 8.6,
     year: 2019,
-    thumbnail: "https://images.unsplash.com/photo-1535498730771-e735b998cd64?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1535498730771-e735b998cd64?auto=format&fit=crop&w=400&q=80"},
   {
     id: "m8",
     title: "Whiplash",
     category: "Drama",
     rating: 8.5,
     year: 2014,
-    thumbnail: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
-  },
+    thumbnail: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80"},
 ];
 
 // --- UI Layer: Presentation Component ---
@@ -203,10 +195,8 @@ export const Movies: React.FC = () => {
     resetFilters,
     processedMovies,
     showBookmarksOnly,
-    setShowBookmarksOnly,
-  } = useMoviesLogic({
-    initialMovies: MOVIE_DATABASE,
-  });
+    setShowBookmarksOnly} = useMoviesLogic({
+    initialMovies: MOVIE_DATABASE});
 
   return (
     <div className="page-container">
@@ -215,6 +205,16 @@ export const Movies: React.FC = () => {
         <div className="todos-header-title">
           <Film className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Cinematic Catalog Explorer</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Movies.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -227,8 +227,7 @@ export const Movies: React.FC = () => {
           background: "var(--input-bg)",
           padding: "16px",
           borderRadius: "var(--border-radius)",
-          border: "1px solid var(--border)",
-        }}
+          border: "1px solid var(--border)"}}
       >
         {/* Row 1: Search & Bookmarks Toggle */}
         <div
@@ -236,16 +235,14 @@ export const Movies: React.FC = () => {
             display: "flex",
             gap: "12px",
             flexWrap: "wrap",
-            width: "100%",
-          }}
+            width: "100%"}}
         >
           <div
             className="sidebar-search"
             style={{
               flexGrow: 1,
               marginBottom: 0,
-              background: "var(--card-bg)",
-            }}
+              background: "var(--card-bg)"}}
           >
             <Search size={16} className="search-icon" />
             <input
@@ -271,8 +268,7 @@ export const Movies: React.FC = () => {
                 background: "var(--border)",
                 color: "var(--text-h)",
                 fontSize: "0.75rem",
-                borderRadius: "10px",
-              }}
+                borderRadius: "10px"}}
             >
               {bookmarks.length}
             </span>
@@ -286,8 +282,7 @@ export const Movies: React.FC = () => {
             flexWrap: "wrap",
             gap: "16px",
             alignItems: "center",
-            justifyContent: "space-between",
-          }}
+            justifyContent: "space-between"}}
         >
           {/* Category Pills */}
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
@@ -307,8 +302,7 @@ export const Movies: React.FC = () => {
                   cursor: "pointer",
                   fontSize: "0.85rem",
                   fontWeight: 600,
-                  transition: "var(--transition)",
-                }}
+                  transition: "var(--transition)"}}
               >
                 {cat}
               </button>
@@ -354,8 +348,7 @@ export const Movies: React.FC = () => {
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
           gap: "24px",
-          marginTop: "12px",
-        }}
+          marginTop: "12px"}}
       >
         {processedMovies.length === 0 ? (
           <div
@@ -365,8 +358,7 @@ export const Movies: React.FC = () => {
               padding: "48px",
               border: "1px dashed var(--border)",
               borderRadius: "var(--border-radius)",
-              color: "var(--text-muted)",
-            }}
+              color: "var(--text-muted)"}}
           >
             No movies matched your search filters.
           </div>
@@ -384,8 +376,7 @@ export const Movies: React.FC = () => {
                   display: "flex",
                   flexDirection: "column",
                   transition: "var(--transition)",
-                  position: "relative",
-                }}
+                  position: "relative"}}
               >
                 {/* Film Poster Thumbnail */}
                 <div style={{ position: "relative", height: "180px", overflow: "hidden" }}>
@@ -406,8 +397,7 @@ export const Movies: React.FC = () => {
                       borderRadius: "10px",
                       fontSize: "0.75rem",
                       fontWeight: 600,
-                      backdropFilter: "blur(2px)",
-                    }}
+                      backdropFilter: "blur(2px)"}}
                   >
                     {movie.category}
                   </span>
@@ -430,8 +420,7 @@ export const Movies: React.FC = () => {
                       justifyContent: "center",
                       alignItems: "center",
                       backdropFilter: "blur(2px)",
-                      transition: "var(--transition)",
-                    }}
+                      transition: "var(--transition)"}}
                     title={isBookmarked ? "Remove from Favorites" : "Add to Favorites"}
                   >
                     {isBookmarked ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
@@ -445,8 +434,7 @@ export const Movies: React.FC = () => {
                     display: "flex",
                     flexDirection: "column",
                     gap: "8px",
-                    flexGrow: 1,
-                  }}
+                    flexGrow: 1}}
                 >
                   <h4 style={{ margin: 0, fontSize: "1.05rem", color: "var(--text-h)" }}>
                     {movie.title}
@@ -458,8 +446,7 @@ export const Movies: React.FC = () => {
                       alignItems: "center",
                       marginTop: "auto",
                       fontSize: "0.85rem",
-                      color: "var(--text-muted)",
-                    }}
+                      color: "var(--text-muted)"}}
                   >
                     <span>Released: {movie.year}</span>
                     <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "orange" }}>

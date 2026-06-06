@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef } from "react";
-import { Star, RotateCcw, HelpCircle, CheckCircle2 } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Star, RotateCcw, HelpCircle, CheckCircle2, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface UseStarRatingParams {
@@ -12,8 +13,7 @@ export interface UseStarRatingParams {
 export function useStarRatingLogic({
   totalStars = 5,
   initialRating = 0,
-  initialAllowFractional = true,
-}: UseStarRatingParams = {}) {
+  initialAllowFractional = true}: UseStarRatingParams = {}) {
   const [rating, setRating] = useState<number>(initialRating);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [allowFractional, setAllowFractional] = useState<boolean>(initialAllowFractional);
@@ -50,8 +50,7 @@ export function useStarRatingLogic({
     handleSelect,
     handleHover,
     reset,
-    toggleFractional,
-  };
+    toggleFractional};
 }
 
 // --- Star SVG Drawing Component ---
@@ -68,8 +67,7 @@ const StarItem: React.FC<StarItemProps> = ({
   ratingValue,
   allowFractional,
   onHover,
-  onSelect,
-}) => {
+  onSelect}) => {
   const starRef = useRef<HTMLDivElement>(null);
 
   const getTargetValue = (e: React.MouseEvent<HTMLDivElement>): number => {
@@ -126,8 +124,7 @@ const StarItem: React.FC<StarItemProps> = ({
         width: "48px",
         height: "48px",
         display: "inline-block",
-        transition: "transform 0.15s ease",
-      }}
+        transition: "transform 0.15s ease"}}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "scale(1.15)";
       }}
@@ -140,8 +137,7 @@ const StarItem: React.FC<StarItemProps> = ({
           fill: "var(--border)",
           position: "absolute",
           top: 0,
-          left: 0,
-        }}
+          left: 0}}
       />
       {/* Foreground Filled Star (Yellow/Gold) using clip-path */}
       <div
@@ -152,8 +148,7 @@ const StarItem: React.FC<StarItemProps> = ({
           width: `${fillPercentage}%`,
           overflow: "hidden",
           height: "100%",
-          transition: "width 0.1s ease",
-        }}
+          transition: "width 0.1s ease"}}
       >
         <Star
           size={48}
@@ -181,12 +176,10 @@ export const StarRating: React.FC = () => {
     handleSelect,
     handleHover,
     reset,
-    toggleFractional,
-  } = useStarRatingLogic({
+    toggleFractional} = useStarRatingLogic({
     totalStars: 5,
     initialRating: 0.5,
-    initialAllowFractional: true,
-  });
+    initialAllowFractional: true});
 
   const displayRating = hoverRating !== null ? hoverRating : rating;
 
@@ -197,6 +190,16 @@ export const StarRating: React.FC = () => {
         <div className="todos-header-title">
           <Star className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Rating Engine</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/StarRating.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -205,8 +208,7 @@ export const StarRating: React.FC = () => {
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
           gap: "24px",
-          alignItems: "start",
-        }}
+          alignItems: "start"}}
       >
         {/* Left Card: Star Container & Stats */}
         <div
@@ -219,8 +221,7 @@ export const StarRating: React.FC = () => {
             flexDirection: "column",
             alignItems: "center",
             gap: "20px",
-            textAlign: "center",
-          }}
+            textAlign: "center"}}
         >
           <h4>Submit Feedback Score</h4>
 
@@ -247,8 +248,7 @@ export const StarRating: React.FC = () => {
               border: "1px solid var(--border)",
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-            }}
+              gap: "8px"}}
           >
             <span style={{ fontSize: "1.1rem", fontWeight: "bold", color: "var(--text-h)" }}>
               {displayRating.toFixed(1)}
@@ -262,8 +262,7 @@ export const StarRating: React.FC = () => {
                   color: "var(--bg)",
                   padding: "2px 6px",
                   borderRadius: "10px",
-                  fontWeight: "bold",
-                }}
+                  fontWeight: "bold"}}
               >
                 Hovering
               </span>
@@ -286,8 +285,7 @@ export const StarRating: React.FC = () => {
             padding: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
-          }}
+            gap: "16px"}}
         >
           <h4>Configuration & Math Details</h4>
 
@@ -298,8 +296,7 @@ export const StarRating: React.FC = () => {
               justifyContent: "space-between",
               alignItems: "center",
               borderBottom: "1px solid var(--border)",
-              paddingBottom: "12px",
-            }}
+              paddingBottom: "12px"}}
           >
             <div>
               <span style={{ fontWeight: 600, display: "block" }}>Allow Fractional Selection</span>
@@ -338,8 +335,7 @@ export const StarRating: React.FC = () => {
                 alignItems: "center",
                 gap: "8px",
                 fontSize: "0.9rem",
-                color: "var(--success)",
-              }}
+                color: "var(--success)"}}
             >
               <CheckCircle2 size={16} />
               <span>Feedback of {rating} stars submitted successfully.</span>

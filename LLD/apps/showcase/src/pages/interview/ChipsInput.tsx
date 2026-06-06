@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Check, AlertTriangle, Layers } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { X, Check, AlertTriangle, Layers, Code} from "lucide-react";
 
 interface ChipItem {
   id: string;
@@ -53,8 +54,7 @@ export const ChipsInput: React.FC = () => {
     const newChip: ChipItem = {
       id: `chip_${Date.now()}`,
       label: trimmed,
-      isValid: validateText(trimmed),
-    };
+      isValid: validateText(trimmed)};
 
     setChips((prev) => [...prev, newChip]);
     setInputValue("");
@@ -136,6 +136,16 @@ export const ChipsInput: React.FC = () => {
         <div className="todos-header-title">
           <Layers className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Chips Input</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ChipsInput.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -195,8 +205,7 @@ export const ChipsInput: React.FC = () => {
               border: isFocused ? "2px solid var(--primary)" : "1px solid var(--border)",
               background: "var(--input-bg)",
               cursor: "text",
-              minHeight: "44px",
-            }}
+              minHeight: "44px"}}
           >
             {/* Visual render list */}
             {(showOverflowBadge ? chips.slice(0, maxVisibleChips) : chips).map((chip, idx) => {
@@ -228,8 +237,7 @@ export const ChipsInput: React.FC = () => {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",
-                    transition: "all 0.15s ease",
-                  }}
+                    transition: "all 0.15s ease"}}
                 >
                   {/* Status Indicator Icons */}
                   {showIcons && (
@@ -255,8 +263,7 @@ export const ChipsInput: React.FC = () => {
                       color: isHighlighted ? "var(--bg)" : "var(--text-muted)",
                       cursor: "pointer",
                       padding: 0,
-                      display: "flex",
-                    }}
+                      display: "flex"}}
                   >
                     <X size={12} />
                   </button>
@@ -273,8 +280,7 @@ export const ChipsInput: React.FC = () => {
                   fontSize: "0.75rem",
                   padding: "4px 8px",
                   borderRadius: "10px",
-                  fontWeight: "bold",
-                }}
+                  fontWeight: "bold"}}
               >
                 +{chips.length - maxVisibleChips} more
               </span>
@@ -297,8 +303,7 @@ export const ChipsInput: React.FC = () => {
                 outline: "none",
                 fontSize: "0.9rem",
                 flex: 1,
-                minWidth: "120px",
-              }}
+                minWidth: "120px"}}
             />
           </div>
 

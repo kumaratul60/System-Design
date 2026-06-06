@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Clock, Play, Pause, RotateCcw, AlertTriangle, Plus, Trash2, CheckCircle2, Volume2 } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Clock, Play, Pause, RotateCcw, AlertTriangle, Plus, Trash2, CheckCircle2, Volume2, Code} from "lucide-react";
 
 interface TimerHistoryItem {
   id: string;
@@ -165,8 +166,7 @@ export const CountdownTimer: React.FC = () => {
       totalSeconds: newTimerSecs,
       remainingSeconds: newTimerSecs,
       isPaused: false,
-      lastTickTimestamp: Date.now(),
-    };
+      lastTickTimestamp: Date.now()};
     setActiveTimers((prev) => [...prev, newTimer]);
     setNewTimerName("");
     setNewTimerSecs(60);
@@ -221,8 +221,7 @@ export const CountdownTimer: React.FC = () => {
                 id: timer.id,
                 name: timer.name,
                 duration: timer.totalSeconds,
-                completedAt: new Date().toLocaleTimeString(),
-              });
+                completedAt: new Date().toLocaleTimeString()});
             } else {
               updated.push({
                 ...timer,
@@ -253,6 +252,16 @@ export const CountdownTimer: React.FC = () => {
         <div className="todos-header-title">
           <Clock className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Countdown Timer Suite</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/CountdownTimer.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

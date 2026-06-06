@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
+import { translate } from "@statelab/theme";
 import { create } from "zustand";
-import { Sparkles, Play, Pause, ChevronRight, Settings } from "lucide-react";
+import { Sparkles, Play, Pause, ChevronRight, Settings, Code} from "lucide-react";
 import type { LightColor } from "./PropDrillingTrafficLight";
 
 interface TrafficLightState {
@@ -45,8 +46,7 @@ const useLocalTrafficLightStore = create<TrafficLightState>((set, get) => ({
     } else {
       set({ timeLeft: currentTimer - 1 });
     }
-  },
-}));
+  }}));
 
 // --- Data Layer: Custom Hook ---
 export function useZustandTrafficLightLogic() {
@@ -72,8 +72,7 @@ export function useZustandTrafficLightLogic() {
     timeLeft,
     toggleLoop,
     forceNext,
-    selectColor,
-  };
+    selectColor};
 }
 
 // --- UI Presentation Component ---
@@ -84,8 +83,7 @@ export const ZustandTrafficLight: React.FC = () => {
     timeLeft,
     toggleLoop,
     forceNext,
-    selectColor,
-  } = useZustandTrafficLightLogic();
+    selectColor} = useZustandTrafficLightLogic();
 
   return (
     <div className="page-container traffic-light-page">
@@ -93,6 +91,16 @@ export const ZustandTrafficLight: React.FC = () => {
         <div className="todos-header-title">
           <Settings className="todos-title-icon" />
           <h3>Traffic Light Controller (Engine 5: Zustand Store)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/traffic-light/ZustandTrafficLight.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

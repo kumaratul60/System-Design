@@ -125,6 +125,7 @@ export interface FeatureRoute {
   sidebar: boolean;
   labelKey?: keyof typeof translations.en;
   icon?: LucideIcon;
+  filePath?: string;
 }
 
 export const featureRegistry: FeatureRoute[] = [
@@ -135,6 +136,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navHome",
     icon: LayoutGrid,
+    filePath: "apps/showcase/src/pages/Home.tsx",
   },
   {
     path: "/todos",
@@ -143,6 +145,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navTodos",
     icon: CheckSquare,
+    filePath: "apps/showcase/src/pages/Todos.tsx",
   },
   {
     path: "/products",
@@ -151,18 +154,21 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navProducts",
     icon: ShoppingBag,
+    filePath: "apps/showcase/src/pages/Products.tsx",
   },
   {
     path: "/products/:id",
     element: ProductDetail,
     access: "public",
     sidebar: false,
+    filePath: "apps/showcase/src/pages/ProductDetail.tsx",
   },
   {
     path: "/checkout",
     element: Checkout,
     access: "public",
     sidebar: false,
+    filePath: "apps/showcase/src/pages/Checkout.tsx",
   },
   {
     path: "/memes",
@@ -171,6 +177,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navMemes",
     icon: Image,
+    filePath: "apps/showcase/src/pages/Memes.tsx",
   },
   {
     path: "/infinite-scroll",
@@ -179,6 +186,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navInfinite",
     icon: InfinityIcon,
+    filePath: "apps/showcase/src/pages/InfiniteScroll.tsx",
   },
   {
     path: "/traffic-light",
@@ -187,6 +195,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navTrafficLight",
     icon: TrafficCone,
+    filePath: "apps/showcase/src/pages/TrafficLight.tsx",
   },
   {
     path: "/trello",
@@ -195,6 +204,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navTrello",
     icon: Kanban,
+    filePath: "apps/showcase/src/pages/Trello.tsx",
   },
   // Standalone LLD Interview components routes
   {
@@ -204,6 +214,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navAccordions",
     icon: FolderClosed,
+    filePath: "apps/showcase/src/pages/interview/Accordions.tsx",
   },
   {
     path: "/interview/autocomplete",
@@ -212,6 +223,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navAutocomplete",
     icon: Compass,
+    filePath: "apps/showcase/src/pages/interview/Autocomplete.tsx",
   },
   {
     path: "/interview/carousel",
@@ -220,6 +232,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navCarousel",
     icon: Image,
+    filePath: "apps/showcase/src/pages/interview/Carousel.tsx",
   },
   {
     path: "/interview/movies",
@@ -228,6 +241,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navMovies",
     icon: Film,
+    filePath: "apps/showcase/src/pages/interview/Movies.tsx",
   },
   {
     path: "/interview/nested-comments",
@@ -236,6 +250,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navNestedComments",
     icon: MessageSquare,
+    filePath: "apps/showcase/src/pages/interview/NestedComments.tsx",
   },
   {
     path: "/interview/stack",
@@ -244,6 +259,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navStack",
     icon: Binary,
+    filePath: "apps/showcase/src/pages/interview/Stack.tsx",
   },
   {
     path: "/interview/star-rating",
@@ -252,6 +268,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navStarRating",
     icon: Star,
+    filePath: "apps/showcase/src/pages/interview/StarRating.tsx",
   },
   {
     path: "/interview/stock-watch",
@@ -260,6 +277,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navStockWatch",
     icon: BarChart3,
+    filePath: "apps/showcase/src/pages/interview/StockWatch.tsx",
   },
   {
     path: "/interview/timer",
@@ -268,6 +286,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navTimer",
     icon: TimerIcon,
+    filePath: "apps/showcase/src/pages/interview/Timer.tsx",
   },
   {
     path: "/interview/virtualization",
@@ -276,6 +295,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navVirtualization",
     icon: ScrollText,
+    filePath: "apps/showcase/src/pages/interview/Virtualization.tsx",
   },
   {
     path: "/interview/calculator",
@@ -284,6 +304,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navCalculator",
     icon: CalculatorIcon,
+    filePath: "apps/showcase/src/pages/interview/Calculator.tsx",
   },
   {
     path: "/interview/notepad",
@@ -292,6 +313,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navNotepad",
     icon: FileText,
+    filePath: "apps/showcase/src/pages/interview/Notepad.tsx",
   },
   {
     path: "/interview/password-checker",
@@ -300,6 +322,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navPasswordChecker",
     icon: LockKeyhole,
+    filePath: "apps/showcase/src/pages/interview/PasswordChecker.tsx",
   },
   {
     path: "/interview/scroll-tracker",
@@ -308,6 +331,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navScrollTracker",
     icon: Activity,
+    filePath: "apps/showcase/src/pages/interview/ScrollTracker.tsx",
   },
   {
     path: "/interview/theme-switch",
@@ -316,6 +340,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navThemeSwitch",
     icon: Palette,
+    filePath: "apps/showcase/src/pages/interview/ThemeSwitchShowcase.tsx",
   },
   {
     path: "/interview/counter",
@@ -324,6 +349,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navCounter",
     icon: Plus,
+    filePath: "apps/showcase/src/pages/Counter.tsx",
   },
   {
     path: "/interview/fiber-workloop",
@@ -332,6 +358,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navFiberWorkloop",
     icon: Network,
+    filePath: "apps/showcase/src/pages/interview/FiberWorkloop.tsx",
   },
   {
     path: "/interview/smart-textarea",
@@ -340,6 +367,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navSmartTextarea",
     icon: Type,
+    filePath: "apps/showcase/src/pages/interview/SmartTextarea.tsx",
   },
   {
     path: "/interview/dropdown",
@@ -348,6 +376,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navDropdown",
     icon: List,
+    filePath: "apps/showcase/src/pages/interview/Dropdown.tsx",
   },
   {
     path: "/interview/autosuggest",
@@ -356,6 +385,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navAutosuggest",
     icon: Search,
+    filePath: "apps/showcase/src/pages/interview/Autosuggest.tsx",
   },
   {
     path: "/interview/cookie-consent",
@@ -364,6 +394,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navCookieConsent",
     icon: Cookie,
+    filePath: "apps/showcase/src/pages/interview/CookieConsent.tsx",
   },
   {
     path: "/interview/progress-bar",
@@ -372,6 +403,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navProgressBar",
     icon: Percent,
+    filePath: "apps/showcase/src/pages/interview/ProgressBar.tsx",
   },
   {
     path: "/interview/countdown-timer",
@@ -380,6 +412,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navCountdownTimer",
     icon: Clock,
+    filePath: "apps/showcase/src/pages/interview/CountdownTimer.tsx",
   },
   {
     path: "/interview/feedback-modal",
@@ -388,6 +421,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navFeedbackModal",
     icon: MessageSquare,
+    filePath: "apps/showcase/src/pages/interview/FeedbackModal.tsx",
   },
   {
     path: "/interview/multistep-form",
@@ -396,6 +430,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navMultistepForm",
     icon: List,
+    filePath: "apps/showcase/src/pages/interview/MultistepForm.tsx",
   },
   {
     path: "/interview/toast-notification",
@@ -404,6 +439,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navToastNotification",
     icon: Activity,
+    filePath: "apps/showcase/src/pages/interview/ToastNotification.tsx",
   },
   {
     path: "/interview/profile-card",
@@ -412,6 +448,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navProfileCard",
     icon: User,
+    filePath: "apps/showcase/src/pages/interview/ProfileCard.tsx",
   },
   {
     path: "/interview/accordion-component",
@@ -420,6 +457,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navAccordionComponent",
     icon: Folder,
+    filePath: "apps/showcase/src/pages/interview/AccordionComponent.tsx",
   },
   {
     path: "/interview/otp-verification",
@@ -428,6 +466,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navOtpVerification",
     icon: Key,
+    filePath: "apps/showcase/src/pages/interview/OtpVerification.tsx",
   },
   {
     path: "/interview/calendar-viewer",
@@ -436,6 +475,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navCalendarViewer",
     icon: Calendar,
+    filePath: "apps/showcase/src/pages/interview/CalendarViewer.tsx",
   },
   {
     path: "/interview/pricing-card",
@@ -444,6 +484,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navPricingCard",
     icon: DollarSign,
+    filePath: "apps/showcase/src/pages/interview/PricingCardPage.tsx",
   },
   {
     path: "/interview/typeahead-search",
@@ -452,6 +493,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navTypeaheadSearch",
     icon: Search,
+    filePath: "apps/showcase/src/pages/interview/TypeaheadSearch.tsx",
   },
   {
     path: "/interview/video-player",
@@ -460,6 +502,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navVideoPlayer",
     icon: Video,
+    filePath: "apps/showcase/src/pages/interview/VideoPlayer.tsx",
   },
   {
     path: "/interview/contact-us",
@@ -468,6 +511,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navContactUs",
     icon: Mail,
+    filePath: "apps/showcase/src/pages/interview/ContactUsForm.tsx",
   },
   {
     path: "/interview/quote-generator",
@@ -476,6 +520,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navQuoteGenerator",
     icon: Quote,
+    filePath: "apps/showcase/src/pages/interview/RandomQuoteGenerator.tsx",
   },
   {
     path: "/interview/file-explorer",
@@ -484,6 +529,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navFileExplorer",
     icon: Folder,
+    filePath: "apps/showcase/src/pages/interview/FileExplorer.tsx",
   },
   {
     path: "/interview/guess-number",
@@ -492,6 +538,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navGuessNumber",
     icon: Gamepad2,
+    filePath: "apps/showcase/src/pages/interview/GuessNumber.tsx",
   },
   {
     path: "/interview/tic-tac-toe",
@@ -500,6 +547,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navTicTacToe",
     icon: LayoutGrid,
+    filePath: "apps/showcase/src/pages/interview/TicTacToe.tsx",
   },
   {
     path: "/interview/chess-board",
@@ -508,6 +556,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navChessBoard",
     icon: Grid,
+    filePath: "apps/showcase/src/pages/interview/ChessBoard.tsx",
   },
   {
     path: "/interview/chips-input",
@@ -516,6 +565,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navChipsInput",
     icon: Tags,
+    filePath: "apps/showcase/src/pages/interview/ChipsInput.tsx",
   },
   {
     path: "/interview/area-selector",
@@ -524,6 +574,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navAreaSelector",
     icon: MousePointer,
+    filePath: "apps/showcase/src/pages/interview/AreaSelector.tsx",
   },
   {
     path: "/interview/column-table",
@@ -532,6 +583,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navColumnTable",
     icon: Table,
+    filePath: "apps/showcase/src/pages/interview/ColumnTable.tsx",
   },
   {
     path: "/interview/column-grid",
@@ -540,6 +592,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navColumnGrid",
     icon: Grid,
+    filePath: "apps/showcase/src/pages/interview/ColumnGrid.tsx",
   },
   {
     path: "/interview/string-transformers",
@@ -548,6 +601,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navStringTransformers",
     icon: Type,
+    filePath: "apps/showcase/src/pages/interview/StringTransformers.tsx",
   },
   {
     path: "/interview/json-viewer",
@@ -556,6 +610,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navJsonViewer",
     icon: Braces,
+    filePath: "apps/showcase/src/pages/interview/JsonViewer.tsx",
   },
   {
     path: "/interview/diff-checker",
@@ -564,6 +619,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navDiffChecker",
     icon: GitCompare,
+    filePath: "apps/showcase/src/pages/interview/DiffChecker.tsx",
   },
   {
     path: "/interview/url-sync",
@@ -572,6 +628,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navUrlSync",
     icon: Link,
+    filePath: "apps/showcase/src/pages/interview/UrlStateSync.tsx",
   },
   {
     path: "/interview/url-inspector",
@@ -580,6 +637,7 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navUrlInspector",
     icon: Globe,
+    filePath: "apps/showcase/src/pages/interview/UrlInspector.tsx",
   },
   {
     path: "/admin",
@@ -588,11 +646,13 @@ export const featureRegistry: FeatureRoute[] = [
     sidebar: true,
     labelKey: "navAdmin",
     icon: ShieldAlert,
+    filePath: "apps/showcase/src/pages/Admin.tsx",
   },
   {
     path: "/unauthorized",
     element: Unauthorized,
     access: "public",
     sidebar: false,
+    filePath: "apps/showcase/src/pages/Unauthorized.tsx",
   },
 ];

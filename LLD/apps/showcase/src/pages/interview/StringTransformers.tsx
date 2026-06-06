@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Type, Copy, CheckCircle } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Type, Copy, CheckCircle, Code} from "lucide-react";
 
 export const StringTransformers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -117,6 +118,16 @@ export const StringTransformers: React.FC = () => {
         <div className="todos-header-title">
           <Type className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>String Case Transformers</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/StringTransformers.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

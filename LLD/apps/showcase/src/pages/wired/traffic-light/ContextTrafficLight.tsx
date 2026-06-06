@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { Sparkles, Play, Pause, ChevronRight, Settings } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Sparkles, Play, Pause, ChevronRight, Settings, Code} from "lucide-react";
 import type { LightColor } from "./PropDrillingTrafficLight";
 
 interface TrafficLightContextType {
@@ -71,8 +72,7 @@ const TrafficLightProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         timeLeft,
         toggleLoop,
         forceNext,
-        selectColor,
-      }}
+        selectColor}}
     >
       {children}
     </TrafficLightContext.Provider>
@@ -96,8 +96,7 @@ const ContextTrafficLightInner: React.FC = () => {
     timeLeft,
     toggleLoop,
     forceNext,
-    selectColor,
-  } = useTrafficLightContext();
+    selectColor} = useTrafficLightContext();
 
   return (
     <div className="page-container traffic-light-page">
@@ -105,6 +104,16 @@ const ContextTrafficLightInner: React.FC = () => {
         <div className="todos-header-title">
           <Settings className="todos-title-icon" />
           <h3>Traffic Light Controller (Engine 3: Context API Bus)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/traffic-light/ContextTrafficLight.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

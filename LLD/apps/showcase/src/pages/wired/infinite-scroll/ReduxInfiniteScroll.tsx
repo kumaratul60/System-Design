@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useCallback } from "react";
+import { translate } from "@statelab/theme";
 import { configureStore, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon, Code} from "lucide-react";
 
 interface Photo {
   id: string;
@@ -25,8 +26,7 @@ const initialState: GallerySliceState = {
   page: 1,
   isLoading: false,
   hasMore: true,
-  error: null,
-};
+  error: null};
 
 // Async Thunk
 export const fetchGalleryPhotos = createAsyncThunk(
@@ -54,8 +54,7 @@ const gallerySlice = createSlice({
       state.photos = [];
       state.page = 1;
       state.hasMore = true;
-    },
-  },
+    }},
   extraReducers: (builder) => {
     builder
       .addCase(fetchGalleryPhotos.pending, (state) => {
@@ -74,15 +73,12 @@ const gallerySlice = createSlice({
         state.error = action.payload as string;
         state.isLoading = false;
       });
-  },
-});
+  }});
 
 // Configure Store
 const localGalleryStore = configureStore({
   reducer: {
-    galleryStore: gallerySlice.reducer,
-  },
-});
+    galleryStore: gallerySlice.reducer}});
 
 type LocalGalleryRootState = ReturnType<typeof localGalleryStore.getState>;
 
@@ -118,8 +114,7 @@ export function useReduxGalleryLogic() {
     hasMore,
     error,
     handleNextPage,
-    handleReset,
-  };
+    handleReset};
 }
 
 // --- UI Presentation Component ---
@@ -132,8 +127,7 @@ const ReduxInfiniteScrollInner: React.FC = () => {
     hasMore,
     error,
     handleNextPage,
-    handleReset,
-  } = useReduxGalleryLogic();
+    handleReset} = useReduxGalleryLogic();
 
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -161,6 +155,16 @@ const ReduxInfiniteScrollInner: React.FC = () => {
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" />
           <h3>Infinite Gallery (Engine 6: Redux Toolkit)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/infinite-scroll/ReduxInfiniteScroll.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={handleReset} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading && photos.length === 0 ? "spinning" : ""}`} size={16} />

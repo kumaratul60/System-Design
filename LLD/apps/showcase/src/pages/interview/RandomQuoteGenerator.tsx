@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { MessageSquare, RefreshCw, Volume2, Copy, Play, Pause, Compass } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { MessageSquare, RefreshCw, Volume2, Copy, Play, Pause, Compass, Code} from "lucide-react";
 
 interface Quote {
   text: string;
@@ -120,6 +121,16 @@ export const RandomQuoteGenerator: React.FC = () => {
         <div className="todos-header-title">
           <MessageSquare className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Random Quote Generator</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/RandomQuoteGenerator.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -193,8 +204,7 @@ export const RandomQuoteGenerator: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: "20px",
-              minHeight: "180px",
-            }}
+              minHeight: "180px"}}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "0.75rem", background: "var(--input-bg)", padding: "2px 8px", borderRadius: "10px", textTransform: "uppercase", color: "var(--text-muted)" }}>

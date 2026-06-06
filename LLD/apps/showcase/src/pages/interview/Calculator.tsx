@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Calculator as CalcIcon, Trash2, History, CornerDownLeft } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Calculator as CalcIcon, Trash2, History, CornerDownLeft, Code} from "lucide-react";
 
 // --- Dijkstra's Shunting-Yard Lexer & Infix Evaluator ---
 // Custom parsing engine showing compilation theory and LLD design patterns.
@@ -40,8 +41,7 @@ const evaluateExpression = (expression: string): number => {
     "+": 1,
     "-": 1,
     "*": 2,
-    "/": 2,
-  };
+    "/": 2};
 
   for (const token of tokens) {
     if (!isNaN(Number(token))) {
@@ -193,8 +193,7 @@ export function useCalculator() {
     calculate,
     clearHistory,
     restoreHistory,
-    setEquation,
-  };
+    setEquation};
 }
 
 // --- UI Layer: Presentation Component ---
@@ -206,8 +205,7 @@ export const Calculator: React.FC = () => {
     handleKeyPress,
     calculate,
     clearHistory,
-    restoreHistory,
-  } = useCalculator();
+    restoreHistory} = useCalculator();
 
   const [showHistory, setShowHistory] = useState(false);
 
@@ -245,6 +243,16 @@ export const Calculator: React.FC = () => {
         <div className="todos-header-title">
           <CalcIcon className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Mathematical Evaluator</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Calculator.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button
           onClick={() => setShowHistory(!showHistory)}
@@ -265,8 +273,7 @@ export const Calculator: React.FC = () => {
           alignItems: "start",
           maxWidth: "760px",
           margin: "0 auto",
-          width: "100%",
-        }}
+          width: "100%"}}
       >
         {/* Main Calculator Screen */}
         <div
@@ -275,8 +282,7 @@ export const Calculator: React.FC = () => {
             borderRadius: "var(--border-radius)",
             background: "var(--card-bg)",
             padding: "24px",
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
-          }}
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)"}}
         >
           {/* Display screen */}
           <div
@@ -291,8 +297,7 @@ export const Calculator: React.FC = () => {
               flexDirection: "column",
               justifyContent: "space-between",
               alignItems: "flex-end",
-              overflow: "hidden",
-            }}
+              overflow: "hidden"}}
           >
             <div
               style={{
@@ -300,8 +305,7 @@ export const Calculator: React.FC = () => {
                 color: "var(--text-muted)",
                 wordBreak: "break-all",
                 fontFamily: "var(--font-mono)",
-                minHeight: "24px",
-              }}
+                minHeight: "24px"}}
             >
               {equation || "0"}
             </div>
@@ -312,8 +316,7 @@ export const Calculator: React.FC = () => {
                 color: "var(--text-h)",
                 wordBreak: "break-all",
                 fontFamily: "var(--font-mono)",
-                marginTop: "12px",
-              }}
+                marginTop: "12px"}}
             >
               {result || "0"}
             </div>
@@ -360,8 +363,7 @@ export const Calculator: React.FC = () => {
                         transition: "transform 0.1s, opacity 0.1s",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                      }}
+                        justifyContent: "center"}}
                       onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
                       onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -388,8 +390,7 @@ export const Calculator: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: "12px",
-              overflow: "hidden",
-            }}
+              overflow: "hidden"}}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h4 style={{ margin: 0 }}>Calculation History</h4>
@@ -403,8 +404,7 @@ export const Calculator: React.FC = () => {
                     cursor: "pointer",
                     padding: "4px",
                     display: "flex",
-                    alignItems: "center",
-                  }}
+                    alignItems: "center"}}
                   title="Clear history"
                 >
                   <Trash2 size={16} />
@@ -421,8 +421,7 @@ export const Calculator: React.FC = () => {
                     color: "var(--text-muted)",
                     fontSize: "0.9rem",
                     border: "1px dashed var(--border)",
-                    borderRadius: "6px",
-                  }}
+                    borderRadius: "6px"}}
                 >
                   No calculations recorded yet.
                 </div>
@@ -441,8 +440,7 @@ export const Calculator: React.FC = () => {
                       flexDirection: "column",
                       alignItems: "flex-end",
                       gap: "4px",
-                      transition: "background 0.2s",
-                    }}
+                      transition: "background 0.2s"}}
                     onMouseEnter={(e) => (e.currentTarget.style.background = "var(--border)")}
                     onMouseLeave={(e) => (e.currentTarget.style.background = "var(--input-bg)")}
                   >

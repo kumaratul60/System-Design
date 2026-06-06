@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Shield, Info, RefreshCw, Eye } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Shield, Info, RefreshCw, Eye, Code} from "lucide-react";
 
 // Cookie details structure
 interface CookieAudit {
@@ -81,6 +82,16 @@ export const CookieConsent: React.FC = () => {
         <div className="todos-header-title">
           <Shield className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Cookie Consent Management</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/CookieConsent.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -134,8 +145,7 @@ export const CookieConsent: React.FC = () => {
                     boxShadow: "0 10px 25px -5px rgba(0,0,0,0.3)",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "12px",
-                  }}
+                    gap: "12px"}}
                 >
                   <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                     <Shield size={22} style={{ color: "var(--primary)", flexShrink: 0, marginTop: "2px" }} />
@@ -297,8 +307,7 @@ export const CookieConsent: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px",
-              }}
+                gap: "8px"}}
             >
               <RefreshCw size={14} /> Withdraw Consent Preferences
             </button>

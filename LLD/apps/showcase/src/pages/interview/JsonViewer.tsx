@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FileText, CheckCircle, AlertCircle, Search, ChevronRight, ChevronDown, Copy } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { FileText, CheckCircle, AlertCircle, Search, ChevronRight, ChevronDown, Copy, Code} from "lucide-react";
 
 // Initial Complex Mock JSON Object representation
 const INITIAL_JSON = {
@@ -9,13 +10,11 @@ const INITIAL_JSON = {
   settings: {
     theme: "dark",
     telemetry: false,
-    ports: [8080, 9000],
-  },
+    ports: [8080, 9000]},
   users: [
     { id: 101, username: "atul_dev", roles: ["admin", "staff"] },
     { id: 102, username: "gemini_bot", roles: ["guest"] },
-  ],
-};
+  ]};
 
 export const JsonViewer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -116,8 +115,7 @@ export const JsonViewer: React.FC = () => {
           marginLeft: `${depth * 16}px`,
           marginTop: "4px",
           fontFamily: "var(--font-mono)",
-          fontSize: "0.85rem",
-        }}
+          fontSize: "0.85rem"}}
         onMouseEnter={(e) => {
           e.stopPropagation();
           if (activeTab === "advance") setHoveredPath(currentPath);
@@ -175,6 +173,16 @@ export const JsonViewer: React.FC = () => {
         <div className="todos-header-title">
           <FileText className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>JSON Object Formatter & Viewer</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/JsonViewer.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -225,8 +233,7 @@ export const JsonViewer: React.FC = () => {
               fontFamily: "var(--font-mono)",
               fontSize: "0.82rem",
               lineHeight: 1.4,
-              resize: "vertical",
-            }}
+              resize: "vertical"}}
             placeholder="Paste raw JSON here..."
           />
 

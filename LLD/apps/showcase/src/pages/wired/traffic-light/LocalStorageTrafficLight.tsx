@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Sparkles, Play, Pause, ChevronRight, Settings } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Sparkles, Play, Pause, ChevronRight, Settings, Code} from "lucide-react";
 import type { LightColor } from "./PropDrillingTrafficLight";
 
 // --- Data Layer: Custom Hook ---
@@ -104,8 +105,7 @@ export function useLocalStorageTrafficLightLogic() {
     timeLeft,
     handleToggle,
     handleNext,
-    handleSelectColor,
-  };
+    handleSelectColor};
 }
 
 // --- UI Presentation Component ---
@@ -116,8 +116,7 @@ export const LocalStorageTrafficLight: React.FC = () => {
     timeLeft,
     handleToggle,
     handleNext,
-    handleSelectColor,
-  } = useLocalStorageTrafficLightLogic();
+    handleSelectColor} = useLocalStorageTrafficLightLogic();
 
   return (
     <div className="page-container traffic-light-page">
@@ -125,6 +124,16 @@ export const LocalStorageTrafficLight: React.FC = () => {
         <div className="todos-header-title">
           <Settings className="todos-title-icon" />
           <h3>Traffic Light Controller (Engine 2: LocalStorage Sync)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/traffic-light/LocalStorageTrafficLight.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

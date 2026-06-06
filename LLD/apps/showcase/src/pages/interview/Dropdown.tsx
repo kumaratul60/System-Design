@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { ChevronDown, Search, X, Loader, Check, Compass, HelpCircle } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { ChevronDown, Search, X, Loader, Check, Compass, HelpCircle, Code} from "lucide-react";
 
 // Types
 interface Option {
@@ -15,8 +16,7 @@ const generateLargeList = (): Option[] => {
     items.push({
       value: `item-${i}`,
       label: `Virtualized Option Item ${i}`,
-      group: i % 2 === 0 ? "Even Numbers" : "Odd Numbers",
-    });
+      group: i % 2 === 0 ? "Even Numbers" : "Odd Numbers"});
   }
   return items;
 };
@@ -224,6 +224,16 @@ export const Dropdown: React.FC = () => {
         <div className="todos-header-title">
           <Compass className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Dropdown Select Showcase</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Dropdown.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -260,8 +270,7 @@ export const Dropdown: React.FC = () => {
                 border: "1px solid var(--border)",
                 borderRadius: "var(--border-radius)",
                 background: "var(--card-bg)",
-                padding: "24px",
-              }}
+                padding: "24px"}}
             >
               <h4 style={{ marginBottom: "12px" }}>Custom Dropdown with Keyboard Navigation</h4>
 
@@ -282,8 +291,7 @@ export const Dropdown: React.FC = () => {
                     alignItems: "center",
                     cursor: "pointer",
                     color: basicSelected ? "var(--text-h)" : "var(--text-muted)",
-                    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
-                  }}
+                    transition: "border-color 0.15s ease, box-shadow 0.15s ease"}}
                 >
                   <span>{basicSelected ? basicSelected.label : "Select a framework..."}</span>
                   <ChevronDown size={18} style={{ transform: basicOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
@@ -301,8 +309,7 @@ export const Dropdown: React.FC = () => {
                       border: "1px solid var(--border)",
                       borderRadius: "8px",
                       boxShadow: "0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3)",
-                      zIndex: 100,
-                    }}
+                      zIndex: 100}}
                   >
                     <div style={{ display: "flex", alignItems: "center", borderBottom: "1px solid var(--border)", padding: "8px 12px" }}>
                       <Search size={16} style={{ color: "var(--text-muted)", marginRight: "8px" }} />
@@ -319,8 +326,7 @@ export const Dropdown: React.FC = () => {
                           border: "none",
                           width: "100%",
                           color: "var(--text-h)",
-                          outline: "none",
-                        }}
+                          outline: "none"}}
                       />
                     </div>
 
@@ -349,8 +355,7 @@ export const Dropdown: React.FC = () => {
                                 alignItems: "center",
                                 background: isHighlighted ? "var(--input-bg)" : isSelected ? "rgba(59, 130, 246, 0.15)" : "transparent",
                                 color: isHighlighted || isSelected ? "var(--text-h)" : "var(--text)",
-                                transition: "background-color 0.15s ease, color 0.15s ease",
-                              }}
+                                transition: "background-color 0.15s ease, color 0.15s ease"}}
                             >
                               <span>{opt.label}</span>
                               {isSelected && <Check size={14} style={{ color: "var(--primary)" }} />}
@@ -378,8 +383,7 @@ export const Dropdown: React.FC = () => {
                 border: "1px solid var(--border)",
                 borderRadius: "var(--border-radius)",
                 background: "var(--card-bg)",
-                padding: "24px",
-              }}
+                padding: "24px"}}
             >
               <h4 style={{ marginBottom: "12px" }}>Multi-select Dropdown (Dismissible Chips)</h4>
 
@@ -408,8 +412,7 @@ export const Dropdown: React.FC = () => {
                     alignItems: "center",
                     cursor: "pointer",
                     minHeight: "44px",
-                    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
-                  }}
+                    transition: "border-color 0.15s ease, box-shadow 0.15s ease"}}
                 >
                   {midSelected.map((opt) => (
                     <span
@@ -424,8 +427,7 @@ export const Dropdown: React.FC = () => {
                         display: "flex",
                         alignItems: "center",
                         gap: "6px",
-                        fontWeight: 500,
-                      }}
+                        fontWeight: 500}}
                     >
                       {opt.label}
                       <X
@@ -455,8 +457,7 @@ export const Dropdown: React.FC = () => {
                       outline: "none",
                       color: "var(--text-h)",
                       flex: 1,
-                      minWidth: "60px",
-                    }}
+                      minWidth: "60px"}}
                   />
 
                   {midSelected.length > 0 && (
@@ -487,8 +488,7 @@ export const Dropdown: React.FC = () => {
                       zIndex: 100,
                       maxHeight: "180px",
                       overflowY: "auto",
-                      padding: "6px",
-                    }}
+                      padding: "6px"}}
                   >
                     {midFiltered.length === 0 ? (
                       <div style={{ padding: "12px", textAlign: "center", color: "var(--text-muted)" }}>All options selected</div>
@@ -509,8 +509,7 @@ export const Dropdown: React.FC = () => {
                               cursor: "pointer",
                               background: isHighlighted ? "var(--input-bg)" : "transparent",
                               color: isHighlighted ? "var(--text-h)" : "var(--text)",
-                              transition: "background-color 0.15s ease, color 0.15s ease",
-                            }}
+                              transition: "background-color 0.15s ease, color 0.15s ease"}}
                           >
                             {opt.label}
                           </div>
@@ -530,8 +529,7 @@ export const Dropdown: React.FC = () => {
                 border: "1px solid var(--border)",
                 borderRadius: "var(--border-radius)",
                 background: "var(--card-bg)",
-                padding: "24px",
-              }}
+                padding: "24px"}}
             >
               <h4 style={{ marginBottom: "12px" }}>Advance: Virtualized list (10k items) & Grouping</h4>
 
@@ -551,8 +549,7 @@ export const Dropdown: React.FC = () => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     cursor: "pointer",
-                    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
-                  }}
+                    transition: "border-color 0.15s ease, box-shadow 0.15s ease"}}
                 >
                   <span>{advanceSelected ? advanceSelected.label : "Select Virtualized Item..."}</span>
                   <ChevronDown size={18} />
@@ -570,8 +567,7 @@ export const Dropdown: React.FC = () => {
                       border: "1px solid var(--border)",
                       borderRadius: "8px",
                       boxShadow: "0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3)",
-                      zIndex: 100,
-                    }}
+                      zIndex: 100}}
                   >
                     {/* Search Bar */}
                     <div style={{ display: "flex", alignItems: "center", borderBottom: "1px solid var(--border)", padding: "8px 12px" }}>
@@ -586,8 +582,7 @@ export const Dropdown: React.FC = () => {
                           border: "none",
                           width: "100%",
                           color: "var(--text-h)",
-                          outline: "none",
-                        }}
+                          outline: "none"}}
                       />
                       {isLoading && <Loader className="animated-spin" size={16} />}
                     </div>
@@ -598,8 +593,7 @@ export const Dropdown: React.FC = () => {
                       style={{
                         height: `${listHeight}px`,
                         overflowY: "auto",
-                        position: "relative",
-                      }}
+                        position: "relative"}}
                     >
                       {/* Inner wrapper mapping actual scale of list */}
                       <div style={{ height: `${filteredVirtual.length * itemHeight}px`, width: "100%" }}>
@@ -634,8 +628,7 @@ export const Dropdown: React.FC = () => {
                                   justifyContent: "space-between",
                                   cursor: "pointer",
                                   borderBottom: "1px solid var(--border)",
-                                  background: advanceSelected?.value === item.value ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                                }}
+                                  background: advanceSelected?.value === item.value ? "rgba(59, 130, 246, 0.15)" : "transparent"}}
                               >
                                 <span>{item.label}</span>
                                 <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", background: "var(--input-bg)", padding: "2px 6px", borderRadius: "10px" }}>

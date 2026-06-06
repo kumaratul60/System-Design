@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Pause, RotateCcw, Award, ShieldAlert, ArrowLeft, ArrowRight } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Play, Pause, RotateCcw, Award, ShieldAlert, ArrowLeft, ArrowRight, Code} from "lucide-react";
 
 // Web Audio API Sound Synthesizer Helper
 const playSynthSound = (frequency: number, type: OscillatorType = "sine", duration = 0.1) => {
@@ -222,8 +223,7 @@ export const TicTacToe: React.FC = () => {
 
       setScores((prev) => ({
         ...prev,
-        [winResult.winner.toLowerCase() as "x" | "o"]: prev[winResult.winner.toLowerCase() as "x" | "o"] + 1,
-      }));
+        [winResult.winner.toLowerCase() as "x" | "o"]: prev[winResult.winner.toLowerCase() as "x" | "o"] + 1}));
     } else if (!nextBoard.includes("")) {
       setIsTie(true);
       setScores((prev) => ({ ...prev, ties: prev.ties + 1 }));
@@ -327,6 +327,16 @@ export const TicTacToe: React.FC = () => {
         <div className="todos-header-title">
           <Award className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Tic-Tac-Toe Arena</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/TicTacToe.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -418,8 +428,7 @@ export const TicTacToe: React.FC = () => {
               gridTemplateColumns: `repeat(${activeTab === "basic" ? 3 : gridSize}, 1fr)`,
               gap: "8px",
               maxWidth: "320px",
-              margin: "0 auto 24px auto",
-            }}
+              margin: "0 auto 24px auto"}}
           >
             {board.map((cell, idx) => {
               const isWinningCell = winningCells.includes(idx);
@@ -436,8 +445,7 @@ export const TicTacToe: React.FC = () => {
                     fontWeight: "bold",
                     color: cell === "X" ? "var(--primary)" : "red",
                     cursor: cell || winner || isTie ? "not-allowed" : "pointer",
-                    outline: "none",
-                  }}
+                    outline: "none"}}
                   disabled={!!cell || !!winner || isTie}
                 >
                   {cell}
@@ -502,8 +510,7 @@ export const TicTacToe: React.FC = () => {
                       background: historyStep === step ? "var(--primary)" : "var(--input-bg)",
                       color: historyStep === step ? "var(--bg)" : "var(--text-h)",
                       justifyContent: "flex-start",
-                      textAlign: "left",
-                    }}
+                      textAlign: "left"}}
                   >
                     {step === 0 ? "• Move Game Start" : `• Move #${step}`}
                   </button>

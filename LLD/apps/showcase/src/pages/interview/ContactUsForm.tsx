@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { MessageSquare, AlertTriangle, CheckCircle, Info, Send, Trash2 } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { MessageSquare, AlertTriangle, CheckCircle, Info, Send, Trash2, Code} from "lucide-react";
 
 interface SentMessage {
   id: string;
@@ -53,8 +54,7 @@ export const ContactUsForm: React.FC = () => {
       email: "alice@hashing.io",
       category: "sales",
       message: "Looking for pro consultation regarding virtual viewport sharding configs.",
-      timestamp: "10:30 AM",
-    },
+      timestamp: "10:30 AM"},
   ]);
 
   const handleMidSubmit = (e: React.FormEvent) => {
@@ -71,8 +71,7 @@ export const ContactUsForm: React.FC = () => {
       email: midEmail,
       category: midCategory,
       message: midMsg,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })};
 
     setSentMessages((prev) => [newMsg, ...prev]);
     setMidSuccess(true);
@@ -167,6 +166,16 @@ export const ContactUsForm: React.FC = () => {
         <div className="todos-header-title">
           <MessageSquare className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Contact Form Architect</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ContactUsForm.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

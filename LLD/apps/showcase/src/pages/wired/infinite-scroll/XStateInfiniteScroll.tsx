@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useCallback } from "react";
+import { translate } from "@statelab/theme";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
-import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon, Code} from "lucide-react";
 
 interface Photo {
   id: string;
@@ -20,29 +21,22 @@ const galleryMachine = createMachine({
     photos: [] as Photo[],
     page: 1,
     hasMore: true,
-    error: null as string | null,
-  },
+    error: null as string | null},
   states: {
     idle: {
       on: {
         FETCH: { target: "fetching" },
         INCREMENT_PAGE: {
           actions: assign({
-            page: ({ context }) => context.page + 1,
-          }),
-          target: "fetching",
-        },
+            page: ({ context }) => context.page + 1}),
+          target: "fetching"},
         RESET: {
           actions: assign({
             photos: [],
             page: 1,
             hasMore: true,
-            error: null,
-          }),
-          target: "fetching",
-        },
-      },
-    },
+            error: null}),
+          target: "fetching"}}},
     fetching: {
       on: {
         FETCH_SUCCESS: {
@@ -55,19 +49,11 @@ const galleryMachine = createMachine({
               return [...context.photos, ...unique];
             },
             hasMore: ({ event }) => (event as unknown as { photos: Photo[] }).photos.length === 12,
-            error: null,
-          }),
-        },
+            error: null})},
         FETCH_FAILURE: {
           target: "idle",
           actions: assign({
-            error: ({ event }) => (event as unknown as { error: string }).error,
-          }),
-        },
-      },
-    },
-  },
-});
+            error: ({ event }) => (event as unknown as { error: string }).error})}}}}});
 
 // --- Data Layer: Custom Hook ---
 export function useXStateGalleryLogic() {
@@ -115,8 +101,7 @@ export function useXStateGalleryLogic() {
     hasMore,
     error,
     handleNextPage,
-    handleReset,
-  };
+    handleReset};
 }
 
 // --- UI Presentation Component ---
@@ -127,8 +112,7 @@ export const XStateInfiniteScroll: React.FC = () => {
     hasMore,
     error,
     handleNextPage,
-    handleReset,
-  } = useXStateGalleryLogic();
+    handleReset} = useXStateGalleryLogic();
 
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -156,6 +140,16 @@ export const XStateInfiniteScroll: React.FC = () => {
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" />
           <h3>Infinite Gallery (Engine 4: XState Machine)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/infinite-scroll/XStateInfiniteScroll.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={handleReset} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading && photos.length === 0 ? "spinning" : ""}`} size={16} />

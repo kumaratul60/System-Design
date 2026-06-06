@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useZustandStore } from "@statelab/state-engines";
 import { translate } from "@statelab/theme";
-import { CheckCircle2, Circle, ClipboardList, Plus, RefreshCw, Trash2, Lock } from "lucide-react";
+import { CheckCircle2, Circle, ClipboardList, Plus, RefreshCw, Trash2, Lock, Code} from "lucide-react";
 
 // --- Data Layer: Custom Hook ---
 export function useZustandTodoLogic() {
@@ -34,8 +34,7 @@ export function useZustandTodoLogic() {
   const welcomeMessage = user
     ? translate("welcomeUser", {
         username: user.username,
-        role: user.role === "ADMIN" ? translate("roleAdmin") : translate("roleUser"),
-      })
+        role: user.role === "ADMIN" ? translate("roleAdmin") : translate("roleUser")})
     : "";
 
   return {
@@ -48,8 +47,7 @@ export function useZustandTodoLogic() {
     welcomeMessage,
     toggleTodo,
     deleteTodo,
-    fetchTodos,
-  };
+    fetchTodos};
 }
 
 // --- UI Presentation Component ---
@@ -64,8 +62,7 @@ export const ZustandTodo: React.FC = () => {
     welcomeMessage,
     toggleTodo,
     deleteTodo,
-    fetchTodos,
-  } = useZustandTodoLogic();
+    fetchTodos} = useZustandTodoLogic();
 
   const isAdmin = user?.role === "ADMIN";
 
@@ -78,9 +75,19 @@ export const ZustandTodo: React.FC = () => {
       <div className="todos-card-wrapper">
         <div className="todos-card-header">
           <div className="todos-header-title">
-            <ClipboardList className="todos-title-icon" />
+          <ClipboardList className="todos-title-icon" />
             <h3>Engine 5: Zustand Atomic Store</h3>
-          </div>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/todos/ZustandTodo.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
+        </div>
           <button
             onClick={() => fetchTodos()}
             className="btn btn-secondary fetch-btn"

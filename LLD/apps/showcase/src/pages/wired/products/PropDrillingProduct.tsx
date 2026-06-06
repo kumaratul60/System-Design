@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { translate } from "@statelab/theme";
-import { Trash2, Lock, ShoppingBag, RefreshCw } from "lucide-react";
+import { Trash2, Lock, ShoppingBag, RefreshCw, Code} from "lucide-react";
 import type { AppUser } from "@statelab/state-engines";
 
 // --- Types & Interfaces ---
@@ -66,8 +66,7 @@ export function usePropDrillingProductLogic(user: AppUser | null) {
     error,
     isAdmin,
     fetchProducts,
-    handleDeleteSimulate,
-  };
+    handleDeleteSimulate};
 }
 
 // --- UI Presentation Components ---
@@ -76,8 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   isAdmin,
   onNavigateToDetail,
-  onDeleteSimulate,
-}) => {
+  onDeleteSimulate}) => {
   return (
     <div className="product-card">
       <div onClick={() => onNavigateToDetail(product.id)} className="product-card-clickable-area">
@@ -124,8 +122,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   user,
   isAdmin,
   onNavigateToDetail,
-  onDeleteSimulate,
-}) => {
+  onDeleteSimulate}) => {
   return (
     <div className="products-grid">
       {products.map((prod) => (
@@ -144,8 +141,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
 
 // Main Component
 export const PropDrillingProduct: React.FC<{ user: AppUser | null }> = ({
-  user,
-}) => {
+  user}) => {
   const navigate = useNavigate();
   const {
     products,
@@ -153,8 +149,7 @@ export const PropDrillingProduct: React.FC<{ user: AppUser | null }> = ({
     error,
     isAdmin,
     fetchProducts,
-    handleDeleteSimulate,
-  } = usePropDrillingProductLogic(user);
+    handleDeleteSimulate} = usePropDrillingProductLogic(user);
 
   return (
     <div className="page-container products-page">
@@ -162,6 +157,16 @@ export const PropDrillingProduct: React.FC<{ user: AppUser | null }> = ({
         <div className="todos-header-title">
           <ShoppingBag className="todos-title-icon" />
           <h3>Products Catalog (Engine 1: Prop Drilling)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/products/PropDrillingProduct.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button
           onClick={fetchProducts}

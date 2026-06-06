@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Folder, File, ChevronRight, ChevronDown, Trash2, Edit, Search, FolderPlus, FilePlus } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Folder, File, ChevronRight, ChevronDown, Trash2, Edit, Search, FolderPlus, FilePlus, Code} from "lucide-react";
 
 // ----------------------------------------------------
 // --- Interfaces & Mock Filesystem Structure --------
@@ -28,12 +29,10 @@ const INITIAL_FS: FSNode = {
           children: [
             { id: "node_button", name: "Button.tsx", isFolder: false },
             { id: "node_dropdown", name: "Dropdown.tsx", isFolder: false },
-          ],
-        },
+          ]},
         { id: "node_app", name: "App.tsx", isFolder: false },
         { id: "node_main", name: "main.tsx", isFolder: false },
-      ],
-    },
+      ]},
     {
       id: "node_public",
       name: "public",
@@ -41,12 +40,10 @@ const INITIAL_FS: FSNode = {
       children: [
         { id: "node_logo", name: "favicon.ico", isFolder: false },
         { id: "node_index", name: "index.html", isFolder: false },
-      ],
-    },
+      ]},
     { id: "node_package", name: "package.json", isFolder: false },
     { id: "node_tsconfig", name: "tsconfig.json", isFolder: false },
-  ],
-};
+  ]};
 
 export const FileExplorer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -59,8 +56,7 @@ export const FileExplorer: React.FC = () => {
     root: true,
     node_src: true,
     node_components: false,
-    node_public: false,
-  });
+    node_public: false});
 
   // Toggle Folder expansion helper
   const toggleFolder = (id: string) => {
@@ -77,19 +73,16 @@ export const FileExplorer: React.FC = () => {
         id: `node_${Date.now()}`,
         name,
         isFolder,
-        children: isFolder ? [] : undefined,
-      };
+        children: isFolder ? [] : undefined};
       return {
         ...tree,
-        children: [...(tree.children || []), newNode],
-      };
+        children: [...(tree.children || []), newNode]};
     }
 
     if (tree.children) {
       return {
         ...tree,
-        children: tree.children.map((child) => insertNode(child, parentId, name, isFolder)),
-      };
+        children: tree.children.map((child) => insertNode(child, parentId, name, isFolder))};
     }
     return tree;
   };
@@ -103,8 +96,7 @@ export const FileExplorer: React.FC = () => {
         ...tree,
         children: tree.children
           .map((child) => deleteNode(child, targetId))
-          .filter((child): child is FSNode => child !== null),
-      };
+          .filter((child): child is FSNode => child !== null)};
     }
     return tree;
   };
@@ -118,8 +110,7 @@ export const FileExplorer: React.FC = () => {
     if (tree.children) {
       return {
         ...tree,
-        children: tree.children.map((child) => renameNode(child, targetId, newName)),
-      };
+        children: tree.children.map((child) => renameNode(child, targetId, newName))};
     }
     return tree;
   };
@@ -161,8 +152,7 @@ export const FileExplorer: React.FC = () => {
       if (filteredChildren.length > 0 || matches) {
         return {
           ...node,
-          children: filteredChildren,
-        };
+          children: filteredChildren};
       }
     } else if (matches) {
       return node;
@@ -234,8 +224,7 @@ export const FileExplorer: React.FC = () => {
             cursor: "pointer",
             background: "transparent",
             justifyContent: "space-between",
-            transition: "background-color 0.2s",
-          }}
+            transition: "background-color 0.2s"}}
           onClick={() => node.isFolder && toggleFolder(node.id)}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
@@ -268,8 +257,7 @@ export const FileExplorer: React.FC = () => {
                 style={{
                   fontSize: "0.9rem",
                   color: "var(--text-h)",
-                  fontWeight: node.isFolder ? "bold" : "normal",
-                }}
+                  fontWeight: node.isFolder ? "bold" : "normal"}}
                 title={allowPathTrace ? `ID: ${node.id}` : undefined}
               >
                 {node.name}
@@ -381,6 +369,16 @@ export const FileExplorer: React.FC = () => {
         <div className="todos-header-title">
           <Folder className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Recursive File Explorer</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/FileExplorer.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { TrendingUp, TrendingDown, Activity, RefreshCw, BarChart2 } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { TrendingUp, TrendingDown, Activity, RefreshCw, BarChart2, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface Stock {
@@ -15,8 +16,7 @@ export function useStockWatchLogic() {
   const [stocks, setStocks] = useState<Record<string, Stock>>({
     AAPL: { symbol: "AAPL", name: "Apple Inc.", price: 175.5, change: 0.15, history: [173.2, 174.1, 173.8, 174.5, 175.1, 175.5] },
     GOOG: { symbol: "GOOG", name: "Alphabet Inc.", price: 142.2, change: -0.45, history: [144.5, 143.8, 143.1, 142.9, 142.5, 142.2] },
-    MSFT: { symbol: "MSFT", name: "Microsoft Corp.", price: 380.1, change: 0.82, history: [375.0, 376.5, 377.9, 378.2, 379.5, 380.1] },
-  });
+    MSFT: { symbol: "MSFT", name: "Microsoft Corp.", price: 380.1, change: 0.82, history: [375.0, 376.5, 377.9, 378.2, 379.5, 380.1] }});
   const [selectedSymbol, setSelectedSymbol] = useState<string>("AAPL");
   const [isLive, setIsLive] = useState<boolean>(true);
 
@@ -49,8 +49,7 @@ export function useStockWatchLogic() {
             ...stock,
             price: nextPrice,
             change: totalChange,
-            history: nextHistory,
-          };
+            history: nextHistory};
         });
         return next;
       });
@@ -72,8 +71,7 @@ export function useStockWatchLogic() {
     selectedSymbol,
     isLive,
     selectStock,
-    toggleLive,
-  };
+    toggleLive};
 }
 
 // --- UI Layer: Presentation Component ---
@@ -191,6 +189,16 @@ export const StockWatch: React.FC = () => {
         <div className="todos-header-title">
           <Activity className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Real-time Stock Watchlist</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/StockWatch.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -224,8 +232,7 @@ export const StockWatch: React.FC = () => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    transition: "all 0.2s ease",
-                  }}
+                    transition: "all 0.2s ease"}}
                   onMouseEnter={(e) => {
                     if (!selected) e.currentTarget.style.borderColor = "var(--text-muted)";
                   }}
@@ -253,8 +260,7 @@ export const StockWatch: React.FC = () => {
                         gap: "2px",
                         fontSize: "0.85rem",
                         fontWeight: 600,
-                        color: positive ? "var(--success)" : "var(--danger)",
-                      }}
+                        color: positive ? "var(--success)" : "var(--danger)"}}
                     >
                       {positive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                       {positive ? "+" : ""}
@@ -276,8 +282,7 @@ export const StockWatch: React.FC = () => {
             padding: "20px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
-          }}
+            gap: "16px"}}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
@@ -300,8 +305,7 @@ export const StockWatch: React.FC = () => {
               height: "260px",
               background: "var(--input-bg)",
               borderRadius: "var(--border-radius)",
-              overflow: "hidden",
-            }}
+              overflow: "hidden"}}
           >
             <canvas
               ref={canvasRef}
@@ -310,8 +314,7 @@ export const StockWatch: React.FC = () => {
               style={{
                 width: "100%",
                 height: "100%",
-                display: "block",
-              }}
+                display: "block"}}
             />
           </div>
         </div>

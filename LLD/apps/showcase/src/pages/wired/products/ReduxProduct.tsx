@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { configureStore, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { translate } from "@statelab/theme";
-import { Trash2, Lock, ShoppingBag, RefreshCw } from "lucide-react";
+import { Trash2, Lock, ShoppingBag, RefreshCw, Code} from "lucide-react";
 import type { AppUser } from "@statelab/state-engines";
 
 // --- Types & Interfaces ---
@@ -24,8 +24,7 @@ interface ProductSliceState {
 const initialState: ProductSliceState = {
   products: [],
   isLoading: false,
-  error: null,
-};
+  error: null};
 
 // Async Thunk
 export const fetchReduxProducts = createAsyncThunk(
@@ -49,8 +48,7 @@ const productSlice = createSlice({
   reducers: {
     deleteProduct: (state, action) => {
       state.products = state.products.filter((p) => p.id !== action.payload);
-    },
-  },
+    }},
   extraReducers: (builder) => {
     builder
       .addCase(fetchReduxProducts.pending, (state) => {
@@ -65,15 +63,12 @@ const productSlice = createSlice({
         state.error = action.payload as string;
         state.isLoading = false;
       });
-  },
-});
+  }});
 
 // Configure Store
 const localProductStore = configureStore({
   reducer: {
-    productsStore: productSlice.reducer,
-  },
-});
+    productsStore: productSlice.reducer}});
 
 type LocalProductRootState = ReturnType<typeof localProductStore.getState>;
 
@@ -103,14 +98,12 @@ export function useReduxProductLogic() {
     isLoading,
     error,
     handleDelete,
-    handleReset,
-  };
+    handleReset};
 }
 
 // --- UI Presentation Component ---
 const ReduxProductInner: React.FC<{ user: AppUser | null }> = ({
-  user,
-}) => {
+  user}) => {
   const navigate = useNavigate();
   const { products, isLoading, error, handleDelete, handleReset } = useReduxProductLogic();
   const isAdmin = user?.role === "ADMIN";
@@ -121,6 +114,16 @@ const ReduxProductInner: React.FC<{ user: AppUser | null }> = ({
         <div className="todos-header-title">
           <ShoppingBag className="todos-title-icon" />
           <h3>Products Catalog (Engine 6: Redux Toolkit)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/products/ReduxProduct.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={handleReset} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading ? "spinning" : ""}`} size={16} />
@@ -192,8 +195,7 @@ const ReduxProductInner: React.FC<{ user: AppUser | null }> = ({
 };
 
 export const ReduxProduct: React.FC<{ user: AppUser | null }> = ({
-  user,
-}) => {
+  user}) => {
   return (
     <Provider store={localProductStore}>
       <ReduxProductInner user={user} />

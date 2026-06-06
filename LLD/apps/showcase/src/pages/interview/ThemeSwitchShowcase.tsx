@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { translate } from "@statelab/theme";
 import { useAppState } from "@statelab/state-engines";
-import { Palette, Sun, Moon, Info, Zap, AlertCircle } from "lucide-react";
+import { Palette, Sun, Moon, Info, Zap, AlertCircle, Code} from "lucide-react";
 
 // --- Data Layer: Custom Hook ---
 export function useThemeSwitchLogic() {
@@ -49,8 +50,7 @@ export function useThemeSwitchLogic() {
     setTheme,
     chaosMode,
     setChaosMode,
-    toggleTheme,
-  };
+    toggleTheme};
 }
 
 // --- UI Presentation Component ---
@@ -64,6 +64,16 @@ export const ThemeSwitchShowcase: React.FC = () => {
         <div className="todos-header-title">
           <Palette className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Theme Playground</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ThemeSwitchShowcase.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -77,8 +87,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
             padding: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "20px",
-          }}
+            gap: "20px"}}
         >
           <h4>Toggle Widgets</h4>
 
@@ -91,8 +100,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
               borderRadius: "8px",
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
-            }}
+              alignItems: "center"}}
           >
             <div>
               <strong style={{ display: "block", color: "var(--text-h)" }}>Neon Sliding Toggle</strong>
@@ -109,8 +117,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
                 cursor: "pointer",
                 position: "relative",
                 transition: "background 0.3s",
-                padding: 0,
-              }}
+                padding: 0}}
               aria-label="Toggle theme sliding"
             >
               <div
@@ -123,8 +130,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
                   top: "4px",
                   left: theme === "light" ? "4px" : "32px",
                   transition: "left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                }}
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)"}}
               />
             </button>
           </div>
@@ -138,8 +144,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
               borderRadius: "8px",
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
-            }}
+              alignItems: "center"}}
           >
             <div>
               <strong style={{ display: "block", color: "var(--text-h)" }}>3D Push Switch</strong>
@@ -160,8 +165,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
                 fontWeight: "bold",
                 outline: "none",
                 transition: "all 0.1s",
-                transform: "translateY(0px)",
-              }}
+                transform: "translateY(0px)"}}
               onMouseDown={(e) => {
                 e.currentTarget.style.transform = "translateY(4px)";
                 e.currentTarget.style.boxShadow = "none";
@@ -191,8 +195,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: "12px",
-              transition: "all 0.3s",
-            }}
+              transition: "all 0.3s"}}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--warning)" }}>
               <Zap size={18} className={chaosMode ? "animated-pulse" : ""} />
@@ -225,8 +228,7 @@ export const ThemeSwitchShowcase: React.FC = () => {
             padding: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "18px",
-          }}
+            gap: "18px"}}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <Info size={18} style={{ color: "var(--primary)" }} />

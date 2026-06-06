@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { DollarSign, Check } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { DollarSign, Check, Code} from "lucide-react";
 
 export const PricingCardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -48,6 +49,16 @@ export const PricingCardPage: React.FC = () => {
         <div className="todos-header-title">
           <DollarSign className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Product Subscription Pricing</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/PricingCardPage.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -147,8 +158,7 @@ export const PricingCardPage: React.FC = () => {
                     position: "relative",
                     transform: isPopular ? "scale(1.03)" : "scale(1)",
                     transition: "transform 0.2s ease",
-                    boxShadow: isPopular ? "0 10px 20px -5px rgba(0,0,0,0.2)" : "none",
-                  }}
+                    boxShadow: isPopular ? "0 10px 20px -5px rgba(0,0,0,0.2)" : "none"}}
                 >
                   {isPopular && (
                     <span style={{ position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)", background: "var(--primary)", color: "var(--bg)", padding: "2px 12px", borderRadius: "12px", fontSize: "0.72rem", fontWeight: "bold", textTransform: "uppercase" }}>

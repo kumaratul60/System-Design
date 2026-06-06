@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 import { translate } from "@statelab/theme";
-import { Trash2, Lock, ShoppingBag, RefreshCw } from "lucide-react";
+import { Trash2, Lock, ShoppingBag, RefreshCw, Code} from "lucide-react";
 import type { AppUser } from "@statelab/state-engines";
 
 // --- Types & Interfaces ---
@@ -21,8 +21,7 @@ const productMachine = createMachine({
   initial: "idle",
   context: {
     products: [] as Product[],
-    error: null as string | null,
-  },
+    error: null as string | null},
   states: {
     idle: {
       on: {
@@ -32,30 +31,18 @@ const productMachine = createMachine({
             products: ({ context, event }) => {
               const e = event as unknown as { id: number };
               return context.products.filter((p) => p.id !== e.id);
-            },
-          }),
-        },
-      },
-    },
+            }})}}},
     fetching: {
       on: {
         FETCH_SUCCESS: {
           target: "idle",
           actions: assign({
             products: ({ event }) => (event as unknown as { products: Product[] }).products,
-            error: null,
-          }),
-        },
+            error: null})},
         FETCH_FAILURE: {
           target: "idle",
           actions: assign({
-            error: ({ event }) => (event as unknown as { error: string }).error,
-          }),
-        },
-      },
-    },
-  },
-});
+            error: ({ event }) => (event as unknown as { error: string }).error})}}}}});
 
 // --- Data Layer: Custom Hook ---
 export function useXStateProductLogic() {
@@ -90,14 +77,12 @@ export function useXStateProductLogic() {
     isLoading,
     error,
     loadProducts,
-    deleteProduct,
-  };
+    deleteProduct};
 }
 
 // --- UI Presentation Component ---
 export const XStateProduct: React.FC<{ user: AppUser | null }> = ({
-  user,
-}) => {
+  user}) => {
   const navigate = useNavigate();
   const { products, isLoading, error, loadProducts, deleteProduct } = useXStateProductLogic();
   const isAdmin = user?.role === "ADMIN";
@@ -108,6 +93,16 @@ export const XStateProduct: React.FC<{ user: AppUser | null }> = ({
         <div className="todos-header-title">
           <ShoppingBag className="todos-title-icon" />
           <h3>Products Catalog (Engine 4: XState Machine)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/products/XStateProduct.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={loadProducts} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading ? "spinning" : ""}`} size={16} />

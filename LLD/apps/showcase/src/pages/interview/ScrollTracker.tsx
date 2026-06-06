@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Activity, Move, Maximize2, MousePointer, Info } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Activity, Move, Maximize2, MousePointer, Info, Code} from "lucide-react";
 
 // --- Data Layer 1: Custom Hook for Window Dimensions ---
 export function useWindowSize() {
@@ -7,8 +8,7 @@ export function useWindowSize() {
     width: window.innerWidth,
     height: window.innerHeight,
     screenWidth: window.screen.width,
-    screenHeight: window.screen.height,
-  });
+    screenHeight: window.screen.height});
 
   useEffect(() => {
     const handleResize = () => {
@@ -16,8 +16,7 @@ export function useWindowSize() {
         width: window.innerWidth,
         height: window.innerHeight,
         screenWidth: window.screen.width,
-        screenHeight: window.screen.height,
-      });
+        screenHeight: window.screen.height});
     };
 
     window.addEventListener("resize", handleResize);
@@ -89,8 +88,7 @@ export function useScrollPosition(threshold = 50) {
     isAtTop: true,
     isAtBottom: false,
     isAtLeft: true,
-    isAtRight: false,
-  });
+    isAtRight: false});
 
   const lastScroll = useRef({ x: 0, y: 0 });
 
@@ -131,8 +129,7 @@ export function useScrollPosition(threshold = 50) {
         isAtTop,
         isAtBottom,
         isAtLeft,
-        isAtRight,
-      });
+        isAtRight});
 
       lastScroll.current = { x, y };
     };
@@ -163,6 +160,16 @@ export const ScrollTracker: React.FC = () => {
         <div className="todos-header-title">
           <Activity className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Viewport, Scroll & Pointer Auditor</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ScrollTracker.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -177,8 +184,7 @@ export const ScrollTracker: React.FC = () => {
             padding: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "18px",
-          }}
+            gap: "18px"}}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <Move size={18} style={{ color: "var(--primary)" }} />
@@ -254,8 +260,7 @@ export const ScrollTracker: React.FC = () => {
               padding: "24px",
               display: "flex",
               flexDirection: "column",
-              gap: "14px",
-            }}
+              gap: "14px"}}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <Maximize2 size={18} style={{ color: "var(--primary)" }} />
@@ -279,8 +284,7 @@ export const ScrollTracker: React.FC = () => {
               padding: "24px",
               display: "flex",
               flexDirection: "column",
-              gap: "18px",
-            }}
+              gap: "18px"}}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <MousePointer size={18} style={{ color: "var(--primary)" }} />
@@ -312,8 +316,7 @@ export const ScrollTracker: React.FC = () => {
                 justifyContent: "center",
                 cursor: "crosshair",
                 transition: "background 0.2s",
-                position: "relative",
-              }}
+                position: "relative"}}
             >
               {localPos.isOver ? (
                 <div style={{ textAlign: "center" }}>

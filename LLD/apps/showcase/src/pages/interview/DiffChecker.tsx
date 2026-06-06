@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo } from "react";
+import { translate } from "@statelab/theme";
 import { Columns, Layers, Copy, Check, Info, FileCode, Sparkles } from "lucide-react";
 
 // Pre-defined initial mock values for testing diff checks
@@ -9,8 +10,7 @@ const settings = {
   ports: [8080, 9000],
   db: {
     host: "localhost",
-    user: "root",
-  }
+    user: "root"}
 };
 
 function init() {
@@ -25,8 +25,7 @@ const settings = {
   ports: [8080, 5000, 9000],
   db: {
     host: "127.0.0.1",
-    user: "admin",
-  }
+    user: "admin"}
 };
 
 function init() {
@@ -317,6 +316,16 @@ export const DiffChecker: React.FC = () => {
         <div className="todos-header-title">
           <FileCode className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Text Diff Checker</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/DiffChecker.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

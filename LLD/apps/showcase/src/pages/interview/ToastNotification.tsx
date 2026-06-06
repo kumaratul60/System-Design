@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { CheckCircle, AlertTriangle, Info, XCircle, X, Terminal, RefreshCw } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { CheckCircle, AlertTriangle, Info, XCircle, X, Terminal, RefreshCw, Code} from "lucide-react";
 
 interface Toast {
   id: string;
@@ -19,8 +20,7 @@ export const ToastNotification: React.FC = () => {
       id: Math.random().toString(36).substring(2, 9),
       type,
       message,
-      duration,
-    };
+      duration};
     setToasts((prev) => [...prev, newToast]);
   };
 
@@ -43,8 +43,7 @@ export const ToastNotification: React.FC = () => {
       success: "System compiled. 0 warnings.",
       error: "NullPointerException resolved inside state provider.",
       warning: "Disk utilization exceeds 85% cache capacity.",
-      info: "Thread count synchronized at port 8080.",
-    };
+      info: "Thread count synchronized at port 8080."};
     addToast(type, msgs[type], 4000);
   };
 
@@ -126,8 +125,7 @@ export const ToastNotification: React.FC = () => {
           flexDirection: "column",
           gap: "6px",
           position: "relative",
-          pointerEvents: "auto",
-        }}
+          pointerEvents: "auto"}}
       >
         <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
           {getIcon()}
@@ -150,6 +148,16 @@ export const ToastNotification: React.FC = () => {
         <div className="todos-header-title">
           <Terminal className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Toast Notifications Suite</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ToastNotification.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -281,8 +289,7 @@ export const ToastNotification: React.FC = () => {
           top: (activeTab === "advance" && placement.startsWith("bottom")) ? "auto" : "24px",
           bottom: (activeTab === "advance" && placement.startsWith("bottom")) ? "24px" : "auto",
           left: (activeTab === "advance" && placement.endsWith("left")) ? "24px" : "auto",
-          right: (activeTab === "advance" && placement.endsWith("left")) ? "auto" : "24px",
-        }}
+          right: (activeTab === "advance" && placement.endsWith("left")) ? "auto" : "24px"}}
       >
         {toasts.map((toast) => (
           <ToastItem key={toast.id} toast={toast} onRemove={removeToast} />

@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
+import { translate } from "@statelab/theme";
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban } from "lucide-react";
+import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban, Code} from "lucide-react";
 import type { TrelloCardData, TrelloColumnData } from "./PropDrillingTrello";
 
 interface TrelloSliceState {
@@ -19,8 +20,7 @@ const initialState: TrelloSliceState = {
     { id: "todo", title: "To Do" },
     { id: "in-progress", title: "In Progress" },
     { id: "done", title: "Done" },
-  ],
-};
+  ]};
 
 // Slice
 const trelloSlice = createSlice({
@@ -34,8 +34,7 @@ const trelloSlice = createSlice({
       state.cards.push({
         id: Math.random().toString(36).substring(2, 9),
         title: clean,
-        columnId: colId,
-      });
+        columnId: colId});
     },
     deleteCard: (state, action) => {
       state.cards = state.cards.filter((c) => c.id !== action.payload);
@@ -58,16 +57,12 @@ const trelloSlice = createSlice({
       state.cards = state.cards.map((c) =>
         c.id === cardId ? { ...c, columnId: targetColId } : c
       );
-    },
-  },
-});
+    }}});
 
 // Configure Store
 const localTrelloStore = configureStore({
   reducer: {
-    trelloStore: trelloSlice.reducer,
-  },
-});
+    trelloStore: trelloSlice.reducer}});
 
 type LocalTrelloRootState = ReturnType<typeof localTrelloStore.getState>;
 
@@ -117,8 +112,7 @@ export function useReduxTrelloLogic() {
     handleMoveCard,
     handleDragStart,
     handleDragOver,
-    handleDrop,
-  };
+    handleDrop};
 }
 
 // --- UI Presentation Component ---
@@ -131,8 +125,7 @@ const ReduxTrelloInner: React.FC = () => {
     handleMoveCard,
     handleDragStart,
     handleDragOver,
-    handleDrop,
-  } = useReduxTrelloLogic();
+    handleDrop} = useReduxTrelloLogic();
 
   return (
     <div className="page-container trello-page">
@@ -140,6 +133,16 @@ const ReduxTrelloInner: React.FC = () => {
         <div className="todos-header-title">
           <Kanban className="todos-title-icon" />
           <h3>Kanban Trello Board (Engine 6: Redux Toolkit)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/trello/ReduxTrello.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

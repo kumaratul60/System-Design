@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ShieldAlert, RefreshCw, Key, ShieldCheck, HelpCircle } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { ShieldAlert, RefreshCw, Key, ShieldCheck, HelpCircle, Code} from "lucide-react";
 
 export const OtpVerification: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -181,6 +182,16 @@ export const OtpVerification: React.FC = () => {
         <div className="todos-header-title">
           <Key className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Secure OTP Verification Panel</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/OtpVerification.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -237,8 +248,7 @@ export const OtpVerification: React.FC = () => {
                       color: "var(--text-h)",
                       fontSize: "1.5rem",
                       textAlign: "center",
-                      outline: "none",
-                    }}
+                      outline: "none"}}
                   />
                 ))}
               </div>
@@ -297,8 +307,7 @@ export const OtpVerification: React.FC = () => {
                       color: "var(--text-h)",
                       fontSize: "1.3rem",
                       textAlign: "center",
-                      outline: "none",
-                    }}
+                      outline: "none"}}
                   />
                 ))}
               </div>
@@ -356,8 +365,7 @@ export const OtpVerification: React.FC = () => {
                       color: "var(--text-h)",
                       fontSize: "1.3rem",
                       textAlign: "center",
-                      outline: "none",
-                    }}
+                      outline: "none"}}
                   />
                 ))}
               </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
+import { translate } from "@statelab/theme";
 import { create } from "zustand";
-import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon, Code} from "lucide-react";
 
 interface Photo {
   id: string;
@@ -41,8 +42,7 @@ const useLocalGalleryStore = create<GalleryState>((set, get) => ({
         const uniqueNew = data.filter((p: Photo) => !existingIds.has(p.id));
         return {
           photos: [...state.photos, ...uniqueNew],
-          hasMore: data.length === 12,
-        };
+          hasMore: data.length === 12};
       });
     } catch {
       set({ error: "Unable to connect to the photo API. Please try again." });
@@ -58,8 +58,7 @@ const useLocalGalleryStore = create<GalleryState>((set, get) => ({
   resetGallery: () => {
     set({ photos: [], page: 1, hasMore: true });
     get().fetchPhotos(1);
-  },
-}));
+  }}));
 
 // --- Data Layer: Custom Hook ---
 export function useZustandGalleryLogic() {
@@ -87,8 +86,7 @@ export function useZustandGalleryLogic() {
     error,
     fetchPhotos,
     incrementPage,
-    resetGallery,
-  };
+    resetGallery};
 }
 
 // --- UI Presentation Component ---
@@ -101,8 +99,7 @@ export const ZustandInfiniteScroll: React.FC = () => {
     error,
     fetchPhotos,
     incrementPage,
-    resetGallery,
-  } = useZustandGalleryLogic();
+    resetGallery} = useZustandGalleryLogic();
 
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -130,6 +127,16 @@ export const ZustandInfiniteScroll: React.FC = () => {
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" />
           <h3>Infinite Gallery (Engine 5: Zustand Atomic Store)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/infinite-scroll/ZustandInfiniteScroll.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={resetGallery} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading && photos.length === 0 ? "spinning" : ""}`} size={16} />

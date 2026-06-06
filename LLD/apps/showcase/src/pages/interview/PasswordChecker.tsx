@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { ShieldCheck, Copy, Check, Eye, EyeOff, RotateCcw, AlertTriangle } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { ShieldCheck, Copy, Check, Eye, EyeOff, RotateCcw, AlertTriangle, Code} from "lucide-react";
 
 interface PasswordCriteria {
   label: string;
@@ -101,8 +102,7 @@ export function usePasswordChecker() {
     setGenSymbols,
     strength: getStrengthTier(),
     generatePassword,
-    copyToClipboard,
-  };
+    copyToClipboard};
 }
 
 // --- UI Presentation Component ---
@@ -126,8 +126,7 @@ export const PasswordChecker: React.FC = () => {
     setGenSymbols,
     strength,
     generatePassword,
-    copyToClipboard,
-  } = usePasswordChecker();
+    copyToClipboard} = usePasswordChecker();
 
   return (
     <div className="page-container">
@@ -136,6 +135,16 @@ export const PasswordChecker: React.FC = () => {
         <div className="todos-header-title">
           <ShieldCheck className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Password Auditor & Generator</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/PasswordChecker.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -150,8 +159,7 @@ export const PasswordChecker: React.FC = () => {
             padding: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "20px",
-          }}
+            gap: "20px"}}
         >
           <h4>Entropy Auditor</h4>
 
@@ -217,8 +225,7 @@ export const PasswordChecker: React.FC = () => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      transition: "all 0.2s",
-                    }}
+                      transition: "all 0.2s"}}
                   >
                     {pass && <Check size={12} style={{ color: "var(--success)", strokeWidth: 3 }} />}
                   </div>
@@ -240,8 +247,7 @@ export const PasswordChecker: React.FC = () => {
             padding: "24px",
             display: "flex",
             flexDirection: "column",
-            gap: "18px",
-          }}
+            gap: "18px"}}
         >
           <h4>Generator Panel</h4>
 

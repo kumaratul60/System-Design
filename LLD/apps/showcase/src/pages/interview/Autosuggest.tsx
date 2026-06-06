@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Search, History, X, Clock, Terminal, Award, Sparkles, Loader } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Search, History, X, Clock, Terminal, Award, Sparkles, Loader, Code} from "lucide-react";
 
 // Mock Database of suggestions with categories and icons
 interface SuggestionItem {
@@ -172,7 +173,7 @@ export const Autosuggest: React.FC = () => {
       <span>
         {parts.map((part, idx) =>
           part.toLowerCase() === cleanSearch.toLowerCase() ? (
-            <strong key={idx} style={{ color: "var(--primary)" }}>{part}</strong>
+            <strong key={idx} className="highlight-text-primary">{part}</strong>
           ) : (
             <span key={idx}>{part}</span>
           )
@@ -221,11 +222,21 @@ export const Autosuggest: React.FC = () => {
         <div className="todos-header-title">
           <Search className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Autosuggest Input Showcase</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Autosuggest.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
       {/* Tabs Menu */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px", borderBottom: "1px solid var(--border)", paddingBottom: "10px" }}>
+      <div className="autosuggest-tabs" style={{ display: "flex", gap: "10px", marginBottom: "20px", borderBottom: "1px solid var(--border)", paddingBottom: "10px" }}>
         <button
           className={`btn ${activeTab === "basic" ? "btn-primary" : "btn-secondary"}`}
           onClick={() => { setActiveTab("basic"); setIsOpen(false); setQuery(""); }}
@@ -246,81 +257,66 @@ export const Autosuggest: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.7fr 1.3fr", gap: "24px", alignItems: "start" }}>
+      <div className="autosuggest-main-layout" style={{ display: "grid", gridTemplateColumns: "1.7fr 1.3fr", gap: "24px", alignItems: "start" }}>
         {/* Left Side: Interactive Input */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="autosuggest-input-column" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
           {/* TAB 1: BASIC */}
           {activeTab === "basic" && (
             <div style={{ border: "1px solid var(--border)", borderRadius: "var(--border-radius)", background: "var(--card-bg)", padding: "20px", position: "relative" }}>
               <h4 style={{ marginBottom: "12px" }}>Basic Autosuggest Input</h4>
 
-              <div
-                className="sidebar-search"
-                style={{
-                  background: "var(--input-bg)",
-                  border: isOpen ? "2px solid var(--text-h)" : "1px solid var(--border)",
-                  height: "44px",
-                  padding: "0 12px",
-                  marginBottom: 0,
-                }}
-              >
-                <Search size={16} />
-                <input
-                  type="text"
-                  placeholder="Type an architecture (e.g. Consistent)..."
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    setIsOpen(true);
-                  }}
-                  onFocus={() => setIsOpen(true)}
-                  onKeyDown={(e) => handleKeyDown(e, basicSuggestions)}
-                  className="search-input"
-                />
-              </div>
-
-              {isOpen && query.trim() !== "" && (
+              <div className="autosuggest-container">
                 <div
+                  className="sidebar-search"
                   style={{
-                    position: "absolute",
-                    top: "84px",
-                    left: "20px",
-                    right: "20px",
-                    background: "var(--card-bg)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.2)",
-                    zIndex: 50,
-                  }}
+                    background: "var(--input-bg)",
+                    border: isOpen ? "2px solid var(--primary)" : "1px solid var(--border)",
+                    height: "44px",
+                    padding: "0 12px",
+                    marginBottom: 0,
+                    transition: "border-color 0.2s ease"}}
                 >
-                  {basicSuggestions.length === 0 ? (
-                    <div style={{ padding: "12px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No matches found</div>
-                  ) : (
-                    basicSuggestions.map((item, idx) => {
-                      const isHighlighted = idx === highlightedIndex;
-                      return (
-                        <div
-                          key={item.id}
-                          onMouseEnter={() => setHighlightedIndex(idx)}
-                          onClick={() => {
-                            setQuery(item.title);
-                            setIsOpen(false);
-                          }}
-                          style={{
-                            padding: "10px 14px",
-                            cursor: "pointer",
-                            background: isHighlighted ? "var(--input-bg)" : "transparent",
-                            color: isHighlighted ? "var(--text-h)" : "var(--text)",
-                          }}
-                        >
-                          {item.title}
-                        </div>
-                      );
-                    })
-                  )}
+                  <Search size={16} />
+                  <input
+                    type="text"
+                    placeholder="Type an architecture (e.g. Consistent)..."
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      setIsOpen(true);
+                    }}
+                    onFocus={() => setIsOpen(true)}
+                    onKeyDown={(e) => handleKeyDown(e, basicSuggestions)}
+                    className="search-input"
+                  />
                 </div>
-              )}
+
+                {isOpen && query.trim() !== "" && (
+                  <div className="autosuggest-dropdown">
+                    {basicSuggestions.length === 0 ? (
+                      <div style={{ padding: "16px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No matches found</div>
+                    ) : (
+                      basicSuggestions.map((item, idx) => {
+                        const isHighlighted = idx === highlightedIndex;
+                        return (
+                          <div
+                            key={item.id}
+                            onMouseEnter={() => setHighlightedIndex(idx)}
+                            onClick={() => {
+                              setQuery(item.title);
+                              setIsOpen(false);
+                            }}
+                            className={`autosuggest-dropdown-item ${isHighlighted ? "highlighted" : ""}`}
+                          >
+                            {item.title}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -329,80 +325,68 @@ export const Autosuggest: React.FC = () => {
             <div style={{ border: "1px solid var(--border)", borderRadius: "var(--border-radius)", background: "var(--card-bg)", padding: "20px", position: "relative" }}>
               <h4 style={{ marginBottom: "12px" }}>Mid: Async Simulated Fetch & Results Caching</h4>
 
-              <div
-                className="sidebar-search"
-                style={{
-                  background: "var(--input-bg)",
-                  border: isOpen ? "2px solid var(--text-h)" : "1px solid var(--border)",
-                  height: "44px",
-                  padding: "0 12px",
-                  marginBottom: 0,
-                }}
-              >
-                <Search size={16} />
-                <input
-                  type="text"
-                  placeholder="Type queries (simulate api call)..."
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    setIsOpen(true);
-                  }}
-                  onFocus={() => setIsOpen(true)}
-                  onKeyDown={(e) => handleKeyDown(e, midSuggestions)}
-                  className="search-input"
-                />
-                {isLoading && <Loader className="animated-spin" size={16} style={{ color: "var(--text-muted)" }} />}
+              <div className="autosuggest-container">
+                <div
+                  className="sidebar-search"
+                  style={{
+                    background: "var(--input-bg)",
+                    border: isOpen ? "2px solid var(--primary)" : "1px solid var(--border)",
+                    height: "44px",
+                    padding: "0 12px",
+                    marginBottom: 0,
+                    transition: "border-color 0.2s ease"}}
+                >
+                  <Search size={16} />
+                  <input
+                    type="text"
+                    placeholder="Type queries (simulate api call)..."
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      setIsOpen(true);
+                    }}
+                    onFocus={() => setIsOpen(true)}
+                    onKeyDown={(e) => handleKeyDown(e, midSuggestions)}
+                    className="search-input"
+                  />
+                  {isLoading && <Loader className="spinning" size={16} style={{ color: "var(--primary)" }} />}
+                </div>
+
+                {isOpen && query.trim() !== "" && !apiError && (
+                  <div className="autosuggest-dropdown">
+                    {isLoading ? (
+                      <div style={{ padding: "24px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+                        <Loader className="spinning" size={24} />
+                        <span>Searching distributed databases...</span>
+                      </div>
+                    ) : midSuggestions.length === 0 ? (
+                      <div style={{ padding: "16px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No matches found</div>
+                    ) : (
+                      midSuggestions.map((item, idx) => {
+                        const isHighlighted = idx === highlightedIndex;
+                        return (
+                          <div
+                            key={item.id}
+                            onMouseEnter={() => setHighlightedIndex(idx)}
+                            onClick={() => {
+                              setQuery(item.title);
+                              setIsOpen(false);
+                            }}
+                            className={`autosuggest-dropdown-item ${isHighlighted ? "highlighted" : ""}`}
+                          >
+                            {item.title}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
               </div>
 
               {apiError && (
-                <div style={{ marginTop: "8px", color: "red", fontSize: "0.8rem", display: "flex", justifyContent: "space-between" }}>
-                  <span>Error: {apiError}</span>
-                  <button onClick={() => fetchMockApi(debouncedQuery)} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", textDecoration: "underline" }}>Retry</button>
-                </div>
-              )}
-
-              {isOpen && query.trim() !== "" && !apiError && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "84px",
-                    left: "20px",
-                    right: "20px",
-                    background: "var(--card-bg)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.2)",
-                    zIndex: 50,
-                  }}
-                >
-                  {isLoading ? (
-                    <div style={{ padding: "12px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>Querying databases...</div>
-                  ) : midSuggestions.length === 0 ? (
-                    <div style={{ padding: "12px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No matches found</div>
-                  ) : (
-                    midSuggestions.map((item, idx) => {
-                      const isHighlighted = idx === highlightedIndex;
-                      return (
-                        <div
-                          key={item.id}
-                          onMouseEnter={() => setHighlightedIndex(idx)}
-                          onClick={() => {
-                            setQuery(item.title);
-                            setIsOpen(false);
-                          }}
-                          style={{
-                            padding: "10px 14px",
-                            cursor: "pointer",
-                            background: isHighlighted ? "var(--input-bg)" : "transparent",
-                            color: isHighlighted ? "var(--text-h)" : "var(--text)",
-                          }}
-                        >
-                          {item.title}
-                        </div>
-                      );
-                    })
-                  )}
+                <div style={{ marginTop: "12px", color: "var(--danger)", fontSize: "0.85rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(220, 38, 38, 0.05)", padding: "8px 12px", borderRadius: "6px", border: "1px solid rgba(220, 38, 38, 0.2)" }}>
+                  <span>{apiError}</span>
+                  <button onClick={() => fetchMockApi(debouncedQuery)} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", textDecoration: "underline", fontWeight: "600" }}>Retry</button>
                 </div>
               )}
             </div>
@@ -413,139 +397,116 @@ export const Autosuggest: React.FC = () => {
             <div style={{ border: "1px solid var(--border)", borderRadius: "var(--border-radius)", background: "var(--card-bg)", padding: "20px", position: "relative" }}>
               <h4 style={{ marginBottom: "12px" }}>Advance: Search History & Metadata Templates</h4>
 
-              <div
-                className="sidebar-search"
-                style={{
-                  background: "var(--input-bg)",
-                  border: isOpen ? "2px solid var(--text-h)" : "1px solid var(--border)",
-                  height: "44px",
-                  padding: "0 12px",
-                  marginBottom: 0,
-                }}
-              >
-                <Search size={16} />
-                <input
-                  type="text"
-                  placeholder="Search and save to history..."
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    setIsOpen(true);
-                  }}
-                  onFocus={() => setIsOpen(true)}
-                  onKeyDown={(e) => handleKeyDown(e, query.trim() === "" ? history : advanceSuggestions)}
-                  className="search-input"
-                />
-              </div>
-
-              {isOpen && (
+              <div className="autosuggest-container">
                 <div
+                  className="sidebar-search"
                   style={{
-                    position: "absolute",
-                    top: "84px",
-                    left: "20px",
-                    right: "20px",
-                    background: "var(--card-bg)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.2)",
-                    zIndex: 50,
-                  }}
+                    background: "var(--input-bg)",
+                    border: isOpen ? "2px solid var(--primary)" : "1px solid var(--border)",
+                    height: "44px",
+                    padding: "0 12px",
+                    marginBottom: 0,
+                    transition: "border-color 0.2s ease"}}
                 >
-                  {/* Recent searches history panel when query is empty */}
-                  {query.trim() === "" ? (
-                    <div>
-                      {history.length > 0 ? (
-                        <>
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", borderBottom: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                            <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><Clock size={12} /> Recent Queries</span>
-                            <button onClick={clearAllHistory} style={{ background: "none", border: "none", color: "red", cursor: "pointer" }}>Clear All</button>
-                          </div>
-                          {history.map((term, idx) => {
+                  <Search size={16} />
+                  <input
+                    type="text"
+                    placeholder="Search and save to history..."
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      setIsOpen(true);
+                    }}
+                    onFocus={() => setIsOpen(true)}
+                    onKeyDown={(e) => handleKeyDown(e, query.trim() === "" ? history : advanceSuggestions)}
+                    className="search-input"
+                  />
+                </div>
+
+                {isOpen && (
+                  <div className="autosuggest-dropdown">
+                    {/* Recent searches history panel when query is empty */}
+                    {query.trim() === "" ? (
+                      <div>
+                        {history.length > 0 ? (
+                          <>
+                            <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 16px", borderBottom: "1px solid var(--border)", fontSize: "0.75rem", color: "var(--text-muted)", background: "rgba(0,0,0,0.02)" }}>
+                              <span style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: "600" }}><Clock size={12} /> RECENT QUERIES</span>
+                              <button onClick={clearAllHistory} style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "0.7rem", fontWeight: "700" }}>CLEAR ALL</button>
+                            </div>
+                            {history.map((term, idx) => {
+                              const isHighlighted = idx === highlightedIndex;
+                              return (
+                                <div
+                                  key={term}
+                                  onMouseEnter={() => setHighlightedIndex(idx)}
+                                  onClick={() => {
+                                    setQuery(term);
+                                    saveHistory(term);
+                                  }}
+                                  className={`autosuggest-dropdown-item ${isHighlighted ? "highlighted" : ""}`}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"}}
+                                >
+                                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><History size={14} style={{ opacity: 0.6 }} /> {term}</span>
+                                  <X size={14} onClick={(e) => deleteHistoryItem(term, e)} style={{ cursor: "pointer", color: "var(--text-muted)", padding: "2px" }} className="delete-history-btn" />
+                                </div>
+                              );
+                            })}
+                          </>
+                        ) : (
+                          <div style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No recent history</div>
+                        )}
+                      </div>
+                    ) : (
+                      /* Rich item suggestion templates */
+                      <div style={{ maxHeight: "350px", overflowY: "auto" }}>
+                        {advanceSuggestions.length === 0 ? (
+                          <div style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No matches found</div>
+                        ) : (
+                          advanceSuggestions.map((item, idx) => {
                             const isHighlighted = idx === highlightedIndex;
                             return (
                               <div
-                                key={term}
+                                key={item.id}
                                 onMouseEnter={() => setHighlightedIndex(idx)}
                                 onClick={() => {
-                                  setQuery(term);
-                                  saveHistory(term);
+                                  setQuery(item.title);
+                                  saveHistory(item.title);
+                                  setIsOpen(false);
                                 }}
-                                style={{
-                                  padding: "8px 12px",
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                  background: isHighlighted ? "var(--input-bg)" : "transparent",
-                                  color: isHighlighted ? "var(--text-h)" : "var(--text)",
-                                }}
+                                className={`autosuggest-dropdown-item-rich ${isHighlighted ? "highlighted" : ""}`}
                               >
-                                <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><History size={12} /> {term}</span>
-                                <X size={12} onClick={(e) => deleteHistoryItem(term, e)} style={{ cursor: "pointer", color: "var(--text-muted)" }} />
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <span style={{ fontSize: "0.95rem", color: "var(--text-h)", fontWeight: "600" }}>
+                                    {highlightMatch(item.title, query)}
+                                  </span>
+                                  <span style={{ fontSize: "0.65rem", background: "var(--input-bg)", padding: "2px 8px", borderRadius: "20px", color: "var(--text-muted)", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                                    {item.category}
+                                  </span>
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                                  <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", lineHeight: "1.4", flex: 1, paddingRight: "20px" }}>{item.description}</span>
+                                  <span style={{ fontSize: "0.8rem", color: "#f59e0b", display: "flex", alignItems: "center", gap: "4px", fontWeight: "700", background: "rgba(245, 158, 11, 0.1)", padding: "2px 6px", borderRadius: "4px" }}><Award size={12} /> {item.stars}</span>
+                                </div>
                               </div>
                             );
-                          })}
-                        </>
-                      ) : (
-                        <div style={{ padding: "12px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No recent history</div>
-                      )}
-                    </div>
-                  ) : (
-                    /* Rich item suggestion templates */
-                    <div>
-                      {advanceSuggestions.length === 0 ? (
-                        <div style={{ padding: "12px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>No matches found</div>
-                      ) : (
-                        advanceSuggestions.map((item, idx) => {
-                          const isHighlighted = idx === highlightedIndex;
-                          return (
-                            <div
-                              key={item.id}
-                              onMouseEnter={() => setHighlightedIndex(idx)}
-                              onClick={() => {
-                                setQuery(item.title);
-                                saveHistory(item.title);
-                                setIsOpen(false);
-                              }}
-                              style={{
-                                padding: "10px 14px",
-                                cursor: "pointer",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "2px",
-                                borderBottom: "1px solid var(--border)",
-                                background: isHighlighted ? "var(--input-bg)" : "transparent",
-                                transition: "background-color 0.15s ease",
-                              }}
-                            >
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "0.9rem", color: isHighlighted ? "var(--text-h)" : "var(--text)", fontWeight: "500" }}>
-                                  {highlightMatch(item.title, query)}
-                                </span>
-                                <span style={{ fontSize: "0.75rem", background: "var(--input-bg)", padding: "1px 6px", borderRadius: "10px", color: "var(--text-muted)" }}>
-                                  {item.category}
-                                </span>
-                              </div>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{item.description}</span>
-                                <span style={{ fontSize: "0.75rem", color: "#f59e0b", display: "flex", alignItems: "center", gap: "2px" }}><Award size={10} /> {item.stars}</span>
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+                          })
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
         </div>
 
         {/* Right Panel: Watcher logs */}
-        <div style={{ border: "1px solid var(--border)", borderRadius: "var(--border-radius)", background: "var(--card-bg)", padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="autosuggest-monitor-panel" style={{ border: "1px solid var(--border)", borderRadius: "var(--border-radius)", background: "var(--card-bg)", padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
           <h4>Autosuggest State Monitor</h4>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.8rem", fontFamily: "var(--font-mono)" }}>

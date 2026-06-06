@@ -90,6 +90,7 @@ export declare const translations: {
         protectedRouteText: string;
         privateRouteText: string;
         refreshApiData: string;
+        viewSource: string;
     };
 };
 export declare const translate: (key: keyof (typeof translations)["en"], variables?: Record<string, string>) => string;

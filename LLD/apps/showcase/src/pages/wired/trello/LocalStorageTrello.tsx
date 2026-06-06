@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban, Code} from "lucide-react";
 import type { TrelloCardData, TrelloColumnData } from "./PropDrillingTrello";
 
 const DEFAULT_TRELLO_CARDS: TrelloCardData[] = [
@@ -51,8 +52,7 @@ export function useLocalStorageTrelloLogic() {
     const newCard: TrelloCardData = {
       id: Math.random().toString(36).substring(2, 9),
       title: cleanTitle,
-      columnId: colId,
-    };
+      columnId: colId};
     setCards((prev) => {
       const next = [...prev, newCard];
       localStorage.setItem("lld_trello_cards", JSON.stringify(next));
@@ -123,8 +123,7 @@ export function useLocalStorageTrelloLogic() {
     handleDragStart,
     handleDragOver,
     handleDrop,
-    resetBoard,
-  };
+    resetBoard};
 }
 
 // --- UI Presentation Component ---
@@ -138,8 +137,7 @@ export const LocalStorageTrello: React.FC = () => {
     handleDragStart,
     handleDragOver,
     handleDrop,
-    resetBoard,
-  } = useLocalStorageTrelloLogic();
+    resetBoard} = useLocalStorageTrelloLogic();
 
   return (
     <div className="page-container trello-page">
@@ -147,6 +145,16 @@ export const LocalStorageTrello: React.FC = () => {
         <div className="todos-header-title">
           <Kanban className="todos-title-icon" />
           <h3>Kanban Trello Board (Engine 2: LocalStorage Sync)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/trello/LocalStorageTrello.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={resetBoard} className="btn btn-secondary fetch-btn">
           <span>Reset Board</span>

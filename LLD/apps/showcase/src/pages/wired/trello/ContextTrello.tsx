@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Sparkles, Trash2, Plus, MoveLeft, MoveRight, Kanban, Code} from "lucide-react";
 import type { TrelloCardData, TrelloColumnData } from "./PropDrillingTrello";
 
 interface TrelloContextType {
@@ -33,8 +34,7 @@ const TrelloProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
     const newCard: TrelloCardData = {
       id: Math.random().toString(36).substring(2, 9),
       title: clean,
-      columnId: colId,
-    };
+      columnId: colId};
     setCards((prev) => [...prev, newCard]);
   }, []);
 
@@ -71,8 +71,7 @@ const TrelloProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
         addCard,
         deleteCard,
         moveCard,
-        updateCardColumn,
-      }}
+        updateCardColumn}}
     >
       {children}
     </TrelloContext.Provider>
@@ -96,8 +95,7 @@ const ContextTrelloInner: React.FC = () => {
     addCard,
     deleteCard,
     moveCard,
-    updateCardColumn,
-  } = useTrelloContext();
+    updateCardColumn} = useTrelloContext();
 
   const handleDragStart = useCallback((e: React.DragEvent, cardId: string) => {
     e.dataTransfer.setData("text/plain", cardId);
@@ -121,6 +119,16 @@ const ContextTrelloInner: React.FC = () => {
         <div className="todos-header-title">
           <Kanban className="todos-title-icon" />
           <h3>Kanban Trello Board (Engine 3: Context API Bus)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/trello/ContextTrello.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 

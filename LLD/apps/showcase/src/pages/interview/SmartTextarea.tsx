@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageSquare, AlertTriangle, Users, Hash, ChevronRight } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { MessageSquare, AlertTriangle, Users, Hash, ChevronRight, Code} from "lucide-react";
 
 // Mock Data for Suggestions
 const MOCK_USERS = ["atul", "react_dev", "system_design", "js_wizard", "google_mind", "dan_abramov"];
@@ -184,6 +185,16 @@ export const SmartTextarea: React.FC = () => {
         <div className="todos-header-title">
           <MessageSquare className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Smart Textarea Showcase</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/SmartTextarea.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -229,8 +240,7 @@ export const SmartTextarea: React.FC = () => {
                     color: "var(--text-h)",
                     padding: "12px",
                     resize: "none",
-                    borderRadius: "8px",
-                  }}
+                    borderRadius: "8px"}}
                   placeholder="What's happening? Type here..."
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -303,8 +313,7 @@ export const SmartTextarea: React.FC = () => {
                     fontFamily: "inherit",
                     fontSize: "inherit",
                     lineHeight: "1.5",
-                    pointerEvents: "none",
-                  }}
+                    pointerEvents: "none"}}
                 >
                   {renderHighlightedText(text)}
                 </div>
@@ -332,8 +341,7 @@ export const SmartTextarea: React.FC = () => {
                     fontSize: "inherit",
                     lineHeight: "1.5",
                     // Semi-transparent so highlight is visible underneath
-                    WebkitTextFillColor: "rgba(255, 255, 255, 0.85)", 
-                  }}
+                    WebkitTextFillColor: "rgba(255, 255, 255, 0.85)"}}
                   placeholder="Try writing hashtags #react or @mentions. Go past 280 characters to see the red highlight overlay!"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -376,8 +384,7 @@ export const SmartTextarea: React.FC = () => {
                       fontFamily: "inherit",
                       fontSize: "inherit",
                       lineHeight: "1.5",
-                      pointerEvents: "none",
-                    }}
+                      pointerEvents: "none"}}
                   >
                     {renderHighlightedText(text)}
                   </div>
@@ -399,8 +406,7 @@ export const SmartTextarea: React.FC = () => {
                       fontFamily: "inherit",
                       fontSize: "inherit",
                       lineHeight: "1.5",
-                      display: "block",
-                    }}
+                      display: "block"}}
                     placeholder="Type '@' for users or '#' for tags (e.g. type @a or #r)..."
                     value={text}
                     onChange={handleAdvanceChange}
@@ -424,8 +430,7 @@ export const SmartTextarea: React.FC = () => {
                       width: "200px",
                       maxHeight: "180px",
                       overflowY: "auto",
-                      marginTop: "4px",
-                    }}
+                      marginTop: "4px"}}
                   >
                     <div style={{ padding: "6px 10px", fontSize: "0.75rem", color: "var(--text-muted)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "6px" }}>
                       {suggestionsType === "user" ? <Users size={12} /> : <Hash size={12} />}
@@ -443,8 +448,7 @@ export const SmartTextarea: React.FC = () => {
                             cursor: "pointer",
                             fontSize: "0.85rem",
                             background: isSelected ? "var(--input-bg)" : "transparent",
-                            color: isSelected ? "var(--text-h)" : "var(--text)",
-                          }}
+                            color: isSelected ? "var(--text-h)" : "var(--text)"}}
                         >
                           {suggestionsType === "user" ? `@${item}` : `#${item}`}
                         </div>

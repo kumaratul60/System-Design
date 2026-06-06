@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Play, Pause, ChevronLeft, ChevronRight, Sliders, Image as ImageIcon } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Play, Pause, ChevronLeft, ChevronRight, Sliders, Image as ImageIcon, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface CarouselImage {
@@ -18,8 +19,7 @@ export interface UseCarouselParams {
 export function useCarouselLogic({
   itemCount,
   defaultInterval = 3000,
-  defaultAutoplay = true,
-}: UseCarouselParams) {
+  defaultAutoplay = true}: UseCarouselParams) {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(defaultAutoplay);
   const [intervalMs, setIntervalMs] = useState<number>(defaultInterval);
@@ -68,8 +68,7 @@ export function useCarouselLogic({
     goToSlide,
     togglePlay,
     changeSpeed,
-    setIsHovered,
-  };
+    setIsHovered};
 }
 
 // --- Dummy Slideshow Images ---
@@ -77,23 +76,19 @@ const DEFAULT_IMAGES: CarouselImage[] = [
   {
     url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
     caption: "Golden Horizon - Serene Ocean Sunset",
-    photographer: "Sean Oulashin",
-  },
+    photographer: "Sean Oulashin"},
   {
     url: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
     caption: "Mist-covered Valleys of the Alps",
-    photographer: "Kal Vis",
-  },
+    photographer: "Kal Vis"},
   {
     url: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=80",
     caption: "Deep Forest Pathway through Redwoods",
-    photographer: "Lukasz Szmigiel",
-  },
+    photographer: "Lukasz Szmigiel"},
   {
     url: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80",
     caption: "Rugged Mountain Ridges under Clear Skies",
-    photographer: "David Marcu",
-  },
+    photographer: "David Marcu"},
 ];
 
 // --- UI Layer: Presentation Component ---
@@ -108,12 +103,10 @@ export const Carousel: React.FC = () => {
     goToSlide,
     togglePlay,
     changeSpeed,
-    setIsHovered,
-  } = useCarouselLogic({
+    setIsHovered} = useCarouselLogic({
     itemCount: images.length,
     defaultInterval: 3000,
-    defaultAutoplay: true,
-  });
+    defaultAutoplay: true});
 
   // Keyboard navigation listener
   useEffect(() => {
@@ -134,6 +127,16 @@ export const Carousel: React.FC = () => {
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Precision Slideshow Carousel</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Carousel.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -147,8 +150,7 @@ export const Carousel: React.FC = () => {
           padding: "16px",
           borderRadius: "var(--border-radius)",
           alignItems: "center",
-          justifyContent: "space-between",
-        }}
+          justifyContent: "space-between"}}
       >
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <button className="btn btn-primary" onClick={togglePlay}>
@@ -188,8 +190,7 @@ export const Carousel: React.FC = () => {
           borderRadius: "var(--border-radius)",
           overflow: "hidden",
           border: "1px solid var(--border)",
-          background: "#000",
-        }}
+          background: "#000"}}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -200,8 +201,7 @@ export const Carousel: React.FC = () => {
             width: "100%",
             height: "100%",
             transform: `translateX(-${activeIndex * 100}%)`,
-            transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
+            transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"}}
         >
           {images.map((img, idx) => (
             <div
@@ -209,8 +209,7 @@ export const Carousel: React.FC = () => {
               style={{
                 minWidth: "100%",
                 height: "100%",
-                position: "relative",
-              }}
+                position: "relative"}}
             >
               <img
                 src={img.url}
@@ -219,8 +218,7 @@ export const Carousel: React.FC = () => {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  opacity: 0.85,
-                }}
+                  opacity: 0.85}}
               />
               {/* Slide Caption Overlay */}
               <div
@@ -234,8 +232,7 @@ export const Carousel: React.FC = () => {
                   padding: "24px 32px",
                   display: "flex",
                   flexDirection: "column",
-                  gap: "4px",
-                }}
+                  gap: "4px"}}
               >
                 <span style={{ fontSize: "1.2rem", fontWeight: 700 }}>
                   {img.caption}
@@ -267,8 +264,7 @@ export const Carousel: React.FC = () => {
             justifyContent: "center",
             alignItems: "center",
             transition: "all 0.2s ease",
-            outline: "none",
-          }}
+            outline: "none"}}
           onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.35)")}
           onMouseOut={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)")}
           aria-label="Previous Slide"
@@ -294,8 +290,7 @@ export const Carousel: React.FC = () => {
             justifyContent: "center",
             alignItems: "center",
             transition: "all 0.2s ease",
-            outline: "none",
-          }}
+            outline: "none"}}
           onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.35)")}
           onMouseOut={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)")}
           aria-label="Next Slide"
@@ -310,8 +305,7 @@ export const Carousel: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           gap: "8px",
-          marginTop: "16px",
-        }}
+          marginTop: "16px"}}
       >
         {images.map((_, idx) => (
           <button
@@ -326,8 +320,7 @@ export const Carousel: React.FC = () => {
               cursor: "pointer",
               transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
               outline: "none",
-              padding: 0,
-            }}
+              padding: 0}}
             aria-label={`Go to slide ${idx + 1}`}
           />
         ))}

@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { MessageSquare, Send, Trash2, Edit2, CornerDownRight, X, Check } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { MessageSquare, Send, Trash2, Edit2, CornerDownRight, X, Check, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface CommentNode {
@@ -71,8 +72,7 @@ export function useCommentsLogic({ initialComments }: UseCommentsParams) {
       author,
       text: clean,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      replies: [],
-    };
+      replies: []};
 
     setComments((prev) => [newComment, ...prev]);
   }, []);
@@ -87,8 +87,7 @@ export function useCommentsLogic({ initialComments }: UseCommentsParams) {
         author,
         text: clean,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        replies: [],
-      };
+        replies: []};
 
       setComments((prev) => {
         const clone = JSON.parse(JSON.stringify(prev));
@@ -129,8 +128,7 @@ export function useCommentsLogic({ initialComments }: UseCommentsParams) {
     postRootComment,
     replyToComment,
     editComment,
-    deleteComment,
-  };
+    deleteComment};
 }
 
 // --- Recursive Comment Node component ---
@@ -147,8 +145,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   depth,
   onReply,
   onEdit,
-  onDelete,
-}) => {
+  onDelete}) => {
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [replyInput, setReplyInput] = useState("");
@@ -176,8 +173,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
         flexDirection: "column",
         gap: "8px",
         marginTop: "12px",
-        position: "relative",
-      }}
+        position: "relative"}}
     >
       {/* Outer Card */}
       <div
@@ -187,8 +183,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           background: "var(--card-bg)",
           padding: "14px",
           position: "relative",
-          marginLeft: depth > 0 ? "16px" : "0px",
-        }}
+          marginLeft: depth > 0 ? "16px" : "0px"}}
       >
         {/* Thread connecting indicator lines */}
         {depth > 0 && (
@@ -201,8 +196,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               height: "28px",
               borderLeft: "2px solid var(--border)",
               borderBottom: "2px solid var(--border)",
-              borderBottomLeftRadius: "6px",
-            }}
+              borderBottomLeftRadius: "6px"}}
           />
         )}
 
@@ -331,26 +325,21 @@ const COMMENT_SEED_DATA: CommentNode[] = [
             author: "Charlie",
             text: "Spot on! That makes perfect sense. Plus, recursion maps directly to standard DFS visual nesting in HTML render trees.",
             timestamp: "10:35 AM",
-            replies: [],
-          },
-        ],
-      },
-    ],
-  },
+            replies: []},
+        ]},
+    ]},
   {
     id: "c-4",
     author: "System Architect",
     text: "Always deep-clone state when updating nested object properties in React. Mutating nested child references directly causes render misses because shallow array/object identity is preserved.",
     timestamp: "09:50 AM",
-    replies: [],
-  },
+    replies: []},
 ];
 
 // --- UI Layer: Presentation Component ---
 export const NestedComments: React.FC = () => {
   const { comments, postRootComment, replyToComment, editComment, deleteComment } = useCommentsLogic({
-    initialComments: COMMENT_SEED_DATA,
-  });
+    initialComments: COMMENT_SEED_DATA});
 
   const [newCommentVal, setNewCommentVal] = useState("");
 
@@ -369,6 +358,16 @@ export const NestedComments: React.FC = () => {
         <div className="todos-header-title">
           <MessageSquare className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Hierarchical Thread Comments</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/NestedComments.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -398,8 +397,7 @@ export const NestedComments: React.FC = () => {
               padding: "48px",
               border: "1px dashed var(--border)",
               borderRadius: "var(--border-radius)",
-              color: "var(--text-muted)",
-            }}
+              color: "var(--text-muted)"}}
           >
             Thread is currently empty. Be the first to start the conversation!
           </div>

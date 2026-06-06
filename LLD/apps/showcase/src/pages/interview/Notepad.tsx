@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { translate } from "@statelab/theme";
 import { FileText, Plus, Trash2, Search, Eye, Code, Tag, Save } from "lucide-react";
 
 export interface Note {
@@ -91,8 +92,7 @@ const parseInlineFormatting = (text: string): React.ReactNode[] => {
               padding: "2px 6px",
               borderRadius: "4px",
               fontSize: "0.85em",
-              fontFamily: "var(--font-mono)",
-            }}
+              fontFamily: "var(--font-mono)"}}
           >
             {currentText.slice(codeIdx + 1, nextCodeIdx)}
           </code>
@@ -123,8 +123,7 @@ export function useNotepad() {
         title: "Welcome Note",
         content: "# Quick Notepad Guide\n\nCreate sticky notes and format them with simple Markdown tags:\n- Use `#` for headings\n- Use `**` for **bold text**\n- Use backticks for `code snippets`\n- Tag notes to organize them!",
         tags: ["guide", "markdown"],
-        updatedAt: new Date().toLocaleString(),
-      },
+        updatedAt: new Date().toLocaleString()},
     ];
   });
 
@@ -144,8 +143,7 @@ export function useNotepad() {
       title: "Untitled Note",
       content: "",
       tags: [],
-      updatedAt: new Date().toLocaleString(),
-    };
+      updatedAt: new Date().toLocaleString()};
     setNotes((prev) => [newNote, ...prev]);
     setActiveNoteId(newNote.id);
   }, []);
@@ -197,8 +195,7 @@ export function useNotepad() {
     setSearchQuery,
     addNote,
     updateActiveNote,
-    deleteNote,
-  };
+    deleteNote};
 }
 
 // --- UI Presentation Component ---
@@ -212,8 +209,7 @@ export const Notepad: React.FC = () => {
     setSearchQuery,
     addNote,
     updateActiveNote,
-    deleteNote,
-  } = useNotepad();
+    deleteNote} = useNotepad();
 
   const [editMode, setEditMode] = useState<"edit" | "preview">("edit");
   const [tagInput, setTagInput] = useState("");
@@ -243,6 +239,16 @@ export const Notepad: React.FC = () => {
         <div className="todos-header-title">
           <FileText className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Reactive Offline Notepad</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Notepad.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={addNote} className="btn btn-primary" style={{ display: "flex", gap: "6px" }}>
           <Plus size={16} /> New Note
@@ -258,8 +264,7 @@ export const Notepad: React.FC = () => {
           borderRadius: "var(--border-radius)",
           background: "var(--card-bg)",
           overflow: "hidden",
-          minHeight: "500px",
-        }}
+          minHeight: "500px"}}
       >
         {/* Sidebar Notes Feed */}
         <div
@@ -267,8 +272,7 @@ export const Notepad: React.FC = () => {
             borderRight: "1px solid var(--border)",
             display: "flex",
             flexDirection: "column",
-            background: "var(--input-bg)",
-          }}
+            background: "var(--input-bg)"}}
         >
           {/* Search bar */}
           <div style={{ padding: "14px", borderBottom: "1px solid var(--border)", position: "relative" }}>
@@ -300,8 +304,7 @@ export const Notepad: React.FC = () => {
                     borderBottom: "1px solid var(--border)",
                     background: note.id === activeNoteId ? "var(--card-bg)" : "transparent",
                     transition: "background 0.2s",
-                    position: "relative",
-                  }}
+                    position: "relative"}}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
                     <strong
@@ -311,8 +314,7 @@ export const Notepad: React.FC = () => {
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
-                        maxWidth: "180px",
-                      }}
+                        maxWidth: "180px"}}
                     >
                       {note.title.trim() || "Untitled Note"}
                     </strong>
@@ -325,8 +327,7 @@ export const Notepad: React.FC = () => {
                         background: "transparent",
                         border: "none",
                         cursor: "pointer",
-                        color: "var(--text-muted)",
-                      }}
+                        color: "var(--text-muted)"}}
                       onMouseEnter={(e) => (e.currentTarget.style.color = "var(--danger)")}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
                       title="Delete note"
@@ -347,8 +348,7 @@ export const Notepad: React.FC = () => {
                             background: "var(--border)",
                             color: "var(--text)",
                             padding: "1px 6px",
-                            borderRadius: "4px",
-                          }}
+                            borderRadius: "4px"}}
                         >
                           {t}
                         </span>
@@ -379,8 +379,7 @@ export const Notepad: React.FC = () => {
                   border: "none",
                   background: "transparent",
                   outline: "none",
-                  flexGrow: 1,
-                }}
+                  flexGrow: 1}}
               />
               <div
                 style={{
@@ -388,8 +387,7 @@ export const Notepad: React.FC = () => {
                   background: "var(--input-bg)",
                   border: "1px solid var(--border)",
                   borderRadius: "6px",
-                  padding: "2px",
-                }}
+                  padding: "2px"}}
               >
                 <button
                   onClick={() => setEditMode("edit")}
@@ -404,8 +402,7 @@ export const Notepad: React.FC = () => {
                     alignItems: "center",
                     gap: "4px",
                     fontSize: "0.85rem",
-                    fontWeight: 600,
-                  }}
+                    fontWeight: 600}}
                 >
                   <Code size={14} /> Edit
                 </button>
@@ -422,8 +419,7 @@ export const Notepad: React.FC = () => {
                     alignItems: "center",
                     gap: "4px",
                     fontSize: "0.85rem",
-                    fontWeight: 600,
-                  }}
+                    fontWeight: 600}}
                 >
                   <Eye size={14} /> Preview
                 </button>
@@ -460,8 +456,7 @@ export const Notepad: React.FC = () => {
                   fontFamily: "inherit",
                   color: "var(--text)",
                   resize: "vertical",
-                  outline: "none",
-                }}
+                  outline: "none"}}
               />
             ) : (
               <div
@@ -472,8 +467,7 @@ export const Notepad: React.FC = () => {
                   borderRadius: "var(--border-radius)",
                   padding: "16px",
                   background: "var(--input-bg)",
-                  overflowY: "auto",
-                }}
+                  overflowY: "auto"}}
               >
                 {activeNote.content.trim() ? (
                   renderSimpleMarkdown(activeNote.content)

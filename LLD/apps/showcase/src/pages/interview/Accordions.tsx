@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { ChevronDown, Layers, Layers3, ArrowUpDown } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { ChevronDown, Layers, Layers3, ArrowUpDown, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface AccordionItem {
@@ -18,8 +19,7 @@ export interface UseAccordionParams {
 export function useAccordionLogic({
   items,
   initialAllowMultiple = false,
-  initialExpanded = [],
-}: UseAccordionParams) {
+  initialExpanded = []}: UseAccordionParams) {
   const [expandedIds, setExpandedIds] = useState<string[]>(initialExpanded);
   const [allowMultiple, setAllowMultiple] = useState<boolean>(initialAllowMultiple);
 
@@ -63,8 +63,7 @@ export function useAccordionLogic({
     toggleItem,
     toggleMode,
     expandAll,
-    collapseAll,
-  };
+    collapseAll};
 }
 
 // --- Helper Child Component for Height Transitions ---
@@ -104,8 +103,7 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({ item, isOpen, onTog
         borderRadius: "var(--border-radius)",
         background: "var(--card-bg)",
         overflow: "hidden",
-        transition: "var(--transition)",
-      }}
+        transition: "var(--transition)"}}
     >
       <button
         onClick={onToggle}
@@ -123,8 +121,7 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({ item, isOpen, onTog
           fontSize: "1rem",
           fontWeight: 600,
           textAlign: "left",
-          outline: "none",
-        }}
+          outline: "none"}}
       >
         <span>{item.title}</span>
         <ChevronDown
@@ -132,16 +129,14 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({ item, isOpen, onTog
           style={{
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
             transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-            color: "var(--text-muted)",
-          }}
+            color: "var(--text-muted)"}}
         />
       </button>
       <div
         style={{
           height: typeof height === "number" ? `${height}px` : height,
           overflow: "hidden",
-          transition: "height 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-        }}
+          transition: "height 0.25s cubic-bezier(0.4, 0, 0.2, 1)"}}
       >
         <div
           ref={contentRef}
@@ -149,8 +144,7 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({ item, isOpen, onTog
             padding: "0 16px 16px 16px",
             color: "var(--text)",
             fontSize: "0.95rem",
-            lineHeight: 1.6,
-          }}
+            lineHeight: 1.6}}
         >
           {item.content}
         </div>
@@ -165,20 +159,17 @@ const DEFAULT_ITEMS: AccordionItem[] = [
     id: "fsm",
     title: "Finite State Machine (FSM) in UI Engineering",
     content:
-      "A Finite State Machine is a mathematical model of computation. In frontend LLD, it models components with a finite number of states (e.g., Idle, Loading, Success, Error). State transitions are deterministic and occur only in response to explicit actions, eliminating unpredictable 'impossible states'.",
-  },
+      "A Finite State Machine is a mathematical model of computation. In frontend LLD, it models components with a finite number of states (e.g., Idle, Loading, Success, Error). State transitions are deterministic and occur only in response to explicit actions, eliminating unpredictable 'impossible states'."},
   {
     id: "virtualization",
     title: "How Virtual Viewports Work",
     content:
-      "Virtualization handles rendering high-frequency tables or lists by only rendering elements that are inside the visible window. By calculating scroll offset, total container height, and child heights, it computes a starting index and slices the elements, rendering a container placeholder with absolute offsets.",
-  },
+      "Virtualization handles rendering high-frequency tables or lists by only rendering elements that are inside the visible window. By calculating scroll offset, total container height, and child heights, it computes a starting index and slices the elements, rendering a container placeholder with absolute offsets."},
   {
     id: "reconciliation",
     title: "React Reconciliation & Virtual DOM",
     content:
-      "Reconciliation is React's diffing algorithm. It uses a heuristic algorithm with O(n) complexity. Key properties like stable 'key' props allow React to track element identity across renders, minimizing DOM insertions and updates for performance-critical components.",
-  },
+      "Reconciliation is React's diffing algorithm. It uses a heuristic algorithm with O(n) complexity. Key properties like stable 'key' props allow React to track element identity across renders, minimizing DOM insertions and updates for performance-critical components."},
 ];
 
 // --- UI Layer: Main Component ---
@@ -189,11 +180,9 @@ export const Accordions: React.FC = () => {
     toggleItem,
     toggleMode,
     expandAll,
-    collapseAll,
-  } = useAccordionLogic({
+    collapseAll} = useAccordionLogic({
     items: DEFAULT_ITEMS,
-    initialAllowMultiple: false,
-  });
+    initialAllowMultiple: false});
 
   return (
     <div className="page-container">
@@ -201,6 +190,16 @@ export const Accordions: React.FC = () => {
         <div className="todos-header-title">
           <ArrowUpDown className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Accordion System</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Accordions.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -212,8 +211,7 @@ export const Accordions: React.FC = () => {
           background: "var(--input-bg)",
           padding: "16px",
           borderRadius: "var(--border-radius)",
-          alignItems: "center",
-        }}
+          alignItems: "center"}}
       >
         <button className="btn btn-primary" onClick={toggleMode}>
           {allowMultiple ? <Layers3 size={16} /> : <Layers size={16} />}
@@ -234,8 +232,7 @@ export const Accordions: React.FC = () => {
           style={{
             fontSize: "0.85rem",
             color: "var(--text-muted)",
-            marginLeft: "auto",
-          }}
+            marginLeft: "auto"}}
         >
           Active Expands: <strong>{expandedIds.length}</strong>
         </span>
@@ -246,8 +243,7 @@ export const Accordions: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           gap: "12px",
-          marginTop: "12px",
-        }}
+          marginTop: "12px"}}
       >
         {DEFAULT_ITEMS.map((item) => (
           <AccordionSection

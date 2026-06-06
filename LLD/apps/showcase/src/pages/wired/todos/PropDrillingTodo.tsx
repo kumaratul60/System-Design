@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { usePropDrillingState } from "@statelab/state-engines";
 import { translate } from "@statelab/theme";
-import { CheckCircle2, Circle, ClipboardList, Plus, RefreshCw, Trash2, Lock } from "lucide-react";
+import { CheckCircle2, Circle, ClipboardList, Plus, RefreshCw, Trash2, Lock, Code} from "lucide-react";
 import type { Todo, AppUser } from "@statelab/state-engines";
 
 // --- Types & Interfaces for Prop Drilling ---
@@ -42,8 +42,7 @@ export function usePropDrillingTodo() {
   const welcomeMessage = state.user
     ? translate("welcomeUser", {
         username: state.user.username,
-        role: state.user.role === "ADMIN" ? translate("roleAdmin") : translate("roleUser"),
-      })
+        role: state.user.role === "ADMIN" ? translate("roleAdmin") : translate("roleUser")})
     : "";
 
   return {
@@ -51,8 +50,7 @@ export function usePropDrillingTodo() {
     newTodoTitle,
     setNewTodoTitle,
     handleAddTodo,
-    welcomeMessage,
-  };
+    welcomeMessage};
 }
 
 // --- UI Presentation Components ---
@@ -165,9 +163,19 @@ export const PropDrillingTodo: React.FC = () => {
       <div className="todos-card-wrapper">
         <div className="todos-card-header">
           <div className="todos-header-title">
-            <ClipboardList className="todos-title-icon" />
+          <ClipboardList className="todos-title-icon" />
             <h3>Engine 1: Prop Drilling</h3>
-          </div>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/todos/PropDrillingTodo.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
+        </div>
           <button
             onClick={() => state.fetchTodos()}
             className="btn btn-secondary fetch-btn"

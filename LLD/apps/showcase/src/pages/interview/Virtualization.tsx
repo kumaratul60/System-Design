@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useRef } from "react";
-import { Layers } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Layers, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 export interface VirtualListParams {
@@ -14,8 +15,7 @@ export function useVirtualList({
   itemCount,
   itemHeight,
   viewportHeight,
-  bufferSize = 5,
-}: VirtualListParams) {
+  bufferSize = 5}: VirtualListParams) {
   const [scrollTop, setScrollTop] = useState<number>(0);
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -64,8 +64,7 @@ export function useVirtualList({
     startIndex,
     endIndex,
     scrollToIndex,
-    handleScroll,
-  };
+    handleScroll};
 }
 
 // --- Generate Mock Datastore (10,000 items) ---
@@ -86,8 +85,7 @@ const GENERATE_MOCK_ITEMS = (count: number): MockItem[] => {
     uuid: `SYS-${Math.floor(Math.random() * 900000 + 100000)}`,
     name: `Enterprise Process Service Node #${idx + 1}`,
     category: categories[idx % categories.length],
-    status: statuses[idx % statuses.length],
-  }));
+    status: statuses[idx % statuses.length]}));
 };
 
 const ITEMS_COUNT = 10000;
@@ -107,13 +105,11 @@ export const Virtualization: React.FC = () => {
     startIndex,
     endIndex,
     scrollToIndex,
-    handleScroll,
-  } = useVirtualList({
+    handleScroll} = useVirtualList({
     itemCount: ITEMS_COUNT,
     itemHeight,
     viewportHeight,
-    bufferSize: 4,
-  });
+    bufferSize: 4});
 
   const [jumpInput, setJumpInput] = useState<string>("");
 
@@ -132,6 +128,16 @@ export const Virtualization: React.FC = () => {
         <div className="todos-header-title">
           <Layers className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Virtual Viewport List (10k items)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/Virtualization.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -145,8 +151,7 @@ export const Virtualization: React.FC = () => {
             padding: "20px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
-          }}
+            gap: "16px"}}
         >
           <h4>Virtual List Parameters</h4>
 
@@ -216,8 +221,7 @@ export const Virtualization: React.FC = () => {
             position: "relative",
             border: "1px solid var(--border)",
             borderRadius: "var(--border-radius)",
-            background: "var(--card-bg)",
-          }}
+            background: "var(--card-bg)"}}
         >
           {/* Scroll spacer to maintain physical scroll height */}
           <div style={{ height: `${totalHeight}px`, width: "100%", position: "absolute", top: 0, left: 0 }} />
@@ -231,16 +235,14 @@ export const Virtualization: React.FC = () => {
               left: 0,
               right: 0,
               display: "flex",
-              flexDirection: "column",
-            }}
+              flexDirection: "column"}}
           >
             {visibleIndices.map((idx) => {
               const item = MOCK_DB[idx];
               const statusColors = {
                 active: { bg: "rgba(34, 197, 94, 0.15)", text: "var(--success)" },
                 pending: { bg: "rgba(245, 158, 11, 0.15)", text: "orange" },
-                suspended: { bg: "rgba(239, 68, 68, 0.15)", text: "var(--danger)" },
-              };
+                suspended: { bg: "rgba(239, 68, 68, 0.15)", text: "var(--danger)" }};
               const col = statusColors[item.status];
 
               return (
@@ -254,8 +256,7 @@ export const Virtualization: React.FC = () => {
                     padding: "0 16px",
                     borderBottom: "1px solid var(--border)",
                     boxSizing: "border-box",
-                    background: "var(--card-bg)",
-                  }}
+                    background: "var(--card-bg)"}}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <span
@@ -263,8 +264,7 @@ export const Virtualization: React.FC = () => {
                         fontFamily: "var(--font-mono)",
                         fontSize: "0.8rem",
                         color: "var(--text-muted)",
-                        minWidth: "42px",
-                      }}
+                        minWidth: "42px"}}
                     >
                       #{item.id}
                     </span>
@@ -284,8 +284,7 @@ export const Virtualization: React.FC = () => {
                       fontWeight: "bold",
                       padding: "2px 8px",
                       borderRadius: "10px",
-                      textTransform: "uppercase",
-                    }}
+                      textTransform: "uppercase"}}
                   >
                     {item.status}
                   </span>

@@ -89,7 +89,8 @@ export const translations = {
     publicRouteText: "Public Routes: Accessible by anyone, guest or authenticated. (e.g., Home, Login page)",
     protectedRouteText: "Protected Routes: Accessible to any authenticated user. Guests are automatically redirected to Login. (e.g., Todos Showcase)",
     privateRouteText: "Private Routes: Restricted to authenticated users with specific roles (e.g., ADMIN). Non-admin users are blocked and shown a 403 Forbidden page. (e.g., Admin Console)",
-    refreshApiData: "Re-fetch Todo API Data"
+    refreshApiData: "Re-fetch Todo API Data",
+    viewSource: "View Source Code"
   }
 };
 

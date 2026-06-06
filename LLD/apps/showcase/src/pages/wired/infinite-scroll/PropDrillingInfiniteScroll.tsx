@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Sparkles, RefreshCw, ExternalLink, Image as ImageIcon, Code} from "lucide-react";
 
 // --- Types & Interfaces ---
 interface Photo {
@@ -93,8 +94,7 @@ export function usePropDrillingScrollLogic() {
     lastPhotoElementRef,
     handleReload,
     fetchPhotos,
-    page,
-  };
+    page};
 }
 
 // --- UI Presentation Components ---
@@ -146,8 +146,7 @@ export const PropDrillingInfiniteScroll: React.FC = () => {
     lastPhotoElementRef,
     handleReload,
     fetchPhotos,
-    page,
-  } = usePropDrillingScrollLogic();
+    page} = usePropDrillingScrollLogic();
 
   return (
     <div className="page-container infinite-scroll-page">
@@ -155,6 +154,16 @@ export const PropDrillingInfiniteScroll: React.FC = () => {
         <div className="todos-header-title">
           <ImageIcon className="todos-title-icon" />
           <h3>Infinite Gallery (Engine 1: Prop Drilling)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/infinite-scroll/PropDrillingInfiniteScroll.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={handleReload} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading && photos.length === 0 ? "spinning" : ""}`} size={16} />

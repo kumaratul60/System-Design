@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
-import { Folder, Search, Loader, ChevronDown, HelpCircle, Keyboard, Cpu } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Folder, Search, Loader, ChevronDown, HelpCircle, Keyboard, Cpu, Code} from "lucide-react";
 
 interface AccordionItem {
   id: string;
@@ -68,8 +69,7 @@ export const AccordionComponent: React.FC = () => {
         const item = ACCORDION_DATA.find((i) => i.id === id);
         setLazyContent((prev) => ({
           ...prev,
-          [id]: item ? item.content : "Loaded API content successfully.",
-        }));
+          [id]: item ? item.content : "Loaded API content successfully."}));
         setLoadingIds((prev) => prev.filter((item) => item !== id));
       }, 700); // 700ms simulated network latency
     }
@@ -118,6 +118,16 @@ export const AccordionComponent: React.FC = () => {
         <div className="todos-header-title">
           <Folder className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Accordion Component Sandbox</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/AccordionComponent.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -166,8 +176,7 @@ export const AccordionComponent: React.FC = () => {
                     alignItems: "center",
                     cursor: "pointer",
                     fontSize: "0.95rem",
-                    fontWeight: 600,
-                  }}
+                    fontWeight: 600}}
                 >
                   <span>Click to view details</span>
                   <ChevronDown size={18} style={{ transform: basicOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
@@ -180,8 +189,7 @@ export const AccordionComponent: React.FC = () => {
                     overflow: "hidden",
                     transition: "max-height 0.2s ease-out",
                     background: "var(--card-bg)",
-                    borderTop: basicOpen ? "1px solid var(--border)" : "none",
-                  }}
+                    borderTop: basicOpen ? "1px solid var(--border)" : "none"}}
                 >
                   <p style={{ padding: "16px 18px", margin: 0, fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
                     This accordion uses pure CSS transitions on the <code>max-height</code> property, triggered dynamically by React states.
@@ -233,8 +241,7 @@ export const AccordionComponent: React.FC = () => {
                             alignItems: "center",
                             cursor: "pointer",
                             fontWeight: 600,
-                            fontSize: "0.88rem",
-                          }}
+                            fontSize: "0.88rem"}}
                         >
                           <span>{item.title}</span>
                           <ChevronDown size={16} style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
@@ -287,8 +294,7 @@ export const AccordionComponent: React.FC = () => {
                           fontWeight: 600,
                           fontSize: "0.88rem",
                           outline: "none",
-                          boxShadow: isFocused ? "0 0 0 2px var(--primary)" : "none",
-                        }}
+                          boxShadow: isFocused ? "0 0 0 2px var(--primary)" : "none"}}
                       >
                         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                           {item.title}
@@ -305,8 +311,7 @@ export const AccordionComponent: React.FC = () => {
                           maxHeight: isOpen ? "150px" : "0px",
                           overflow: "hidden",
                           transition: "max-height 0.2s ease-out",
-                          background: "var(--card-bg)",
-                        }}
+                          background: "var(--card-bg)"}}
                       >
                         <div style={{ padding: "14px 16px", fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: 1.5, borderTop: "1px solid var(--border)" }}>
                           {isLoading ? (

@@ -263,7 +263,12 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
-/* Page Containers */
+.challenge-code-link:hover {
+  color: var(--primary) !important;
+}
+
+/* Page containers */
+
 .page-container {
   display: flex;
   flex-direction: column;
@@ -283,9 +288,16 @@ h1, h2, h3, h4, h5, h6 {
 .home-hero {
   text-align: center;
   padding: 48px 24px;
-  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.05), transparent 70%);
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.03), transparent 80%);
   border-radius: 16px;
   border: 1px solid var(--border);
+  box-shadow: 0 4px 20px -12px rgba(0, 0, 0, 0.1);
+}
+
+html.dark .home-hero {
+  border-color: var(--border);
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.08), transparent 85%);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.2);
 }
 
 .home-hero-title {
@@ -702,6 +714,17 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
+}
+
+.todos-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.todos-title-icon {
+  flex-shrink: 0;
 }
 
 .add-todo-form {
@@ -2175,3 +2198,251 @@ h1, h2, h3, h4, h5, h6 {
   color: #38bdf8;
 }
 
+
+/* Autosuggest Component Styles */
+.autosuggest-container {
+  position: relative;
+}
+
+.autosuggest-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.autosuggest-dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-h);
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.autosuggest-dropdown-item.highlighted {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+
+.autosuggest-dropdown-item-rich {
+  padding: 14px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-left: 4px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.autosuggest-dropdown-item-rich.highlighted {
+  background: rgba(59, 130, 246, 0.08);
+  border-left-color: var(--primary);
+}
+
+.autosuggest-dropdown-item-rich.highlighted .highlight-text-primary {
+  color: var(--primary);
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  html, body {
+    overflow: auto !important;
+    height: auto !important;
+    min-height: 100% !important;
+  }
+
+  #root {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+  }
+
+  .monorepo-shell {
+    flex-direction: column;
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+    display: flex !important;
+  }
+
+  .app-sidebar {
+    width: 100% !important;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    padding: 12px;
+  }
+
+  .shell-main-wrapper {
+    overflow: visible;
+    height: auto;
+    flex: 1 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .shell-content {
+    padding: 16px;
+    flex: 1 0 auto !important;
+  }
+
+  .home-hero-title {
+    font-size: 2rem;
+  }
+
+  .home-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .why-grid, .challenges-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .engine-tabs-row {
+    overflow-x: auto;
+    padding-bottom: 8px;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .engine-tab-button {
+    white-space: nowrap;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-wrapper {
+    width: 100%;
+  }
+
+  .sidebar-user {
+    margin-top: 16px;
+  }
+
+  .todos-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .todos-header-title {
+    width: 100%;
+  }
+
+  /* Feature Specific Responsiveness */
+  .traffic-light-layout-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+
+  .traffic-light-housing {
+    margin: 0 auto;
+  }
+
+  .traffic-light-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .button-group, .override-buttons {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .trello-board-layout {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+    gap: 24px;
+  }
+
+  .kanban-column {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .products-grid, .memes-grid, .photos-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .product-detail-layout {
+    flex-direction: column !important;
+    gap: 24px;
+  }
+
+  .product-detail-image-container, .product-detail-info {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .checkout-layout {
+    flex-direction: column !important;
+  }
+
+  .checkout-main, .checkout-sidebar {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .runlet-featured-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .runlet-card-title {
+    font-size: 1.25rem;
+  }
+
+  .runlet-card-action {
+    width: 100%;
+  }
+
+  .runlet-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .autosuggest-main-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .autosuggest-dropdown {
+    left: 10px !important;
+    right: 10px !important;
+  }
+
+  .autosuggest-tabs {
+    overflow-x: auto;
+    padding-bottom: 12px !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .autosuggest-tabs .btn {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+
+  .autosuggest-monitor-panel {
+    padding: 16px !important;
+  }
+}
+
+.challenge-code-link-header:hover {
+  color: var(--primary) !important;
+}

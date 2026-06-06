@@ -11,6 +11,8 @@ interface ComponentMeta {
   difficulty: "Easy" | "Medium" | "Advance";
 }
 
+const GITHUB_BASE_URL = "https://github.com/kumaratul60/System-Design/blob/main/LLD";
+
 // Visual descriptions, categories, and difficulty levels for the showcases catalog
 const METADATA: Record<string, ComponentMeta> = {
   "/interview/file-explorer": {
@@ -331,6 +333,7 @@ export const Home: React.FC = () => {
           path,
           label,
           icon: route.icon,
+          filePath: route.filePath,
           ...meta
         };
       });
@@ -562,12 +565,10 @@ export const Home: React.FC = () => {
         ) : (
           <div className="challenges-grid">
             {filteredChallenges.map((challenge) => {
-              const Icon = challenge.icon || Code;
               return (
                 <div key={challenge.path} className="challenge-card">
                   <div className="challenge-card-header">
                     <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                      <Icon size={16} style={{ color: "var(--primary)", marginTop: "2px", flexShrink: 0 }} />
                       <h4 className="challenge-title">{highlightText(challenge.label, searchQuery)}</h4>
                     </div>
                     <span className={`difficulty-badge difficulty-${challenge.difficulty.toLowerCase()}`}>

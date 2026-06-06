@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { translate } from "@statelab/theme";
-import { Trash2, Lock, ShoppingBag, RefreshCw } from "lucide-react";
+import { Trash2, Lock, ShoppingBag, RefreshCw, Code} from "lucide-react";
 import type { AppUser } from "@statelab/state-engines";
 
 // --- Types & Interfaces ---
@@ -26,8 +26,7 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 // --- Custom Provider Component ---
 const ProductProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+  children}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,8 +72,7 @@ export function useContextProductLogic() {
 
 // Inner presentation layout
 const ContextProductInner: React.FC<{ user: AppUser | null }> = ({
-  user,
-}) => {
+  user}) => {
   const navigate = useNavigate();
   const { products, isLoading, error, deleteProduct, fetchProducts } = useContextProductLogic();
   const isAdmin = user?.role === "ADMIN";
@@ -85,6 +83,16 @@ const ContextProductInner: React.FC<{ user: AppUser | null }> = ({
         <div className="todos-header-title">
           <ShoppingBag className="todos-title-icon" />
           <h3>Products Catalog (Engine 3: Context API Bus)</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/wired/products/ContextProduct.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
         <button onClick={fetchProducts} className="btn btn-secondary fetch-btn" disabled={isLoading}>
           <RefreshCw className={`fetch-icon ${isLoading ? "spinning" : ""}`} size={16} />
@@ -157,8 +165,7 @@ const ContextProductInner: React.FC<{ user: AppUser | null }> = ({
 
 // Exported component wrapped with Provider
 export const ContextProduct: React.FC<{ user: AppUser | null }> = ({
-  user,
-}) => {
+  user}) => {
   return (
     <ProductProvider>
       <ContextProductInner user={user} />

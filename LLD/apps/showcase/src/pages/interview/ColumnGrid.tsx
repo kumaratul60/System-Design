@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Grid, RefreshCw, Layers, Compass, HelpCircle } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { Grid, RefreshCw, Layers, Compass, HelpCircle, Code} from "lucide-react";
 
 export const ColumnGrid: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -56,6 +57,16 @@ export const ColumnGrid: React.FC = () => {
         <div className="todos-header-title">
           <Grid className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Column Grid Layout Visualizer</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/ColumnGrid.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -137,8 +148,7 @@ export const ColumnGrid: React.FC = () => {
                 display: "grid",
                 gridTemplateRows: `repeat(${rows}, 60px)`,
                 gridTemplateColumns: `repeat(${cols}, 60px)`,
-                gap: "8px",
-              }}
+                gap: "8px"}}
             >
               {Array.from({ length: rows }).map((_, rIdx) => (
                 Array.from({ length: cols }).map((_, cIdx) => {
@@ -166,8 +176,7 @@ export const ColumnGrid: React.FC = () => {
                         fontSize: "1.2rem",
                         cursor: activeTab === "mid" ? "pointer" : "default",
                         transition: "all 0.15s ease",
-                        userSelect: "none",
-                      }}
+                        userSelect: "none"}}
                       title={`Row: ${rIdx + 1}, Col: ${cIdx + 1}`}
                     >
                       {val}

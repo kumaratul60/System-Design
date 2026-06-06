@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MessageSquare, Star, X, CheckCircle, HelpCircle, Layers } from "lucide-react";
+import { translate } from "@statelab/theme";
+import { MessageSquare, Star, X, CheckCircle, HelpCircle, Layers, Code} from "lucide-react";
 
 export const FeedbackModal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "mid" | "advance">("basic");
@@ -89,6 +90,16 @@ export const FeedbackModal: React.FC = () => {
         <div className="todos-header-title">
           <MessageSquare className="todos-title-icon" style={{ color: "var(--text-h)" }} />
           <h3>Interactive Feedback Modal</h3>
+                    <a
+            href={`https://github.com/kumaratul60/System-Design/blob/main/LLD/apps/showcase/src/pages/interview/FeedbackModal.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={translate("viewSource")}
+            className="challenge-code-link-header"
+            style={{ marginLeft: "auto", color: "var(--text-muted)", display: "flex", alignItems: "center", transition: "color 0.2s" }}
+          >
+            <Code size={20} />
+          </a>
         </div>
       </div>
 
@@ -139,8 +150,7 @@ export const FeedbackModal: React.FC = () => {
                     zIndex: 200,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                    justifyContent: "center"}}
                 >
                   {/* Modal card */}
                   <div
@@ -154,8 +164,7 @@ export const FeedbackModal: React.FC = () => {
                       boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "12px",
-                    }}
+                      gap: "12px"}}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <h4 style={{ margin: 0 }}>Basic Dialog</h4>
@@ -192,8 +201,7 @@ export const FeedbackModal: React.FC = () => {
                     zIndex: 200,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                    justifyContent: "center"}}
                 >
                   <div
                     style={{
@@ -205,8 +213,7 @@ export const FeedbackModal: React.FC = () => {
                       boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "16px",
-                    }}
+                      gap: "16px"}}
                   >
                     {isSubmitted ? (
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "16px 0", textAlign: "center" }}>
@@ -236,8 +243,7 @@ export const FeedbackModal: React.FC = () => {
                                   cursor: "pointer",
                                   fill: isFilled ? "#f59e0b" : "transparent",
                                   color: isFilled ? "#f59e0b" : "var(--border)",
-                                  transition: "transform 0.15s ease",
-                                }}
+                                  transition: "transform 0.15s ease"}}
                               />
                             );
                           })}
@@ -287,8 +293,7 @@ export const FeedbackModal: React.FC = () => {
                     zIndex: 200,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                    justifyContent: "center"}}
                 >
                   <div
                     ref={firstModalRef}
@@ -301,8 +306,7 @@ export const FeedbackModal: React.FC = () => {
                       boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "14px",
-                    }}
+                      gap: "14px"}}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <h4 style={{ margin: 0 }}>Primary stacked layer</h4>
@@ -333,8 +337,7 @@ export const FeedbackModal: React.FC = () => {
                     zIndex: 300, // higher z-index stack
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                    justifyContent: "center"}}
                 >
                   <div
                     ref={secondModalRef}
@@ -347,8 +350,7 @@ export const FeedbackModal: React.FC = () => {
                       boxShadow: "0 25px 30px -5px rgba(0,0,0,0.4)",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "12px",
-                    }}
+                      gap: "12px"}}
                   >
                     <strong style={{ color: "red", fontSize: "1.1rem" }}>Critical confirmation</strong>
                     <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
