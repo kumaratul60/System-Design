@@ -165,7 +165,7 @@ Exhaustive documentation on the building blocks of the web:
 - **Infrastructure:** Scalability patterns and terminal mastery.
 - **Workflow:** Git internals and tech acronyms for industry-standard communication.
 
-### 10. [Low-Level Design (LLD) & Object-Oriented Design](./LLD/README.md)
+### 10. [Low-Level Design (LLD) & Object-Oriented Design](./LLD/LLD.md)
 
 A comprehensive guide to writing clean, modular, extensible, and high-performance software. Covers the progression from Beginner OOP fundamentals to Staff-level lock-free design:
 
