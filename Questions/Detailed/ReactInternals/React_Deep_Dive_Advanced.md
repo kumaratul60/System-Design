@@ -1,5 +1,13 @@
 # React Deep Dive: Advanced Concurrency, Hooks & Telemetry
 
+> [!NOTE]
+> This document is part of our **React Deep Dive Series**. Navigate the deep dives here:
+>
+> - **[React Layout & General Internals](./index.md)**
+> - **[Part 1: Core Engine & Architecture](./React_Deep_Dive_Internals.md)**
+> - **[Part 2: Advanced Concurrency & Hooks (This Document)](./React_Deep_Dive_Advanced.md)**
+> - **[Part 3: Interview Grill Questions & Timing Cheat Sheet](./React_Deep_Dive_Cheat_Sheet.md)**
+
 ---
 
 ## Table of Contents
@@ -856,5 +864,6 @@ graph TD
 
 ### Navigation:
 
+- **[Back: React Layout & General Internals](./index.md)**
 - **[Back: Core Engine & Architecture (Part 1)](./React_Deep_Dive_Internals.md)**
 - **[Next: Interview Grill Questions & Timing Cheat Sheet (Part 3)](./React_Deep_Dive_Cheat_Sheet.md)**

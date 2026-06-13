@@ -1,5 +1,12 @@
 # React Deep Dive: Grill Questions & Timing Cheat Sheet
 
+> [!NOTE]
+> This document is part of our **React Deep Dive Series**. Navigate the deep dives here:
+> - **[React Layout & General Internals](./index.md)**
+> - **[Part 1: Core Engine & Architecture](./React_Deep_Dive_Internals.md)**
+> - **[Part 2: Advanced Concurrency & Hooks](./React_Deep_Dive_Advanced.md)**
+> - **[Part 3: Interview Grill Questions & Timing Cheat Sheet (This Document)](./React_Deep_Dive_Cheat_Sheet.md)**
+
 ---
 
 ## Table of Contents
@@ -439,5 +446,6 @@ This pattern is commonly used in high-performance scrolling libraries and animat
 
 ### Navigation:
 
+- **[Back: React Layout & General Internals](./index.md)**
 - **[Back: Core Engine & Architecture (Part 1)](./React_Deep_Dive_Internals.md)**
 - **[Back: Advanced Concurrency, Hooks & Telemetry (Part 2)](./React_Deep_Dive_Advanced.md)**

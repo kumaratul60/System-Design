@@ -450,7 +450,7 @@ For a comprehensive understanding of React's architecture, follow this deep dive
 - **[React Deep Dive: Core Engine & Architecture (Part 1)](../Questions/Detailed/ReactInternals/React_Deep_Dive_Internals.md)**: `useRef` stable instance storage, Virtual DOM reconciliation (Myers vs Zhang-Shasha algorithms), recursive Stack vs Concurrent Fiber, rendering pipeline (Render/Commit/Paint), state management quirks, `useSyncExternalStore` subscription tearing, and tricky hooks.
 - **[React Deep Dive: Advanced Concurrency & Hooks (Part 2)](../Questions/Detailed/ReactInternals/React_Deep_Dive_Advanced.md)**: Deep hook mechanics (circular update queue, eager bailouts, WorkTags), transition interruption, 32-bit bitmask Lanes priorities, bubbled-up `childLanes`, React 19 compiler integration, Actions and `useOptimistic` engine, selective hydration, and system telemetry auditing.
 - **[React Deep Dive: Grill Questions & Timing Cheat Sheet (Part 3)](../Questions/Detailed/ReactInternals/React_Deep_Dive_Cheat_Sheet.md)**: 14 Consolidated Senior/Staff level "Grill" questions, Internals quick-reference flags matrix, timing API differences, Event Loop execution stages, and high-performance Double-rAF animation synchronization pattern.
-- **[React Deep Dive: Consolidated Grill Questions](../Questions/Detailed/ReactInternals/ReactGeneral.md)**: Nuances on Ref accuracy, reference equality, and lifecycle leaks.
+- **[React Deep Dive: Consolidated Grill Questions](../Questions/Detailed/ReactInternals/index.md)**: Nuances on Ref accuracy, reference equality, and lifecycle leaks.
 
 ---
 

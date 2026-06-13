@@ -10,6 +10,14 @@ The answers to all of these questions live in React's internals—specifically, 
 
 This guide takes you on a complete journey through React's rendering engine. We start with why the original Stack Reconciler had to be replaced, move through every stage of the Fiber architecture, and end with a deep understanding of the Commit Phase and how effects are run. By the end, you'll have a mental model that makes React's behaviour feel predictable and not magical.
 
+> [!NOTE]
+> This document is part of our **React Deep Dive Series**. Navigate the deep dives here:
+>
+> - **[React Layout & General Internals](./index.md)**
+> - **[Part 1: Core Engine & Architecture (This Document)](./React_Deep_Dive_Internals.md)**
+> - **[Part 2: Advanced Concurrency & Hooks](./React_Deep_Dive_Advanced.md)**
+> - **[Part 3: Interview Grill Questions & Timing Cheat Sheet](./React_Deep_Dive_Cheat_Sheet.md)**
+
 ---
 
 ## Table of Contents
@@ -75,6 +83,7 @@ This guide takes you on a complete journey through React's rendering engine. We 
         - [Anatomy of React's Render Phase (Flowchart)](#anatomy-of-reacts-render-phase-flowchart)
         - [1. `beginWork`](#1-beginwork)
         - [2. `completeWork`](#2-completework)
+        - [Why This Matters:](#why-this-matters)
       - [Phase 2: Commit (Synchronous \& Uninterruptible)](#phase-2-commit-synchronous--uninterruptible)
         - [1. How the Effects List is Compiled (Bottom-Up)](#1-how-the-effects-list-is-compiled-bottom-up)
         - [2. The Commit Phase Execution Loops](#2-the-commit-phase-execution-loops)
@@ -1070,6 +1079,12 @@ beginWork    ──► Decides what changes are needed (creates/reuses child fib
 completeWork ──► Finalizes the fiber, instantiates DOM nodes in memory, and queues side-effects in the form of a linked list (Effects List)
 ```
 
+##### Why This Matters:
+
+- **`React.memo` Short-Circuiting:** When a component bails out, `beginWork` skips evaluating the component _and_ reuses its entire child subtree as-is, short-circuiting the entire branch rather than just a single node.
+- **In-Memory DOM Creation:** By creating host DOM elements in memory during `completeWork` and storing them in `fiber.stateNode`, React ensures they are ready to be attached instantly and atomically during the Commit Phase.
+- **Interruptible Rendering:** Because the Render Phase only operates on the in-memory virtual DOM and Fiber tree (no real DOM touches occur here), React can safely pause, yield, discard, or restart rendering without leaving the UI in an inconsistent state.
+
 ---
 
 #### Phase 2: Commit (Synchronous & Uninterruptible)
@@ -1861,5 +1876,6 @@ Wrapping everything in memoization hooks is a common anti-pattern because **memo
 
 ### Navigation:
 
+- **[Back: React Layout & General Internals](./index.md)**
 - **[Next: Advanced Concurrency, Hooks & Telemetry (Part 2)](./React_Deep_Dive_Advanced.md)**
 - **[Next: Interview Grill Questions & Timing Cheat Sheet (Part 3)](./React_Deep_Dive_Cheat_Sheet.md)**
