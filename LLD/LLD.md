@@ -466,3 +466,21 @@ When evaluating LLD at senior and staff levels, focus switches from _"Do you kno
 > - If you store objects in a contiguous array (e.g., flat structures, primitives), fetching one element loads adjacent elements into the cache, speeding up sequential processing (data-oriented design).
 > - If you use reference-heavy object graphs (e.g., linked structures), the CPU suffers frequent cache misses because references point to random heap locations.
 > - **Staff Tip:** For high-throughput systems, keep active data flat and avoid deep pointer chasing.
+
+### Q4: When is `ref.current` guaranteed to be accurate, and why should you avoid reading it during the Render Phase?
+
+> **Answer:** `ref.current` is only guaranteed to be accurate during the **Layout Phase**, which occurs after DOM mutation but before the browser paint.
+>
+> **Deep Dive:** Reading a ref during the Render Phase is unreliable because the DOM element may not have been created or updated yet. React attaches refs synchronously during the Layout Phase, just before `useLayoutEffect` runs. For a detailed breakdown of this phase, see [React Internals](./Questions/Detailed/ReactInternals/index.md).
+
+### Q5: Why does React rely on reference equality for state updates, and what are the implications for performance?
+
+> **Answer:** React uses shallow comparison (reference equality) to detect state changes efficiently. If you mutate an object directly, its reference remains the same, and React may skip re-rendering because it doesn't "see" a change.
+>
+> **Staff Insight:** This design enables extremely fast optimizations like `React.memo` and `useMemo`. Instead of deep-comparing large object trees (expensive), React just checks if the memory address has changed (cheap). Creating new objects via the spread operator is the "signal" React needs to update.
+
+### Q6: If a `useEffect` with `[]` deps fires 3 times in development, where is the 3rd call coming from?
+
+> **Answer:** React 18 `StrictMode` explains the first 2 calls (mount → unmount → remount). The **3rd call** is a massive hint of a "lifecycle leak." It usually means a state update inside your effect is triggering a parent re-render that resets your component's `key` or recreates it entirely.
+>
+> **Cracked Dev Tip:** Check for "prop instability"—if you're receiving non-memoized objects/functions from a parent that force a remount, or if you're updating a global store that triggers a top-level layout reset.
