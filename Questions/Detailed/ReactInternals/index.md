@@ -21,30 +21,30 @@ The Commit Phase is executed across four sequential sub-phases in a strict order
 
 ```mermaid
 graph TD
-    subgraph Render Phase (Interruptible, Async)
-        R[WorkLoop / Fiber Tree Reconciliation]
+
+    subgraph "Render Phase (Interruptible, Async)"
+        R["WorkLoop / Fiber Tree Reconciliation"]
     end
 
-    subgraph Commit Phase (Synchronous, Blocking)
-        R --> BM["1. Before Mutation Phase<br>(getSnapshotBeforeUpdate)"]
-        BM --> M["2. Mutation Phase<br>(Deletions ➔ Placements ➔ Updates)"]
-        M --> L["3. Layout Phase<br>(useLayoutEffect, Ref attachments)"]
+    subgraph "Commit Phase (Synchronous, Blocking)"
+        R --> BM["1. Before Mutation Phase<br/>getSnapshotBeforeUpdate"]
+        BM --> M["2. Mutation Phase<br/>Deletions → Placements → Updates"]
+        M --> L["3. Layout Phase<br/>useLayoutEffect, Ref Attachments"]
     end
 
-    L --> P["🎨 UI UPDATED (Browser Paints)"]
+    L --> P["UI Updated (Browser Paints)"]
 
-    subgraph Passive Effects (Asynchronous, Non-blocking)
-        P --> PE["4. Passive Effects Phase<br>(useEffect callbacks)"]
+    subgraph "Passive Effects (Async, Non-blocking)"
+        P --> PE["4. Passive Effects Phase<br/>useEffect Callbacks"]
     end
 
-    style R fill:#fff8db,stroke:#dda15e,stroke-width:2px
-    style BM fill:#ffe3e3,stroke:#e63946,stroke-width:2px
-    style M fill:#eaf4f4,stroke:#457b9d,stroke-width:2px
-    style L fill:#f1e9f7,stroke:#8338ec,stroke-width:2px
-    style P fill:#f7f7f7,stroke:#333,stroke-width:2px,stroke-dasharray: 5 5
-    style PE fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style R fill:#FEF3C7,stroke:#D97706,stroke-width:3px,color:#111827
+    style BM fill:#FEE2E2,stroke:#DC2626,stroke-width:3px,color:#111827
+    style M fill:#DBEAFE,stroke:#2563EB,stroke-width:3px,color:#111827
+    style L fill:#EDE9FE,stroke:#7C3AED,stroke-width:3px,color:#111827
+    style P fill:#F3F4F6,stroke:#374151,stroke-width:3px,color:#111827,stroke-dasharray:5 5
+    style PE fill:#DCFCE7,stroke:#16A34A,stroke-width:3px,color:#111827
 ```
-
 
 ---
 
@@ -53,26 +53,33 @@ graph TD
 From the start of a render to the final visual paint, React follows a strict, step-by-step chronological pipeline:
 
 ### 1. Render Phase (Async & Interruptible)
+
 - React calculates what should change (Virtual DOM reconciliation). This is pure and has no visible side effects.
 
 ### 2. Before Mutation Phase (Sync & Blocking)
+
 - React's last chance to read the DOM before it changes. Runs `getSnapshotBeforeUpdate` on class components.
 
 ### 3. DOM Mutation (Sync & Blocking)
+
 - React applies mutations (deletions, placements, and updates) directly to the browser DOM.
 
 ### 4. Ref Attachment (Sync & Blocking)
+
 - DOM element references are attached to the `.current` property of `useRef` objects.
 
 ### 5. `useLayoutEffect` Callbacks (Sync & Blocking)
+
 - **Timing:** Runs synchronously after DOM mutations but **before** the browser paints.
 - **Execution Order:** Cleanup functions from the previous render run first, then the new `useLayoutEffect` callbacks fire. They run in **child-first, parent-last** order.
 - **Blocking:** The browser cannot paint until these callbacks complete. Heavy work here will delay what the user sees.
 
 ### 6. Browser Paint
+
 - The browser calculates layout geometries (reflow) and paints the updated pixels onto the screen.
 
 ### 7. `useEffect` (Passive Effects - Async & Non-blocking)
+
 - Runs asynchronously after the browser has painted. Ideal for side effects that don't affect layout (e.g., API calls, subscriptions, logging).
 
 ---
@@ -225,7 +232,7 @@ graph TD
 
 ---
 
-## 🧠 Reference Equality & Immutability
+## Reference Equality & Immutability
 
 If JavaScript compared objects by value, React would have been designed very differently. React relies on **Reference Equality** to determine when to re-render.
 

@@ -208,6 +208,8 @@ Choosing a communication strategy is about managing **State**, **Latency**, and 
 
 ## Interview Deep Dive: From Basic to Staff Level
 
+- **[Communication Q&A Guide (15 Core Questions)](./Communication_QA.md):** Detailed explanations covering Short/Long Polling, WebSockets, Server-Sent Events (SSE), and Webhooks.
+
 ### 🟢 Basic (Junior / Mid Level)
 
 **Q: What is the main difference between Short Polling and Long Polling?**

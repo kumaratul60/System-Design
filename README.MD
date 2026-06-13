@@ -49,7 +49,8 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── Webhooks/                # Server-to-server POST callbacks
 │   ├── ServerSentEvent/         # Unidirectional streaming (SSE)
 │   ├── WebSocket/               # Full-duplex bidirectional streams
-│   └── WebRTC.md                # Peer-to-peer real-time connection
+│   ├── WebRTC.md                # Peer-to-peer real-time connection
+│   └── Communication_QA.md      # 15 Core Communication Q&A Guide
 ├── Networking/                  # API Architectural Styles
 │   ├── RestAPI/                 # Standard REST implementation
 │   ├── Graphql/                 # Schema-driven query language
@@ -65,7 +66,8 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── XSS/                     # Cross-Site Scripting & CSP
 │   ├── CSRF.md                  # Detailed CSRF Mitigations
 │   ├── SSRF&JI.md               # SSRF, Injection & XXE
-│   └── Compliance&Regulations.md # GDPR, HIPAA, SOC 2
+│   ├── Compliance&Regulations.md # GDPR, HIPAA, SOC 2
+│   └── Security_QA.md           # 33 Core Security Q&A Guide
 ├── Performance/                 # Web Performance Optimization
 │   ├── Metrics/                 # Web Vitals (LCP, FID/INP, CLS) & measurement
 │   ├── Assets/                  # Image & font optimization
@@ -117,7 +119,7 @@ Full-stack storage and caching strategies. Covers PACELC database selection, dis
 
 ### 4. [Communication Strategies](./Communication/README.md)
 
-Explore how services talk to each other. Includes a decision tree for choosing between WebSockets, SSE, Webhooks, and Polling based on real-time requirements and scalability.
+Explore how services talk to each other. Includes a decision tree for choosing between WebSockets, SSE, Webhooks, and Polling based on real-time requirements and scalability. Access the [15 Core Communication Q&A Guide](./Communication/Communication_QA.md) directly.
 
 ### 5. [Networking Protocols](./Networking/README.md)
 
@@ -135,6 +137,7 @@ Comprehensive coverage of web and architectural security:
 - **Attack Mitigations:** In-depth guides on XSS, CSRF (vulnerabilities and tokens), SSRF, and SQLi.
 - **Architecture:** Zero Trust, OAuth2/OIDC, and secure JWT management.
 - **Compliance:** Practical insights into GDPR, SOC 2, and HIPAA.
+- **Interview Q&A:** [33 Core Security Q&A Guide](./Security/Security_QA.md) covering web-security vulnerabilities, headers, and compliance.
 
 ### 7. [Performance Optimization](./Performance/README.md)
 

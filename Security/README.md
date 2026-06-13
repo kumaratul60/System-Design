@@ -126,6 +126,7 @@ Security is the art of "Informed Friction." You are choosing where to place the 
 
 Ready to test your knowledge or preparing for a Staff/Architect role?
 
+- **[Security Q&A Guide (33 Core Questions)](./Security_QA.md):** Detailed explanations covering XSS, CSRF, Clickjacking, Headers, Auth, HTTPS, Dependencies, and Compliance.
 - **[Security Architect Interview Grill](../Questions/Detailed/Security_Architect.md):** High-level architectural challenges and "grill" style questions.
 
 ---
