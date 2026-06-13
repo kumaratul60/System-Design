@@ -373,6 +373,8 @@ Managing global application data states requires selecting appropriate library p
 
 ## Part 3: Senior/Staff Level "Grill" Questions
 
+- **[Database & Caching Q&A Guide (21 Core Questions)](./Database_Caching_QA.md):** Detailed explanations covering frontend normalization, HTTP caching headers, Service Worker proxies, API query caching, state management, LocalStorage, SessionStorage, Cookie security, and IndexedDB integrations.
+
 ### Q1: ETag vs. Last-Modified—which should be preferred for visual resources?
 
 > **Answer:** **ETag** is preferred. `Last-Modified` has a 1-second resolution limit. If an asset is modified multiple times in a single second, the modification timestamp will not capture it. Additionally, if an asset is touched/re-saved without content alterations, `Last-Modified` triggers a cache invalidation, whereas ETags recognize the matching file hash and return `304 Not Modified`.

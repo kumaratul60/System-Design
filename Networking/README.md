@@ -65,6 +65,8 @@ Choosing a networking style isn't about "which is better," but "which trade-offs
 
 ## The Unified Networking "Grill"
 
+- **[Networking Q&A Guide (28 Core Questions)](./Networking_QA.md):** Detailed explanations covering internet fundamentals, HTTP methods, RESTful principles, GraphQL schemas/batching, and gRPC Protocol Buffers over HTTP/2.
+
 ### Q1: What are the "8 Fallacies of Distributed Computing" and which one hurts APIs the most?
 
 > **Answer:** The most dangerous fallacy is **"Latency is zero."**
