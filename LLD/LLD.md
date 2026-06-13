@@ -482,7 +482,7 @@ When evaluating LLD at senior and staff levels, focus switches from _"Do you kno
 
 > **Answer:** `ref.current` is only guaranteed to be accurate during the **Layout Phase**, which occurs after DOM mutation but before the browser paint.
 >
-> **Deep Dive:** Reading a ref during the Render Phase is unreliable because the DOM element may not have been created or updated yet. React attaches refs synchronously during the Layout Phase, just before `useLayoutEffect` runs. For a detailed breakdown of this phase, see [React Internals](./Questions/Detailed/ReactInternals/index.md).
+> **Deep Dive:** Reading a ref during the Render Phase is unreliable because the DOM element may not have been created or updated yet. React attaches refs synchronously during the Layout Phase, just before `useLayoutEffect` runs. For a detailed breakdown of this phase, see [React Internals](file:///Users/atulkumarawasthi/projects/SystemDesign/Questions/Detailed/ReactInternals/index.md).
 
 ### Q5: Why does React rely on reference equality for state updates, and what are the implications for performance?
 

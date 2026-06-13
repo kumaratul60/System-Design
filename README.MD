@@ -228,3 +228,5 @@ We welcome contributions from the community! Whether you are fixing bugs, improv
 - **JavaScript in Depth:** [kumaratul60/javascript-interview](https://github.com/kumaratul60/javascript-interview)
 - **System Design:** [kumaratul60/System-Design](https://github.com/kumaratul60/System-Design)
 - **Online JavaScript Editor:** [Runlet Practice Environment](https://runlet.vercel.app)
+- **Frontend-Lab:** [Practice Machine Coding Questions](https://fe-battle.vercel.app)
+- **React Playground:** [Practice pure React JS, HTML, and CSS (write component tests without libraries)](https://fe-battle.vercel.app/interview/playground)
