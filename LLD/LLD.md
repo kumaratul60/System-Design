@@ -20,7 +20,7 @@ graph TD
 
 An **Element** is the most atomic, immutable building block in a system.
 
-- **In UI Frameworks (e.g., React):** An element is a plain JavaScript object describing a DOM node or a component instance. It has no lifecycle, is extremely cheap to create, and is destroyed/recreated on every render.
+- **In UI Frameworks:** An element is a plain object describing a UI node or a component instance. It has no lifecycle, is extremely cheap to create, and is destroyed/recreated on every update.
 - **In Systems/OOP:** An element is a primitive unit—a single function, a data structure, or an individual value type (e.g., a coordinate class, an enum).
 - **Key Characteristic:** Elements are stateless blueprints. They describe _what_ should exist, not _how_ it behaves over time.
 
@@ -28,7 +28,7 @@ An **Element** is the most atomic, immutable building block in a system.
 
 A **Component** is a self-contained, reusable module that encapsulates structure, behavior, and state.
 
-- **In UI Frameworks:** A component is a function or class that accepts inputs (props), maintains internal state, manages a lifecycle (mount, update, unmount), and returns elements.
+- **In UI Frameworks:** A component is a function or class that accepts inputs, maintains internal state, manages a lifecycle (mount, update, unmount), and returns elements.
 - **In Systems/OOP:** A component is a package, service, class hierarchy, or library module (e.g., a `PaymentProcessor`, a `DatabaseConnector`).
 - **Key Characteristic:** Components have lifecycles, hold state, and expose APIs. They are the active agents in your system.
 
@@ -440,6 +440,17 @@ _Focus: Setting architectural standards, lock-free engine design, metamodeling, 
 1. **Custom DSL Rules Engine:** Design a text-based rules parser (e.g., `IF user.age > 18 AND user.country == 'US' THEN ALLOW`) that compiles into executable AST nodes.
 2. **Lock-Free Concurrent Queue:** Write a lock-free queue using CAS, and verify its correctness under high thread contention.
 3. **Plugin-Driven Extensible Web Gateway:** Design a gateway where routing, logging, and rate-limiting modules are dynamically loaded, isolated, and updated at runtime.
+
+---
+
+## 🚀 React Deep Dive: Core Internals
+
+For a comprehensive understanding of React's architecture, follow this deep dive series:
+
+- **[React Deep Dive: Core Engine & Architecture (Part 1)](../Questions/Detailed/ReactInternals/React_Deep_Dive_Internals.md)**: `useRef` stable instance storage, Virtual DOM reconciliation (Myers vs Zhang-Shasha algorithms), recursive Stack vs Concurrent Fiber, rendering pipeline (Render/Commit/Paint), state management quirks, `useSyncExternalStore` subscription tearing, and tricky hooks.
+- **[React Deep Dive: Advanced Concurrency & Hooks (Part 2)](../Questions/Detailed/ReactInternals/React_Deep_Dive_Advanced.md)**: Deep hook mechanics (circular update queue, eager bailouts, WorkTags), transition interruption, 32-bit bitmask Lanes priorities, bubbled-up `childLanes`, React 19 compiler integration, Actions and `useOptimistic` engine, selective hydration, and system telemetry auditing.
+- **[React Deep Dive: Grill Questions & Timing Cheat Sheet (Part 3)](../Questions/Detailed/ReactInternals/React_Deep_Dive_Cheat_Sheet.md)**: 14 Consolidated Senior/Staff level "Grill" questions, Internals quick-reference flags matrix, timing API differences, Event Loop execution stages, and high-performance Double-rAF animation synchronization pattern.
+- **[React Deep Dive: Consolidated Grill Questions](../Questions/Detailed/ReactInternals/ReactGeneral.md)**: Nuances on Ref accuracy, reference equality, and lifecycle leaks.
 
 ---
 

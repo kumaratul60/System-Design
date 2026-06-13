@@ -17,4 +17,4 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ## 📚 Detailed Documentation
 
-- [React Internals](./Questions/Detailed/ReactInternals/index.md) — A deep dive into the Layout Phase, `useEffect` lifecycles, and Reference Equality.
+- [React Internals](../Questions/Detailed/ReactInternals/index.md) — A deep dive into the Layout Phase, `useEffect` lifecycles, and Reference Equality.
