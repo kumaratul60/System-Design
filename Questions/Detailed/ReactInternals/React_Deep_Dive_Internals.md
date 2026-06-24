@@ -1852,23 +1852,33 @@ return <div ref={measuredRef}>Height is {height}px</div>;
 
 ---
 
-### Q3: The Cost of Over-Memoization (`useCallback` / `useMemo` Anti-Patterns)
+### Q3: The Cost of Over-Memoization (`useCallback` / `useMemo` / `React.memo` Anti-Patterns)
 
-**Question:** Many developers wrap every single callback function in `useCallback` and every array/object in `useMemo` "just in case." Explain the hidden performance costs of doing this, and when it actually behaves as a de-optimization.
+**Question:** Many developers wrap every single callback function in `useCallback`, every array/object in `useMemo`, and every component in `React.memo` "just in case." Explain the hidden performance costs of doing this, and when it actually behaves as a de-optimization.
 
 **Answer:**
-Wrapping everything in memoization hooks is a common anti-pattern because **memoization is not free**.
+Wrapping everything in memoization hooks is a common anti-pattern because **memoization is not free**. It consumes memory for caching, runs comparison checks on every render, and adds hook overhead.
 
-1. **The Overhead of Hooks:** Both `useCallback` and `useMemo` are functions that React must execute on every render. They require allocating memory for the hook instance, defining dependency arrays, and doing a shallow comparison (shallow equality check) of every dependency on every single render.
-2. **Double Function Allocation:** Writing `const onClick = useCallback(() => { ... }, [])` still allocates a new function object on _every_ render inside the component body, which is then passed to the hook. The hook simply discards it if the dependency array hasn't changed. Therefore, you are doing double allocation plus dependency checking.
-3. **Useless Memoization:** If a child component does not use `React.memo` to guard against re-renders, passing a `useCallback` handler to it is completely useless. The child will re-render anyway when the parent re-renders, making the dependency comparison in `useCallback` wasted CPU work.
+#### 1. The Cost of `useCallback`
+Writing `const onClick = useCallback(() => { ... }, [])` does NOT prevent the callback from being created. A new function is still allocated in memory on every render inside the component body, then immediately discarded by the hook if dependencies haven't changed.
+* **`useCallback` is ONLY worth keeping if:**
+  1. **Passed to a `React.memo` child:** The function is passed as a prop to a child component wrapped in `React.memo` (otherwise, the child re-renders anyway, making the reference check useless).
+  2. **Used as a dependency:** The function is a dependency of another hook (e.g., inside a `useEffect`, `useMemo`, or another `useCallback`'s dependency array) to prevent infinite loops or redundant executions.
+  3. **Passed to custom hooks** that internally track its reference as a dependency.
 
-**When to actually use them:**
+#### 2. The Cost of `useMemo`
+`useMemo` requires storing the dependency array and the previous value in memory, and running a shallow equality comparison on every render.
+* **`useMemo` is ONLY worth keeping if:**
+  1. **Expensive Computations:** The calculation is genuinely heavy (e.g., filtering, sorting, or mapping thousands of objects, or executing complex algorithms). Basic operations (like simple arithmetic, mapping a small array, or object creation) are much faster to re-compute than the overhead of hook lookup and dependency checking.
+  2. **Maintaining Referential Identity:** You are passing an object or array as a dependency to another hook (like `useEffect` or `useMemo`), or as a prop to a `React.memo` child component.
+  3. **Custom Hook Exports:** Ensuring the custom hook returns referentially stable non-primitive data.
 
-- **Only use `useCallback` / `useMemo` when:**
-  1. The value or callback is passed to a child component that is wrapped in `React.memo` (so the reference stability actually prevents a render).
-  2. The value or callback is used as a dependency in another hook (e.g., in a `useEffect` or `useMemo` dependency array).
-  3. The computation is genuinely expensive (e.g., filtering/sorting a large array of objects). A simple map or basic mathematical calculation is faster to calculate than comparing dependencies.
+#### 3. The Cost of `React.memo`
+`React.memo` performs a shallow equality check on all props before deciding to skip rendering.
+* **`React.memo` is ONLY worth keeping if:**
+  1. **Frequent Re-renders with Stable Props:** The component re-renders frequently with the *exact same* props (e.g., a list item in a list where only one item updates at a time).
+  2. **Heavy Render Subtree:** The component has a heavy render tree (lots of children or complex DOM structure). Memoizing a trivial component (e.g., a simple button or text label) is a de-optimization because the overhead of running `shallowEqual` on props is more expensive than the render itself.
+  3. **Combined with Reference Stability:** All non-primitive props passed to the component (functions, objects, arrays) must be referentially stable (via `useCallback`/`useMemo` or declared outside the component). Otherwise, the shallow check will always fail, and `React.memo` will run its checks in vain on every render.
 
 ---
 

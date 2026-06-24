@@ -284,29 +284,93 @@ This simple behavior enables extremely fast performance checks in:
 
 ## 🕵️ The Triple API Call Mystery
 
-You have a `useEffect` with an empty dependency array `[]`. In development, you expect 1 call, but you see **3 API calls** in the network tab. Why?
+You have a `useEffect` and in development, you expect 1 call, but you see **3 network requests** or **3 API calls** in your browser's network tab or logs. Why?
 
-### The Breakdown: 1 ➔ 2 ➔ 3
+### The Logically Flawed Explanation (Why simple "remounting" doesn't explain 3 calls)
 
-#### Call 1 & 2: React 18 StrictMode
+It is a common misconception that a third call is simply caused by the component unmounting and remounting a third time (e.g., due to parent state updates, non-memoized props, or key resets). Under React 18+ `StrictMode` in development:
 
-React 18's `StrictMode` intentionally double-invokes effects in development to ensure your cleanup logic is correct.
+- Every mount triggers a double-invocation of the effect (Mount ➔ Unmount ➔ Mount).
+- If your component actually unmounted and remounted a second time, it would double-mount again, resulting in **4 API calls** (2 from the first mount + 2 from the second mount), not 3!
 
-- **Call 1:** Initial mount.
-- **Call 2:** React unmounts and remounts the component instantly.
+So, how do we get exactly **3** calls? There are two main actual reasons:
 
-#### Call 3: The "Leak" in Data Flow
+### Actual Cause 1: CORS Preflight (OPTIONS) + StrictMode (Most Common)
 
-If you see a **third** call, it's not React 18 being "extra." It's a signal that your component is being unmounted and remounted a **third time** due to an external trigger.
+If your API call is cross-origin (CORS), the browser must send a preflight `OPTIONS` request before sending the actual `GET`/`POST` request to verify server permissions.
 
-### Common Culprits for the 3rd Call:
+Under `StrictMode` in development, React mounts, unmounts, and remounts your component, running your `useEffect` twice. This sequence of events results in exactly **3 network requests** appearing in the browser's Network tab:
 
-1. **State Uplifting Loops:** `useEffect` calls `setData()`, which updates a parent component's state, causing the parent to re-render and potentially recreate your component (e.g., if a `key` prop changes).
-2. **Key Prop Resets:** A parent component is resetting the `key` prop of your component, forcing a full destroy/rebuild.
-3. **Non-Memoized Props:** You are receiving a function or object prop that is recreated on every render in the parent, and that prop is used in a way that triggers a remount.
-4. **Context Providers:** An external provider or custom hook is firing a separate update that forces your component to re-initialize.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Browser as Browser Network Tab
+    participant React as React (StrictMode)
+    participant Server as API Server (CORS)
 
-**The Fix:** Check your parent re-renders and ensure you aren't accidentally triggering a "reset" of your component's lifecycle.
+    Note over React: 1. INITIAL MOUNT
+    React->>React: Mounts Component (Effect runs)
+    React->>Browser: fetch('/api/data') (Call 1)
+
+    activate Browser
+    Browser->>Server: OPTIONS /api/data (Preflight Request)
+    Server-->>Browser: 200 OK (CORS Headers allowed)
+    Browser->>Server: GET /api/data (Actual Request 1)
+    Server-->>Browser: Response Data
+    deactivate Browser
+
+    Note over React: 2. STRICTMODE UNMOUNT
+    React->>React: Simulates Unmount (Cleanup runs)
+
+    Note over React: 3. SECOND MOUNT (Remount)
+    React->>React: Re-mounts Component (Effect runs again)
+    React->>Browser: fetch('/api/data') (Call 2)
+
+    activate Browser
+    Note over Browser: Preflight OPTIONS is cached in the browser!
+    Browser->>Server: GET /api/data (Actual Request 2)
+    Server-->>Browser: Response Data
+    deactivate Browser
+
+    Note over Browser, Server: Total requests in Network tab:<br/>1. OPTIONS (Preflight)<br/>2. GET (Call 1)<br/>3. GET (Call 2)
+```
+
+In your browser's Network tab, this displays exactly **3 network requests** for a single component mount!
+
+### Actual Cause 2: Non-Empty Dependency Array with a Post-Mount Update
+
+If your `useEffect` is **not** using an empty dependency array `[]`, but instead has dependencies (e.g., `[id]`), then:
+
+1. **Call 1 & 2:** React's `StrictMode` double-mounts the component on load, firing the effect twice with the initial value of `id`.
+2. **Call 3:** Shortly after mounting, the parent component updates or the state changes, causing `id` to change (e.g., from `undefined` or `null` to a valid value). This triggers the effect to run a third time.
+
+### Actual Cause 3: Multiple Instances of the Component
+
+If you have multiple instances of the component on the page:
+
+- If StrictMode is disabled, rendering 3 instances of the component will trigger 3 API calls (1 for each mount).
+- If StrictMode is enabled, rendering 2 instances would trigger 4 API calls. However, if one instance is mounted initially, and a second one is mounted conditionally later _without_ StrictMode, or under some complex lazy-loading behavior, you might see odd numbers of calls.
+
+### 🛠️ How to Handle It
+
+1. **Write Idempotent Cleanup Logic:** Always use `AbortController` in your cleanup function to cancel pending fetch requests. This ensures that even if React mounts the component twice, the browser aborts the first request:
+
+   ```javascript
+   useEffect(() => {
+     const controller = new AbortController();
+
+     fetch('/api/data', { signal: controller.signal })
+       .then((res) => res.json())
+       .then((data) => setData(data))
+       .catch((err) => {
+         if (err.name !== 'AbortError') console.error(err);
+       });
+
+     return () => controller.abort(); // Cancels the request if unmounted
+   }, [id]);
+   ```
+
+2. **Use Data Fetching Libraries:** Libraries like **TanStack Query (React Query)** or **SWR** handle request deduplication and caching out of the box, preventing duplicate calls during rapid remounts.
 
 ---
 
