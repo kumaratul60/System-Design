@@ -15,6 +15,77 @@ Unlike the Render Phase, the Commit Phase is **synchronous and blocking**. Once 
 
 ---
 
+## 🗺️ The Complete React Rendering Pipeline (End-to-End)
+
+From calling `setState` to updating pixels on the screen, here is the complete 13-step journey of React's cooperative rendering engine:
+
+```mermaid
+graph TD
+    %% 1. TRIGGER & SCHEDULING
+    subgraph TriggerSched["1. Trigger & Scheduling (Lanes)"]
+        A["setState() / Trigger Update"] --> B["Assign Update to a Lane<br/>(SyncLane / DefaultLane / TransitionLane)"]
+        B --> C["Bubble childLanes Bitmask Up to Root Fiber"]
+    end
+
+    %% 2. RENDER PHASE
+    subgraph RenderPhase["2. Render Phase (Async, Interruptible)"]
+        C --> D["Start workLoop & DFS Traversal"]
+        D --> E["beginWork()<br/>(Evaluate changes, reconcile children)"]
+        E --> F{"React.memo / lanes check:<br/>Props stable? (fiber.lanes & renderLanes) === 0?"}
+
+        F -- "Yes (Bailout)" --> G["Skip entire child subtree<br/>(O(1) optimization)"]
+        F -- "No (Render)" --> H["Evaluate component &<br/>create/update child fibers"]
+
+        G --> I{"shouldYield()?<br/>(Check 5ms time slice)"}
+        H --> I
+
+        I -- "Yes (Yield)" --> J["Pause workInProgress pointer<br/>& Yield thread to Browser"]
+        J -- "Next Frame" --> D
+
+        I -- "No" --> K["completeWork()<br/>(DFS Ascent)"]
+        K --> L["Create DOM elements in-memory<br/>& bubble subtreeFlags up"]
+    end
+
+    %% 3. COMMIT PHASE
+    subgraph CommitPhase["3. Commit Phase (Sync, Blocking, Uninterruptible)"]
+        L --> M["Before Mutation Phase<br/>(Read DOM / getSnapshotBeforeUpdate)"]
+        M --> N["Mutation Phase (Write DOM)<br/>Children first: 1. Deletions ➔ 2. Placements ➔ 3. Updates"]
+        N --> O["Layout Phase (Sync)<br/>(Attach refs, run useLayoutEffect)"]
+    end
+
+    %% 4. BROWSER PAINT & PASSIVE EFFECTS
+    subgraph PaintEffects["4. Browser Paint & Passive Effects"]
+        O --> P["Browser Paint<br/>(Style Recalculation ➔ Reflow ➔ Rasterize)"]
+        P --> Q["Pixel is visible on screen"]
+        Q --> R["Passive Effects Phase (Async)<br/>(1. Cleanup previous useEffect ➔ 2. Run new callback)"]
+    end
+
+    %% Styling
+    style A fill:#DBEAFE,stroke:#2563EB,stroke-width:2px,color:#1e3a8a
+    style B fill:#DBEAFE,stroke:#2563EB,stroke-width:1px,color:#1e3a8a
+    style C fill:#DBEAFE,stroke:#2563EB,stroke-width:1px,color:#1e3a8a
+
+    style D fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#78350f
+    style E fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#78350f
+    style F fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#7f1d1d
+    style G fill:#D1FAE5,stroke:#10B981,stroke-width:1px,color:#064e3b
+    style H fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#78350f
+    style I fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#7f1d1d
+    style J fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#4c1d95
+    style K fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#78350f
+    style L fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#78350f
+
+    style M fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#7f1d1d
+    style N fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#7f1d1d
+    style O fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#7f1d1d
+
+    style P fill:#EDE9FE,stroke:#7C3AED,stroke-width:2px,color:#4c1d95
+    style Q fill:#D1FAE5,stroke:#10B981,stroke-width:2px,color:#064e3b
+    style R fill:#D1FAE5,stroke:#10B981,stroke-width:2px,color:#064e3b
+```
+
+---
+
 ## 🚀 The Commit Phase Pipeline
 
 The Commit Phase is executed across four sequential sub-phases in a strict order:

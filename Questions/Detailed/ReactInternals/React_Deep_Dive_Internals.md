@@ -85,7 +85,7 @@ This guide takes you on a complete journey through React's rendering engine. We 
         - [2. `completeWork`](#2-completework)
         - [Why This Matters:](#why-this-matters)
       - [Phase 2: Commit (Synchronous \& Uninterruptible)](#phase-2-commit-synchronous--uninterruptible)
-        - [1. How the Effects List is Compiled (Bottom-Up)](#1-how-the-effects-list-is-compiled-bottom-up)
+        - [1. The Evolution of Effect Management: effectList (Legacy) vs. subtreeFlags (Modern React 18+)](#1-the-evolution-of-effect-management-effectlist-legacy-vs-subtreeflags-modern-react-18)
         - [2. The Commit Phase Execution Loops](#2-the-commit-phase-execution-loops)
           - [2.1 Before Mutation Phase — Capturing the DOM Snapshot](#21-before-mutation-phase--capturing-the-dom-snapshot)
           - [2.2 Mutation Phase — Deletions, Placements, and Updates in Order](#22-mutation-phase--deletions-placements-and-updates-in-order)
@@ -100,6 +100,10 @@ This guide takes you on a complete journey through React's rendering engine. We 
       - [Why Not requestIdleCallback?](#why-not-requestidlecallback)
       - [The MessageChannel Work Loop](#the-messagechannel-work-loop)
         - [Why This Matters to Architects:](#why-this-matters-to-architects-1)
+      - [5. The Lanes Priority System: Bitmask Scheduling \& childLanes Propagation](#5-the-lanes-priority-system-bitmask-scheduling--childlanes-propagation)
+        - [The Lane Priorities](#the-lane-priorities)
+        - [childLanes Propagation (Bubbling Priorities Upward)](#childlanes-propagation-bubbling-priorities-upward)
+        - [The O(1) Subtree Skipping Optimization](#the-o1-subtree-skipping-optimization)
   - [4. Controlled vs Uncontrolled Components](#4-controlled-vs-uncontrolled-components)
   - [5. React Strict Mode](#5-react-strict-mode)
   - [6. React State Management Quirks: The Merge Trap, Batching, \& Derived State](#6-react-state-management-quirks-the-merge-trap-batching--derived-state)
@@ -137,7 +141,10 @@ This guide takes you on a complete journey through React's rendering engine. We 
   - [12. Component Logic Reuse: Custom Hooks vs. HOCs vs. Render Props \& Callback Refs](#12-component-logic-reuse-custom-hooks-vs-hocs-vs-render-props--callback-refs)
     - [Q1: The Evolution of Logic Reuse (Why Hooks Replaced HOCs \& Render Props)](#q1-the-evolution-of-logic-reuse-why-hooks-replaced-hocs--render-props)
     - [Q2: Callback Refs vs. `useRef`](#q2-callback-refs-vs-useref)
-    - [Q3: The Cost of Over-Memoization (`useCallback` / `useMemo` Anti-Patterns)](#q3-the-cost-of-over-memoization-usecallback--usememo-anti-patterns)
+    - [Q3: The Cost of Over-Memoization (`useCallback` / `useMemo` / `React.memo` Anti-Patterns)](#q3-the-cost-of-over-memoization-usecallback--usememo--reactmemo-anti-patterns)
+      - [1. The Cost of `useCallback`](#1-the-cost-of-usecallback)
+      - [2. The Cost of `useMemo`](#2-the-cost-of-usememo)
+      - [3. The Cost of `React.memo`](#3-the-cost-of-reactmemo)
     - [Navigation:](#navigation)
 
 ---
@@ -1091,22 +1098,25 @@ completeWork ──► Finalizes the fiber, instantiates DOM nodes in memory, an
 
 Once the Render phase finishes and the WorkInProgress tree is ready, React enters the **Commit phase**.
 
-The main challenge for the Commit phase is speed: it cannot yield, and it must update the DOM atomically. React solves this by consuming the **Effects List** (compiled during the `completeWork` step).
+The main challenge for the Commit phase is speed: it cannot yield, and it must update the DOM atomically. React solves this by consuming side-effect flags compiled during the Render Phase.
 
-##### 1. How the Effects List is Compiled (Bottom-Up)
+##### 1. The Evolution of Effect Management: effectList (Legacy) vs. subtreeFlags (Modern React 18+)
 
-Instead of re-analyzing or re-traversing the entire tree in the Commit phase, React uses the linear Effects List built during the `completeWork` ascent.
+Historically, React's reconciler compiled all Fibers with pending changes into a linear, flat linked list called the **Effects List** (linked by `firstEffect` ➔ `nextEffect` ➔ `lastEffect` pointers) during the `completeWork` step:
 
-During the Render Phase, the work loop executes DFS traversal via `performUnitOfWork`:
+- **Legacy Bottom-Up Construction (Pre-v18):**
+  - **`beginWork` (Pre-Order):** Evaluated top-down as React descends the tree.
+  - **`completeWork` (Post-Order):** Evaluated bottom-up starting at leaf nodes. Each parent Fiber collected its children's `effectList`, merged them, and appended its own effect tag to the end.
+  - **Root Finalization:** By the time the work loop returned to the root, a single, flat linked list of all dirty fibers was complete, letting the Commit phase entirely bypass clean fibers.
+  - **Why it was removed:** Managing a global linked list of effects was rigid and prone to bugs in Concurrent rendering (where work can be paused, discarded, or re-prioritized mid-flight).
 
-- **`beginWork` (Pre-Order):** Evaluated top-down as React descends the tree.
-- **`completeWork` (Post-Order):** Evaluated bottom-up as React ascends back up, starting at the deepest leaf nodes.
+- **Modern Subtree Flags (React 18+):**
+  - **`flags`:** A bitmask representing pending side-effects (e.g., `Placement`, `Update`, `Deletion`, `Passive`) on the node itself.
+  - **`subtreeFlags`:** A bitmask representing whether any descendant in the node's subtree has pending side-effects.
+  - **How it works:** During the `completeWork` ascent, React bubbles up the side-effect flags of child fibers to update their parent's `subtreeFlags`.
+  - **Commit Phase Traversal:** Instead of a flat list, React performs a selective tree-walking traversal. At every node, if `subtreeFlags` has no matching flags for the current phase, React immediately skips the entire subtree, achieving the same performance benefit of skipping clean subtrees without the overhead of a global linked list.
 
-Due to this post-order processing:
-
-- **Bottom-Up Construction:** The Effects List begins compilation at leaf nodes.
-- **Parent Collection:** Each parent Fiber node collects the Effects List of its children, merges them, and appends its own effect flag (if dirty) to the end of the list.
-- **Root Finalization:** By the time the work loop returns to the root fiber, a single, flat linked list of all fibers requiring side effects (and only those fibers) is complete. Clean fibers are entirely bypassed.
+Following this reconciliation pattern:
 
 ```mermaid
 graph TD
@@ -1295,6 +1305,51 @@ The Scheduler runs a loop that breaks large tasks into **Time Slices** (normally
 - **Large UI Scaling:** Explains why complex rendering subtrees do not block rendering and cause the page to freeze.
 - **Transition Internals:** Explains why `startTransition` behaves smoothly. It tags the states in a lower priority lane, allowing `shouldYield()` to interrupt rendering whenever higher priority tasks enter the queue.
 - **Concurrent Foundations:** Time Slicing is the technical foundation of Concurrent React; Concurrent Mode would be structurally impossible without cooperative yielding.
+
+---
+
+#### 5. The Lanes Priority System: Bitmask Scheduling & childLanes Propagation
+
+To coordinate multiple concurrent updates with different levels of urgency, React Fiber uses **Lanes**—a bitmask representation of priority levels.
+
+##### The Lane Priorities
+
+React defines 31 lanes, representing different categories of priority:
+
+1. **SyncLane:** Highest priority. Assigned to urgent user interactions that must feel instantaneous (e.g., clicks, keypresses, input changes).
+2. **InputContinuousLane:** For continuous user inputs that require smooth feedback (e.g., mouse hovering, scrolling, dragging).
+3. **DefaultLane:** For standard asynchronous updates (e.g., fetch request resolutions, timer completions).
+4. **TransitionLane:** Lowest priority. For transitions (`startTransition`) which are non-urgent UI updates (e.g., tab switching, filtering a list). These can be easily interrupted by any higher-priority lane.
+
+##### childLanes Propagation (Bubbling Priorities Upward)
+
+When `setState` is called on a component:
+
+1. React creates an update object and assigns it a specific **Lane** (e.g., `SyncLane` for a click event).
+2. React sets the corresponding bit on the component's Fiber `lanes` property.
+3. React then bubbles this priority up through the tree, setting the bit on every ancestor Fiber's **`childLanes`** property until it reaches the root (`FiberRoot`).
+
+```
+[Root Fiber] (childLanes: TransitionLane | SyncLane)
+     │
+     ▼ (child)
+[Parent Fiber] (childLanes: SyncLane)
+     │
+     ▼ (child)
+[Child Fiber] (lanes: SyncLane)  ◄── Update triggered here (setState)
+```
+
+##### The O(1) Subtree Skipping Optimization
+
+During the Render Phase, when the `workLoop` encounters a Fiber node:
+
+- React compares the node's `lanes` and `childLanes` bitmasks against the current `renderLanes` (the priority of the current render pass).
+- **If they do not intersect:**
+  ```javascript
+  (fiber.lanes & renderLanes) === 0 && (fiber.childLanes & renderLanes) === 0;
+  ```
+- **Result:** React knows that neither this component nor any of its descendants have pending updates for the current render pass.
+- **The Optimization:** React immediately skips the entire subtree in **$O(1)$ time** without traversing a single child. It simply returns the cached sibling of the current Fiber, bypassing millions of potential reconciliation checks.
 
 ---
 
@@ -1860,23 +1915,29 @@ return <div ref={measuredRef}>Height is {height}px</div>;
 Wrapping everything in memoization hooks is a common anti-pattern because **memoization is not free**. It consumes memory for caching, runs comparison checks on every render, and adds hook overhead.
 
 #### 1. The Cost of `useCallback`
+
 Writing `const onClick = useCallback(() => { ... }, [])` does NOT prevent the callback from being created. A new function is still allocated in memory on every render inside the component body, then immediately discarded by the hook if dependencies haven't changed.
-* **`useCallback` is ONLY worth keeping if:**
+
+- **`useCallback` is ONLY worth keeping if:**
   1. **Passed to a `React.memo` child:** The function is passed as a prop to a child component wrapped in `React.memo` (otherwise, the child re-renders anyway, making the reference check useless).
   2. **Used as a dependency:** The function is a dependency of another hook (e.g., inside a `useEffect`, `useMemo`, or another `useCallback`'s dependency array) to prevent infinite loops or redundant executions.
   3. **Passed to custom hooks** that internally track its reference as a dependency.
 
 #### 2. The Cost of `useMemo`
+
 `useMemo` requires storing the dependency array and the previous value in memory, and running a shallow equality comparison on every render.
-* **`useMemo` is ONLY worth keeping if:**
+
+- **`useMemo` is ONLY worth keeping if:**
   1. **Expensive Computations:** The calculation is genuinely heavy (e.g., filtering, sorting, or mapping thousands of objects, or executing complex algorithms). Basic operations (like simple arithmetic, mapping a small array, or object creation) are much faster to re-compute than the overhead of hook lookup and dependency checking.
   2. **Maintaining Referential Identity:** You are passing an object or array as a dependency to another hook (like `useEffect` or `useMemo`), or as a prop to a `React.memo` child component.
   3. **Custom Hook Exports:** Ensuring the custom hook returns referentially stable non-primitive data.
 
 #### 3. The Cost of `React.memo`
+
 `React.memo` performs a shallow equality check on all props before deciding to skip rendering.
-* **`React.memo` is ONLY worth keeping if:**
-  1. **Frequent Re-renders with Stable Props:** The component re-renders frequently with the *exact same* props (e.g., a list item in a list where only one item updates at a time).
+
+- **`React.memo` is ONLY worth keeping if:**
+  1. **Frequent Re-renders with Stable Props:** The component re-renders frequently with the _exact same_ props (e.g., a list item in a list where only one item updates at a time).
   2. **Heavy Render Subtree:** The component has a heavy render tree (lots of children or complex DOM structure). Memoizing a trivial component (e.g., a simple button or text label) is a de-optimization because the overhead of running `shallowEqual` on props is more expensive than the render itself.
   3. **Combined with Reference Stability:** All non-primitive props passed to the component (functions, objects, arrays) must be referentially stable (via `useCallback`/`useMemo` or declared outside the component). Otherwise, the shallow check will always fail, and `React.memo` will run its checks in vain on every render.
 
