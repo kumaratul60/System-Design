@@ -81,7 +81,10 @@
   - [18. Peering \& ICANN](#18-peering--icann)
     - [18.1 Peering](#181-peering)
     - [18.2 ICANN \& WHOIS](#182-icann--whois)
-  - [19. Complete Timeline (Condensed)](#19-complete-timeline-condensed)
+  - [19. Complete Timeline (URL to Pixels)](#19-complete-timeline-url-to-pixels)
+    - [Detailed Browser Rendering \& Network Pipeline](#detailed-browser-rendering--network-pipeline)
+      - [Short Interview Version (Quick Reference)](#short-interview-version-quick-reference)
+      - [Important Notes](#important-notes)
   - [20. Key Mental Models](#20-key-mental-models)
   - [21. Tips](#21-tips)
   - [22. One‑Sentence Summary about hit to pixel on ui](#22-onesentence-summary-about-hit-to-pixel-on-ui)
@@ -939,25 +942,77 @@ Once the painting phase is complete, the browser has compiled drawing instructio
 
 ---
 
-## 19. Complete Timeline (Condensed)
+## 19. Complete Timeline (URL to Pixels)
 
+### Detailed Browser Rendering & Network Pipeline
+
+1. **User enters URL**
+2. **Browser checks cache / Service Worker** (if applicable)
+3. **DNS Lookup** (Domain name to IP address)
+4. **TCP Connection** (3-Way Handshake)
+5. **TLS Handshake** (HTTPS security negotiation)
+6. **HTTP Request sent**
+7. **Server Processing**
+8. **HTTP Response starts**
+9. **TTFB (Time To First Byte)**
+10. **Response download**
+11. **HTML Parsing → DOM** (Document Object Model)
+12. **CSS Download + Parse → CSSOM** (CSS Object Model)
+13. **JavaScript Download → Parse → Execute**
+    - May block parsing (unless marked with `defer` or `async`)
+    - May modify the DOM or CSSOM
+14. **DOM + CSSOM → Render Tree**
+15. **Layout (Reflow)** (Calculating geometry and positions)
+16. **Paint** (Converting elements into pixels/drawing layers)
+17. **Compositing** (GPU combining painted layers into the final frame)
+18. **Pixels displayed on screen (UI visible)**
+
+#### Short Interview Version (Quick Reference)
+
+```text
+URL
+↓
+DNS Lookup
+↓
+TCP Connection
+↓
+TLS Handshake
+↓
+HTTP Request
+↓
+Server Processing
+↓
+TTFB
+↓
+Response Download
+↓
+DOM
+↓
+CSSOM
+↓
+JavaScript Execution
+↓
+Render Tree
+↓
+Layout (Reflow)
+↓
+Paint
+↓
+Composite
+↓
+Screen/UI
 ```
 
-Request page
-→ DNS
-→ TCP
-→ TLS
-→ HTTP
-→ HTML
-→ DOM
-→ CSSOM
-→ JS
-→ Render Tree
-→ Layout
-→ Paint
-→ Composite
+#### Important Notes
 
-```
+> [!NOTE]
+> **TTFB (Time To First Byte):** The duration from the user initiating the request until the first byte of the response arrives. It encapsulates DNS resolution, TCP handshake, TLS negotiation, request transmission, and server processing.
+
+> [!IMPORTANT]
+> **JavaScript Execution & Parsing:** JS execution can happen while HTML is still being parsed and will block the parser by default, unless the script tag uses `defer` or `async`.
+
+> [!TIP]
+> **Compositing:** The final step where the GPU combines the individual painted layers of the page into the final frame displayed to the user on the screen.
 
 ---
 
