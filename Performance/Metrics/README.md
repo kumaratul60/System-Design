@@ -1,6 +1,20 @@
 # Core Web Vitals & Performance Metrics
 
+core web vitals: A small set of metrics for how a page is actually feels to a real person using it.
+
 Core Web Vitals are a set of specific factors that Google considers important in a webpage's overall user experience. They are part of Google's "Page Experience" score, which affects SEO ranking.
+
+## Three to fix,
+
+1.  LCP
+2.  INP
+3.  CLS
+
+## Three to diagnose
+
+1.  FCP
+2.  TTFB
+3.  TBT
 
 ---
 
@@ -24,9 +38,9 @@ graph TD
     end
 
     FCP -.-> |"Something is on screen"| User1(Perception: Started)
-    LCP -.-> |"Main content is ready"| User2(Perception: Useful)
-    INP -.-> |"Page is responsive"| User3(Perception: Usable)
-    CLS -.-> |"Page is stable"| User4(Perception: Smooth)
+    LCP -.-> |"Main content is loading/ready"| User2(Perception: Useful) | <=2.5s
+    INP -.-> |"Page is responsive"| User3(Perception: Usable) | <=200ms
+    CLS -.-> |"Page is visually stable"| User4(Perception: Smooth) | <=0.1s
 ```
 
 ---
