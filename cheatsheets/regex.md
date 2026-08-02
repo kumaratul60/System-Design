@@ -109,13 +109,65 @@ Makes regex results much more readable.
 
 ## Module 4: Professional Features
 
-### 4.1 Unicode and Flags
+### 4.1 Regex Flags (In-Depth Guide)
 
-- `g` : Global (don't stop after first match).
-- `i` : Case-insensitive.
-- `m` : Multiline.
-- `u` : Unicode (handles emojis and special characters).
-- `y` : Sticky (matches only from the lastIndex).
+Flags are parameters appended to the end of a regular expression (e.g., `/pattern/giy`) that alter its matching behaviors:
+
+#### 1. `g` (Global)
+*   **Behavior**: Finds every match in the input string instead of stopping after the first match. In string replacements, it replaces all occurrences.
+*   **Example**:
+    ```javascript
+    const text = "test1 test2 test3";
+    console.log(text.match(/test\d/));  // Output: ["test1"] (No global flag)
+    console.log(text.match(/test\d/g)); // Output: ["test1", "test2", "test3"] (Global)
+    ```
+
+#### 2. `i` (Ignore Case)
+*   **Behavior**: Matches both uppercase and lowercase letters without needing to specify both in the character classes.
+*   **Example**:
+    ```javascript
+    const text = "Admin admin ADMIN";
+    console.log(text.match(/admin/gi)); // Output: ["Admin", "admin", "ADMIN"]
+    ```
+
+#### 3. `m` (Multiline)
+*   **Behavior**: Alters the behavior of the start anchor `^` and end anchor `$`. Instead of matching only the absolute start and end of the entire string, they match the start and end of individual lines (demarcated by `\n`).
+*   **Example**:
+    ```javascript
+    const text = "first line\nsecond line";
+    console.log(text.match(/^second/));  // Output: null (Starts search at "first")
+    console.log(text.match(/^second/m)); // Output: ["second"] (Matches because it is the start of line 2)
+    ```
+
+#### 4. `s` (Dot All / Single Line)
+*   **Behavior**: Allows the wildcard dot character `.` to match newline characters (`\n`, `\r`). By default, `.` matches any character *except* newlines, which prevents matches from accidentally spanning multiple lines.
+*   **Example**:
+    ```javascript
+    const text = "line1\nline2";
+    console.log(text.match(/line1.line2/));  // Output: null (dot does not match \n)
+    console.log(text.match(/line1.line2/s)); // Output: ["line1\nline2"] (matches successfully)
+    ```
+
+#### 5. `u` (Unicode)
+*   **Behavior**: Enables Unicode-aware parsing. This allows the engine to handle 4-byte UTF-16 surrogate pairs (like emojis) as single characters instead of splitting them, and enables advanced property escapes like `\p{Letter}` or `\p{Emoji}`.
+*   **Example**:
+    ```javascript
+    const text = "a 𝌆 b"; // 𝌆 is a 4-byte surrogate pair character
+    console.log(/𝌆/.test(text)); // Output: true
+    // Match letter characters from any language
+    console.log(/\p{Letter}/u.test("α")); // Output: true (requires 'u' flag)
+    ```
+
+#### 6. `y` (Sticky)
+*   **Behavior**: Instructs the engine to perform matching strictly starting at the exact position defined by the regex object's `lastIndex` property (and does not scan forward). Extremely useful when writing parsers or tokenizers that consume strings sequentially.
+*   **Example**:
+    ```javascript
+    const regex = /test/y;
+    const text = "123 test";
+    console.log(regex.exec(text)); // Output: null (since "test" is at index 4, not 0)
+    regex.lastIndex = 4;
+    console.log(regex.exec(text)); // Output: ["test"] (matches successfully at index 4)
+    ```
 
 ### 4.2 Backreferences
 
