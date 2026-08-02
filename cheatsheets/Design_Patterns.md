@@ -2,6 +2,8 @@
 
 This guide covers common design patterns and how to implement real-world features correctly.
 
+> [Deep into Design Patterns](https://github.com/kumaratul60/design-patterns)
+
 ## Table of Contents
 
 - [React Design Patterns \& Common Tasks](#react-design-patterns--common-tasks)
