@@ -109,6 +109,53 @@ gh pr list --limit 100 --state open \
 
 ---
 
+## 8.1) View Pull Request Details (`gh pr view`)
+
+`gh pr view` displays details of a GitHub Pull Request. If you're on a branch that already has an associated PR, you can simply run:
+
+```bash
+gh pr view
+```
+
+Useful variations:
+
+```bash
+# Open the PR in your browser
+gh pr view --web
+
+# View a specific PR by number
+gh pr view 123
+
+# View the PR for a branch
+gh pr view feature/my-branch
+
+# Include review comments
+gh pr view --comments
+
+# Get JSON output
+gh pr view --json title,body,author,reviewDecision,mergeStateStatus,url
+
+# Pretty-print selected fields
+gh pr view --json title,url,reviewDecision \
+  --jq '{title, url, reviewDecision}'
+```
+
+To see the diff instead of the PR details:
+
+```bash
+gh pr diff
+```
+
+To list open PRs:
+
+```bash
+gh pr list
+```
+
+*Note: `gh pr view` without arguments automatically shows the PR associated with your current branch.*
+
+---
+
 ## 9) Conflict Risk Assessment
 
 Identify PRs that touch more than 50 files—likely candidates for merge conflicts and slow reviews.

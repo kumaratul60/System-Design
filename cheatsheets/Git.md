@@ -135,6 +135,8 @@ git commit --amend --no-edit # Amend without changing message
 ```bash
 git push origin main        # Push local branch to remote
 git push -u origin feature  # Push new branch & set upstream
+git branch --unset-upstream # Clear remote tracking branch association for current branch
+git branch -u origin/branch # Set/change remote tracking branch association for current branch
 git pull origin main        # Fetch & merge from remote
 git fetch origin            # Fetch changes without merging
 ```
@@ -173,6 +175,22 @@ git merge --abort          # Abort merge on conflicts
 git rebase main             # Rebase current branch on main
 git rebase -i HEAD~3        # Interactive rebase last 3 commits
 git rebase --abort          # Abort rebase
+```
+
+### Squashing Commits (All-in-One)
+
+Combine all commits in your feature branch into a single clean commit before merging:
+
+```bash
+# Method A: Soft Reset to Merge-Base (Quickest all-in-one squash)
+git reset --soft $(git merge-base main HEAD) && git commit -m "My squashed commit message"
+
+# Method B: Interactive Rebase
+git rebase -i main             # Replace 'pick' with 'squash' (or 's') for commits 2+
+
+# Method C: Merge Squash (run from main/base branch)
+git merge --squash feature     # Merges feature changes as a single staged commit
+git commit -m "Squashed feature integration message"
 ```
 
 ---

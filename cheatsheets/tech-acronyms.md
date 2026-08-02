@@ -61,6 +61,7 @@ _The core technologies and concepts for building websites and web applications._
 - **JS** — JavaScript
 - **TS** — TypeScript
 - **DOM** — Document Object Model (A programming interface for web documents)
+- **BOM** — Browser Object Model
 - **SEO** — Search Engine Optimization
 - **PWA** — Progressive Web App
 - **SPA** — Single Page Application
@@ -128,10 +129,11 @@ _How different applications and services communicate with each other._
 - **SOAP** — Simple Object Access Protocol (A protocol for exchanging structured information)
 - **GraphQL** — Graph Query Language (A query language and runtime for APIs)
 - **gRPC** — Google Remote Procedure Call (A high-performance RPC framework)
-- **JSON** — JavaScript Object Notation
+- **JSON** — JavaScript Object Notation (A lightweight text-based data interchange format. _Gotcha:_ Synchronous parsing `JSON.parse` blocks the JS event loop on massive payloads).
+- **NDJSON / JSONL** — Newline Delimited JSON / JSON Lines (A format where each line is a valid independent JSON object. _Use Case:_ Processing massive log streams line-by-line without high memory consumption).
 - **XML** — eXtensible Markup Language
-- **YAML** — YAML Ain’t Markup Language
-- **TOML** — Tom’s Obvious Minimal Language
+- **YAML** — YAML Ain't Markup Language
+- **TOML** — Tom's Obvious Minimal Language
 - **Proto** — Protocol Buffers (Google's data serialization format)
 - **OpenAPI (OAS)** — OpenAPI Specification (A standard for describing RESTful APIs)
 - **WSDL** — Web Services Description Language (For describing SOAP-based web services)
@@ -228,25 +230,33 @@ _Essential concepts for protecting data and systems._
 
 _The field of creating intelligent systems._
 
+```text
+Traditional AI (Rule-based, Classification, ML/DL)
+      │
+      ▼
+Generative AI (Transformers, LLMs generating text/code)
+      │
+      ▼
+AI Agents (LLM reasoning + short/long-term Memory + Tool usage)
+      │
+      ▼
+Agentic AI (Autonomous execution loops pursuing high-level goals)
+      │
+      ▼
+Multi-Agent Systems (Distributed networks of collaborative specialists)
+```
+
 - **AI** — Artificial Intelligence
 - **ML** — Machine Learning
-- **DL** — Deep Learning
+- **DL** — Deep Learning (Neural networks with multiple hidden layers)
 - **NLP** — Natural Language Processing
 - **LLM** — Large Language Model
 - **GAN** — Generative Adversarial Network
-
----
-
-## 13. Version Control
-
-_Systems for tracking changes in code over time._
-
-- **VCS** — Version Control System
-- **Git** — A distributed version control system
-- **SVN** — Subversion (A centralized version control system)
-- **Mercurial** — A distributed version control system
- **LLM** — Large Language Model
-- **GAN** — Generative Adversarial Network
+- **RAG** — Retrieval-Augmented Generation (Queries external knowledge sources/vector databases to ground LLM outputs in verified facts).
+- **Agent** — An autonomous component that leverages an LLM reasoning core, maintains memory, plans actions, and executes tools to achieve a goal.
+- **LangChain** — A modular orchestration framework for building applications powered by LLMs (data pipelines, prompt chaining).
+- **LangGraph** — A library for building stateful, multi-actor agentic loops and graph-based workflow topologies.
+- **Langflow** — A low-code visual builder interface for rapid prototyping of LangChain / LangGraph networks.
 
 ---
 
