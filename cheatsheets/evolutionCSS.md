@@ -6,6 +6,7 @@ A chronological master reference mapping the historical evolution of styling par
 
 ## The Styling Paradigm Flow
 
+```text
 No CSS
 │
 ├─ Problem:
@@ -169,6 +170,7 @@ Modern CSS
 • Cascade Layers
 
 Less reliance on preprocessors than before.
+```
 
 ---
 
