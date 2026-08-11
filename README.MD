@@ -8,6 +8,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 
 - [System Design \& Architecture Laboratory](#system-design--architecture-laboratory)
   - [Table of Contents](#table-of-contents)
+  - [🎯 Principal Staff Architect Preparation](#-principal-staff-architect-preparation)
   - [Project Structure](#project-structure)
   - [🚀 Key Modules](#-key-modules)
     - [1. Infrastructure \& Observability](#1-infrastructure--observability)
@@ -24,6 +25,20 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [Development scripts:](#development-scripts)
   - [🤝 Contributing](#-contributing)
   - [🔗 Useful Resources](#-useful-resources)
+
+---
+
+## 🎯 Principal Staff Architect Preparation
+
+🚀 **Looking to crack Staff / Principal Architect roles?** Access the dedicated, 80/20 frontend-focused preparation system here:
+👉 **[Principal Staff Architect Preparation System](./Prep/README.md)**
+- **8-Week Master Roadmap:** [ROADMAP.md](./Prep/ROADMAP.md)
+- **Low-Level Design (LLD):** [01-LLD](./Prep/01-LLD/README.md) (OOP, SOLID, Design Patterns, UML, Machine Coding, Concurrency)
+- **High-Level Design (HLD):** [02-HLD](./Prep/02-HLD/README.md) (Architecture Patterns, Distributed Systems, Classic Systems)
+- **Frontend System Design (80% Focus):** [03-Frontend-SD](./Prep/03-Frontend-SD/README.md) (Rendering, Web Vitals, Browser Internals, React Architecture)
+- **Backend Awareness (20% Node/Express):** [04-Backend-Awareness](./Prep/04-Backend-Awareness/README.md)
+- **Networks & Web Protocols:** [05-Networks-Web](./Prep/05-Networks-Web/README.md) (DNS → TCP → TLS → HTTP/3)
+- **Interactive Q&A Bank:** [06-Interview-QA](./Prep/06-Interview-QA/README.md) (100+ Collapsed Q&A with Answers & Tradeoffs)
 
 ---
 
