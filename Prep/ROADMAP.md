@@ -1,12 +1,12 @@
-# 🗓️ 8-Week Principal Staff Architect Study Roadmap
+# 🗓️ 8-Week Principal & Staff Architect Study Roadmap
 
-> **Target Role:** Staff Engineer / Principal Engineer / Architect
-> **Focus:** 80% Frontend Depth | 20% Backend Integration | LLD + HLD + System Design + Networks
+> **Target Roles:** Staff Engineer / Principal Engineer / Architect  
+> **Focus:** 80% Frontend Depth | 20% Backend Integration | 55 Master System Design & LLD Blueprints  
 > **Time commitment:** 2–4 hours/day, 5–6 days/week.
 
 ---
 
-## 📊 8-Week Timeline (Gantt)
+## 📊 8-Week Timeline Overview
 
 ```mermaid
 gantt
@@ -15,20 +15,20 @@ gantt
     axisFormat  Week %W
 
     section LLD
-    Week 1: OOP, SOLID, Design Principles       :w1, 2026-08-10, 7d
-    Week 2: Design Patterns + Machine Coding     :w2, after w1, 7d
-    Week 3: UML + Requirements + Concurrency     :w3, after w2, 7d
+    Week 1: OOP, SOLID & Software Design Principles :w1, 2026-08-10, 7d
+    Week 2: 10 Design Patterns + Executable Code    :w2, after w1, 7d
+    Week 3: UML Diagrams & Concurrency Machine Code :w3, after w2, 7d
 
     section HLD
-    Week 4: Architecture + Distributed Systems   :w4, after w3, 7d
-    Week 5: Caching, DB, Messaging, Scaling      :w5, after w4, 7d
+    Week 4: Distributed Systems & Microservices     :w4, after w3, 7d
+    Week 5: Caching, DB Sharding & Message Queues   :w5, after w4, 7d
 
     section Frontend
-    Week 6: Rendering, CWV, Browser Internals    :w6, after w5, 7d
-    Week 7: React Arch, Real-time, Micro-FE      :w7, after w6, 7d
+    Week 6: Rendering (SSR/SSG/ISR), CWV & Security :w6, after w5, 7d
+    Week 7: React Internals, Micro-Frontends & WSS  :w7, after w6, 7d
 
     section Synthesis
-    Week 8: Full Mock Interviews + QA Review     :w8, after w7, 7d
+    Week 8: 55 Master Problems & Mock Interview Grill:w8, after w7, 7d
 ```
 
 ---
@@ -42,175 +42,76 @@ Run this **every day**, regardless of what week you are in (45–60 mins):
 │  DAILY PRACTICE LOOP                                                    │
 │                                                                         │
 │  ① PICK   (5 min)                                                       │
-│     → Choose 1 LLD, HLD, or Frontend System Design problem.             │
+│     → Choose 1 blueprint from Prep/07-Problem-Bank/                     │
 │                                                                         │
 │  ② DESIGN  (25–35 min)                                                  │
-│     → Apply FUN-SCALE framework: FR, NFR, Scale, Mermaid Diagram,       │
-│       State Model, TS Code, Bottlenecks.                                │
+│     → Apply 9-Step Framework: FR, NFR, Scale, Mermaid UML, SOLID,      │
+│       Design Patterns, TypeScript Code, Scale Bottlenecks.              │
 │                                                                         │
 │  ③ SPEAK ALOUD (10–15 min)                                              │
-│     → Narrate your design aloud: "I chose X over Y because..."          │
-│       Defend trade-offs, edge cases, and failure modes.                 │
+│     → Defend trade-offs: "I chose X over Y because..."                  │
+│       Explain degraded modes, failure recovery, and SLAs.               │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📅 Week 1 — LLD Foundation: OOP, SOLID & Design Principles
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-Build the bedrock. Master OOP 4 pillars, SOLID principles with TS before/after code, and core design principles (DRY, KISS, YAGNI, Law of Demeter, Coupling/Cohesion).
-
-### 📚 Study Files to Read
-
-- 📖 [`01-LLD/README.md`](./01-LLD/README.md) — LLD 7-Phase Framework & Signals
-- 📖 [`01-LLD/01-OOP-Concepts.md`](./01-LLD/01-OOP-Concepts.md) — 4 Pillars, TS Code, Scale Failures
-- 📖 [`01-LLD/02-SOLID.md`](./01-LLD/02-SOLID.md) — S.O.L.I.D. with TS + Notification System Case Study
-- 📖 [`01-LLD/03-Design-Principles.md`](./01-LLD/03-Design-Principles.md) — DRY, KISS, YAGNI, Law of Demeter, Coupling & Cohesion
-
-### ✍️ Practice Exercises & Q&A
-
-- Self-test with 28 collapsed Q&A blocks in [`01-LLD/01-OOP-Concepts.md`](./01-LLD/01-OOP-Concepts.md) & [`01-LLD/02-SOLID.md`](./01-LLD/02-SOLID.md).
-
----
-
-## 📅 Week 2 — Design Patterns & Machine Coding
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-High-ROI design patterns (Factory, Singleton, Adapter, Decorator, Strategy, Observer) and executable Machine Coding in TypeScript.
-
-### 📚 Study Files to Read
-
-- 📖 [`01-LLD/04-Design-Patterns.md`](./01-LLD/04-Design-Patterns.md) — High-ROI Patterns with TS Code & Decision Flowchart
-- 📖 [`01-LLD/06-Machine-Coding.md`](./01-LLD/06-Machine-Coding.md) — Executable LRU Cache, Splitwise Debt Minimizer, Rate Limiter in TS
-
-### ✍️ Practice Exercises & Q&A
-
-- Implement LRU Cache in TS (`Map` + Doubly LinkedList with Sentinel nodes).
-- Practice LLD Questions in [`06-Interview-QA/LLD-QA.md`](./06-Interview-QA/LLD-QA.md).
-
----
-
-## 📅 Week 3 — UML, Requirements Breakdown & Concurrency
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-Learn to draw Class, Sequence & Component diagrams in Mermaid. Master the FUN-SCALE requirements breakdown framework and thread-safety concurrency primitives.
-
-### 📚 Study Files to Read
-
-- 📖 [`01-LLD/05-UML-Diagrams.md`](./01-LLD/05-UML-Diagrams.md) — Class, Sequence & Component Diagrams + FUN-SCALE Framework
-- 📖 [`01-LLD/07-Concurrency-Design.md`](./01-LLD/07-Concurrency-Design.md) — Mutex, Semaphore, Producer-Consumer, Lock-Free CAS Atomics
-
-### ✍️ Practice Exercises & Q&A
-
-- Draw sequence diagram for HTTP request flow & JWT verification.
-- Implement an Async Producer-Consumer queue in TypeScript.
-
----
-
-## 📅 Week 4 — HLD Foundation: Architecture Patterns & Distributed Systems
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-Shift to system-level architecture: Monolith vs Microservices, Event-Driven Architecture (CQRS / Event Sourcing), BFF, DDD, CAP & PACELC theorems, Consistent Hashing, 2PC vs Saga transactions.
-
-### 📚 Study Files to Read
-
-- 📖 [`02-HLD/README.md`](./02-HLD/README.md) — HLD 5-Step Interview Framework
-- 📖 [`02-HLD/01-Architecture-Patterns.md`](./02-HLD/01-Architecture-Patterns.md) — Monolith, Microservices, Event-Driven, BFF, DDD
-- 📖 [`02-HLD/02-Distributed-Systems.md`](./02-HLD/02-Distributed-Systems.md) — CAP, PACELC, Consistent Hashing Ring, Saga Pattern, CRDTs
-
-### ✍️ Practice Exercises & Q&A
-
-- Practice HLD Q&A in [`06-Interview-QA/HLD-QA.md`](./06-Interview-QA/HLD-QA.md).
-
----
-
-## 📅 Week 5 — HLD Advanced: Caching, Databases & Classic Systems
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-Master distributed caching (Cache-aside vs Write-through), SQL vs NoSQL sharding, and classic system designs.
-
-### 📚 Study Files to Read
-
-- 📖 [`02-HLD/11-Classic-Problems.md`](./02-HLD/11-Classic-Problems.md) — Distributed Rate Limiter, Twitter Feed System (Push vs Pull), WhatsApp Messaging
-
-### ✍️ Practice Exercises & Q&A
-
-- Design a Distributed Rate Limiter with Redis Sliding Window Lua Script.
-
----
-
-## 📅 Week 6 — Frontend System Design: Rendering, CWV & Browser Internals
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-Deep dive into Rendering Strategies (CSR, SSR, SSG, ISR, Streaming SSR, RSC, Islands), Core Web Vitals (LCP, INP, CLS, TTFB), Resource Hints, Event Loop, Layout Thrashing, and Garbage Collection.
-
-### 📚 Study Files to Read
-
-- 📖 [`03-Frontend-SD/README.md`](./03-Frontend-SD/README.md) — FE System Design Framework
-- 📖 [`03-Frontend-SD/01-Rendering-Strategies.md`](./03-Frontend-SD/01-Rendering-Strategies.md) — All Rendering Strategies Matrix & Decision Tree
-- 📖 [`03-Frontend-SD/02-Performance-CWV.md`](./03-Frontend-SD/02-Performance-CWV.md) — Core Web Vitals, Resource Hints, Yielding Main Thread
-- 📖 [`03-Frontend-SD/03-Browser-Internals.md`](./03-Frontend-SD/03-Browser-Internals.md) — Event Loop, Rendering Pipeline, Layout Thrashing, Memory Leaks
-
-### ✍️ Practice Exercises & Q&A
-
-- Practice Frontend Q&A in [`06-Interview-QA/FE-SD-QA.md`](./06-Interview-QA/FE-SD-QA.md).
-
----
-
-## 📅 Week 7 — React Engine, Micro Frontends & Hot FE Practice
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-Master React Fiber engine (32-bit Lanes, `useSyncExternalStore`), Micro Frontends (Module Federation), Advanced Principal Gaps (OpenTelemetry RUM, OAuth2 PKCE, Trusted Types XSS, Design Tokens), and Hot Practice Prompts.
-
-### 📚 Study Files to Read
-
-- 📖 [`03-Frontend-SD/04-React-Architecture.md`](./03-Frontend-SD/04-React-Architecture.md) — React Fiber Engine, Lanes Priority, `useSyncExternalStore`
-- 📖 [`03-Frontend-SD/10-Frontend-Classic.md`](./03-Frontend-SD/10-Frontend-Classic.md) — YouTube Video Player, Virtualized Feed, Search Autocomplete
-- 📖 🔥 [`03-Frontend-SD/HOT-FE-INTERVIEW-PRACTICE.md`](./03-Frontend-SD/HOT-FE-INTERVIEW-PRACTICE.md) — Figma Whiteboard, Micro Frontend Platform, Offline Task PWA
-- 📖 📄 [`03-Frontend-SD/11-Frontend-Systems-Catalog.md`](./03-Frontend-SD/11-Frontend-Systems-Catalog.md) — Uber Live Map, Dropbox Chunked Upload, VS Code Web, Toast Center
-- 📖 🎯 [`03-Frontend-SD/ADVANCED-PRINCIPAL-GAPS.md`](./03-Frontend-SD/ADVANCED-PRINCIPAL-GAPS.md) — OpenTelemetry RUM, OAuth2 PKCE, Trusted Types, Design System Tokens
-
----
-
-## 📅 Week 8 — Backend Awareness, Networks & Full Synthesis Mock Interviews
-
-**Time Budget:** 2–3 hours/day | **Days:** 5–6
-
-### Focus
-
-Review Backend Awareness (Node Event Loop, Express Middleware, Streams, Rate Limiting), Web Protocols (DNS → TCP → TLS 1.3 → HTTP/3 QUIC → L4/L7 LB), and practice Principal-level "Why This Over That?" trade-off scenarios.
-
-### 📚 Study Files to Read
-
-- 📖 [`04-Backend-Awareness/01-Node-Express-Basics.md`](./04-Backend-Awareness/01-Node-Express-Basics.md) — Node Event Loop, Streams, Rate Limiting, BE Red Flags
-- 📖 [`05-Networks-Web/01-DNS-to-HTTP.md`](./05-Networks-Web/01-DNS-to-HTTP.md) — Full Request Lifecycle, TLS 1.3, HTTP/3 QUIC, L4/L7 LB
-- 📖 [`06-Interview-QA/Principal-Level-QA.md`](./06-Interview-QA/Principal-Level-QA.md) — 20 "Why This Over That?" Principal Architectural Scenarios
-- 📖 [`06-Interview-QA/Tradeoffs-Cheatsheet.md`](./06-Interview-QA/Tradeoffs-Cheatsheet.md) — X vs Y Quick Reference Matrix
-
----
-
-## ✅ Ready for Study & Practice!
-
-Every week has direct clickable links to exact files, concepts to master, TS practice code exercises, and self-testing Q&A blocks!
+## 📅 Week-by-Week Actionable Schedule
+
+### 📅 Week 1 — Low-Level Design Foundation: OOP, SOLID & Design Principles
+* 📖 [`01-LLD/README.md`](./01-LLD/README.md) — LLD 7-Phase Framework & Evaluation Signals
+* 📖 [`01-LLD/01-OOP-Concepts.md`](./01-LLD/01-OOP-Concepts.md) — 4 Pillars, TypeScript Implementations, Scale Invariants
+* 📖 [`01-LLD/SOLID.md`](./01-LLD/SOLID.md) — S.O.L.I.D. Principles with FE & BE Code + Case Studies
+* 📖 [`01-LLD/MASTER-OOP-DESIGN-PRINCIPLES.md`](./01-LLD/MASTER-OOP-DESIGN-PRINCIPLES.md) — DRY, KISS, YAGNI, Law of Demeter, Coupling & Cohesion
+
+### 📅 Week 2 — 10 High-Frequency Design Patterns & Executable Machine Coding
+* 📖 [`01-LLD/04-Design-Patterns.md`](./01-LLD/04-Design-Patterns.md) — 10 High-ROI Patterns with TS Code & Decision Flowcharts
+* 📖 [`01-LLD/06-Machine-Coding.md`](./01-LLD/06-Machine-Coding.md) — Executable Machine Coding in TypeScript
+* 🧪 **Practice Blueprints:**
+  * [`07-Problem-Bank/Data Structures & Search/01-Design-LRU-Cache.md`](./07-Problem-Bank/Data%20Structures%20&%20Search/01-Design-LRU-Cache.md)
+  * [`07-Problem-Bank/Data Structures & Search/05-Design-LFU-Cache.md`](./07-Problem-Bank/Data%20Structures%20&%20Search/05-Design-LFU-Cache.md)
+  * [`07-Problem-Bank/Financial & Payment Systems/01-Design-Splitwise.md`](./07-Problem-Bank/Financial%20&%20Payment%20Systems/01-Design-Splitwise.md)
+
+### 📅 Week 3 — UML Diagrams, Concurrency & Machine Coding Drills
+* 📖 [`01-LLD/05-UML-Diagrams.md`](./01-LLD/05-UML-Diagrams.md) — Class, Sequence, Component & State Machine Diagrams with Mermaid
+* 📖 [`01-LLD/07-Concurrency-Multithreading.md`](./01-LLD/07-Concurrency-Multithreading.md) — Thread Safety, Locks, Atomic Operations
+* 🧪 **Practice Blueprints:**
+  * [`07-Problem-Bank/Managing States/01-Design-ATM.md`](./07-Problem-Bank/Managing%20States/01-Design-ATM.md)
+  * [`07-Problem-Bank/Managing States/03-Design-Elevator-System.md`](./07-Problem-Bank/Managing%20States/03-Design-Elevator-System.md)
+  * [`07-Problem-Bank/Data Structures & Search/11-Design-Concurrent-Lockfree-Ring-Buffer.md`](./07-Problem-Bank/Data%20Structures%20&%20Search/11-Design-Concurrent-Lockfree-Ring-Buffer.md)
+
+### 📅 Week 4 — High-Level Design (HLD) & Distributed Systems Architecture
+* 📖 [`02-HLD/README.md`](./02-HLD/README.md) — Distributed Architecture & Scalability Patterns
+* 📖 [`02-HLD/01-System-Architecture-Fundamentals.md`](./02-HLD/01-System-Architecture-Fundamentals.md) — Monoliths vs Microservices, Event-Driven Systems
+* 📖 [`02-HLD/02-Distributed-Systems.md`](./02-HLD/02-Distributed-Systems.md) — CAP Theorem, PACELC, Consensus (Raft/Paxos)
+* 🧪 **Practice Blueprints:**
+  * [`07-Problem-Bank/Developer Tools & Infrastructure/01-Design-URL-Shortener.md`](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/01-Design-URL-Shortener.md)
+  * [`07-Problem-Bank/Developer Tools & Infrastructure/08-Design-Distributed-Key-Value-Store.md`](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/08-Design-Distributed-Key-Value-Store.md)
+
+### 📅 Week 5 — Caching, Database Sharding & Event Messaging
+* 📖 [`02-HLD/03-Caching-Strategies.md`](./02-HLD/03-Caching-Strategies.md) — Cache-Aside, Write-Through, Write-Behind, Redis Cluster
+* 📖 [`02-HLD/04-Databases-Storage.md`](./02-HLD/04-Databases-Storage.md) — SQL vs NoSQL, Sharding, Replication, Indexes
+* 📖 [`02-HLD/05-Messaging-Queues.md`](./02-HLD/05-Messaging-Queues.md) — Kafka, RabbitMQ, Consumer Groups, At-Least-Once Delivery
+* 🧪 **Practice Blueprints:**
+  * [`07-Problem-Bank/Communication & Messaging/02-Design-Pub-Sub-System.md`](./07-Problem-Bank/Communication%20&%20Messaging/02-Design-Pub-Sub-System.md)
+  * [`07-Problem-Bank/Financial & Payment Systems/02-Design-Payment-Gateway.md`](./07-Problem-Bank/Financial%20&%20Payment%20Systems/02-Design-Payment-Gateway.md)
+
+### 📅 Week 6 — Frontend Architecture, Core Web Vitals & Web Security
+* 📖 [`03-Frontend-SD/README.md`](./03-Frontend-SD/README.md) — Client System Design & Architecture
+* 📖 [`03-Frontend-SD/01-Rendering-Strategies.md`](./03-Frontend-SD/01-Rendering-Strategies.md) — CSR vs SSR vs SSG vs ISR
+* 📖 [`03-Frontend-SD/02-Performance-CWV.md`](./03-Frontend-SD/02-Performance-CWV.md) — LCP, INP, CLS Optimization
+* 📖 [`03-Frontend-SD/ADVANCED-PRINCIPAL-GAPS.md`](./03-Frontend-SD/ADVANCED-PRINCIPAL-GAPS.md) — OAuth2 PKCE, Trusted Types XSS, Tree-Shaking
+
+### 📅 Week 7 — React Internals, Micro-Frontends & Real-Time Client Systems
+* 📖 [`03-Frontend-SD/04-React-Architecture.md`](./03-Frontend-SD/04-React-Architecture.md) — Fiber Reconciler, Concurrent Mode, State Management
+* 📖 [`03-Frontend-SD/05-Micro-Frontends.md`](./03-Frontend-SD/05-Micro-Frontends.md) — Module Federation, Isolation, State Sharing
+* 📖 [`03-Frontend-SD/HOT-FE-INTERVIEW-PRACTICE.md`](./03-Frontend-SD/HOT-FE-INTERVIEW-PRACTICE.md) — Collaborative Whiteboard, Micro-Frontend Platform
+* 🧪 **Practice Blueprints:**
+  * [`07-Problem-Bank/Developer Tools & Infrastructure/07-Design-Google-Docs-Collaborative-Editor.md`](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/07-Design-Google-Docs-Collaborative-Editor.md)
+  * [`07-Problem-Bank/Communication & Messaging/03-Design-Chat-Application.md`](./07-Problem-Bank/Communication%20&%20Messaging/03-Design-Chat-Application.md)
+
+### 📅 Week 8 — Master Synthesis & 55 Problem Bank Drills
+* 📖 [`06-Interview-QA/README.md`](./06-Interview-QA/README.md) — Staff/Principal System Interview Grill Q&As
+* 📖 [`06-Interview-QA/SCENARIO-EDGE-CASES-BANK.md`](./06-Interview-QA/SCENARIO-EDGE-CASES-BANK.md) — Small-to-Large Edge Cases & Failure Recovery
+* 🔍 [`07-Problem-Bank/DOMAIN-SEARCH-COMPARISON.md`](./07-Problem-Bank/DOMAIN-SEARCH-COMPARISON.md) — Google vs Amazon vs Social Search Architectures
+* 🎯 **Full 55-Problem Bank Drill:** Complete 1 problem/day from [`07-Problem-Bank/README.md`](./07-Problem-Bank/README.md).

@@ -1,328 +1,163 @@
-# 🎯 Principal Staff Architect — Complete Preparation System
+# 🎯 Principal & Staff Architect System Design Knowledge Hub
 
-> **80% Frontend | 20% Backend Awareness | LLD + HLD + System Design + Networks**  
-> Built for engineers targeting Principal, Staff, or Architect-level roles at product-first companies.  
-> This is not a "definitions list" — it's a **reasoning and tradeoffs** system.
-
----
-
-🚀 **Primary Study Navigation Hub:**
-- 🗺️ **Master Index:** [`Prep/README.md`](./README.md)
-- 📅 **8-Week Master Schedule:** [`Prep/ROADMAP.md`](./ROADMAP.md) (Week-by-week schedule + clickable file links)
-- 🏆 **Social & Content Platforms Problem Bank:** [`Prep/07-Problem-Bank/README.md`](./07-Problem-Bank/README.md) (Stack Overflow, Social Network, Learning Platform, Cricinfo, LinkedIn, Spotify)
-- 🎨 **Master Design Patterns Guide:** [`Prep/01-LLD/04-Design-Patterns.md`](./01-LLD/04-Design-Patterns.md) (10 High-Frequency Patterns + Algomaster Links + FE/BE Code)
-- 📐 **Master UML Diagrams Guide:** [`Prep/01-LLD/05-UML-Diagrams.md`](./01-LLD/05-UML-Diagrams.md) (Class, Sequence, Component & State Machine Diagrams + FUN-SCALE)
-- 🧱 **Standalone SOLID Principles Master Guide:** [`Prep/01-LLD/SOLID.md`](./01-LLD/SOLID.md) (S.O.L.I.D. FE & BE Code, Diagrams, Enterprise Case Study)
-- 🌟 **Master OOP & Principles Guide:** [`Prep/01-LLD/MASTER-OOP-DESIGN-PRINCIPLES.md`](./01-LLD/MASTER-OOP-DESIGN-PRINCIPLES.md) (DRY, KISS, YAGNI, Law of Demeter, Coupling & Cohesion)
-- 🔬 **Small-to-Large Edge Cases:** [`Prep/06-Interview-QA/SCENARIO-EDGE-CASES-BANK.md`](./06-Interview-QA/SCENARIO-EDGE-CASES-BANK.md) (Double submit, Multi-tab desync, SW cache lock, Thundering herd)
-- 🎯 **Advanced Principal Gaps:** [`Prep/03-Frontend-SD/ADVANCED-PRINCIPAL-GAPS.md`](./03-Frontend-SD/ADVANCED-PRINCIPAL-GAPS.md) (OpenTelemetry RUM, OAuth2 PKCE, Trusted Types XSS, Design Tokens, Tree-Shaking)
-- 🔥 **Hot FE Practice Bank:** [`Prep/03-Frontend-SD/HOT-FE-INTERVIEW-PRACTICE.md`](./03-Frontend-SD/HOT-FE-INTERVIEW-PRACTICE.md) (Collaborative Whiteboard, Micro Frontend Platform, Offline Task PWA)
-- 📄 **FE Master Catalog & Blueprints:** [`Prep/03-Frontend-SD/11-Frontend-Systems-Catalog.md`](./03-Frontend-SD/11-Frontend-Systems-Catalog.md) (Uber Live Map, Dropbox Upload, VS Code Web, Toast Center)
+> **Target Roles:** Staff Engineer / Principal Engineer / Systems Architect  
+> **Structure:** 80% Frontend Depth | 20% Backend Awareness | 55 Master Blueprints | LLD + HLD + Networks + Systems  
+> **Interactive Web App:** [`LLD/`](file:///Users/atulkumarawasthi/projects/SystemDesign/LLD/src/data/problemsData.js) (Interactive React Playground & Visual Simulator)
 
 ---
 
-## 🗺️ Study System at a Glance
+## 🧭 System Preparation Master Navigation Portal
+
+> [!TIP]
+> **How to Navigate:** Use the interactive tables below to jump directly to any topic, theory module, or production-grade problem blueprint. Every file includes functional/non-functional requirements, Mermaid diagrams, production TypeScript/JavaScript code, and Staff/Principal level interview grill Q&A.
+
+| Module | Core Domain Focus | Sub-Topics & Master Guides | Direct Index Link |
+| :--- | :--- | :--- | :--- |
+| **01-LLD** | Low-Level Design & Object-Oriented Architecture | OOP Pillars, S.O.L.I.D. Principles, 10 Design Patterns, Machine Coding, UML Diagrams, Concurrency | 📖 [01-LLD/README.md](./01-LLD/README.md) |
+| **02-HLD** | High-Level Design & Distributed Systems | Microservices, Caching Strategies, Database Sharding, Messaging Queues, Consensus, CAP/PACELC | 📖 [02-HLD/README.md](./02-HLD/README.md) |
+| **03-Frontend-SD** | Frontend System Design & Web Architecture | Core Web Vitals, Rendering Strategies (SSR/SSG/ISR), React Internals, Micro-Frontends, Web Security | 📖 [03-Frontend-SD/README.md](./03-Frontend-SD/README.md) |
+| **04-Backend-Awareness** | Backend Engineering for FE/Fullstack Architects | Async I/O Event Loop, REST/GraphQL/gRPC, SQL vs NoSQL, Distributed Saga Transactions | 📖 [04-Backend-Awareness/README.md](./04-Backend-Awareness/README.md) |
+| **05-Networks-Web** | Network Protocols & Web Infrastructure | HTTP/1.1 vs HTTP/2 vs HTTP/3, TLS 1.3 Handshake, DNS Routing, CDNs, WebSockets vs SSE | 📖 [05-Networks-Web/README.md](./05-Networks-Web/README.md) |
+| **06-Interview-QA** | Staff/Principal Level Scenario & Grill Bank | Scenario Edge Cases Bank (Thundering Herd, Race Conditions), Staff Behavioral & System Grill Q&A | 📖 [06-Interview-QA/README.md](./06-Interview-QA/README.md) |
+| **07-Problem-Bank** | 55 Master System Design & LLD Blueprints | 9 Categories, 55 Production Blueprints, Domain Search Architecture Comparison Guide | 📖 [07-Problem-Bank/README.md](./07-Problem-Bank/README.md) |
+
+---
+
+## 🗺️ Visual Architecture Map
 
 ```mermaid
 mindmap
-  root((Principal<br/>Architect Prep))
-    LLD
-      OOP and SOLID
-      Design Patterns
-      Machine Coding
-      UML and Diagrams
-      Concurrency
-    HLD
-      Architecture Patterns
-      Distributed Systems
-      Caching and Databases
-      Messaging and Queues
-      Scaling Strategies
-    Frontend SD
-      Rendering Strategies
-      Core Web Vitals
-      Browser Internals
-      React Architecture
-      Micro Frontends
-      Real-time Systems
-    Backend Awareness
-      Node and Express
-      Databases and SQL
-      APIs and REST
-      Auth and Security
-    Networks and Web
-      HTTP and HTTPS
-      DNS and CDN
-      WebSockets
-      TLS and Certs
-      Browser Request Lifecycle
-    QA Bank
-      LLD Problems
-      HLD Problems
-      Tradeoffs Cheatsheet
-      Classic Problems
+  root((Principal Architect<br/>Prep Knowledge Hub))
+    01 LLD Architecture
+      OOP & SOLID Principles
+      10 Design Patterns
+      UML & Mermaid Diagrams
+      Thread Safety & Concurrency
+      Executable Machine Coding
+    02 HLD & Distributed Systems
+      Microservices & API Gateways
+      Distributed Caching & Eviction
+      Database Partitioning & Replication
+      Message Brokers (Kafka/RabbitMQ)
+      CAP & PACELC Trade-offs
+    03 Frontend System Design
+      SSR vs SSG vs ISR rendering
+      Core Web Vitals Optimization
+      Micro-Frontend Architectures
+      Real-Time State & WebSockets
+      Web Security (OAuth2/PKCE/CSP)
+    04 Backend & Storage
+      Node.js Event Loop Internals
+      REST vs GraphQL vs gRPC
+      SQL vs NoSQL Data Modeling
+      Saga Pattern Transactions
+    05 Networking & Infrastructure
+      HTTP/1.1 vs HTTP/2 vs HTTP/3
+      TLS 1.3 & DNS Anycast
+      CDNs & Edge Worker Caching
+    06 Staff & Principal Grill Bank
+      Small-to-Large Edge Cases
+      Failure Modes & Degradation
+      Trade-off Defense Scenarios
+    07 Master Problem Bank (55 Problems)
+      Games & Puzzles (4)
+      Data Structures & Search (11)
+      Managing States (5)
+      Management Systems (5)
+      Communication & Messaging (3)
+      Financial & Payment Systems (3)
+      E-commerce & Booking Systems (9)
+      Developer Tools & Infrastructure (8)
+      Social & Content Platforms (7)
 ```
 
 ---
 
-## 🧭 What is a Principal/Staff Architect?
+## 🏆 Master System Design & LLD Problem Bank (55 Blueprints across 9 Categories)
 
-### The Title vs The Job
+👉 🔍 **[Special Guide: Search Architecture Across Tech Giants (Google vs Amazon vs Social Search)](./07-Problem-Bank/DOMAIN-SEARCH-COMPARISON.md)**
 
-| Dimension              | Senior Engineer    | Principal / Staff Architect      |
-| ---------------------- | ------------------ | -------------------------------- |
-| **Scope**              | Feature-level      | System or org-level              |
-| **Decision type**      | Implementation     | Architecture + Strategy          |
-| **Ambiguity**          | Low – given a spec | High – you define the spec       |
-| **Mentorship**         | Optional           | Expected                         |
-| **Tradeoff reasoning** | Within a story     | Across quarters, systems, teams  |
-| **Communication**      | Team               | Cross-team, leadership, external |
-| **Review scope**       | PR reviews         | Tech radar, architecture reviews |
+### Category 1: 🎮 Games & Puzzles (4 Problems) — [Index](./07-Problem-Bank/Games%20&%20Puzzles/README.md)
+* 📖 **[Design Tic Tac Toe](./07-Problem-Bank/Games%20&%20Puzzles/01-Design-Tic-Tac-Toe.md)** (`Easy`) — $O(1)$ turn & win verification, Strategy pattern.
+* 📖 **[Design Snake and Ladder Game](./07-Problem-Bank/Games%20&%20Puzzles/02-Design-Snake-and-Ladder.md)** (`Easy`) — Graph cycle detection, dice strategy.
+* 📖 **[Design Minesweeper Game](./07-Problem-Bank/Games%20&%20Puzzles/03-Design-Minesweeper.md)** (`Medium`) — Safe first click, BFS zero-cascade reveal.
+* 📖 **[Design Chess Game](./07-Problem-Bank/Games%20&%20Puzzles/04-Design-Chess-Game.md)** (`Hard`) — Polymorphic piece movement, checkmate detection.
 
-### What Interviewers Actually Test
+### Category 2: 🌿 Data Structures & Search (11 Problems) — [Index](./07-Problem-Bank/Data%20Structures%20&%20Search/README.md)
+* 📖 **[Design LRU Cache](./07-Problem-Bank/Data%20Structures%20&%20Search/01-Design-LRU-Cache.md)** (`Easy`) — $O(1)$ Hash + Doubly LinkedList eviction, lock partitioning.
+* 📖 **[Design Bloom Filter](./07-Problem-Bank/Data%20Structures%20&%20Search/02-Design-Bloom-Filter.md)** (`Easy`) — Bit vector allocation, 0% false negatives.
+* 📖 **[Design Search Autocomplete System](./07-Problem-Bank/Data%20Structures%20&%20Search/03-Design-Search-Autocomplete.md)** (`Easy`) — Trie prefix tree, top-K suggestion nodes.
+* 📖 **[Design Simple Search Engine](./07-Problem-Bank/Data%20Structures%20&%20Search/04-Design-Simple-Search-Engine.md)** (`Medium`) — Inverted index posting lists, TF-IDF ranking.
+* 📖 **[Design LFU Cache](./07-Problem-Bank/Data%20Structures%20&%20Search/05-Design-LFU-Cache.md)** (`Hard`) — $O(1)$ min-frequency hash map + Doubly LinkedList.
+* 📖 **[Design Trie with Fuzzy Search](./07-Problem-Bank/Data%20Structures%20&%20Search/06-Design-Trie-Fuzzy-Search.md)** (`Medium`) — Wildcard `.` matching, Levenshtein edit distance.
+* 📖 **[Design Streaming Median Finder](./07-Problem-Bank/Data%20Structures%20&%20Search/07-Design-Streaming-Median-Finder.md)** (`Hard`) — Two-Heap balance (MaxHeap + MinHeap), $O(1)$ median.
+* 📖 **[Design Consistent Hash Ring](./07-Problem-Bank/Data%20Structures%20&%20Search/08-Design-Consistent-Hash-Ring.md)** (`Medium`) — Virtual nodes distribution, binary search ring lookup.
+* 📖 **[Design Segment Tree & BIT](./07-Problem-Bank/Data%20Structures%20&%20Search/09-Design-Segment-Tree-BIT.md)** (`Hard`) — $O(\log N)$ range min/sum queries & point updates.
+* 📖 **[Design Skiplist Data Structure](./07-Problem-Bank/Data%20Structures%20&%20Search/10-Design-Skiplist.md)** (`Medium`) — Multi-level probabilistic skiplist, $O(\log N)$ search/insert.
+* 📖 **[Design Concurrent Lock-Free Ring Buffer](./07-Problem-Bank/Data%20Structures%20&%20Search/11-Design-Concurrent-Lockfree-Ring-Buffer.md)** (`Hard`) — Atomic CAS sequence pointers, LMAX Disruptor pattern.
 
-At the senior level: _"Can you design a URL shortener?"_
+### Category 3: 🤖 Managing States (5 Problems) — [Index](./07-Problem-Bank/Managing%20States/README.md)
+* 📖 **[Design ATM](./07-Problem-Bank/Managing%20States/01-Design-ATM.md)** (`Medium`) — Finite state machine, Chain of Responsibility dispenser.
+* 📖 **[Design Vending Machine](./07-Problem-Bank/Managing%20States/02-Design-Vending-Machine.md)** (`Medium`) — State pattern, greedy coin change.
+* 📖 **[Design Elevator System](./07-Problem-Bank/Managing%20States/03-Design-Elevator-System.md)** (`Medium`) — LOOK / SCAN seek algorithm, car state machine.
+* 📖 **[Design Traffic Control System](./07-Problem-Bank/Managing%20States/04-Design-Traffic-Control-System.md)** (`Medium`) — 4-way intersection states, emergency overrides.
+* 📖 **[Design Coffee Vending Machine](./07-Problem-Bank/Managing%20States/05-Design-Coffee-Vending-Machine.md)** (`Hard`) — Decorator customizers, multi-boiler state machine.
 
-At the principal level:
+### Category 4: 🏢 Management Systems (5 Problems) — [Index](./07-Problem-Bank/Management%20Systems/README.md)
+* 📖 **[Design Parking Lot](./07-Problem-Bank/Management%20Systems/01-Design-Parking-Lot.md)** (`Easy`) — Spot allocation strategy, vehicle size polymorphism.
+* 📖 **[Design Task Management System](./07-Problem-Bank/Management%20Systems/02-Design-Task-Management-System.md)** (`Easy`) — Status workflow state machine, Command Undo/Redo.
+* 📖 **[Design Inventory Management System](./07-Problem-Bank/Management%20Systems/03-Design-Inventory-Management-System.md)** (`Medium`) — Atomic stock locks, SKU reorder observers.
+* 📖 **[Design Library Management System](./07-Problem-Bank/Management%20Systems/04-Design-Library-Management-System.md)** (`Medium`) — Book ISBN abstraction, overdue fine strategy.
+* 📖 **[Design Restaurant Management System](./07-Problem-Bank/Management%20Systems/05-Design-Restaurant-Management-System.md)** (`Hard`) — Kitchen Order Ticket (KOT) workflow, table allocation.
 
-- _"Why did you choose a hash approach over a counter?"_
-- _"What breaks at 10M req/day? What breaks at 1B?"_
-- _"If the cache layer is lost, what is the degraded experience?"_
-- _"What's the cost implication of your caching strategy vs. strong consistency?"_
-- _"How does your choice affect the on-call burden?"_
-- _"How would you migrate an existing system to this design?"_
+### Category 5: 💬 Communication & Messaging (3 Problems) — [Index](./07-Problem-Bank/Communication%20&%20Messaging/README.md)
+* 📖 **[Design Notification System](./07-Problem-Bank/Communication%20&%20Messaging/01-Design-Notification-System.md)** (`Easy`) — Multi-channel providers, rate limiting, circuit breaker fallback.
+* 📖 **[Design Pub Sub System](./07-Problem-Bank/Communication%20&%20Messaging/02-Design-Pub-Sub-System.md)** (`Medium`) — Distributed topic broker, consumer group offsets.
+* 📖 **[Design Chat Application](./07-Problem-Bank/Communication%20&%20Messaging/03-Design-Chat-Application.md)** (`Medium`) — 10M concurrent WebSockets, receipt state machine.
 
-> **🔑 Principal-Level Signal:** You are not expected to produce a perfect design. You are expected to **reason about tradeoffs, failure modes, cost, and evolution paths** in real-time.
+### Category 6: 💲 Financial & Payment Systems (3 Problems) — [Index](./07-Problem-Bank/Financial%20&%20Payment%20Systems/README.md)
+* 📖 **[Design Splitwise](./07-Problem-Bank/Financial%20&%20Payment%20Systems/01-Design-Splitwise.md)** (`Medium`) — Equal/Exact/Percentage splits, $O(V \log V)$ debt minimizer.
+* 📖 **[Design Payment Gateway](./07-Problem-Bank/Financial%20&%20Payment%20Systems/02-Design-Payment-Gateway.md)** (`Medium`) — Idempotency keys, multi-PSP router, Saga rollbacks.
+* 📖 **[Design Online Stock Exchange](./07-Problem-Bank/Financial%20&%20Payment%20Systems/03-Design-Online-Stock-Exchange.md)** (`Hard`) — Price-Time Priority (FIFO) matching engine, sub-100$\mu\text{s}$ latency.
 
----
+### Category 7: 🛍️ E-commerce & Booking Systems (9 Problems) — [Index](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/README.md)
+* 📖 **[Design Amazon](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/01-Design-Amazon.md)** (`Hard`) — Catalog search, inventory reservation, Saga checkout.
+* 📖 **[Design Movie Booking System](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/02-Design-Movie-Booking-System.md)** (`Hard`) — 10-min temporary seat lock in Redis, seat map grid.
+* 📖 **[Design Online Auction System](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/03-Design-Online-Auction-System.md)** (`Hard`) — Atomic bid processing, proxy bidding engine, WebSocket live price.
+* 📖 **[Design Online Food Delivery Service](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/04-Design-Online-Food-Delivery-Service.md)** (`Hard`) — Geospatial driver matching (QuadTree/H3), order state machine.
+* 📖 **[Design Ride Hailing Service](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/05-Design-Ride-Hailing-Service.md)** (`Hard`) — Spatial driver indexing (Geohash), surge pricing strategy.
+* 📖 **[Design Amazon Locker](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/06-Design-Amazon-Locker.md)** (`Medium`) — Locker size matching (S/M/L/XL), OTP validation.
+* 📖 **[Design Shopping Cart](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/07-Design-Shopping-Cart.md)** (`Medium`) — Decorator coupon discounts, quantity calculator.
+* 📖 **[Design Car Rental System](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/08-Design-Car-Rental-System.md)** (`Hard`) — Date-range overlap checker, add-on options decorator.
+* 📖 **[Design Meeting Scheduler](./07-Problem-Bank/E-commerce%20&%20Booking%20Systems/09-Design-Meeting-Scheduler.md)** (`Hard`) — Interval tree overlap detection, room capacity reservation.
 
-## 📚 How to Use This Repo
+### Category 8: ⚙️ Developer Tools & Infrastructure (8 Problems) — [Index](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/README.md)
+* 📖 **[Design URL Shortener](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/01-Design-URL-Shortener.md)** (`Medium`) — Base62 Key Generation Service, 301 vs 302 redirect.
+* 📖 **[Design Logging Framework](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/02-Design-Logging-Framework.md)** (`Medium`) — Chain of Responsibility appenders, lock-free ring buffer.
+* 📖 **[Design Rate Limiter](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/03-Design-Rate-Limiter.md)** (`Medium`) — Token Bucket & Sliding Window, Redis Lua scripts.
+* 📖 **[Design In Memory File System](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/04-Design-In-Memory-File-System.md)** (`Hard`) — Composite Inode tree (`FileNode`, `DirectoryNode`), Unix VFS methods.
+* 📖 **[Design Version Control System](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/05-Design-Version-Control-System.md)** (`Hard`) — Content-Addressable Storage (SHA-256), DAG history, 3-way merge.
+* 📖 **[Design Task Scheduler](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/06-Design-Task-Scheduler.md)** (`Hard`) — Min-Heap / DelayQueue priority queue, Cron parser.
+* 📖 **[Design Google Docs / Collaborative Editor](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/07-Design-Google-Docs-Collaborative-Editor.md)** (`Hard`) — Operational Transformation (OT) vs CRDTs, Vector Clocks.
+* 📖 **[Design Distributed Key-Value Store](./07-Problem-Bank/Developer%20Tools%20&%20Infrastructure/08-Design-Distributed-Key-Value-Store.md)** (`Hard`) — Consistent Hashing Ring, Tunable Quorum ($R + W > N$), Vector Clocks.
 
-### Core Philosophy
-
-This repo follows the **Feynman Technique** applied to system design:
-
-1. **Read** the concept (with context and diagrams)
-2. **Explain it back** in simple terms (Q&A sections)
-3. **Apply it** to a concrete problem (code + design exercise)
-4. **Stress-test it** — what breaks? what's the cost? what's the alternative?
-
-### The 80/20 Rule Applied
-
-| Section                 | Time Allocation | Why                                                     |
-| ----------------------- | --------------- | ------------------------------------------------------- |
-| Frontend System Design  | 35%             | Your primary domain — go deep                           |
-| LLD (Low-Level Design)  | 25%             | Machine coding is 60% of FE interviews                  |
-| HLD (High-Level Design) | 20%             | Needed for "design an API / feed / notification system" |
-| Networks and Browser    | 10%             | Critical for performance + debugging interviews         |
-| Backend Awareness       | 10%             | Enough to collaborate, not to compete with BEs          |
-
----
-
-## 📂 All Sections Index
-
-### 01 — Low-Level Design (LLD)
-
-> _OOP, Design Patterns, Machine Coding, UML, Concurrency_
-
-| File                                                               | Description                                 | Key Concepts                                                 |
-| ------------------------------------------------------------------ | ------------------------------------------- | ------------------------------------------------------------ |
-| 📖 [`01-OOP-Concepts.md`](./01-LLD/01-OOP-Concepts.md)             | The 4 OOP pillars in depth                  | Encapsulation, Abstraction, Inheritance, Polymorphism        |
-| 📖 [`02-SOLID.md`](./01-LLD/02-SOLID.md)                           | All 5 SOLID principles with TS examples     | SRP, OCP, LSP, ISP, DIP + Case Study                         |
-| 📖 [`03-Design-Principles.md`](./01-LLD/03-Design-Principles.md)   | Core design principles                      | DRY, KISS, YAGNI, Law of Demeter, Coupling & Cohesion        |
-| 📖 [`04-Design-Patterns.md`](./01-LLD/04-Design-Patterns.md)       | Creational, Structural, Behavioral patterns | Factory, Singleton, Adapter, Decorator, Strategy, Observer   |
-| 📖 [`05-UML-Diagrams.md`](./01-LLD/05-UML-Diagrams.md)             | Visual modeling & requirements              | Class, Sequence, Component Diagrams & FUN-SCALE Framework    |
-| 📖 [`06-Machine-Coding.md`](./01-LLD/06-Machine-Coding.md)         | Machine coding challenges                   | Executable LRU Cache, Splitwise Debt Minimizer, Rate Limiter |
-| 📖 [`07-Concurrency-Design.md`](./01-LLD/07-Concurrency-Design.md) | Synchronization primitives                  | Mutex, Semaphore, Async Queue, Lock-free CAS Atomics         |
-
-### 02 — High-Level Design (HLD)
-
-> _Architecture, Distributed Systems, Caching, Databases, Scale_
-
-| File                                                                     | Description                               | Key Concepts                                          |
-| ------------------------------------------------------------------------ | ----------------------------------------- | ----------------------------------------------------- |
-| 📖 [`01-Architecture-Patterns.md`](./02-HLD/01-Architecture-Patterns.md) | Monolith → Microservices → Serverless     | Monolith vs Microservices, Event-Driven, BFF, DDD     |
-| 📖 [`02-Distributed-Systems.md`](./02-HLD/02-Distributed-Systems.md)     | Distributed systems theorems & algorithms | CAP, PACELC, Consistent Hashing, Saga, CRDT           |
-| 📖 [`11-Classic-Problems.md`](./02-HLD/11-Classic-Problems.md)           | Full HLD Blueprints (FUN-SCALE)           | Rate Limiter, Twitter Feed System, WhatsApp Messaging |
-
-### 03 — Frontend System Design (80% Primary Focus)
-
-> _Rendering, Performance, Architecture, Real-time, Browser Internals_
-
-| File                                                                                   | Description                           | Key Concepts                                                   |
-| -------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------- |
-| 📖 [`01-Rendering-Strategies.md`](./03-Frontend-SD/01-Rendering-Strategies.md)         | All Web Rendering Strategies          | CSR, SSR, SSG, ISR, Streaming SSR, RSC, Islands                |
-| 📖 [`02-Performance-CWV.md`](./03-Frontend-SD/02-Performance-CWV.md)                   | Core Web Vitals & Web Performance     | LCP, INP, CLS, TTFB, Resource Hints, Yielding Main Thread      |
-| 📖 [`03-Browser-Internals.md`](./03-Frontend-SD/03-Browser-Internals.md)               | Event Loop & Rendering Pipeline       | Event Loop, Reflow vs Repaint, Layout Thrashing, Memory Leaks  |
-| 📖 [`04-React-Architecture.md`](./03-Frontend-SD/04-React-Architecture.md)             | React Fiber Engine & Concurrency      | Fiber, 32-bit Lanes, `useSyncExternalStore`, React 19 Compiler |
-| 📖 [`10-Frontend-Classic.md`](./03-Frontend-SD/10-Frontend-Classic.md)                 | Classic FE System Designs (FUN-SCALE) | YouTube Player, Virtualized Feed, Search Autocomplete          |
-| 📖 [`11-Frontend-Systems-Catalog.md`](./03-Frontend-SD/11-Frontend-Systems-Catalog.md) | FE Master Catalog & Blueprints        | Uber Live Map, Dropbox Upload, VS Code Web, Toast Center       |
-| 🔥 [`HOT-FE-INTERVIEW-PRACTICE.md`](./03-Frontend-SD/HOT-FE-INTERVIEW-PRACTICE.md)     | Hot FE Practice Bank                  | Figma Whiteboard, Micro Frontend Platform, Offline Task PWA    |
-| 🎯 [`ADVANCED-PRINCIPAL-GAPS.md`](./03-Frontend-SD/ADVANCED-PRINCIPAL-GAPS.md)         | Advanced Principal Gaps               | OpenTelemetry RUM, OAuth2 PKCE, Trusted Types, Design Tokens   |
-
-### 04 — Backend Awareness (20% Focus)
-
-> _Enough backend knowledge to be a great frontend architect_
-
-| File                                                                               | Description                                           | Key Concepts                                             |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
-| 📖 [`01-Node-Express-Basics.md`](./04-Backend-Awareness/01-Node-Express-Basics.md) | Node event loop, middleware, streaming, rate limiting | Event Loop, Streams, Rate Limiter Lua, BE Red Flags, Q&A |
-
-### 05 — Networks & Web
-
-> _DNS, HTTP, TLS, WebSockets, browser request lifecycle_
-
-| File                                                          | Description                                        | Key Concepts                                                  |
-| ------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------- |
-| 📖 [`01-DNS-to-HTTP.md`](./05-Networks-Web/01-DNS-to-HTTP.md) | Complete request lifecycle from DNS to HTTP/3 QUIC | DNS, TCP 3-Way Handshake, TLS 1.3 0-RTT, HTTP/1/2/3, L4/L7 LB |
-
-### 06 — Interview Q&A Bank & Tradeoffs
-
-> _166 Collapsed self-test questions, tradeoffs cheatsheets, interview simulations_
-
-| File                                                                              | Description                           | Key Concepts                                                    |
-| --------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------- |
-| 📖 [`LLD-QA.md`](./06-Interview-QA/LLD-QA.md)                                     | 30 LLD questions with answers         | OOP, SOLID, Patterns, Concurrency                               |
-| 📖 [`HLD-QA.md`](./06-Interview-QA/HLD-QA.md)                                     | 30 HLD questions with answers         | Distributed Systems, DB Sharding, Caching                       |
-| 📖 [`FE-SD-QA.md`](./06-Interview-QA/FE-SD-QA.md)                                 | 30 Frontend SD questions with answers | Rendering, Web Vitals, Security, Real-time                      |
-| 🔬 [`SCENARIO-EDGE-CASES-BANK.md`](./06-Interview-QA/SCENARIO-EDGE-CASES-BANK.md) | Small-to-Large Scenario Edge Cases    | Double submit, Multi-tab desync, SW cache lock, Thundering herd |
-| 🎯 [`Principal-Level-QA.md`](./06-Interview-QA/Principal-Level-QA.md)             | 20 Principal architectural scenarios  | "Why This Over That?" Tradeoffs                                 |
-| ⚡ [`Tradeoffs-Cheatsheet.md`](./06-Interview-QA/Tradeoffs-Cheatsheet.md)         | X vs Y Quick Reference Matrix         | SQL vs NoSQL, REST vs GraphQL, CSR vs SSR                       |
+### Category 9: 📱 Social & Content Platforms (7 Problems) — [Index](./07-Problem-Bank/Social%20&%20Content%20Platforms/README.md)
+* 📖 **[Design Stack Overflow](./07-Problem-Bank/Social%20&%20Content%20Platforms/01-Design-Stack-Overflow.md)** (`Medium`) — Q&A voting, reputation engine, tag indexing.
+* 📖 **[Design a Social Network](./07-Problem-Bank/Social%20&%20Content%20Platforms/02-Design-Social-Network.md)** (`Medium`) — News feed generation (Push vs Pull hybrid), social graph.
+* 📖 **[Design Learning Platform](./07-Problem-Bank/Social%20&%20Content%20Platforms/03-Design-Learning-Platform.md)** (`Medium`) — Video chunk streaming, course progress tracking.
+* 📖 **[Design Cricinfo](./07-Problem-Bank/Social%20&%20Content%20Platforms/04-Design-Cricinfo.md)** (`Hard`) — Sub-second live ball-by-ball score broadcasting, WebSocket fan-out.
+* 📖 **[Design LinkedIn](./07-Problem-Bank/Social%20&%20Content%20Platforms/05-Design-LinkedIn.md)** (`Hard`) — 2nd/3rd degree connection graph, job search indexing.
+* 📖 **[Design Spotify](./07-Problem-Bank/Social%20&%20Content%20Platforms/06-Design-Spotify.md)** (`Hard`) — Audio chunking/caching, offline PWA playback.
+* 📖 **[Design X (Twitter) & Trends Engine](./07-Problem-Bank/Social%20&%20Content%20Platforms/07-Design-X-Twitter-Trends.md)** (`Hard`) — Hybrid timeline fan-out, Count-Min Sketch heavy hitters.
 
 ---
 
-## 📅 8-Week Study Plan
+## 📅 Recommended 8-Week Study Roadmap
+👉 **[View Full 8-Week Actionable Timeline](./ROADMAP.md)**
 
-| Week  | Focus Area                       | Files to Study                                                    | Practice Problems                            | Hours/Day |
-| ----- | -------------------------------- | ----------------------------------------------------------------- | -------------------------------------------- | --------- |
-| **1** | LLD Foundation                   | `01-LLD/01-OOP-SOLID`, `02-Design-Patterns`                       | Parking Lot, LRU Cache                       | 2–3 hrs   |
-| **2** | Design Patterns + Machine Coding | `01-LLD/02-Design-Patterns`, `03-Machine-Coding`                  | Observer pattern, Command pattern, Undo-Redo | 2–3 hrs   |
-| **3** | UML + Concurrency + Requirements | `01-LLD/04-UML-Diagrams`, `05-Concurrency-Patterns`               | Elevator, Chess, Booking System              | 2–3 hrs   |
-| **4** | HLD Foundation                   | `02-HLD/01-Architecture-Patterns`, `02-Distributed-Systems`       | URL Shortener, Pastebin                      | 2–3 hrs   |
-| **5** | HLD Advanced                     | `02-HLD/03-Caching`, `04-Databases`, `05-Messaging`, `06-Scaling` | Twitter Feed, Notification System            | 2–3 hrs   |
-| **6** | Frontend SD — Rendering + Perf   | `03-Frontend-SD/01-Rendering`, `02-CWV`, `03-Browser-Internals`   | Design a news feed, YouTube homepage         | 2–3 hrs   |
-| **7** | Frontend SD Advanced             | `03-Frontend-SD/04-React-Arch`, `05-Micro-FE`, `06-Real-time`     | Google Docs, Uber Map, Collaborative editor  | 2–3 hrs   |
-| **8** | Mock Interviews + Review         | All `06-QA-Bank` files                                            | Full end-to-end mock sessions                | 3–4 hrs   |
-
-> **Tip:** Don't study every file cover-to-cover in Week 1. Follow the sequence — concepts build on each other intentionally.
-
----
-
-## 🔁 Daily Practice Loop
-
-The most effective preparation is a **consistent daily habit**, not weekend cramming.
-
-### The 3-Step Daily Loop (45–60 min)
-
+```text
+Week 1-3: Low-Level Design (LLD), OOP, SOLID, 10 Patterns & Machine Coding
+Week 4-5: High-Level Design (HLD), Distributed Caching, Storage & System Bottlenecks
+Week 6-7: Frontend Architecture, Rendering (SSR/SSG/ISR), CWV & Web Security
+Week 8: Full Synthesis, 55 Problem Bank Practice & Mock Interview Drills
 ```
-Step 1 — PICK  (5 min)
-  → Choose 1 LLD problem or 1 HLD problem from the index
-  → Do NOT look at the answer yet
-
-Step 2 — DESIGN  (25–35 min)
-  → Whiteboard or draw.io or text file
-  → Write: requirements, components, interfaces, data flow
-  → Identify: failure modes, scaling bottlenecks, cost drivers
-
-Step 3 — SPEAK  (10–15 min)
-  → Narrate your design aloud as if presenting to a panel
-  → Explicitly say: "I chose X over Y because..."
-  → Explicitly say: "This breaks when..."
-  → Explicitly say: "At 10x scale, I would change..."
-```
-
-### LLD Daily Problems (rotate through)
-
-| Day | Problem                | What to Practice                       |
-| --- | ---------------------- | -------------------------------------- |
-| Mon | Parking Lot            | Classes, interfaces, strategy pattern  |
-| Tue | LRU Cache              | HashMap + DLL, O(1) operations         |
-| Wed | Elevator System        | State machine, queue, scheduling       |
-| Thu | Chess / Snake & Ladder | Board abstraction, polymorphism        |
-| Fri | Pub-Sub System         | Observer, decoupling, event bus        |
-| Sat | Hotel Booking System   | Booking logic, concurrency, locks      |
-| Sun | Rate Limiter           | Token bucket, sliding window algorithm |
-
-### HLD Daily Problems (rotate through)
-
-| Day | Problem                   | What to Practice                         |
-| --- | ------------------------- | ---------------------------------------- |
-| Mon | URL Shortener             | Hashing, redirects, analytics, scaling   |
-| Tue | Twitter Feed              | Fan-out, celebrity problem, timeline     |
-| Wed | Notification System       | Push/pull, channels, prioritization      |
-| Thu | Google Drive / Dropbox    | Chunking, sync, conflict resolution      |
-| Fri | Ride-sharing App          | Geo-queries, matching, surge pricing     |
-| Sat | Video Streaming (YouTube) | CDN, encoding pipeline, adaptive bitrate |
-| Sun | Chat App (WhatsApp)       | Presence, delivery receipts, group chat  |
-
----
-
-## 🎓 Principal-Level Difference — What They're Actually Testing
-
-At a Principal/Staff level, every question has a **"so what?"** expected after your answer.
-
-### The 5 Principal-Level Questions Behind Every Design
-
-```
-1. "Why this over that?"
-   → You must know at least 2 alternatives and articulate why you ruled them out.
-   → Example: "I chose Redis over Memcached because we need pub-sub and sorted sets."
-
-2. "What breaks at scale?"
-   → Single points of failure, hot partitions, queue depth, thundering herd.
-   → Example: "At 1M users, the fan-out-on-write approach hits write amplification."
-
-3. "What happens on failure?"
-   → Graceful degradation, circuit breakers, fallback strategies.
-   → Example: "If the cache is down, we fall back to DB with a timeout + return stale data."
-
-4. "Cost vs. performance?"
-   → Memory costs money. Compute costs money. Engineers cost money.
-   → Example: "We could store pre-computed timelines but that's 10x storage cost."
-
-5. "How do you migrate to this?"
-   → No system is greenfield. How do you roll this out without downtime?
-   → Example: "We'd run dual writes for 2 weeks, then flip the read path with a flag."
-```
-
-> **🔑 Principal-Level Signal:** The interviewer already knows the "right" answer. They want to see your **reasoning process**, not your memorized solution. A confident "I don't know, but here's how I'd figure it out" beats a wrong confident answer every time.
-
----
-
-## ⚡ Quick Reference Links
-
-| Resource                 | Link                                                                             | When to Use                           |
-| ------------------------ | -------------------------------------------------------------------------------- | ------------------------------------- |
-| **Q&A Bank — LLD**       | [`06-QA-Bank/LLD-QA-Bank.md`](./06-QA-Bank/LLD-QA-Bank.md)                       | Daily self-test for LLD               |
-| **Q&A Bank — HLD**       | [`06-QA-Bank/HLD-QA-Bank.md`](./06-QA-Bank/HLD-QA-Bank.md)                       | Daily self-test for HLD               |
-| **Frontend SD Q&A**      | [`06-QA-Bank/Frontend-SD-QA-Bank.md`](./06-QA-Bank/Frontend-SD-QA-Bank.md)       | Pre-interview FE review               |
-| **Tradeoffs Cheatsheet** | [`06-QA-Bank/Tradeoffs-Cheatsheet.md`](./06-QA-Bank/Tradeoffs-Cheatsheet.md)     | Last-day-before-interview review      |
-| **Classic Problems**     | [`06-QA-Bank/Classic-Problems-Index.md`](./06-QA-Bank/Classic-Problems-Index.md) | Pick your daily practice problem      |
-| **Backend Awareness**    | [`04-Backend-Awareness/README.md`](./04-Backend-Awareness/README.md)             | Before any cross-functional interview |
-| **Networks Overview**    | [`05-Networks-Web/README.md`](./05-Networks-Web/README.md)                       | Network/performance interview prep    |
-| **8-Week Roadmap**       | [`ROADMAP.md`](./ROADMAP.md)                                                     | Your weekly study schedule            |
-
----
-
-## 🔗 Useful External Resources
-
-- 🎨 **Design Patterns Repository:** [kumaratul60/design-patterns](https://github.com/kumaratul60/design-patterns)
-- ⚛️ **React Web Development Notes:** [kumaratul60/web-dev/Notes](https://github.com/kumaratul60/web-dev/tree/main/Notes)
-- ⚡ **JavaScript In-Depth Interview Prep:** [kumaratul60/javascript-interview](https://github.com/kumaratul60/javascript-interview)
-- 🌐 **System Design Core Repository:** [kumaratul60/System-Design](https://github.com/kumaratul60/System-Design)
-
----
-
-## 🧱 Repository Philosophy
-
-This repository is built on three beliefs:
-
-1. **Tradeoffs over solutions** — A correct answer with no reasoning is worth less than a thoughtful answer with explicit tradeoffs.
-
-2. **Depth over breadth** — It is better to deeply understand 10 patterns than to superficially know 50.
-
-3. **Speak before you write** — At the principal level, communication _is_ the skill. Every design session should end with you having narrated the design aloud.
-
----
-
-_Last updated: August 2026 — Principal/Staff Architect Prep System v1.0_
