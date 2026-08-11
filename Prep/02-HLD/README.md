@@ -53,11 +53,18 @@ In each case, the expectation is identical: you must be able to **defend every d
 
 ## ⚖️ HLD vs LLD — Not a Spectrum, a Different Lens
 
-These are not points on a zoom slider. They are fundamentally different problem scopes.
-
-| Dimension                  | High-Level Design                                                                | Low-Level Design                                                     |
-| -------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| **Scope**                  | System boundary, major subsystems                                                | A single service, module, or class                                   |
+| Dimension / Area | 🌐 High-Level Design (HLD) | 🏗️ Low-Level Design (LLD) |
+| :--- | :--- | :--- |
+| **Scope** | **System** & Network Boundaries | **Code** & Module Internals |
+| **Level** | **Macro** (Services, Databases, Queues) | **Micro** (Classes, Methods, Interfaces) |
+| **Output** | **Architecture Diagrams**, Protocols, Specs | **Classes, APIs**, UML, State Machines |
+| **Concern** | **Scalability**, Availability ($99.999\%$), SLAs | **Maintainability**, Extensibility, SOLID |
+| **Example** | **Redis Cluster**, Sharded Postgres, Kafka | `class Cache<K,V>`, `interface Strategy` |
+| **Decisions** | Which database? Which queue? Which CDN? | Which class owns what data? Which pattern? |
+| **Failure Focus** | Network partitions (CAP), Thundering herd | Null pointers, Race conditions, Deadlocks |
+| **Key Metrics** | QPS (Queries/Sec), $P_{99}$ Latency, RAM (TB) | Cyclomatic complexity, Test coverage |
+| **Target Audience**| Architects, PMs, Security & SRE Leads | Developers implementing the code |
+| **Interview Test** | *"Can you design a 10M QPS distributed cache?"* | *"Can you implement an O(1) LRU Cache?"* |
 | **Primary question**       | _What components exist and how do they talk?_                                    | _How does this component actually work internally?_                  |
 | **Primary artifact**       | Architecture diagram, data flow, API contract                                    | Class diagram, sequence diagram, pseudocode, DB schema               |
 | **Key decisions**          | Tech stack choices, communication patterns, storage engines                      | Data structures, algorithm choice, class hierarchies                 |

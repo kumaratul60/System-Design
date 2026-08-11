@@ -69,18 +69,18 @@ Most engineers think LLD is about writing clean classes. Principal engineers kno
 
 ## ⚖️ LLD vs HLD — The Real Difference
 
-| Dimension             | Low-Level Design (LLD)                       | High-Level Design (HLD)                   |
-| --------------------- | -------------------------------------------- | ----------------------------------------- |
-| **Scope**             | Single service or module internals           | Entire distributed system                 |
-| **Output**            | Classes, interfaces, ERD, state machines     | Architecture diagram, service topology    |
-| **Decisions**         | Which class owns what data? Which pattern?   | Which database? Which queue? Which CDN?   |
-| **Abstraction Level** | Code-level (methods, attributes)             | Infrastructure-level (services, networks) |
-| **Time Horizon**      | Sprint/quarter                               | Quarters/years                            |
-| **Audience**          | Developers implementing the feature          | Architects, PMs, stakeholders             |
-| **Risk Focus**        | Coupling, cohesion, testability              | Availability, scalability, cost           |
-| **Tools**             | UML, class diagrams, sequence diagrams       | Block diagrams, data flow diagrams        |
-| **Interview Signal**  | Can you write code that others can maintain? | Can you architect systems that scale?     |
-| **Example Question**  | Design a Parking Lot system                  | Design a ride-sharing system like Uber    |
+| Dimension / Area | 🏗️ Low-Level Design (LLD) | 🌐 High-Level Design (HLD) |
+| :--- | :--- | :--- |
+| **Scope** | **Code** & Module Internals | **System** & Network Boundaries |
+| **Level** | **Micro** (Classes, Methods, Interfaces) | **Macro** (Services, Databases, Queues) |
+| **Output** | **Classes, APIs**, UML, State Machines | **Architecture Diagrams**, Protocols, Specs |
+| **Concern** | **Maintainability**, Extensibility, SOLID | **Scalability**, Availability ($99.999\%$), SLAs |
+| **Example** | `class Cache<K,V>`, `interface Strategy` | **Redis Cluster**, Sharded Postgres, Kafka |
+| **Decisions** | Which class owns what data? Which pattern? | Which database? Which queue? Which CDN? |
+| **Failure Focus** | Null pointers, Race conditions, Deadlocks | Network partitions (CAP), Thundering herd |
+| **Key Metrics** | Cyclomatic complexity, Test coverage | QPS (Queries/Sec), $P_{99}$ Latency, RAM (TB) |
+| **Target Audience**| Developers implementing the code | Architects, PMs, Security & SRE Leads |
+| **Interview Test** | *"Can you implement an O(1) LRU Cache?"* | *"Can you design a 10M QPS distributed cache?"* |
 
 ### Where LLD Lives in the Engineering Lifecycle
 

@@ -23,6 +23,20 @@
 
 ---
 
+## ⚖️ LLD vs HLD Architectural Comparison Matrix
+
+| Area / Dimension | 🏗️ Low-Level Design (LLD) | 🌐 High-Level Design (HLD) |
+| :--- | :--- | :--- |
+| **Scope** | **Code** & Module Internals | **System** & Network Boundaries |
+| **Level** | **Micro** (Classes, Methods, Interfaces) | **Macro** (Services, Databases, Queues) |
+| **Output** | **Classes, APIs**, UML, State Machines | **Architecture Diagrams**, Protocols, Specs |
+| **Concern** | **Maintainability**, Extensibility, SOLID | **Scalability**, Availability ($99.999\%$), SLAs |
+| **Example** | `class Cache<K, V>`, `interface Strategy` | **Redis Cluster**, Sharded Postgres, Kafka |
+| **Key Metrics** | Cyclomatic complexity, Test coverage | QPS (Queries/Sec), $P_{99}$ Latency, Storage RAM |
+| **Target Audience**| Software Engineers, Peer Developers | Staff/Principal Architects, Security & SRE Leads |
+
+---
+
 ## 🗺️ Visual Architecture Map
 
 ```mermaid

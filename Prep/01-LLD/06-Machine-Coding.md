@@ -2,7 +2,6 @@
 
 > **🎯 Target Audience:** Staff / Senior / Principal Engineers
 > **Focus:** 1–2 hour Machine Coding rounds (Clean Code, Data Structure Selection, Extensibility, Working Executable Code).
-> **Existing Repo Tags:** 🔗 [See existing Machine Code Reference](file:///Users/atulkumarawasthi/projects/SystemDesign/Questions/machine_code.md) | 🔗 [See LLD Interactive App](file:///Users/atulkumarawasthi/projects/SystemDesign/LLD/LLD.md)
 
 ---
 
@@ -26,7 +25,7 @@ flowchart LR
 
 ---
 
-## 🚀 Worked Problem 1: LRU Cache (Least Recently Used)
+##  Worked Problem 1: LRU Cache (Least Recently Used)
 
 - **Requirement:** Implement an `LRUCache<K, V>` with $O(1)$ time complexity for `get` and `put` operations.
 
