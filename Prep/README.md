@@ -9,6 +9,7 @@
 🚀 **Primary Study Navigation Hub:**
 - 🗺️ **Master Index:** [`Prep/README.md`](./README.md)
 - 📅 **8-Week Master Schedule:** [`Prep/ROADMAP.md`](./ROADMAP.md) (Week-by-week schedule + clickable file links)
+- 🏆 **Social & Content Platforms Problem Bank:** [`Prep/07-Problem-Bank/README.md`](./07-Problem-Bank/README.md) (Stack Overflow, Social Network, Learning Platform, Cricinfo, LinkedIn, Spotify)
 - 🎨 **Master Design Patterns Guide:** [`Prep/01-LLD/04-Design-Patterns.md`](./01-LLD/04-Design-Patterns.md) (10 High-Frequency Patterns + Algomaster Links + FE/BE Code)
 - 📐 **Master UML Diagrams Guide:** [`Prep/01-LLD/05-UML-Diagrams.md`](./01-LLD/05-UML-Diagrams.md) (Class, Sequence, Component & State Machine Diagrams + FUN-SCALE)
 - 🧱 **Standalone SOLID Principles Master Guide:** [`Prep/01-LLD/SOLID.md`](./01-LLD/SOLID.md) (S.O.L.I.D. FE & BE Code, Diagrams, Enterprise Case Study)
