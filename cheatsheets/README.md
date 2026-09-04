@@ -22,7 +22,9 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - 🧹 **[Clean Code Guidelines](cleancode.md)**: SOLID principles, code smells, UI separation of concerns, and clean async state management.
 - 📐 **[CSS Units & Layouts](cssUnits.md)**: Responsive typography (`rem`, `em`), exact hairlines (`px`), viewports (`vw`, `vh`, `dvh`), and Container Queries (`cqw`, `cqh`).
 - 📈 **[Evolution of CSS](evolutionCSS.md)**: Styling evolution timeline from inline tables to Preprocessors, CSS-in-JS, Tailwind, and Modern specifications.
-- 🔄 **[Evolution of React](evolutionReact.md)**: Rendering paradigm evolution from Mixins to ES6 classes, Hooks, Fiber concurrency, Server Components, and Server Actions.
+- ♿ **[Web Accessibility (a11y) & WCAG Architectural Guide](WCAG_Accessibility.md)**: WCAG 2.1/2.2 compliance, POUR principles, ARIA rules, accessible design patterns, focus management, SPA route announcer, and Staff/Architect interview grill.
+- 🛡️ **[Security Architecture Interview Grill](Security_Architect.md)**: SDE-1 to Staff/Architect security concepts, OAuth2/OIDC, CSRF/XSS, CSP, IDOR, Zero Trust, and secure system design.
+- ⚡ **[Performance Optimization](Performance_Optimization.md)**: Core Web Vitals, browser rendering performance, bundle splitting, memory leak debugging, and network optimization.
 - 🔍 **[Regular Expressions (RegEx)](regex.md)**: Match patterns, character classes, quantifiers, lookarounds, logic flow engine, and performance tips.
 
 ---
@@ -126,3 +128,15 @@ Use this high-level list to find the correct primitive for your specific problem
 - [Cross-Origin Isolation Headers](webassembly-web-sdk.md#2-multithreading-security-sharedarraybuffer--coopcoep) — Secure `SharedArrayBuffer` using COOP/COEP headers.
 - [Asynchronous Queue Loader](webassembly-web-sdk.md#4-client-side-asynchronous-snippet-queue-loader) — Buffer commands inside arrays before scripts finish loading.
 - [Storage Partitioning](webassembly-web-sdk.md#5-storage-partitioning-browser-privacy-sandboxing) — Handle partitioned `localStorage` inside third-party iframe boundaries.
+
+---
+
+### Web Accessibility (a11y) & WCAG Architectural Patterns
+
+- [5 Golden Rules of ARIA](WCAG_Accessibility.md#-the-5-golden-rules-of-aria) — Native HTML vs ARIA polyfills and when not to use ARIA.
+- [`tabIndex` Master Guide (`0`, `-1`, `<0`, `>0`)](WCAG_Accessibility.md#3-the-tabindex-master-guide-0--1-0-0) — Browser navigation behavior, programmatic focus, and why positive values are an anti-pattern.
+- [`inert` vs `aria-hidden` vs `display:none` vs `.sr-only`](WCAG_Accessibility.md#2-hiding-elements-inert-vs-aria-hidden-vs-displaynone-vs-sr-only) — Trade-offs and accessibility tree visibility.
+- [Roving `tabIndex` vs `aria-activedescendant`](WCAG_Accessibility.md#4-focus-management-roving-tabindex-vs-aria-activedescendant) — Focus management strategies for composite widgets.
+- [Modal Focus Trapping & Restoration](WCAG_Accessibility.md#pattern-1-modal-dialogs--focus-trapping-native-dialog-vs-custom-portal) — Native `<dialog>` top layer vs portal focus traps.
+- [SPA Route Announcer](WCAG_Accessibility.md#pattern-3-single-page-application-spa-route-transitions--focus-reset) — Dynamic client-side routing focus reset and screen reader announcements.
+- [A11y CI/CD Pipeline & Automated Governance](WCAG_Accessibility.md#-accessibility-testing--governance-pipeline) — Shift-left testing with `axe-core`, Playwright, and ESLint.
