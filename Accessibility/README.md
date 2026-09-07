@@ -239,9 +239,9 @@ flowchart TD
 
 ```mermaid
 graph TD
-    L1[Level 1: Junior Engineer<br/>0 to 25] --> L2[Level 2: Mid-Level Engineer<br/>25 to 50]
-    L2 --> L3[Level 3: Senior Engineer<br/>50 to 75]
-    L3 --> L4[Level 4: Staff & Principal Architect<br/>75 to 100]
+    L1[Level 1 <br/>] --> L2[Level 2 <br/>]
+    L2 --> L3[Level 3 <br/>]
+    L3 --> L4[Level 4 <br/>]
 
     L1 --- L1_Desc[HTML5 Semantics, Labeling, Contrast 4.5:1, Alt Text]
     L2 --- L2_Desc[5 Rules of ARIA, Dynamic States, Live Regions, Modal Focus Trapping]
