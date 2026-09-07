@@ -235,7 +235,7 @@ flowchart TD
 
 ---
 
-## 6. Engineering Roadmap: From 0 to 100 (Junior to Staff Architect)
+## 6. Engineering Roadmap
 
 ```mermaid
 graph TD
@@ -249,28 +249,28 @@ graph TD
     L4 --- L4_Desc[Enterprise Design Systems, Headless Primitives, CI/CD Automated Governance]
 ```
 
-### Level 1: Junior Foundations (0-25)
+### Level 1: Foundations
 
 - Replace generic `<div onClick>` and `<span onClick>` with native `<button type="button">`.
 - Provide meaningful `alt` descriptions on images (`alt="Financial growth chart Q3"`) and empty `alt=""` on decorative icons.
 - Guarantee that form inputs have explicitly linked `<label for="id">` elements.
 - Maintain at least **4.5:1** contrast on normal body copy and **3:1** on headers and inputs.
 
-### Level 2: Mid-Level Engineering (25-50)
+### Level 2: Mid-Level Engineering
 
 - Manage ARIA component state transitions: `aria-expanded="true|false"` on accordions and menus; `aria-checked="true|false"` on custom toggles.
 - Construct accessible modal dialogs using native `<dialog>` or custom focus traps with `<kbd>Escape</kbd>` listeners.
 - Use `aria-live="polite"` for non-disruptive dynamic content updates (toast notifications, search count updates).
 - Eliminate all positive `tabindex` attributes (`tabindex="1+"`), adhering strictly to `0` and `-1`.
 
-### Level 3: Senior Architecture (50-75)
+### Level 3: Senior Architecture
 
 - Architect composite widgets with **Roving `tabindex`** (Tabs, Toolbars, Menus) and **`aria-activedescendant`** (Comboboxes, Auto-completes).
 - Implement SPA Route Announcers to manage focus shift and announce page updates on client-side routing.
 - Support Windows High Contrast / Forced Colors Mode (`@media (forced-colors: active)`) using semantic system colors (`Canvas`, `CanvasText`, `Highlight`).
 - Handle complex focus restoration stacks when deeply nested flyouts, drawers, or dialogs open and close.
 
-### Level 4: Staff & Principal Governance (75-100)
+### Level 4: Arch&Principal Governance
 
 - **Design System Standardization:** Standardize the enterprise on battle-tested headless UI primitives (e.g., Radix UI, React Aria, Ark UI) to eliminate custom accessible widget wheel-reinvention.
 - **CI/CD Quality Gates:** Deploy automated `@axe-core/playwright` and `lighthouse-ci` testing on every Pull Request, blocking regressions automatically.
