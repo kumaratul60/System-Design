@@ -8,8 +8,8 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 
 - [System Design \& Architecture Laboratory](#system-design--architecture-laboratory)
   - [Table of Contents](#table-of-contents)
-  - [🎯 Principal Staff Architect Preparation](#-principal-staff-architect-preparation)
   - [Project Structure](#project-structure)
+  - [Prep](#prep)
   - [🚀 Key Modules](#-key-modules)
     - [1. Infrastructure \& Observability](#1-infrastructure--observability)
     - [2. Logging \& Monitoring](#2-logging--monitoring)
@@ -28,21 +28,6 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [Development scripts:](#development-scripts)
   - [🤝 Contributing](#-contributing)
   - [🔗 Useful Resources](#-useful-resources)
-
----
-
-## 🎯 Principal Staff Architect Preparation
-
-🚀 **Looking to crack Staff / Principal Architect roles?** Access the dedicated, 80/20 frontend-focused preparation system here:
-👉 **[Principal Staff Architect Preparation System](./Prep/README.md)**
-
-- **8-Week Master Roadmap:** [ROADMAP.md](./Prep/ROADMAP.md)
-- **Low-Level Design (LLD):** [01-LLD](./Prep/01-LLD/README.md) (OOP, SOLID, Design Patterns, UML, Machine Coding, Concurrency)
-- **High-Level Design (HLD):** [02-HLD](./Prep/02-HLD/README.md) (Architecture Patterns, Distributed Systems, Classic Systems)
-- **Frontend System Design (80% Focus):** [03-Frontend-SD](./Prep/03-Frontend-SD/README.md) (Rendering, Web Vitals, Browser Internals, React Architecture)
-- **Backend Awareness (20% Node/Express):** [04-Backend-Awareness](./Prep/04-Backend-Awareness/README.md)
-- **Networks & Web Protocols:** [05-Networks-Web](./Prep/05-Networks-Web/README.md) (DNS → TCP → TLS → HTTP/3)
-- **Interactive Q&A Bank:** [06-Interview-QA](./Prep/06-Interview-QA/README.md) (100+ Collapsed Q&A with Answers & Tradeoffs)
 
 ---
 
@@ -143,33 +128,16 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 
 ---
 
-```text
-├── Prep/                       # Master Preparation System
-│   ├── 01-LLD/                 # Low-Level Design, OOP, SOLID, Design Patterns, UML
-│   ├── 02-HLD/                 # High-Level Design, Microservices, Distributed Systems
-│   ├── 03-Frontend-SD/         # Frontend Architecture, Rendering, Performance, CWV
-│   ├── 04-Backend-Awareness/   # Node.js Async I/O, REST/GraphQL/gRPC, Data Modeling
-│   ├── 05-Networks-Web/        # HTTP/3, TLS 1.3, DNS, CDNs, WebSockets
-│   ├── 06-Interview-QA/        # Scenario Edge Cases & Staff Grill Q&A
-│   └── 07-Problem-Bank/        # 55 Master System Design Problems & Blueprints
-│       ├── Games & Puzzles/
-│       ├── Data Structures & Search/
-│       ├── Managing States/
-│       ├── Management Systems/
-│       ├── Communication & Messaging/
-│       ├── Financial & Payment Systems/
-│       ├── E-commerce & Booking Systems/
-│       ├── Developer Tools & Infrastructure/
-│       ├── Social & Content Platforms/
-│       └── DOMAIN-SEARCH-COMPARISON.md  # Google vs Amazon vs Social Search Architectures
-├── Communication/              # Real-time & Event-driven patterns (SSE, WebSockets, WebRTC)
-├── Database&Caching/          # Caching (Redis, Cache-Aside), Client Storage, Sharding
-├── Infrastructure/             # Traffic Routing, Gateways, Load Balancers, CDN Edge
-├── Logging-Monitoring/        # Distributed Tracing, Telemetry, OpenTelemetry, Correlation IDs
-├── Networking/                 # API Architectural Styles (REST, GraphQL, gRPC)
-├── Performance/                # Web Performance, Core Web Vitals, Asset & Network Optimization
-└── Security/                   # End-to-End Security Architecture (OAuth2/PKCE, CSP, XSS, CSRF)
-```
+## Prep
+
+- **Low-Level Design (LLD):** [01-LLD](./Prep/01-LLD/README.md) (OOP, SOLID, Design Patterns, UML, Machine Coding, Concurrency)
+- **High-Level Design (HLD):** [02-HLD](./Prep/02-HLD/README.md) (Architecture Patterns, Distributed Systems, Classic Systems)
+- **Frontend System Design (80% Focus):** [03-Frontend-SD](./Prep/03-Frontend-SD/README.md) (Rendering, Web Vitals, Browser Internals, React Architecture)
+- **Backend Awareness (20% Node/Express):** [04-Backend-Awareness](./Prep/04-Backend-Awareness/README.md)
+- **Networks & Web Protocols:** [05-Networks-Web](./Prep/05-Networks-Web/README.md) (DNS → TCP → TLS → HTTP/3)
+- **Interactive Q&A Bank:** [06-Interview-QA](./Prep/06-Interview-QA/README.md) (100+ Collapsed Q&A with Answers & Tradeoffs)
+
+---
 
 ## 🚀 Key Modules
 
