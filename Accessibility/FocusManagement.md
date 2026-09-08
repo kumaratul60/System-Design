@@ -37,7 +37,7 @@ In modern enterprise applications, overlays can stack hierarchically (e.g., Page
 graph TD
     P[Main Page Trigger] -->|Opens| M[Modal Dialog 1]
     M -->|Opens| C[Confirmation Modal 2]
-    
+
     C -->|Dismiss Esc| M_Return[Focus Restored to Modal 1 Button]
     M_Return -->|Dismiss Esc| P_Return[Focus Restored to Main Page Trigger]
 ```
@@ -102,15 +102,7 @@ export function RouteFocusManager({ pageTitle }: { pageTitle: string }) {
     }
   }, [location.pathname, pageTitle]);
 
-  return (
-    <div
-      ref={announcerRef}
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      className="sr-only"
-    />
-  );
+  return <div ref={announcerRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />;
 }
 ```
 
@@ -136,6 +128,7 @@ export function RouteFocusManager({ pageTitle }: { pageTitle: string }) {
 The native `inert` HTML attribute provides a modern, performant alternative to manually setting `tabindex="-1"` and `aria-hidden="true"` across dozens of background nodes.
 
 When `inert` is applied to an element:
+
 1. All focusable children are completely removed from sequential keyboard tab order.
 2. Pointer and click events are blocked.
 3. The element and its subtree are hidden from the **Accessibility Tree (AccTree)**.
@@ -172,6 +165,7 @@ flowchart TD
 ```
 
 ### Virtual Focus Best Practices:
+
 1. **Container Navigation:** Use `aria-activedescendant` on the scrollable container rather than moving physical DOM focus. This prevents DOM unmounting race conditions.
 2. **Item Count Announcement:** Provide live announcements indicating the position: `aria-setsize="5000"` and `aria-posinset="42"`.
 3. **Scroll Anchoring:** When unmounting the currently focused DOM node, proactively shift focus to the nearest visible sibling before the element is destroyed.

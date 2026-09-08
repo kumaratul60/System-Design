@@ -19,9 +19,10 @@
     - [2. Hiding Elements: `inert` vs `aria-hidden` vs `display:none` vs `sr-only`](#2-hiding-elements-inert-vs-aria-hidden-vs-displaynone-vs-sr-only)
       - [Accessible `.sr-only` CSS Implementation](#accessible-sr-only-css-implementation)
     - [3. The `tabIndex` Master Guide (`0`, `-1`, `<0`, `>0`)](#3-the-tabindex-master-guide-0--1-0-0)
+      - [Detailed Breakdown by Value:](#detailed-breakdown-by-value)
     - [4. Focus Management: Roving `tabIndex` vs `aria-activedescendant`](#4-focus-management-roving-tabindex-vs-aria-activedescendant)
       - [Decision Matrix: When to choose which?](#decision-matrix-when-to-choose-which)
-    - [5. Dynamic Updates: `aria-live` Regions (`polite` vs `assertive`)](#5-dynamic-updates-aria-live-regions-polite-vs-assertive)
+    - [4. Dynamic Updates: `aria-live` Regions (`polite` vs `assertive`)](#4-dynamic-updates-aria-live-regions-polite-vs-assertive)
   - [🏗️ Complex UI Architectural Patterns](#️-complex-ui-architectural-patterns)
     - [Pattern 1: Modal Dialogs \& Focus Trapping (Native `<dialog>` vs Custom Portal)](#pattern-1-modal-dialogs--focus-trapping-native-dialog-vs-custom-portal)
       - [Modal Architecture Checklist](#modal-architecture-checklist)
@@ -52,6 +53,8 @@
   - [📊 Accessibility Testing \& Governance Pipeline](#-accessibility-testing--governance-pipeline)
     - [Quick Code: Playwright + Axe Automated Test](#quick-code-playwright--axe-automated-test)
     - [🧪 Testing Query Priority: Why `data-testid` is a Last Resort](#-testing-query-priority-why-data-testid-is-a-last-resort)
+      - [Why relying on `data-testid` gives **False Confidence**:](#why-relying-on-data-testid-gives-false-confidence)
+      - [When is `data-testid` genuinely justified?](#when-is-data-testid-genuinely-justified)
   - [🏁 Summary: Key Takeaways for Frontend \& System Architects](#-summary-key-takeaways-for-frontend--system-architects)
 
 ---
@@ -216,12 +219,12 @@ The `tabindex` attribute determines whether an element is focusable, how it ente
 
 #### Detailed Breakdown by Value:
 
-| `tabindex` Value | Meaning & Browser Behavior | When to Use ✅ | When NOT to Use / Anti-Pattern ❌ |
-| :--- | :--- | :--- | :--- |
-| **`tabindex="0"`** | • Inserts non-interactive elements into the **sequential keyboard tab order**.<br>• Focus order strictly follows its position in the DOM tree. | • Custom interactive controls (`<div role="button">`, custom tabs).<br>• Scrollable containers with overflow (`overflow: auto`) so keyboard users can scroll with Arrow keys.<br>• Embedded widgets and custom canvas elements. | • On native interactive elements (`<button>`, `<a>`, `<input>`, `<select>`, `<textarea>`) — they are naturally focusable by default! |
-| **`tabindex="-1"`** | • **Excludes** the element from sequential keyboard `Tab` navigation.<br>• Element **CAN** be focused programmatically via JavaScript (`element.focus()`). | • **Modal / Dialog containers** when opened.<br>• **Page Headings (`<h1 tabindex="-1">`)** during SPA route transitions.<br>• **Inactive items** in Roving `tabIndex` widgets (Tabs, Menus).<br>• **Skip Link targets** (`<main id="main" tabindex="-1">`).<br>• Form error summary alert banners. | • On primary buttons, interactive links, or form controls that keyboard users need to reach via regular `Tab` key. |
-| **`tabindex="-2"`, `tabindex="-5"` (Any negative integer $< 0$)** | • The HTML specification defines **any negative value** ($< 0$) as behaving **identically to `-1`**.<br>• Excluded from Tab sequence; focusable only via `.focus()`. | • None. (Stick to standard `-1` for codebase consistency and readability). | • Avoid using `-2`, `-3`, etc. It creates confusion without providing any behavioral difference over `-1`. |
-| **`tabindex="1"`, `tabindex="2"`, `tabindex="3"` (Any positive integer $> 0$)** | • **Overrides natural DOM order**.<br>• Browser processes positive numbers first in ascending order ($1 \to 2 \to 3$), and *only then* visits natural `tabindex="0"` elements. | • **NEVER (0% of the time).** Considered a severe anti-pattern in modern frontend architecture. | • **CRITICAL HAZARD:** Violates WCAG 2.4.3 (Focus Order). Causes the keyboard cursor to jump wildly across the page, bypassing headers, navigation, and skip links. Highly fragile in modular/MFE components. |
+| `tabindex` Value                                                                | Meaning & Browser Behavior                                                                                                                                                     | When to Use ✅                                                                                                                                                                                                                                                                                     | When NOT to Use / Anti-Pattern ❌                                                                                                                                                                             |
+| :------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`tabindex="0"`**                                                              | • Inserts non-interactive elements into the **sequential keyboard tab order**.<br>• Focus order strictly follows its position in the DOM tree.                                 | • Custom interactive controls (`<div role="button">`, custom tabs).<br>• Scrollable containers with overflow (`overflow: auto`) so keyboard users can scroll with Arrow keys.<br>• Embedded widgets and custom canvas elements.                                                                    | • On native interactive elements (`<button>`, `<a>`, `<input>`, `<select>`, `<textarea>`) — they are naturally focusable by default!                                                                          |
+| **`tabindex="-1"`**                                                             | • **Excludes** the element from sequential keyboard `Tab` navigation.<br>• Element **CAN** be focused programmatically via JavaScript (`element.focus()`).                     | • **Modal / Dialog containers** when opened.<br>• **Page Headings (`<h1 tabindex="-1">`)** during SPA route transitions.<br>• **Inactive items** in Roving `tabIndex` widgets (Tabs, Menus).<br>• **Skip Link targets** (`<main id="main" tabindex="-1">`).<br>• Form error summary alert banners. | • On primary buttons, interactive links, or form controls that keyboard users need to reach via regular `Tab` key.                                                                                            |
+| **`tabindex="-2"`, `tabindex="-5"` (Any negative integer $< 0$)**               | • The HTML specification defines **any negative value** ($< 0$) as behaving **identically to `-1`**.<br>• Excluded from Tab sequence; focusable only via `.focus()`.           | • None. (Stick to standard `-1` for codebase consistency and readability).                                                                                                                                                                                                                         | • Avoid using `-2`, `-3`, etc. It creates confusion without providing any behavioral difference over `-1`.                                                                                                    |
+| **`tabindex="1"`, `tabindex="2"`, `tabindex="3"` (Any positive integer $> 0$)** | • **Overrides natural DOM order**.<br>• Browser processes positive numbers first in ascending order ($1 \to 2 \to 3$), and _only then_ visits natural `tabindex="0"` elements. | • **NEVER (0% of the time).** Considered a severe anti-pattern in modern frontend architecture.                                                                                                                                                                                                    | • **CRITICAL HAZARD:** Violates WCAG 2.4.3 (Focus Order). Causes the keyboard cursor to jump wildly across the page, bypassing headers, navigation, and skip links. Highly fragile in modular/MFE components. |
 
 > [!CAUTION]
 > **Why Positive `tabindex` (`>0`) Breaks Enterprise Architecture:**
@@ -724,7 +727,7 @@ test.describe('Checkout Flow a11y', () => {
 
 > [!IMPORTANT]
 > **The Golden Rule of Testing (Testing Library):**
-> *"The more your tests resemble the way your software is used, the more confidence they can give you."*
+> _"The more your tests resemble the way your software is used, the more confidence they can give you."_
 > Real users and Assistive Technologies (Screen Readers, Voice Control, Switch Access) **cannot see or interact with `data-testid`**.
 
 ```
@@ -747,15 +750,16 @@ test.describe('Checkout Flow a11y', () => {
 
 #### Why relying on `data-testid` gives **False Confidence**:
 
-| Feature / Flaw | Query by `getByTestId('submit-btn')` | Query by `getByRole('button', { name: /submit/i })` |
-| :--- | :---: | :---: |
-| **Catches non-semantic `<div onClick>`?** | ❌ **No** (Test passes, but broken for keyboard & screen readers) | ✅ **Yes** (Fails: No element with role `button` found) |
-| **Catches missing accessible name/label?** | ❌ **No** (Test passes on unlabelled icon buttons) | ✅ **Yes** (Fails if button has no name or text) |
-| **Catches missing `<label>` to `<input>` link?** | ❌ **No** (`data-testid="email-input"` ignores labels) | ✅ **Yes** (`getByLabelText('Email')` fails if `htmlFor`/`id` missing) |
-| **Catches broken `aria-expanded` / states?** | ❌ **No** (Test clicks testid without verifying state) | ✅ **Yes** (`getByRole('button', { expanded: true })` verifies state) |
-| **Resilient to UI refactoring?** | ⚠️ Low (Couples test to artificial test attributes) | ✅ High (Tests user-facing contract, unaffected by markup refactor) |
+| Feature / Flaw                                   |               Query by `getByTestId('submit-btn')`                |          Query by `getByRole('button', { name: /submit/i })`           |
+| :----------------------------------------------- | :---------------------------------------------------------------: | :--------------------------------------------------------------------: |
+| **Catches non-semantic `<div onClick>`?**        | ❌ **No** (Test passes, but broken for keyboard & screen readers) |        ✅ **Yes** (Fails: No element with role `button` found)         |
+| **Catches missing accessible name/label?**       |        ❌ **No** (Test passes on unlabelled icon buttons)         |            ✅ **Yes** (Fails if button has no name or text)            |
+| **Catches missing `<label>` to `<input>` link?** |      ❌ **No** (`data-testid="email-input"` ignores labels)       | ✅ **Yes** (`getByLabelText('Email')` fails if `htmlFor`/`id` missing) |
+| **Catches broken `aria-expanded` / states?**     |      ❌ **No** (Test clicks testid without verifying state)       | ✅ **Yes** (`getByRole('button', { expanded: true })` verifies state)  |
+| **Resilient to UI refactoring?**                 |        ⚠️ Low (Couples test to artificial test attributes)        |  ✅ High (Tests user-facing contract, unaffected by markup refactor)   |
 
 #### When is `data-testid` genuinely justified?
+
 1. **Dynamic / Non-deterministic text:** UI content where text changes rapidly or comes from localized strings that would make tests brittle.
 2. **Invisible structural boundaries:** Containers, modals portals, or layout dividers where no ARIA role exists or makes semantic sense.
 3. **Canvas / WebGL / Third-party SDK embeds:** Elements rendered outside standard HTML DOM elements where screen reader trees are not present.
