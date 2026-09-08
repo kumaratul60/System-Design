@@ -21,6 +21,9 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [8. Interview \& Concept Deep Dives](#8-interview--concept-deep-dives)
     - [9. Web Fundamentals](#9-web-fundamentals)
     - [10. Low-Level Design (LLD) \& Object-Oriented Design](#10-low-level-design-lld--object-oriented-design)
+    - [11. Web Accessibility (a11y) \& WCAG Architecture](#11-web-accessibility-a11y--wcag-architecture)
+    - [12. ESLint \& Automated Quality Suite](#12-eslint--automated-quality-suite)
+    - [13. Categorized Cheatsheets \& Master Reference](#13-categorized-cheatsheets--master-reference)
   - [🛠️ Quick Start \& Local Development](#️-quick-start--local-development)
     - [Development scripts:](#development-scripts)
   - [🤝 Contributing](#-contributing)
@@ -108,6 +111,24 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   │   └── Security_Architect.md
 │   ├── machine_code.md          # Machine coding round preparation
 │   └── Interviewer_Reference.md # Key concepts for interviews
+├── Accessibility/               # Web Accessibility (a11y) & WCAG Architecture
+│   ├── README.md                # 10 Pillars Taxonomy Mindmap & Microsoft Inclusive Matrix
+│   ├── KeyboardAccessibility.md # Master Keyboard Navigation, Roving tabindex & Focus Traps
+│   ├── FocusManagement.md       # LIFO Focus Stack, SPA Route Announcers, inert attribute
+│   ├── ColorContrast.md         # WCAG Ratios (4.5:1 / 3:1), APCA, Forced Colors Mode
+│   ├── ScreenReader.md          # AccTree Compilation, NVDA/VoiceOver, aria-live regions
+│   ├── AccessbilityTools.md     # 4-Tier Testing Pyramid (ESLint, Jest-axe, Playwright)
+│   └── WCAG_Accessibility.md    # 770+ Line WCAG 2.1/2.2 Spec & Staff Architect Interview Grill
+├── cheatsheets/                 # Quick-Reference Cheatsheets & System Architecture
+│   ├── eslint/                  # 10 Modular ESLint & Quality Gate Guides
+│   │   ├── 01-a11y-strict.md    # jsx-a11y/strict WCAG rule mapping & AI pitfalls
+│   │   ├── 02-typescript-typechecked.md # Type-aware linting & zero-unsafe rules
+│   │   ├── 04-storybook-a11y-automation.md # Axe Test-Runner automated CI pipeline
+│   │   └── 09-production-configs.md # Copy-paste Flat (v9+) & Legacy configs
+│   ├── eslint.md                # Consolidated Single-File ESLint Master Reference
+│   ├── dbdecision.md            # Database decision framework & PACELC matrix
+│   ├── typescript.md            # TypeScript types vs interfaces & utility types
+│   └── Performance_Optimization.md # Core Web Vitals & bundle optimization
 ├── LLD/                         # Low-Level Design & Object-Oriented Design
 └── Web/                         # Fundamentals & Web Infrastructure
     ├── Headers.md               # Deep dive into HTTP Headers
@@ -226,6 +247,31 @@ A comprehensive guide to writing clean, modular, extensible, and high-performanc
 - **SOLID & GoF Design Patterns:** Creational, Structural, and Behavioral patterns with real-world scenarios.
 - **Advanced Concurrency & DDD:** Thread-safe architectures, object pooling, and domain boundary isolation.
 - **High-Performance Primitives:** Lock-free structures (CAS), CPU cache lines, custom DSL engines, and LLD governance.
+
+### 11. [Web Accessibility (a11y) & WCAG Architecture](./Accessibility/README.md)
+
+Comprehensive enterprise guide for building 100% accessible, WCAG 2.1/2.2 AA compliant applications:
+
+- **10 Core Pillars:** Taxonomy mindmap, Microsoft Inclusive Design Model (Permanent, Temporary, Situational), and Assistive Tech deep-dives.
+- **[Keyboard Accessibility](./Accessibility/KeyboardAccessibility.md):** Complete event pipelines, `tabindex` decision engines, focus trapping hooks (`useFocusTrap`), Roving `tabindex` vs virtual focus (`aria-activedescendant`), and Playwright E2E suites.
+- **[Focus Management](./Accessibility/FocusManagement.md):** LIFO Focus History stack, SPA client-side route announcers, and native `inert` isolation.
+- **[Color Contrast & Themes](./Accessibility/ColorContrast.md):** WCAG formulas, APCA (WCAG 3.0), Forced Colors mode, and Color Vision Deficiencies.
+- **[Screen Readers & AccTree](./Accessibility/ScreenReader.md):** AccTree compilation pipeline, NVDA/VoiceOver/JAWS/TalkBack heuristics, and live region queues.
+- **[WCAG Interview Grill](./Accessibility/WCAG_Accessibility.md):** 770+ line spec and Staff-level scenario grill.
+
+### 12. [ESLint & Automated Quality Suite](./cheatsheets/eslint/README.md)
+
+Modular, production-ready linting and test-runner automation architecture:
+
+- **[01. a11y Strict Mode](./cheatsheets/eslint/01-a11y-strict.md):** Non-negotiable WCAG error rules and standard AI code pitfalls.
+- **[02. TypeScript Type-Checked](./cheatsheets/eslint/02-typescript-typechecked.md):** Type-aware linting (`projectService: true`), unhandled promise catches, zero-`any` rules.
+- **[03. React & Compiler](./cheatsheets/eslint/03-react-hooks-compiler.md):** React 19 compiler rules, hooks dependency integrity, reconciliation key safety.
+- **[04. Storybook a11y Pipeline](./cheatsheets/eslint/04-storybook-a11y-automation.md):** Storybook + Axe Test-Runner automated CI pipeline (`a11yParams.json`, `a11y-report.mjs`).
+- **[09. Production Configs](./cheatsheets/eslint/09-production-configs.md):** Copy-paste Modern Flat Config (`eslint.config.mjs`) & Legacy (`.eslintrc.json`).
+
+### 13. [Categorized Cheatsheets & Master Reference](./cheatsheets/README.md)
+
+Quick-lookup architectural cheat sheets spanning Database Selection, DOM/CSSOM, WASM & Web SDKs, React Fiber & Lanes, Redux Toolkit & Sagas, and Performance Optimization.
 
 ---
 
