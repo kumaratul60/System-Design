@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04 - Roving tabindex Tabs Pattern</title>
+  <link rel="stylesheet" href="css/a11y-tokens.css">
+  <link rel="stylesheet" href="css/a11y-components.css">
+  <style>
+    .tabs-wrapper {
+      background: var(--a11y-card-bg);
+      border: 1px solid var(--a11y-border);
+      border-radius: var(--a11y-radius-lg);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    /* Tablist container */
+    .tablist {
+      display: flex;
+      background: #0f172a;
+      border-bottom: 1.5px solid var(--a11y-border);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--a11y-text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.03); }
+
+    .tab-btn[aria-selected="true"] {
+      color: var(--a11y-primary);
+      border-bottom-color: var(--a11y-primary);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .tab-btn:focus-visible {
+      outline: 3px solid var(--a11y-focus-ring) !important;
+      outline-offset: -3px;
+    }
+
+    /* Tabpanel */
+    .tabpanel {
+      padding: 2rem;
+      display: none;
+    }
+
+    .tabpanel[data-active="true"] {
+      display: block;
+    }
+
+    .tabpanel:focus-visible {
+      outline: 2px dashed var(--a11y-primary);
+      outline-offset: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="a11y-container">
+    <nav class="a11y-nav-back">
+      <a href="index.html">&larr; Back to Demo Hub</a>
+    </nav>
+
+    <header class="a11y-header">
+      <h1>04: Roving tabindex Tabs Pattern</h1>
+      <p class="desc">
+        W3C WAI-ARIA APG Tabs Pattern: The tablist represents a <strong>single tab stop</strong> in page sequence. Use <kbd class="a11y-kbd">&larr;</kbd> <kbd class="a11y-kbd">&rarr;</kbd> Arrow keys to traverse tabs (physical roving focus), <kbd class="a11y-kbd">Home</kbd> for first, <kbd class="a11y-kbd">End</kbd> for last, and <kbd class="a11y-kbd">Tab</kbd> to move straight into the active tabpanel.
+      </p>
+    </header>
+
+    <main>
+      <div class="tabs-wrapper">
+        <!-- 1. The ARIA Tablist -->
+        <div role="tablist" aria-label="System Settings" class="tablist">
+          <button 
+            type="button" 
+            role="tab" 
+            id="tab-1" 
+            aria-selected="true" 
+            aria-controls="panel-1" 
+            tabindex="0"
+            class="tab-btn"
+          >
+            General Profile
+          </button>
+          <button 
+            type="button" 
+            role="tab" 
+            id="tab-2" 
+            aria-selected="false" 
+            aria-controls="panel-2" 
+            tabindex="-1"
+            class="tab-btn"
+          >
+            Security &amp; API Keys
+          </button>
+          <button 
+            type="button" 
+            role="tab" 
+            id="tab-3" 
+            aria-selected="false" 
+            aria-controls="panel-3" 
+            tabindex="-1"
+            class="tab-btn"
+          >
+            Billing &amp; Invoices
+          </button>
+        </div>
+
+        <!-- 2. The ARIA Tabpanels -->
+        <div 
+          role="tabpanel" 
+          id="panel-1" 
+          aria-labelledby="tab-1" 
+          tabindex="0" 
+          data-active="true" 
+          class="tabpanel"
+        >
+          <h2 style="margin-bottom: 0.5rem; color: #f8fafc;">General Profile Settings</h2>
+          <p style="color: #94a3b8; margin-bottom: 1rem;">Update your corporate account display name and avatar preference.</p>
+          <button type="button" style="padding: 0.5rem 1rem; border-radius: 6px; background: #334155; color: #fff; border: 1px solid #475569;">Edit Profile</button>
+        </div>
+
+        <div 
+          role="tabpanel" 
+          id="panel-2" 
+          aria-labelledby="tab-2" 
+          tabindex="0" 
+          data-active="false" 
+          class="tabpanel"
+        >
+          <h2 style="margin-bottom: 0.5rem; color: #f8fafc;">Security &amp; Two-Factor Authentication</h2>
+          <p style="color: var(--a11y-text-muted); margin-bottom: 1rem;">Manage Hardware Security Keys (WebAuthn) and active JWT session tokens.</p>
+          <button type="button" class="a11y-btn">Generate API Token</button>
+        </div>
+
+        <div 
+          role="tabpanel" 
+          id="panel-3" 
+          aria-labelledby="tab-3" 
+          tabindex="0" 
+          data-active="false" 
+          class="tabpanel"
+        >
+          <h2 style="margin-bottom: 0.5rem; color: #f8fafc;">Billing &amp; Payment Invoices</h2>
+          <p style="color: var(--a11y-text-muted); margin-bottom: 1rem;">Download automated VAT receipts and update corporate credit line.</p>
+          <button type="button" class="a11y-btn">Download Invoice PDF</button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="a11y-hud" aria-live="polite">
+      <div class="a11y-hud-title">Roving Tabindex Focus HUD</div>
+      <strong>Active Focused Element:</strong> <span id="hud-focus">#tab-1</span> | 
+      <strong>Selected Tab:</strong> <span id="hud-selected">General Profile</span>
+    </aside>
+  </div>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+    const hudFocus = document.getElementById('hud-focus');
+    const hudSelected = document.getElementById('hud-selected');
+
+    function selectTab(newIndex, focusTarget = true) {
+      tabs.forEach((tab, index) => {
+        const isTarget = index === newIndex;
+        tab.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+        tab.setAttribute('tabindex', isTarget ? '0' : '-1');
+
+        if (isTarget && focusTarget) {
+          tab.focus();
+          hudSelected.textContent = tab.innerText;
+        }
+      });
+
+      panels.forEach((panel, index) => {
+        panel.setAttribute('data-active', index === newIndex ? 'true' : 'false');
+      });
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectTab(index, true));
+
+      tab.addEventListener('keydown', (e) => {
+        let targetIndex = null;
+
+        if (e.key === 'ArrowRight') {
+          targetIndex = (index + 1) % tabs.length;
+        } else if (e.key === 'ArrowLeft') {
+          targetIndex = (index - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          targetIndex = 0;
+        } else if (e.key === 'End') {
+          targetIndex = tabs.length - 1;
+        }
+
+        if (targetIndex !== null) {
+          e.preventDefault();
+          selectTab(targetIndex, true);
+        }
+      });
+    });
+
+    document.addEventListener('focusin', (e) => {
+      const el = e.target;
+      hudFocus.textContent = `${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`;
+    });
+  </script>
+</body>
+</html>

@@ -103,7 +103,8 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── ColorContrast.md         # WCAG Ratios (4.5:1 / 3:1), APCA, Forced Colors Mode
 │   ├── ScreenReader.md          # AccTree Compilation, NVDA/VoiceOver, aria-live regions
 │   ├── AccessbilityTools.md     # 4-Tier Testing Pyramid (ESLint, Jest-axe, Playwright)
-│   └── WCAG_Accessibility.md    # 770+ Line WCAG 2.1/2.2 Spec & Staff Architect Interview Grill
+│   ├── WCAG_Accessibility.md    # 770+ Line WCAG 2.1/2.2 Spec & Staff Architect Interview Grill
+│   └── demos/                   # 9 Standalone Interactive HTML Testbeds with Real-Time HUDs
 ├── cheatsheets/                 # Quick-Reference Cheatsheets & System Architecture
 │   ├── eslint/                  # 10 Modular ESLint & Quality Gate Guides
 │   │   ├── 01-a11y-strict.md    # jsx-a11y/strict WCAG rule mapping & AI pitfalls
@@ -226,6 +227,7 @@ Comprehensive enterprise guide for building 100% accessible, WCAG 2.1/2.2 AA com
 - **[Color Contrast & Themes](./Accessibility/ColorContrast.md):** WCAG formulas, APCA (WCAG 3.0), Forced Colors mode, and Color Vision Deficiencies.
 - **[Screen Readers & AccTree](./Accessibility/ScreenReader.md):** AccTree compilation pipeline, NVDA/VoiceOver/JAWS/TalkBack heuristics, and live region queues.
 - **[WCAG Interview Grill](./Accessibility/WCAG_Accessibility.md):** 770+ line spec and Staff-level scenario grill.
+- **[Interactive HTML Demos](./Accessibility/demos/index.html):** 9 standalone, zero-dependency browser testbeds with real-time HUDs for testing keyboard traps, live regions, and contrast.
 
 ### 12. [ESLint & Automated Quality Suite](./cheatsheets/eslint/README.md)
 
@@ -288,3 +290,4 @@ We welcome contributions from the community! Whether you are fixing bugs, improv
 - **Online JavaScript Editor:** [Runlet Practice Environment](https://runlet.vercel.app)
 - **Frontend-Lab:** [Practice Machine Coding Questions](https://fe-battle.vercel.app)
 - **React Playground:** [Practice pure React JS, HTML, and CSS (write component tests without libraries)](https://fe-battle.vercel.app/interview/playground)
+- **Web Accessibility Course:** [web.dev / Learn Accessibility](https://web.dev/learn/accessibility)

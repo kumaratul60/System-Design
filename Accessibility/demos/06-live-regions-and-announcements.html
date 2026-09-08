@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06 - ARIA Live Regions, Roles & Announcers</title>
+  <link rel="stylesheet" href="css/a11y-tokens.css">
+  <link rel="stylesheet" href="css/a11y-components.css">
+  <style>
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Toast Notification Box */
+    .toast-box {
+      background: #020617;
+      border-left: 4px solid var(--a11y-primary);
+      padding: 0.85rem 1rem;
+      border-radius: var(--a11y-radius-sm);
+      margin-top: 1rem;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+    }
+
+    .alert-box {
+      background: var(--a11y-error-bg);
+      border-left: 4px solid var(--a11y-error);
+      color: var(--a11y-error-text);
+      padding: 0.85rem 1rem;
+      border-radius: var(--a11y-radius-sm);
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    /* Live Chat Stream Box */
+    .chat-stream {
+      background: #020617;
+      border: 1px solid var(--a11y-border);
+      border-radius: var(--a11y-radius-md);
+      padding: 0.75rem;
+      height: 160px;
+      overflow-y: auto;
+      list-style: none;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chat-msg {
+      background: #1e293b;
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--a11y-radius-sm);
+      font-size: 0.85rem;
+      border: 1px solid var(--a11y-border);
+    }
+
+    .chat-msg strong { color: var(--a11y-primary); }
+
+    /* Audio speech emulator HUD */
+    .screen-reader-hud {
+      background: #020617;
+      border: 2px solid var(--a11y-success);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-top: 2rem;
+      font-family: var(--a11y-font-mono);
+      color: #4ade80;
+    }
+
+    .hud-title {
+      font-weight: bold;
+      color: var(--a11y-success-text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hud-log {
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      color: #86efac;
+    }
+  </style>
+</head>
+<body>
+  <div class="a11y-container">
+    <nav class="a11y-nav-back">
+      <a href="index.html">&larr; Back to Demo Hub</a>
+    </nav>
+
+    <header class="a11y-header">
+      <h1>06: Master ARIA Live Regions &amp; Announcers</h1>
+      <p class="desc">
+        Test how screen readers receive non-visual notifications without moving physical keyboard focus. Test <code>role="status"</code> (polite), <code>role="alert"</code> (assertive), <code>role="log"</code> (streaming), and <code>aria-busy</code>.
+      </p>
+    </header>
+
+    <main>
+      <div class="grid-2">
+        <!-- 1. Polite Toast Notification -->
+        <section class="a11y-card">
+          <h2>1. Polite Status Notification (role="status")</h2>
+          <p style="color: var(--a11y-text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            Queues in speech buffer. Doesn't interrupt user typing.
+          </p>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn-success" id="btn-add-cart">Add Item to Cart</button>
+            <button type="button" id="btn-save-doc">Save File</button>
+          </div>
+          
+          <!-- Persistent live region -->
+          <div id="polite-toast" role="status" aria-live="polite" aria-atomic="true" class="toast-box">
+            Ready (No pending events)
+          </div>
+        </section>
+
+        <!-- 2. Assertive Emergency Alert -->
+        <section class="card">
+          <h2>2. Assertive Emergency Alert (role="alert")</h2>
+          <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+            Interrupts screen reader speech immediately. Reserved for critical errors.
+          </p>
+          <button type="button" class="btn-danger" id="btn-trigger-alert">Trigger 60s Session Timeout Alert</button>
+          
+          <div id="assertive-alert" role="alert" aria-live="assertive" aria-atomic="true" class="alert-box" style="display: none;">
+          </div>
+        </section>
+
+        <!-- 3. Streaming Chat Feed -->
+        <section class="card">
+          <h2>3. Live Streaming Feed (role="log")</h2>
+          <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+            <code>aria-atomic="false"</code> ensures only newly appended messages are spoken.
+          </p>
+          <button type="button" id="btn-send-chat">Simulate Incoming Chat Message</button>
+          
+          <ul id="chat-feed" role="log" aria-live="polite" aria-atomic="false" aria-relevant="additions text" class="chat-stream">
+            <li class="chat-msg"><strong>Bot:</strong> Channel initialized.</li>
+          </ul>
+        </section>
+
+        <!-- 4. Async Data Loading with aria-busy -->
+        <section class="card">
+          <h2>4. Async Table Loading (aria-busy)</h2>
+          <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+            <code>aria-busy="true"</code> silences screen reader while data is refreshing.
+          </p>
+          <button type="button" id="btn-fetch-data">Fetch Database Records</button>
+
+          <div id="table-container" role="region" aria-live="polite" aria-busy="false" style="margin-top: 1rem;">
+            <p id="table-status" style="color: var(--primary);">Data ready (4 records loaded).</p>
+          </div>
+        </section>
+
+        <!-- 5. Programmatic DOM Insertion Sandbox -->
+        <section class="card" style="grid-column: 1 / -1;">
+          <h2>5. Programmatic DOM Methods: insertAdjacentHTML, setAttribute & setTimeout</h2>
+          <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+            Test different JavaScript DOM insertion strategies directly against the live speech synthesizer engine:
+          </p>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+            <button type="button" id="btn-insert-beforeend">insertAdjacentHTML('beforeend')</button>
+            <button type="button" id="btn-insert-afterbegin">insertAdjacentHTML('afterbegin')</button>
+            <button type="button" id="btn-set-attribute">setAttribute('role', 'status') + RAF</button>
+            <button type="button" id="btn-transient-timer">2-Phase setTimeout Transient Region</button>
+          </div>
+
+          <div id="dynamic-dom-sandbox" role="region" aria-label="Dynamic DOM insertion sandbox" style="margin-top: 1.25rem; background: #020617; padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+            <div id="sandbox-live-target" role="log" aria-live="polite" aria-atomic="false" style="font-size: 0.9rem; color: #93c5fd;">
+              [Dynamic Live Subtree Target]
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Visual Screen Reader Speech Synthesizer Simulator -->
+    <aside class="screen-reader-hud" aria-live="polite">
+      <div class="hud-title">🔊 Screen Reader Speech Synthesizer Log (Emulation)</div>
+      <div id="speech-log" class="hud-log">
+        [VoiceOver / NVDA Engine Ready. Perform an action above to see what is spoken.]
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const speechLog = document.getElementById('speech-log');
+    let logCount = 0;
+
+    function logSpeech(message, priority = 'POLITE') {
+      logCount++;
+      const time = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.innerHTML = `<span style="color:#f59e0b;">[${time}]</span> <strong style="color:${priority === 'ASSERTIVE' ? '#f87171' : '#38bdf8'};">[${priority}]</strong> "${message}"`;
+      speechLog.appendChild(div);
+      speechLog.scrollTop = speechLog.scrollHeight;
+    }
+
+    // 1. Polite Toast
+    let cartCount = 0;
+    const politeToast = document.getElementById('polite-toast');
+    document.getElementById('btn-add-cart').addEventListener('click', () => {
+      cartCount++;
+      const msg = `Shopping cart updated: ${cartCount} ${cartCount === 1 ? 'item' : 'items'} in basket.`;
+      politeToast.textContent = msg;
+      logSpeech(msg, 'POLITE');
+    });
+
+    document.getElementById('btn-save-doc').addEventListener('click', () => {
+      const msg = 'Draft changes saved automatically.';
+      politeToast.textContent = msg;
+      logSpeech(msg, 'POLITE');
+    });
+
+    // 2. Assertive Alert
+    const assertiveAlert = document.getElementById('assertive-alert');
+    document.getElementById('btn-trigger-alert').addEventListener('click', () => {
+      const alertMsg = 'CRITICAL WARNING: Security session will expire in 60 seconds due to inactivity. Please extend session.';
+      assertiveAlert.style.display = 'block';
+      assertiveAlert.textContent = alertMsg;
+      logSpeech(alertMsg, 'ASSERTIVE (INTERRUPT)');
+    });
+
+    // 3. Streaming Chat Log
+    const chatFeed = document.getElementById('chat-feed');
+    const senders = ['Alice', 'Bob', 'Charlie', 'Dana'];
+    const quotes = ['Merged PR #402', 'Deploying to staging cluster', 'All unit tests passing', 'Code review requested'];
+    
+    document.getElementById('btn-send-chat').addEventListener('click', () => {
+      const sender = senders[Math.floor(Math.random() * senders.length)];
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      const li = document.createElement('li');
+      li.className = 'chat-msg';
+      li.innerHTML = `<strong>${sender}:</strong> ${quote}`;
+      chatFeed.appendChild(li);
+      chatFeed.scrollTop = chatFeed.scrollHeight;
+
+      logSpeech(`${sender}: ${quote}`, 'LOG (ADDITION)');
+    });
+
+    // 4. Async Fetch with aria-busy
+    const tableContainer = document.getElementById('table-container');
+    const tableStatus = document.getElementById('table-status');
+    const fetchBtn = document.getElementById('btn-fetch-data');
+
+    fetchBtn.addEventListener('click', () => {
+      tableContainer.setAttribute('aria-busy', 'true');
+      fetchBtn.disabled = true;
+      tableStatus.textContent = 'Fetching 500 records from remote server... (aria-busy=true)';
+      logSpeech('Table loading started... (Speech muted while aria-busy=true)', 'BUSY');
+
+      setTimeout(() => {
+        tableContainer.setAttribute('aria-busy', 'false');
+        fetchBtn.disabled = false;
+        tableStatus.textContent = 'Table updated: 500 records reconciled.';
+        logSpeech('Table fetch complete: 500 records reconciled.', 'POLITE');
+      }, 1500);
+    });
+
+    // 5. Programmatic DOM Methods
+    const sandboxTarget = document.getElementById('sandbox-live-target');
+
+    // Method A: insertAdjacentHTML('beforeend')
+    document.getElementById('btn-insert-beforeend').addEventListener('click', () => {
+      const stamp = new Date().toLocaleTimeString();
+      const html = `<div style="color:#a7f3d0; margin-top:0.25rem;">&bull; [beforeend at ${stamp}] New item appended</div>`;
+      sandboxTarget.insertAdjacentHTML('beforeend', html);
+      logSpeech(`[beforeend mutation] New item appended at ${stamp}`, 'POLITE');
+    });
+
+    // Method B: insertAdjacentHTML('afterbegin')
+    document.getElementById('btn-insert-afterbegin').addEventListener('click', () => {
+      const stamp = new Date().toLocaleTimeString();
+      const html = `<div style="color:#fde047; margin-top:0.25rem;">&bull; [afterbegin at ${stamp}] High priority item prepended</div>`;
+      sandboxTarget.insertAdjacentHTML('afterbegin', html);
+      logSpeech(`[afterbegin mutation] High priority item prepended at ${stamp}`, 'POLITE');
+    });
+
+    // Method C: setAttribute + requestAnimationFrame
+    document.getElementById('btn-set-attribute').addEventListener('click', () => {
+      const dynamicSpan = document.createElement('span');
+      dynamicSpan.setAttribute('role', 'status');
+      dynamicSpan.setAttribute('aria-live', 'polite');
+      sandboxTarget.appendChild(dynamicSpan);
+      
+      requestAnimationFrame(() => {
+        const text = `setAttribute('role','status') triggered at ${new Date().toLocaleTimeString()}`;
+        dynamicSpan.textContent = text;
+        logSpeech(text, 'POLITE (RAF)');
+      });
+    });
+
+    // Method D: Two-Phase setTimeout Transient Region
+    document.getElementById('btn-transient-timer').addEventListener('click', () => {
+      // Phase 1: Mount empty live container
+      const transientDiv = document.createElement('div');
+      transientDiv.setAttribute('role', 'status');
+      transientDiv.setAttribute('aria-live', 'polite');
+      transientDiv.className = 'sr-only';
+      document.body.appendChild(transientDiv);
+      logSpeech('Phase 1: Empty live container mounted to DOM', 'INIT');
+
+      // Phase 2: Inject text after 50ms tick
+      setTimeout(() => {
+        const msg = `Transient notification announced after 50ms tick at ${new Date().toLocaleTimeString()}`;
+        transientDiv.textContent = msg;
+        logSpeech(msg, 'POLITE (PHASE 2)');
+      }, 50);
+
+      // Phase 3: Cleanup after 4 seconds
+      setTimeout(() => {
+        if (document.body.contains(transientDiv)) {
+          document.body.removeChild(transientDiv);
+          logSpeech('Phase 3: Transient live container cleaned up from DOM', 'CLEANUP');
+        }
+      }, 4000);
+    });
+  </script>
+</body>
+</html>

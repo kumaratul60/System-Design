@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>07 - Color Contrast & Forced Colors Mode</title>
+  <link rel="stylesheet" href="css/a11y-tokens.css">
+  <link rel="stylesheet" href="css/a11y-components.css">
+  <style>
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Contrast Box Samples */
+    .sample-box {
+      padding: 1.5rem;
+      border-radius: var(--a11y-radius-md);
+      margin-bottom: 1rem;
+    }
+
+    .sample-pass {
+      background: var(--a11y-bg);
+      color: var(--a11y-text);
+      border: 1px solid var(--a11y-primary);
+    }
+
+    .sample-fail {
+      background: #334155;
+      color: #64748b;
+    }
+
+    /* Forced Colors / High Contrast Integration */
+    .hc-button {
+      background: #0284c7;
+      color: #ffffff;
+      border: 2px solid transparent; /* Fallback for Windows High Contrast / Forced Colors */
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--a11y-radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    }
+
+    .hc-button:focus-visible {
+      outline: 3px solid var(--a11y-focus-ring);
+      outline-offset: 3px;
+    }
+
+    /* Forced Colors Simulation Mode */
+    body.sim-forced-colors {
+      background: Canvas !important;
+      color: CanvasText !important;
+    }
+
+    body.sim-forced-colors .a11y-card {
+      background: Canvas !important;
+      color: CanvasText !important;
+      border: 2px solid CanvasText !important;
+    }
+
+    body.sim-forced-colors .hc-button {
+      background: ButtonFace !important;
+      color: ButtonText !important;
+      border: 2px solid ButtonText !important;
+      box-shadow: none !important;
+    }
+
+    body.sim-forced-colors .hc-button:focus-visible {
+      outline: 3px solid Highlight !important;
+    }
+
+    /* Color Vision Deficiency Filter Simulation */
+    body.sim-protanopia { filter: grayscale(50%) sepia(40%) hue-rotate(-20deg); }
+    body.sim-deuteranopia { filter: grayscale(60%) sepia(30%) hue-rotate(50deg); }
+    body.sim-grayscale { filter: grayscale(100%); }
+
+    .control-panel {
+      background: #020617;
+      border: 1px solid var(--a11y-border);
+      border-radius: var(--a11y-radius-md);
+      padding: 1rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .control-panel button {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid var(--a11y-border);
+      padding: 0.5rem 1rem;
+      border-radius: var(--a11y-radius-sm);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .control-panel button.active {
+      background: var(--a11y-primary);
+      color: #0f172a;
+      font-weight: bold;
+    }
+
+    .control-panel button:focus-visible {
+      outline: 2px solid var(--a11y-focus-ring);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="a11y-container">
+    <nav class="nav-back">
+      <a href="index.html">&larr; Back to Demo Hub</a>
+    </nav>
+
+    <header>
+      <h1>07: Color Contrast &amp; Forced Colors Mode</h1>
+      <p class="desc">
+        Validate WCAG 2.1 Level AA (4.5:1 text, 3:1 UI) vs failing contrast, and simulate <strong>Windows High Contrast / Forced Colors Mode</strong> and <strong>Color Vision Deficiencies (CVD)</strong> in real time.
+      </p>
+    </header>
+
+    <!-- Simulation Controls -->
+    <section class="control-panel" aria-label="Visual simulation filters">
+      <span style="color: var(--a11y-text-muted); font-weight: 600; font-size: 0.85rem;">OS / Vision Simulation:</span>
+      <button type="button" class="sim-btn active" data-mode="normal">Default Theme</button>
+      <button type="button" class="sim-btn" data-mode="forced-colors">Forced Colors (High Contrast)</button>
+      <button type="button" class="sim-btn" data-mode="protanopia">Protanopia (Red-Weak)</button>
+      <button type="button" class="sim-btn" data-mode="deuteranopia">Deuteranopia (Green-Weak)</button>
+      <button type="button" class="sim-btn" data-mode="grayscale">Achromatopsia (Monochrome)</button>
+    </section>
+
+    <main class="grid-2">
+      <!-- Passing Contrast -->
+      <section class="a11y-card">
+        <h2>1. Compliant Contrast (Level AA)</h2>
+        <div class="sample-box sample-pass">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong>High Luminance Ratio</strong>
+            <span class="a11y-badge a11y-badge-success">PASS: 13.8:1</span>
+          </div>
+          <p style="font-size: 0.95rem;">
+            Light text (#f8fafc) on dark slate background (#0f172a). Easily legible for users with low vision or screen glare.
+          </p>
+        </div>
+      </section>
+
+      <!-- Failing Contrast -->
+      <section class="a11y-card">
+        <h2>2. Non-Compliant Contrast (Anti-Pattern)</h2>
+        <div class="sample-box sample-fail">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong>Low Contrast Copy</strong>
+            <span class="a11y-badge a11y-badge-error">FAIL: 2.1:1</span>
+          </div>
+          <p style="font-size: 0.95rem;">
+            Low contrast gray-on-dark copy (#64748b on #334155). Unreadable under direct sunlight or for low vision users.
+          </p>
+        </div>
+      </section>
+
+      <!-- High Contrast Integration -->
+      <section class="a11y-card" style="grid-column: 1 / -1;">
+        <h2>3. Windows High Contrast Mode Fallback Architecture</h2>
+        <p style="color: var(--a11y-text-muted); margin-bottom: 1rem; font-size: 0.95rem;">
+          In Forced Colors mode, OS themes strip <code>box-shadow</code> and custom color gradients. Notice how the button below includes <code>border: 2px solid transparent</code> so its boundary remains crisp when Forced Colors mode is toggled on:
+        </p>
+        <button type="button" class="hc-button">High Contrast Resilient Button</button>
+      </section>
+    </main>
+
+    <aside class="a11y-hud" aria-live="polite">
+      <strong>Active Mode:</strong> <span id="hud-mode">Default Theme</span> | 
+      <strong>Forced Colors Media Query:</strong> <span id="hud-mq">@media (forced-colors: active)</span>
+    </aside>
+  </div>
+
+  <script>
+    const simButtons = Array.from(document.querySelectorAll('.sim-btn'));
+    const hudMode = document.getElementById('hud-mode');
+
+    simButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        simButtons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        document.body.className = '';
+        const mode = btn.getAttribute('data-mode');
+        hudMode.textContent = btn.textContent;
+
+        if (mode === 'forced-colors') {
+          document.body.classList.add('sim-forced-colors');
+        } else if (mode === 'protanopia') {
+          document.body.classList.add('sim-protanopia');
+        } else if (mode === 'deuteranopia') {
+          document.body.classList.add('sim-deuteranopia');
+        } else if (mode === 'grayscale') {
+          document.body.classList.add('sim-grayscale');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Accessibility (a11y) Interactive Testbed Hub</title>
+  <link rel="stylesheet" href="css/a11y-tokens.css">
+  <link rel="stylesheet" href="css/a11y-components.css">
+  <style>
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--a11y-card-bg);
+      border: 1px solid var(--a11y-border);
+      border-radius: var(--a11y-radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--a11y-primary);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      color: var(--a11y-text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p {
+      color: var(--a11y-text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .features-list {
+      list-style: none;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--a11y-text-subtle);
+    }
+
+    .features-list li {
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .features-list li::before {
+      content: "✓";
+      color: var(--a11y-success);
+      font-weight: bold;
+    }
+
+    .btn-launch {
+      display: inline-block;
+      text-align: center;
+      background: var(--a11y-primary);
+      color: #0f172a;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--a11y-radius-md);
+      transition: background 0.2s ease;
+    }
+
+    .btn-launch:hover {
+      background: var(--a11y-primary-hover);
+    }
+
+    .btn-launch:focus-visible {
+      outline: 3px solid var(--a11y-focus-ring);
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="a11y-container" style="max-width: 1100px;">
+    <header class="a11y-header" style="text-align: center; margin-bottom: 2.5rem; border-bottom: 1px solid var(--a11y-border); padding-bottom: 1.5rem;">
+      <h1>Accessibility (a11y) Interactive Testbeds</h1>
+      <p class="desc" style="margin: 0 auto;">
+        Standalone, zero-dependency HTML test environments. Test keyboard tab orders, screen reader announcements (VoiceOver / NVDA), focus traps, and ARIA attributes directly in your browser.
+      </p>
+    </header>
+
+    <main class="grid">
+      <!-- Demo 1 -->
+      <article class="card">
+        <div>
+          <span class="badge">WCAG 1.3.1, 3.3.2, 4.1.2</span>
+          <h2>1. Semantic HTML & Forms</h2>
+          <p>Accessible form controls, native labels, fieldsets, dynamic validation hints with aria-describedby, and accessible icon buttons.</p>
+          <ul class="features-list">
+            <li>Native &lt;label htmlFor&gt; + click-to-focus</li>
+            <li>aria-describedby for errors & hints</li>
+            <li>Accessible SVG icon buttons</li>
+          </ul>
+        </div>
+        <a href="01-semantic-html-and-forms.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+
+      <!-- Demo 2 -->
+      <article class="card">
+        <div>
+          <span class="badge">WCAG 2.1.1, 2.4.1, 2.4.7</span>
+          <h2>2. Keyboard Nav & Skip Links</h2>
+          <p>Sequential tab order, skip navigation link, and :focus-visible indicators with 3:1 contrast ratios.</p>
+          <ul class="features-list">
+            <li>Interactive Skip-to-Content link</li>
+            <li>tabindex="0" vs tabindex="-1" testbed</li>
+            <li>Live Active Element Inspector</li>
+          </ul>
+        </div>
+        <a href="02-keyboard-navigation-and-skip-links.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+
+      <!-- Demo 3 -->
+      <article class="card">
+        <div>
+          <span class="badge">WCAG 2.1.2, 2.4.3</span>
+          <h2>3. Modal Focus Trap & Inert</h2>
+          <p>Dialog lifecycle management, Tab wrapping, Escape dismissal, background inert isolation, and initial focus on Cancel.</p>
+          <ul class="features-list">
+            <li>Zero background tab leaks</li>
+            <li>Safe initial focus on Cancel button</li>
+            <li>LIFO focus restoration to trigger</li>
+          </ul>
+        </div>
+        <a href="03-modal-focus-trap-and-inert.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+
+      <!-- Demo 4 -->
+      <article class="card">
+        <div>
+          <span class="badge">WAI-ARIA Tabs Pattern</span>
+          <h2>4. Roving tabindex (Tabs)</h2>
+          <p>W3C APG compliant Tabs widget with single tab-stop, Arrow key traversal, Home/End jumping, and automatic panel binding.</p>
+          <ul class="features-list">
+            <li>Physical focus via Roving tabindex</li>
+            <li>ArrowLeft / ArrowRight / Home / End</li>
+            <li>aria-selected and aria-controls bindings</li>
+          </ul>
+        </div>
+        <a href="04-roving-tabindex-tabs.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+
+      <!-- Demo 5 -->
+      <article class="card">
+        <div>
+          <span class="badge">WAI-ARIA Combobox Pattern</span>
+          <h2>5. Virtual Focus (Combobox)</h2>
+          <p>Search autocomplete using aria-activedescendant. Keyboard arrow navigation changes virtual focus while cursor stays in input.</p>
+          <ul class="features-list">
+            <li>aria-activedescendant state sync</li>
+            <li>Live search filter result announcements</li>
+            <li>Touch swipe and keyboard support</li>
+          </ul>
+        </div>
+        <a href="05-virtual-focus-combobox.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+
+      <!-- Demo 6 -->
+      <article class="card">
+        <div>
+          <span class="badge">WCAG 4.1.3 (Status Messages)</span>
+          <h2>6. Live Regions & Announcers</h2>
+          <p>Complete testbed for aria-live="polite", assertive alerts, role="status", role="log" chat stream, and aria-busy data tables.</p>
+          <ul class="features-list">
+            <li>Toast & Cart status announcers</li>
+            <li>Streaming live chat feed with role="log"</li>
+            <li>Data table async loading with aria-busy</li>
+          </ul>
+        </div>
+        <a href="06-live-regions-and-announcements.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+
+      <!-- Demo 7 -->
+      <article class="card">
+        <div>
+          <span class="badge">WCAG 1.4.3, 1.4.11</span>
+          <h2>7. Contrast & Forced Colors</h2>
+          <p>Interactive color contrast validator, Color Vision Deficiency (CVD) filters, and Windows High Contrast / Forced Colors simulation.</p>
+          <ul class="features-list">
+            <li>Live 4.5:1 and 3:1 ratio calculator</li>
+            <li>Protanopia / Deuteranopia filters</li>
+            <li>Forced Colors mode fallback styling</li>
+          </ul>
+        </div>
+        <a href="07-color-contrast-and-forced-colors.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+
+      <!-- Demo 8 -->
+      <article class="card">
+        <div>
+          <span class="badge">WAI-ARIA Accordion Pattern</span>
+          <h2>8. Disclosure & Accordion</h2>
+          <p>Accessible expandable panels with aria-expanded, aria-controls, and CSS transitions that eliminate ghost focus.</p>
+          <ul class="features-list">
+            <li>Zero ghost focus on collapsed panels</li>
+            <li>Native keyboard Space/Enter triggers</li>
+            <li>visibility: hidden step transitions</li>
+          </ul>
+        </div>
+        <a href="08-disclosure-and-accordion.html" class="btn-launch">Launch Demo &rarr;</a>
+      </article>
+    </main>
+
+    <!-- Screen Reader Quick Setup & Shortcuts Cheat Sheet -->
+    <section style="background: var(--a11y-card-bg); border: 1px solid var(--a11y-border); border-radius: var(--a11y-radius-lg); padding: 2rem; margin-top: 3rem;">
+      <h2 style="color: var(--a11y-primary); font-size: 1.5rem; margin-bottom: 1rem;">
+        🎙️ How to Turn On &amp; Operate Screen Readers (macOS &amp; Windows)
+      </h2>
+      <p style="color: var(--a11y-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Follow these steps to enable native screen readers on your machine and test the interactive demos above:
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+        <!-- macOS VoiceOver -->
+        <div style="background: var(--a11y-bg); padding: 1.25rem; border-radius: var(--a11y-radius-md); border: 1px solid var(--a11y-border);">
+          <h3 style="color: var(--a11y-primary); margin-bottom: 0.5rem; font-size: 1.1rem;">🍎 macOS (Apple VoiceOver)</h3>
+          <ul style="list-style: none; font-size: 0.85rem; color: #cbd5e1; line-height: 1.7;">
+            <li><strong>Toggle On/Off:</strong> <kbd class="a11y-kbd">Cmd + F5</kbd> (or triple-click Touch ID)</li>
+            <li><strong>VoiceOver Key (VO):</strong> <kbd class="a11y-kbd">Ctrl + Option</kbd></li>
+            <li><strong>Next / Prev Item:</strong> <kbd class="a11y-kbd">VO + &rarr;</kbd> / <kbd class="a11y-kbd">VO + &larr;</kbd></li>
+            <li><strong>Activate / Click:</strong> <kbd class="a11y-kbd">VO + Space</kbd></li>
+            <li><strong>Open Rotor:</strong> <kbd class="a11y-kbd">VO + U</kbd> (Headings, Landmarks, Links)</li>
+            <li><strong>Safari Prerequisite:</strong> Safari &rarr; Settings &rarr; Advanced &rarr; Check <em>"Press Tab to highlight each item"</em></li>
+          </ul>
+        </div>
+
+        <!-- Windows NVDA / Narrator -->
+        <div style="background: var(--a11y-bg); padding: 1.25rem; border-radius: var(--a11y-radius-md); border: 1px solid var(--a11y-border);">
+          <h3 style="color: var(--a11y-success); margin-bottom: 0.5rem; font-size: 1.1rem;">🪟 Windows (NVDA &amp; Narrator)</h3>
+          <ul style="list-style: none; font-size: 0.85rem; color: #cbd5e1; line-height: 1.7;">
+            <li><strong>Start NVDA:</strong> <kbd class="a11y-kbd">Ctrl + Alt + N</kbd> (Stop: <kbd class="a11y-kbd">NVDA + Q</kbd>)</li>
+            <li><strong>Start Narrator:</strong> <kbd class="a11y-kbd">Win + Ctrl + Enter</kbd></li>
+            <li><strong>NVDA Modifier:</strong> <kbd class="a11y-kbd">Insert</kbd> or <kbd class="a11y-kbd">Caps Lock</kbd></li>
+            <li><strong>Next Heading:</strong> Press <kbd class="a11y-kbd">H</kbd> (Forms: <kbd class="a11y-kbd">F</kbd>, Buttons: <kbd class="a11y-kbd">B</kbd>)</li>
+            <li><strong>Elements List:</strong> <kbd class="a11y-kbd">NVDA + F7</kbd></li>
+            <li><strong>Toggle Forced Colors:</strong> <kbd class="a11y-kbd">Left Alt + Left Shift + PrintScreen</kbd></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>System Design &bull; Accessible Rich Internet Applications (WAI-ARIA 1.2)</p>
+    </footer>
+  </div>
+</body>
+</html>

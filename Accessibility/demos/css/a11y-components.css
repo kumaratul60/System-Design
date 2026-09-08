@@ -1,0 +1,220 @@
+/**
+ * Common Base Styles, Layout & Reusable Accessibility Components
+ * Uses CSS Cascade Layers to guarantee deterministic specificity without style leakage.
+ */
+
+@layer a11y-reset, a11y-layout, a11y-components, a11y-hud;
+
+@layer a11y-reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: var(--a11y-font-sans);
+    background-color: var(--a11y-bg);
+    color: var(--a11y-text);
+    line-height: 1.6;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+  }
+}
+
+@layer a11y-layout {
+  .a11y-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .a11y-nav-back {
+    margin-bottom: 1.5rem;
+  }
+
+  .a11y-nav-back a {
+    color: var(--a11y-primary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .a11y-nav-back a:hover {
+    text-decoration: underline;
+  }
+
+  .a11y-header {
+    margin-bottom: 2rem;
+  }
+
+  .a11y-header h1 {
+    font-size: 2.1rem;
+    color: var(--a11y-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .a11y-header p.desc {
+    color: var(--a11y-text-muted);
+    font-size: 1rem;
+    max-width: 800px;
+  }
+}
+
+@layer a11y-components {
+  /* Cards */
+  .a11y-card {
+    background: var(--a11y-card-bg);
+    border: 1px solid var(--a11y-border);
+    border-radius: var(--a11y-radius-lg);
+    padding: 1.75rem;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .a11y-card h2 {
+    font-size: 1.3rem;
+    color: #f1f5f9;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--a11y-border);
+    padding-bottom: 0.5rem;
+  }
+
+  /* Badges */
+  .a11y-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--a11y-radius-full);
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--a11y-primary);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .a11y-badge-pass {
+    background: var(--a11y-success-bg);
+    color: var(--a11y-success-text);
+    border: 1px solid var(--a11y-success);
+    font-weight: bold;
+  }
+
+  .a11y-badge-fail {
+    background: var(--a11y-error-bg);
+    color: var(--a11y-error-text);
+    border: 1px solid var(--a11y-error);
+    font-weight: bold;
+  }
+
+  /* Universal Buttons */
+  button.a11y-btn, a.a11y-btn {
+    background: #334155;
+    color: #f8fafc;
+    border: 1.5px solid var(--a11y-border);
+    padding: 0.65rem 1.3rem;
+    border-radius: var(--a11y-radius-md);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  button.a11y-btn:hover, a.a11y-btn:hover {
+    background: #475569;
+    border-color: #64748b;
+  }
+
+  /* WCAG 2.4.7 Compliant Focus Visible Ring */
+  button.a11y-btn:focus-visible, 
+  a.a11y-btn:focus-visible, 
+  [tabindex="0"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--a11y-focus-ring) !important;
+    outline-offset: var(--a11y-focus-ring-offset) !important;
+  }
+
+  .a11y-btn-primary {
+    background: var(--a11y-primary) !important;
+    color: #0f172a !important;
+    border-color: var(--a11y-primary) !important;
+  }
+
+  .a11y-btn-primary:hover {
+    background: var(--a11y-primary-hover) !important;
+  }
+
+  .a11y-btn-danger {
+    background: #dc2626 !important;
+    color: #ffffff !important;
+    border-color: var(--a11y-error) !important;
+  }
+
+  .a11y-btn-danger:hover {
+    background: #b91c1c !important;
+  }
+
+  .a11y-btn-success {
+    background: #059669 !important;
+    color: #ffffff !important;
+    border-color: var(--a11y-success) !important;
+  }
+
+  .a11y-btn-success:hover {
+    background: #047857 !important;
+  }
+
+  /* Keyboard Keycap Badge */
+  kbd.a11y-kbd {
+    background: #334155;
+    color: #ffffff;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    border: 1px solid #64748b;
+    font-family: var(--a11y-font-mono);
+    font-size: 0.85em;
+  }
+
+  /* Screen Reader Accessible Utility Class */
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border-width: 0 !important;
+  }
+}
+
+@layer a11y-hud {
+  /* Real-Time Event & Inspector HUD */
+  .a11y-hud {
+    background: #020617;
+    border: 1px solid var(--a11y-border);
+    border-radius: var(--a11y-radius-md);
+    padding: 1rem 1.25rem;
+    margin-top: 1.75rem;
+    font-family: var(--a11y-font-mono);
+    font-size: 0.85rem;
+    color: var(--a11y-primary);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .a11y-hud-title {
+    font-weight: 700;
+    color: var(--a11y-text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+}

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>01 - Accessible Semantic HTML & Form Controls</title>
+    <link rel="stylesheet" href="css/a11y-tokens.css" />
+    <link rel="stylesheet" href="css/a11y-components.css" />
+    <style>
+      /* Component Form Specific Overrides */
+      .form-group {
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #f1f5f9;
+        cursor: pointer;
+      }
+
+      input[type='text'],
+      input[type='email'],
+      input[type='password'] {
+        background: #0f172a;
+        border: 1.5px solid var(--a11y-border);
+        border-radius: var(--a11y-radius-md);
+        padding: 0.65rem 0.85rem;
+        color: var(--a11y-text);
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      input:focus-visible {
+        outline: none;
+        border-color: var(--a11y-primary);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+      }
+
+      input[aria-invalid='true'] {
+        border-color: var(--a11y-error);
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+      }
+
+      .field-hint {
+        font-size: 0.85rem;
+        color: var(--a11y-text-muted);
+      }
+
+      .field-error {
+        font-size: 0.85rem;
+        color: var(--a11y-error);
+        font-weight: 500;
+      }
+
+      fieldset {
+        border: 1.5px solid var(--a11y-border);
+        border-radius: var(--a11y-radius-md);
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+
+      legend {
+        padding: 0 0.5rem;
+        font-weight: 600;
+        color: #f1f5f9;
+      }
+
+      .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+        cursor: pointer;
+      }
+
+      .radio-option input {
+        accent-color: var(--a11y-primary);
+        width: 1.1rem;
+        height: 1.1rem;
+        cursor: pointer;
+      }
+
+      .icon-btn {
+        background: #334155;
+        border: none;
+        color: #f8fafc;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--a11y-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .icon-btn:hover {
+        background: #475569;
+      }
+
+      .icon-btn:focus-visible {
+        outline: 3px solid var(--a11y-focus-ring);
+        outline-offset: 2px;
+      }
+    </style>
+
+      .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+        cursor: pointer;
+      }
+
+      .radio-option input {
+        accent-color: var(--primary);
+        width: 1.1rem;
+        height: 1.1rem;
+        cursor: pointer;
+      }
+
+      /* Icon Button */
+      .icon-btn-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .icon-btn {
+    </style>
+  </head>
+  <body>
+    <div class="a11y-container">
+      <nav class="a11y-nav-back">
+        <a href="index.html">&larr; Back to Demo Hub</a>
+      </nav>
+
+      <header class="a11y-header">
+        <h1>01: Accessible Semantic HTML & Form Controls</h1>
+        <p class="desc">
+          Demonstrates native semantic elements (<code>&lt;label for&gt;</code>, <code>&lt;fieldset&gt;</code>,
+          <code>&lt;legend&gt;</code>), dynamic error association using <code>aria-describedby</code>, and accessible
+          icon buttons with <code>aria-label</code> and <code>aria-hidden="true"</code>.
+        </p>
+      </header>
+
+      <main>
+        <section class="a11y-card">
+          <h2>Accessible Registration Form</h2>
+          <form id="reg-form" novalidate>
+            <!-- 1. Text Field with Label and Hint -->
+            <div class="form-group">
+              <label for="username">User Handle</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                aria-describedby="user-hint"
+                required
+                autocomplete="username"
+              />
+              <span id="user-hint" class="field-hint">Letters and numbers only. 3-15 characters.</span>
+            </div>
+
+            <!-- 2. Email with Dynamic Validation Error -->
+            <div class="form-group">
+              <label for="user-email">Work Email Address</label>
+              <input
+                type="email"
+                id="user-email"
+                name="email"
+                aria-describedby="email-hint email-error"
+                aria-invalid="false"
+                required
+                autocomplete="email"
+              />
+              <span id="email-hint" class="field-hint">We will never share your corporate email.</span>
+              <span id="email-error" class="field-error" style="display: none" role="alert"></span>
+            </div>
+
+            <!-- 3. Semantic Fieldset & Legend for Radio Group -->
+            <fieldset>
+              <legend>Preferred Notification Channel</legend>
+              <label class="radio-option">
+                <input type="radio" name="notify" value="email" checked />
+                <span>Email Digest (Daily)</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="notify" value="sms" />
+                <span>SMS Critical Alerts</span>
+              </label>
+            </fieldset>
+
+            <!-- 4. Form Action Buttons -->
+            <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem">
+              <button type="submit" class="a11y-btn a11y-btn-primary">Submit Registration</button>
+              <button
+                type="button"
+                id="btn-validate"
+                class="icon-btn"
+                aria-label="Validate form syntax immediately"
+                title="Validate form syntax"
+              >
+                <!-- Decorative SVG icon -->
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Live Inspector -->
+        <aside class="a11y-hud" aria-live="polite">
+          <div class="a11y-hud-title">Active Accessibility Inspector</div>
+          <div id="inspector-output">
+            Click or Tab into any input to inspect its computed Accessible Name and ARIA linkages.
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script>
+      const form = document.getElementById('reg-form');
+      const emailInput = document.getElementById('user-email');
+      const emailError = document.getElementById('email-error');
+      const inspectorOutput = document.getElementById('inspector-output');
+      const validateBtn = document.getElementById('btn-validate');
+
+      function updateInspector(el) {
+        if (!el || el.tagName === 'BODY') return;
+        const id = el.id || '(no id)';
+        const tag = el.tagName.toLowerCase();
+        const role = el.getAttribute('role') || el.type || tag;
+        const ariaLabel = el.getAttribute('aria-label') || '(none)';
+        const describedBy = el.getAttribute('aria-describedby') || '(none)';
+        const invalid = el.getAttribute('aria-invalid') || '(none)';
+
+        // Calculate label
+        let labelText = '(none)';
+        if (el.labels && el.labels.length > 0) {
+          labelText = el.labels[0].innerText;
+        } else if (ariaLabel !== '(none)') {
+          labelText = `aria-label: "${ariaLabel}"`;
+        }
+
+        inspectorOutput.innerHTML = `
+        <strong>Focused Node:</strong> &lt;${tag} id="${id}"&gt;<br>
+        <strong>Accessible Name:</strong> "${labelText}"<br>
+        <strong>Role:</strong> ${role}<br>
+        <strong>aria-describedby:</strong> "${describedBy}"<br>
+        <strong>aria-invalid:</strong> ${invalid}
+      `;
+      }
+
+      document.addEventListener('focusin', (e) => updateInspector(e.target));
+
+      function validateEmail() {
+        const val = emailInput.value.trim();
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
+        if (!isValid) {
+          emailInput.setAttribute('aria-invalid', 'true');
+          emailError.textContent = 'Please enter a valid corporate email format (name@company.com).';
+          emailError.style.display = 'block';
+        } else {
+          emailInput.setAttribute('aria-invalid', 'false');
+          emailError.textContent = '';
+          emailError.style.display = 'none';
+        }
+        updateInspector(emailInput);
+        return isValid;
+      }
+
+      emailInput.addEventListener('blur', validateEmail);
+      validateBtn.addEventListener('click', validateEmail);
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (validateEmail()) {
+          alert('Form submitted successfully!');
+        } else {
+          emailInput.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>03 - Modal Focus Trap & Background Inert</title>
+    <link rel="stylesheet" href="css/a11y-tokens.css" />
+    <link rel="stylesheet" href="css/a11y-components.css" />
+    <style>
+      /* Modal Specific Overlay Styling */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .modal-backdrop.is-open {
+        display: flex;
+      }
+
+      .modal-dialog {
+        background: #1e293b;
+        border: 1.5px solid var(--a11y-border);
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        padding: 2rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .modal-header h2 {
+        font-size: 1.35rem;
+        color: #f8fafc;
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .modal-body {
+        color: var(--a11y-text-muted);
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
+
+      .btn-icon-close {
+        background: transparent;
+        border: none;
+        color: var(--a11y-text-muted);
+        font-size: 1.25rem;
+        padding: 0.2rem 0.5rem;
+        cursor: pointer;
+        border-radius: var(--a11y-radius-sm);
+      }
+      .btn-icon-close:hover {
+        color: #fff;
+      }
+    </style>
+        width: 90%;
+        max-width: 500px;
+        padding: 2rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .modal-header h2 {
+        font-size: 1.35rem;
+        color: #f8fafc;
+      }
+
+      .modal-body {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
+
+      .btn-icon-close {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.25rem;
+        padding: 0.2rem 0.5rem;
+        cursor: pointer;
+      }
+      .btn-icon-close:hover {
+        color: #fff;
+      }
+
+      .hud {
+        background: #020617;
+    </style>
+  </head>
+  <body>
+    <div id="main-app-container" class="a11y-container">
+      <nav class="a11y-nav-back">
+        <a href="index.html">&larr; Back to Demo Hub</a>
+      </nav>
+
+      <header class="a11y-header">
+        <h1>03: Modal Dialog Focus Trapping &amp; Inert</h1>
+        <p class="desc">
+          Demonstrates the complete modal lifecycle: (1) Background <code>inert</code> isolation, (2) Cyclic
+          <kbd class="a11y-kbd">Tab</kbd>/<kbd class="a11y-kbd">Shift+Tab</kbd> keyboard trapping, (3) <kbd class="a11y-kbd">Escape</kbd> key dismissal, (4) Safety-first
+          initial focus on <strong>Cancel</strong>, and (5) Focus restoration to the origin trigger button.
+        </p>
+      </header>
+
+      <main>
+        <section class="a11y-card">
+          <h2>Cluster Management</h2>
+          <p style="margin-bottom: 1rem">
+            Click below to open the confirmation dialog. While open, notice you cannot tab into background elements.
+          </p>
+          <button type="button" id="open-modal-trigger" class="a11y-btn a11y-btn-danger">Delete Production Cluster</button>
+        </section>
+
+        <section class="a11y-card">
+          <h2>Background Form Controls (Should be inert when modal is open)</h2>
+          <div style="display: flex; gap: 1rem; margin-top: 0.5rem">
+            <input
+              type="text"
+              placeholder="Background input"
+              style="padding: 0.5rem 0.8rem; border-radius: var(--a11y-radius-sm); background: #0f172a; color: #fff; border: 1px solid var(--a11y-border)"
+            />
+            <button type="button" class="a11y-btn">Background Button</button>
+          </div>
+        </section>
+      </main>
+
+      <aside class="a11y-hud" aria-live="polite">
+        <div class="a11y-hud-title">Modal Trapping State Inspector</div>
+        <strong>Active Focus:</strong> <span id="hud-focus">&lt;body&gt;</span> | <strong>Modal State:</strong>
+        <span id="hud-state">Closed</span>
+      </aside>
+    </div>
+
+    <!-- The Modal Overlay (Rendered as sibling to main container) -->
+    <div
+      id="modal-backdrop"
+      class="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-desc"
+    >
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h2 id="modal-title">Confirm Deletion</h2>
+          <button type="button" class="btn-icon-close" id="modal-close-icon" aria-label="Close dialog">✕</button>
+        </div>
+        <div class="modal-body" id="modal-desc">
+          Are you sure you want to delete the production database cluster? All 48 replicas and backups will be
+          immediately decommissioned. This action cannot be reversed.
+        </div>
+        <div class="modal-actions">
+          <!-- Safety First Focus: Initial focus defaults to Cancel -->
+          <button type="button" id="btn-cancel" class="a11y-btn">Cancel</button>
+          <button type="button" id="btn-confirm-delete" class="a11y-btn a11y-btn-danger">Yes, Delete Cluster</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const triggerBtn = document.getElementById('open-modal-trigger');
+      const backdrop = document.getElementById('modal-backdrop');
+      const cancelBtn = document.getElementById('btn-cancel');
+      const confirmDeleteBtn = document.getElementById('btn-confirm-delete');
+      const closeIconBtn = document.getElementById('modal-close-icon');
+      const mainAppContainer = document.getElementById('main-app-container');
+      const hudFocus = document.getElementById('hud-focus');
+      const hudState = document.getElementById('hud-state');
+
+      let previousActiveElement = null;
+
+      function openModal() {
+        previousActiveElement = document.activeElement;
+        backdrop.classList.add('is-open');
+        mainAppContainer.setAttribute('inert', ''); // Freeze background
+        hudState.textContent = 'Open (Inert Active)';
+
+        // Set initial focus to safe action
+        cancelBtn.focus();
+      }
+
+      function closeModal() {
+        backdrop.classList.remove('is-open');
+        mainAppContainer.removeAttribute('inert'); // Unfreeze background
+        hudState.textContent = 'Closed';
+
+        // Restore focus to original trigger
+        if (previousActiveElement) {
+          previousActiveElement.focus();
+        }
+      }
+
+      // Modal Focus Trapping Listener
+      backdrop.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeModal();
+          return;
+        }
+
+        if (e.key === 'Tab') {
+          const focusables = backdrop.querySelectorAll('button:not([disabled])');
+          const firstFocusable = focusables[0];
+          const lastFocusable = focusables[focusables.length - 1];
+
+          if (e.shiftKey) {
+            if (document.activeElement === firstFocusable) {
+              e.preventDefault();
+              lastFocusable.focus();
+            }
+          } else {
+            if (document.activeElement === lastFocusable) {
+              e.preventDefault();
+              firstFocusable.focus();
+            }
+          }
+        }
+      });
+
+      triggerBtn.addEventListener('click', openModal);
+      cancelBtn.addEventListener('click', closeModal);
+      closeIconBtn.addEventListener('click', closeModal);
+      confirmDeleteBtn.addEventListener('click', () => {
+        alert('Cluster deletion requested.');
+        closeModal();
+      });
+
+      document.addEventListener('focusin', (e) => {
+        const el = e.target;
+        const tag = el.tagName.toLowerCase();
+        const text = (el.innerText || el.getAttribute('aria-label') || '').slice(0, 20);
+        hudFocus.textContent = `<${tag}> "${text}"`;
+      });
+    </script>
+  </body>
+</html>

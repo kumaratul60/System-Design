@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>02 - Keyboard Navigation, Focus Rings & Skip Links</title>
+    <link rel="stylesheet" href="css/a11y-tokens.css" />
+    <link rel="stylesheet" href="css/a11y-components.css" />
+    <style>
+      /* 1. Skip Navigation Link (Hidden offscreen until focused) */
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 1rem;
+        background: var(--a11y-focus-ring);
+        color: #0f172a;
+        padding: 0.75rem 1.25rem;
+        font-weight: 700;
+        border-radius: var(--a11y-radius-sm);
+        z-index: 9999;
+        text-decoration: none;
+        transition: top 0.2s ease-in-out;
+        border: 2px solid #000;
+      }
+
+      .skip-link:focus-visible {
+        top: 1rem;
+        outline: 3px solid #fff !important;
+        outline-offset: 2px;
+      }
+
+      .app-header {
+        background: #1e293b;
+        border-bottom: 1px solid var(--a11y-border);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--a11y-primary);
+      }
+
+      .nav-list {
+        display: flex;
+        list-style: none;
+        gap: 1rem;
+      }
+      .nav-list a {
+        color: var(--a11y-text-subtle);
+        text-decoration: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: var(--a11y-radius-sm);
+        transition: background 0.2s;
+      }
+
+      .nav-list a:hover {
+        background: #334155;
+      }
+      .nav-list a:focus-visible {
+        outline: 3px solid var(--a11y-focus-ring);
+        outline-offset: 2px;
+        background: #334155;
+      }
+
+      .btn-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+    </style>
+
+      button:hover,
+      a.btn:hover {
+        background: #475569;
+      }
+
+      /* Strict Focus Visible Style */
+      button:focus-visible,
+      a.btn:focus-visible,
+      [tabindex='0']:focus-visible {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 3px;
+      }
+
+      /* Live Keyboard HUD */
+      .keyboard-hud {
+        position: sticky;
+        bottom: 1rem;
+        background: #020617;
+        border: 1px solid var(--primary);
+        border-radius: 8px;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 0.85rem;
+        color: #38bdf8;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      }
+
+      .key-badge {
+        background: #334155;
+        color: #fff;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        border: 1px solid #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. The Skip Navigation Link -->
+    <a href="#main-content" class="skip-link">Skip to main content &darr;</a>
+
+    <!-- Header with dummy repetitive navigation links -->
+    <header class="app-header">
+      <div class="logo">ACME Cloud Console</div>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-list">
+          <li><a href="#dash">Dashboard</a></li>
+          <li><a href="#instances">EC2 Instances</a></li>
+          <li><a href="#storage">S3 Buckets</a></li>
+          <li><a href="#iam">IAM Security</a></li>
+          <li><a href="#billing">Billing & Cost</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="a11y-container">
+      <nav class="a11y-nav-back">
+        <a href="index.html">&larr; Back to Demo Hub</a>
+      </nav>
+
+      <!-- Main Landmark Region with target id -->
+      <main id="main-content" tabindex="-1">
+        <section class="a11y-card">
+          <h2>1. Skip Link &amp; Focus Ring Testing</h2>
+          <p>
+            Press <kbd class="a11y-kbd">Tab</kbd> repeatedly from the top of the browser URL bar. The first element to
+            receive focus is the <strong>Skip Link</strong>. Pressing <kbd class="a11y-kbd">Enter</kbd> on it bypasses
+            all 5 header links and immediately focuses this main content area.
+          </p>
+        </section>
+
+        <section class="a11y-card">
+          <h2>2. tabindex Master Comparison</h2>
+          <p>
+            Demonstrates natural DOM order, <code>tabindex="0"</code> (insert into sequence), and
+            <code>tabindex="-1"</code> (programmatic only):
+          </p>
+
+          <div class="btn-grid">
+            <button type="button" class="a11y-btn">Natural Button 1</button>
+            <div tabindex="0" class="a11y-btn" role="button" aria-label="Custom div button with tabindex 0">
+              Custom Div (tabindex="0")
+            </div>
+            <button type="button" tabindex="-1" id="prog-btn" class="a11y-btn">Bypassed Tab (tabindex="-1")</button>
+            <button type="button" class="a11y-btn">Natural Button 2</button>
+            <button type="button" class="a11y-btn a11y-btn-primary" onclick="document.getElementById('prog-btn').focus()">
+              Trigger focus() on tabindex="-1"
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <!-- Interactive Keyboard Event HUD -->
+      <aside class="a11y-hud" aria-live="polite">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div><strong>Active Focus:</strong> <span id="hud-focus">&lt;body&gt;</span></div>
+          <div><strong>Last Key Pressed:</strong> <span id="hud-key">None</span></div>
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      const hudFocus = document.getElementById('hud-focus');
+      const hudKey = document.getElementById('hud-key');
+
+      document.addEventListener('keydown', (e) => {
+        hudKey.textContent = `${e.key} ${e.shiftKey ? '(+Shift)' : ''}`;
+      });
+
+      document.addEventListener('focusin', (e) => {
+        const el = e.target;
+        const tag = el.tagName.toLowerCase();
+        const id = el.id ? `#${el.id}` : '';
+        const text = (el.innerText || el.getAttribute('aria-label') || '').slice(0, 20);
+        hudFocus.textContent = `<${tag}${id}> "${text}"`;
+      });
+    </script>
+  </body>
+</html>

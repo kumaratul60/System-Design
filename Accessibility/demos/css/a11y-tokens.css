@@ -1,0 +1,40 @@
+/**
+ * Web Accessibility (a11y) Design Tokens & Variables
+ * Scoped namespacing (--a11y-*) prevents variable collision and leakage.
+ */
+
+:root {
+  /* Color Palette Tokens */
+  --a11y-bg: #0f172a;
+  --a11y-card-bg: #1e293b;
+  --a11y-card-hover-border: #38bdf8;
+  --a11y-text: #f8fafc;
+  --a11y-text-muted: #94a3b8;
+  --a11y-text-subtle: #cbd5e1;
+  --a11y-border: #334155;
+  --a11y-border-subtle: rgba(51, 65, 85, 0.5);
+
+  /* Semantic Accent & State Tokens */
+  --a11y-primary: #38bdf8;
+  --a11y-primary-hover: #0ea5e9;
+  --a11y-accent: #a855f7;
+  --a11y-error: #ef4444;
+  --a11y-error-bg: #450a0a;
+  --a11y-error-text: #fca5a5;
+  --a11y-success: #10b981;
+  --a11y-success-bg: #064e3b;
+  --a11y-success-text: #a7f3d0;
+  --a11y-warning: #f59e0b;
+
+  /* Focus Indicator Ring Token (WCAG 2.4.7 Compliant: >= 3:1 contrast) */
+  --a11y-focus-ring: #f59e0b;
+  --a11y-focus-ring-offset: 3px;
+
+  /* Typography & Spacing */
+  --a11y-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --a11y-font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  --a11y-radius-sm: 6px;
+  --a11y-radius-md: 8px;
+  --a11y-radius-lg: 12px;
+  --a11y-radius-full: 9999px;
+}

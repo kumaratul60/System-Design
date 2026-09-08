@@ -22,7 +22,7 @@
       - [Detailed Breakdown by Value:](#detailed-breakdown-by-value)
     - [4. Focus Management: Roving `tabIndex` vs `aria-activedescendant`](#4-focus-management-roving-tabindex-vs-aria-activedescendant)
       - [Decision Matrix: When to choose which?](#decision-matrix-when-to-choose-which)
-    - [4. Dynamic Updates: `aria-live` Regions (`polite` vs `assertive`)](#4-dynamic-updates-aria-live-regions-polite-vs-assertive)
+    - [5. Dynamic Updates: `aria-live` Regions (`polite` vs `assertive`)](#5-dynamic-updates-aria-live-regions-polite-vs-assertive)
   - [🏗️ Complex UI Architectural Patterns](#️-complex-ui-architectural-patterns)
     - [Pattern 1: Modal Dialogs \& Focus Trapping (Native `<dialog>` vs Custom Portal)](#pattern-1-modal-dialogs--focus-trapping-native-dialog-vs-custom-portal)
       - [Modal Architecture Checklist](#modal-architecture-checklist)
@@ -258,7 +258,7 @@ When building complex composite widgets (Tabs, Toolbars, Menus, Grids, Trees, Co
 
 ---
 
-### 4. Dynamic Updates: `aria-live` Regions (`polite` vs `assertive`)
+### 5. Dynamic Updates: `aria-live` Regions (`polite` vs `assertive`)
 
 `aria-live` instructs screen readers to announce dynamic content injected into the DOM without user navigation.
 
@@ -772,3 +772,10 @@ test.describe('Checkout Flow a11y', () => {
 2. **ARIA is for Polyfilling Semantics:** Only use ARIA when native HTML5 cannot express the custom UI behavior.
 3. **Keyboard Parity is Non-Negotiable:** Every feature operable with a mouse must be equally operable via standard keyboard conventions (`Tab`, `Shift+Tab`, `Space`, `Enter`, `Esc`, `Arrow Keys`).
 4. **Automated Testing is a Floor, Not a Ceiling:** Always combine `axe-core` / CI checks with manual assistive technology testing.
+
+---
+
+## 🧪 Interactive Browser Testbed Hub
+
+To test all the patterns discussed in this document (including focus trapping, roving `tabindex`, combobox virtual focus, live regions, contrast calculators, and zero-ghost-focus accordions), open the [**Interactive Testbed Hub**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/index.html) in your browser.
+

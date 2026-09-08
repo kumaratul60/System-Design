@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>05 - Virtual Focus Combobox & Autocomplete</title>
+  <link rel="stylesheet" href="css/a11y-tokens.css">
+  <link rel="stylesheet" href="css/a11y-components.css">
+  <style>
+    .combobox-wrapper {
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    label { font-weight: 600; color: #f1f5f9; display: block; margin-bottom: 0.5rem; }
+
+    input.combobox-input {
+      width: 100%;
+      background: #0f172a;
+      border: 1.5px solid var(--a11y-border);
+      border-radius: var(--a11y-radius-md);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    input.combobox-input:focus-visible {
+      outline: none;
+      border-color: var(--a11y-primary);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Listbox Dropdown */
+    .listbox {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #0f172a;
+      border: 1.5px solid var(--a11y-border);
+      border-radius: var(--a11y-radius-md);
+      list-style: none;
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    }
+
+    .listbox[data-open="true"] { display: block; }
+
+    .option {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      color: var(--a11y-text-subtle);
+      border-bottom: 1px solid var(--a11y-border-subtle);
+    }
+
+    .option:last-child { border-bottom: none; }
+
+    /* Virtual Focus styling via aria-selected or active class */
+    .option[aria-selected="true"], .option.is-active {
+      background: #0284c7;
+      color: #ffffff;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="a11y-container">
+    <nav class="a11y-nav-back">
+      <a href="index.html">&larr; Back to Demo Hub</a>
+    </nav>
+
+    <header class="a11y-header">
+      <h1>05: Virtual Focus Combobox (aria-activedescendant)</h1>
+      <p class="desc">
+        Demonstrates the WAI-ARIA Combobox pattern. Physical focus stays locked on the <code>&lt;input&gt;</code> while typing. Pressing <kbd class="a11y-kbd">&darr;</kbd> <kbd class="a11y-kbd">&uarr;</kbd> Arrow keys traverses options virtually by dynamically updating <code>aria-activedescendant</code>.
+      </p>
+    </header>
+
+    <main>
+      <section class="a11y-card">
+        <label id="combo-label" for="search-input">Search Regional Data Centers</label>
+        
+        <div class="combobox-wrapper">
+          <input 
+            type="text" 
+            id="search-input" 
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="results-listbox"
+            aria-labelledby="combo-label"
+            aria-activedescendant=""
+            autocomplete="off"
+            placeholder="Type 'us', 'eu', or press Down arrow..."
+            class="combobox-input"
+          />
+
+          <!-- 2. The Listbox -->
+          <ul 
+            id="results-listbox" 
+            role="listbox" 
+            aria-labelledby="combo-label"
+            class="listbox"
+            data-open="false"
+          >
+            <!-- Options populated dynamically -->
+          </ul>
+        </div>
+      </section>
+
+      <!-- Screen Reader Live Announcer for count -->
+      <div id="sr-announcer" role="status" aria-live="polite" class="sr-only"></div>
+    </main>
+
+    <aside class="a11y-hud" aria-live="polite">
+      <div class="a11y-hud-title">Virtual Focus Inspector</div>
+      <strong>Physical Focus:</strong> <span id="hud-focus">&lt;input#search-input&gt;</span><br>
+      <strong>Virtual aria-activedescendant:</strong> <span id="hud-active">""</span><br>
+      <strong>aria-expanded:</strong> <span id="hud-expanded">false</span>
+    </aside>
+  </div>
+
+  <script>
+    const data = [
+      { id: 'opt-us-east', name: 'US East (N. Virginia) - us-east-1' },
+      { id: 'opt-us-west', name: 'US West (Oregon) - us-west-2' },
+      { id: 'opt-eu-west', name: 'EU West (Ireland) - eu-west-1' },
+      { id: 'opt-eu-central', name: 'EU Central (Frankfurt) - eu-central-1' },
+      { id: 'opt-ap-south', name: 'Asia Pacific (Mumbai) - ap-south-1' },
+      { id: 'opt-ap-tokyo', name: 'Asia Pacific (Tokyo) - ap-northeast-1' }
+    ];
+
+    const input = document.getElementById('search-input');
+    const listbox = document.getElementById('results-listbox');
+    const srAnnouncer = document.getElementById('sr-announcer');
+    const hudActive = document.getElementById('hud-active');
+    const hudExpanded = document.getElementById('hud-expanded');
+
+    let activeIndex = -1;
+    let filtered = [...data];
+
+    function renderOptions() {
+      listbox.innerHTML = '';
+      filtered.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.id = item.id;
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', index === activeIndex ? 'true' : 'false');
+        li.className = `option ${index === activeIndex ? 'is-active' : ''}`;
+        li.textContent = item.name;
+        li.addEventListener('click', () => selectOption(item));
+        listbox.appendChild(li);
+      });
+
+      const isOpen = filtered.length > 0 && input.value.trim().length >= 0 && activeIndex !== -999;
+      listbox.setAttribute('data-open', isOpen ? 'true' : 'false');
+      input.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      hudExpanded.textContent = isOpen ? 'true' : 'false';
+
+      if (isOpen) {
+        srAnnouncer.textContent = `${filtered.length} regions found. Use up and down arrows to review.`;
+      }
+    }
+
+    function selectOption(item) {
+      input.value = item.name;
+      activeIndex = -1;
+      input.setAttribute('aria-activedescendant', '');
+      listbox.setAttribute('data-open', 'false');
+      input.setAttribute('aria-expanded', 'false');
+      hudActive.textContent = '""';
+      hudExpanded.textContent = 'false';
+    }
+
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      filtered = data.filter(d => d.name.toLowerCase().includes(q));
+      activeIndex = filtered.length > 0 ? 0 : -1;
+      renderOptions();
+      updateActiveDescendant();
+    });
+
+    input.addEventListener('focus', () => {
+      filtered = [...data];
+      renderOptions();
+    });
+
+    function updateActiveDescendant() {
+      if (activeIndex >= 0 && activeIndex < filtered.length) {
+        const activeId = filtered[activeIndex].id;
+        input.setAttribute('aria-activedescendant', activeId);
+        hudActive.textContent = `"${activeId}"`;
+      } else {
+        input.setAttribute('aria-activedescendant', '');
+        hudActive.textContent = '""';
+      }
+      renderOptions();
+    }
+
+    input.addEventListener('keydown', (e) => {
+      if (filtered.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        listbox.setAttribute('data-open', 'true');
+        input.setAttribute('aria-expanded', 'true');
+        activeIndex = (activeIndex + 1) % filtered.length;
+        updateActiveDescendant();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
+        updateActiveDescendant();
+      } else if (e.key === 'Enter') {
+        if (activeIndex >= 0 && activeIndex < filtered.length) {
+          e.preventDefault();
+          selectOption(filtered[activeIndex]);
+        }
+      } else if (e.key === 'Escape') {
+        listbox.setAttribute('data-open', 'false');
+        input.setAttribute('aria-expanded', 'false');
+        hudExpanded.textContent = 'false';
+      }
+    });
+  </script>
+</body>
+</html>

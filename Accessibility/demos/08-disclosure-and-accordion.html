@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>08 - Accessible Accordion &amp; Disclosure Pattern</title>
+  <link rel="stylesheet" href="css/a11y-tokens.css">
+  <link rel="stylesheet" href="css/a11y-components.css">
+  <style>
+    .accordion-container {
+      background: var(--a11y-card-bg);
+      border: 1px solid var(--a11y-border);
+      border-radius: var(--a11y-radius-lg);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid var(--a11y-border);
+    }
+    .accordion-item:last-child { border-bottom: none; }
+
+    .accordion-header {
+      margin: 0;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--a11y-text);
+      padding: 1.25rem 1.5rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .accordion-trigger:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .accordion-trigger:focus-visible {
+      outline: 3px solid var(--a11y-focus-ring);
+      outline-offset: -3px;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .chevron {
+      transition: transform 0.2s ease;
+      font-size: 0.85rem;
+      color: var(--a11y-primary);
+    }
+
+    .accordion-trigger[aria-expanded="true"] .chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Zero Ghost Focus CSS Transitions */
+    .accordion-panel {
+      height: 0;
+      overflow: hidden;
+      visibility: hidden; /* Removes from sequential tab order while closed */
+      background: var(--a11y-bg);
+      transition: height 0.25s ease, visibility 0.25s step-end;
+    }
+
+    .accordion-panel[data-open="true"] {
+      height: auto;
+      visibility: visible;
+      transition: height 0.25s ease, visibility 0.25s step-start;
+    }
+
+    .panel-content {
+      padding: 1.5rem;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    .panel-content a, .panel-content button {
+      color: var(--a11y-primary);
+      text-decoration: underline;
+    }
+
+    .panel-content button {
+      background: #334155;
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--a11y-radius-sm);
+      border: 1px solid var(--a11y-border);
+      text-decoration: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      display: inline-block;
+    }
+
+    .panel-content button:focus-visible {
+      outline: 2px solid var(--a11y-focus-ring);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="a11y-container">
+    <nav class="nav-back">
+      <a href="index.html">&larr; Back to Demo Hub</a>
+    </nav>
+
+    <header>
+      <h1>08: Accessible Accordion (Zero Ghost Focus)</h1>
+      <p class="desc">
+        Demonstrates the WAI-ARIA Accordion Pattern. Uses <code>aria-expanded</code> and <code>aria-controls</code>. When collapsed, CSS <code>visibility: hidden</code> ensures that internal links/buttons are completely removed from the keyboard tab sequence.
+      </p>
+    </header>
+
+    <main>
+      <div class="accordion-container">
+        <!-- Section 1 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button 
+              type="button" 
+              id="acc-hdr-1" 
+              class="accordion-trigger" 
+              aria-expanded="false" 
+              aria-controls="acc-panel-1"
+            >
+              <span>What is Web Accessibility (a11y)?</span>
+              <span class="chevron" aria-hidden="true">&#9660;</span>
+            </button>
+          </h2>
+          <div 
+            id="acc-panel-1" 
+            role="region" 
+            aria-labelledby="acc-hdr-1" 
+            class="accordion-panel"
+            data-open="false"
+          >
+            <div class="panel-content">
+              Web accessibility means designing digital tools so that everyone, including over 1.3 billion people with disabilities, can perceive, understand, navigate, and interact with the web.
+              <div><button type="button">Internal Interactive Button 1</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button 
+              type="button" 
+              id="acc-hdr-2" 
+              class="accordion-trigger" 
+              aria-expanded="false" 
+              aria-controls="acc-panel-2"
+            >
+              <span>What are the POUR Principles in WCAG?</span>
+              <span class="chevron" aria-hidden="true">&#9660;</span>
+            </button>
+          </h2>
+          <div 
+            id="acc-panel-2" 
+            role="region" 
+            aria-labelledby="acc-hdr-2" 
+            class="accordion-panel"
+            data-open="false"
+          >
+            <div class="panel-content">
+              The 4 foundational principles of the Web Content Accessibility Guidelines (WCAG): <strong>Perceivable</strong>, <strong>Operable</strong>, <strong>Understandable</strong>, and <strong>Robust</strong>.
+              <div><button type="button">Internal Interactive Button 2</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button 
+              type="button" 
+              id="acc-hdr-3" 
+              class="accordion-trigger" 
+              aria-expanded="false" 
+              aria-controls="acc-panel-3"
+            >
+              <span>How does aria-expanded notify assistive technology?</span>
+              <span class="chevron" aria-hidden="true">&#9660;</span>
+            </button>
+          </h2>
+          <div 
+            id="acc-panel-3" 
+            role="region" 
+            aria-labelledby="acc-hdr-3" 
+            class="accordion-panel"
+            data-open="false"
+          >
+            <div class="panel-content">
+              When <code>aria-expanded="true"</code> is set on the header button, screen readers announce "Expanded", telling the user that the content panel is visible and ready to explore.
+              <div><button type="button">Internal Interactive Button 3</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="a11y-hud" aria-live="polite">
+      <strong>Active Focus:</strong> <span id="hud-focus">&lt;body&gt;</span> | 
+      <strong>Accordion Status:</strong> <span id="hud-status">All closed (internal buttons unreachable via Tab)</span>
+    </aside>
+  </div>
+
+  <script>
+    const triggers = Array.from(document.querySelectorAll('.accordion-trigger'));
+    const hudFocus = document.getElementById('hud-focus');
+    const hudStatus = document.getElementById('hud-status');
+
+    triggers.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        const panelId = btn.getAttribute('aria-controls');
+        const panel = document.getElementById(panelId);
+
+        btn.setAttribute('aria-expanded', !isExpanded ? 'true' : 'false');
+        panel.setAttribute('data-open', !isExpanded ? 'true' : 'false');
+
+        hudStatus.textContent = !isExpanded 
+          ? `Opened ${panelId} (internal button is now in Tab sequence)` 
+          : `Closed ${panelId} (internal button hidden from Tab sequence)`;
+      });
+    });
+
+    document.addEventListener('focusin', (e) => {
+      const el = e.target;
+      const tag = el.tagName.toLowerCase();
+      const text = (el.innerText || el.getAttribute('aria-label') || '').slice(0, 25);
+      hudFocus.textContent = `<${tag}> "${text}"`;
+    });
+  </script>
+</body>
+</html>
