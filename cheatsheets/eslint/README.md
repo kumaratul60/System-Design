@@ -31,16 +31,16 @@ flowchart TD
         A2 --> A3[Husky + lint-staged pre-commit hook]
     end
 
-    subgraph Component_CI [2. Storybook Component CI Gate]
-        A3 --> B1[Vite builds Storybook]
-        B1 --> B2[@storybook/test-runner with Axe-core]
-        B2 --> B3[a11y-report.mjs aggregates story violations]
+    subgraph Component_CI ["2. Storybook Component CI Gate"]
+        A3 --> B1["Vite builds Storybook"]
+        B1 --> B2["Storybook Test-Runner with Axe-core"]
+        B2 --> B3["a11y-report.mjs aggregates story violations"]
     end
 
-    subgraph E2E_CI [3. E2E & Full App CI Gate]
-        B3 --> C1[Playwright @axe-core full route audit]
-        C1 --> C2[Lighthouse CI contrast & performance audit]
+    subgraph E2E_CI ["3. E2E & Full App CI Gate"]
+        B3 --> C1["Playwright Axe-core full route audit"]
+        C1 --> C2["Lighthouse CI contrast & performance audit"]
     end
 
-    C2 --> D[Production Release]
+    C2 --> D["Production Release"]
 ```

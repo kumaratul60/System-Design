@@ -22,7 +22,7 @@ flowchart LR
 ## 2. Complete Rule Matrix & WCAG Success Criteria Mapping
 
 | Rule Name                                         |  Level  | WCAG Criterion                    | Why It Matters                                                            |
-| :------------------------------------------------ | :-----: | :-------------------------------- | :------------------------------------------------------------------------ | -------- |
+| :------------------------------------------------ | :-----: | :-------------------------------- | :------------------------------------------------------------------------ |
 | `jsx-a11y/alt-text`                               | `error` | SC 1.1.1 (Non-text Content)       | Enforces `alt` on `<img>`, `<area>`, `<input type="image">`.              |
 | `jsx-a11y/anchor-is-valid`                        | `error` | SC 2.1.1 (Keyboard)               | Bans `<a href="#">` and `<a>` without valid `href`.                       |
 | `jsx-a11y/aria-props`                             | `error` | SC 4.1.2 (Name, Role, Value)      | Prevents misspelled ARIA attributes (e.g., `aria-labeledby`).             |
@@ -36,7 +36,7 @@ flowchart LR
 | `jsx-a11y/no-noninteractive-element-interactions` | `error` | SC 4.1.2 (Name, Role, Value)      | Bans click handlers directly on `<main>`, `<div>`, `<article>`, `<ul>`.   |
 | `jsx-a11y/no-noninteractive-tabindex`             | `error` | SC 2.4.3 (Focus Order)            | Disallows `tabIndex="0"` on non-interactive structural tags.              |
 | `jsx-a11y/no-static-element-interactions`         | `error` | SC 4.1.2 (Name, Role, Value)      | Blocks `<div>` or `<span>` with click handlers unless given a valid role. |
-| `jsx-a11y/role-has-required-aria-props`           | `error` | SC 4.1.2 (Name, Role, Value)      | e.g., `role="checkbox"` requires `aria-checked="true                      | false"`. |
+| `jsx-a11y/role-has-required-aria-props`           | `error` | SC 4.1.2 (Name, Role, Value)      | e.g., `role="checkbox"` requires `aria-checked="true/false"`.             |
 | `jsx-a11y/no-redundant-roles`                     | `warn`  | Clean DOM                         | Warns against `<button role="button">` or `<nav role="navigation">`.      |
 | `jsx-a11y/media-has-caption`                      | `warn`  | SC 1.2.2 (Captions)               | Enforces `<track kind="captions">` inside `<video>` elements.             |
 
