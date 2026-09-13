@@ -457,7 +457,7 @@ flowchart LR
 
     T1 -->|ArrowRight| T2
     T2 -->|ArrowRight| T3
-    T3 -->|ArrowRight (Wrap)| T1
+    T3 -->|"ArrowRight (Wrap)"| T1
 ```
 
 ### Pattern B: `aria-activedescendant` (Virtual Focus)
