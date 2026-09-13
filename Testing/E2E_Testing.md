@@ -10,7 +10,11 @@
   - [Table of Contents](#table-of-contents)
   - [1. Core Philosophy: The Top of the Testing Pyramid](#1-core-philosophy-the-top-of-the-testing-pyramid)
   - [2. Framework Comparison: Playwright vs. Cypress vs. Selenium](#2-framework-comparison-playwright-vs-cypress-vs-selenium)
-  - [3. Page Object Model (POM) Architecture](#3-page-object-model-pom-architecture)
+  - [3. Cypress Testing Library Integration (`@testing-library/cypress`)](#3-cypress-testing-library-integration-testing-librarycypress)
+    - [Configuration \& Setup](#configuration--setup)
+    - [Using `cy.findByRole` vs. `cy.get`](#using-cyfindbyrole-vs-cyget)
+    - [Scoped Queries with `.within()`](#scoped-queries-with-within)
+  - [4. Page Object Model (POM) Architecture](#4-page-object-model-pom-architecture)
   - [4. Global Authentication State Reuse (`storageState.json`)](#4-global-authentication-state-reuse-storagestatejson)
   - [5. Resilient Locators \& Auto-Waiting Engine](#5-resilient-locators--auto-waiting-engine)
   - [6. Complete Production E2E Suite (Playwright)](#6-complete-production-e2e-suite-playwright)
@@ -45,7 +49,66 @@ flowchart LR
 
 ---
 
-## 3. Page Object Model (POM) Architecture
+## 3. Cypress Testing Library Integration (`@testing-library/cypress`)
+
+By default, Cypress tests often rely on fragile CSS selectors like `cy.get('.btn-primary-2')`. The `@testing-library/cypress` extension brings DOM Testing Library's accessible query hierarchy directly into Cypress commands (`cy.findByRole`, `cy.findByLabelText`, `cy.findByText`).
+
+### Configuration & Setup
+
+1. **Install package:**
+   ```bash
+   npm install --save-dev @testing-library/cypress
+   ```
+2. **Import commands in Cypress support file:**
+   ```typescript
+   // cypress/support/commands.ts
+   import '@testing-library/cypress/add-commands';
+   ```
+3. **Add TypeScript definitions:**
+   ```json
+   // cypress/tsconfig.json
+   {
+     "compilerOptions": {
+       "types": ["cypress", "@testing-library/cypress"]
+     }
+   }
+   ```
+
+---
+
+### Using `cy.findByRole` vs. `cy.get`
+
+```typescript
+// ❌ BAD: Brittle CSS selectors
+cy.get('.login-form > div:nth-child(2) > input').type('secret');
+cy.get('#submit-button').click();
+
+// ✅ GOOD: Resilient, accessible queries
+cy.findByLabelText(/password/i).type('secret');
+cy.findByRole('button', { name: /sign in/i }).click();
+
+// Asserting notifications
+cy.findByRole('alert').should('contain.text', 'Invalid credentials');
+```
+
+---
+
+### Scoped Queries with `.within()`
+
+To query within a specific modal, card, or navigation bar:
+
+```typescript
+cy.findByRole('dialog', { name: /edit profile/i }).within(() => {
+  cy.findByLabelText(/first name/i)
+    .clear()
+    .type('Atul');
+  cy.findByRole('button', { name: /save/i }).click();
+});
+```
+
+---
+
+## 4. Page Object Model (POM) Architecture
 
 POM encapsulates page selectors and domain interactions into dedicated classes, isolating tests from UI markup changes:
 

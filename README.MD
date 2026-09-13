@@ -132,7 +132,8 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── Localization_Testing.md  # Pseudo-localization, RTL mirroring, Intl formatting
 │   ├── Contract_Mutation_Testing.md # Pact consumer-driven contracts & Stryker mutators
 │   ├── Mocking_Strategy.md      # Test doubles, mockClear/Reset/Restore, mock drift
-│   └── Testing_QA.md            # 28+ Staff/Senior Interview Questions & Live Coding Suites
+│   ├── Assertions_Expect_API.md # Jest/Vitest expect, matchers, soft assertions, poll
+│   └── Testing_QA.md            # 29+ Staff/Senior Interview Questions & Live Coding Suites
 ├── LLD/                         # Low-Level Design & Object-Oriented Design
 └── Web/                         # Fundamentals & Web Infrastructure
     ├── Headers.md               # Deep dive into HTTP Headers
@@ -280,7 +281,8 @@ An end-to-end guide to modern software quality engineering, frontend testing, te
 - **[Localization (i18n) Testing](./Testing/Localization_Testing.md):** Pseudo-localization text expansion ($+30\%-50\%$), Right-to-Left (RTL) mirroring, and `Intl` formatting.
 - **[Contract & Mutation Testing](./Testing/Contract_Mutation_Testing.md):** Consumer-Driven Contracts (Pact) across microservices and Mutation Testing with Stryker Mutator.
 - **[Mocking Strategy & Lifecycle](./Testing/Mocking_Strategy.md):** Test Doubles taxonomy (Dummies, Stubs, Spies, Mocks, Fakes, MSW) and `mockClear` vs `mockReset` vs `mockRestore`.
-- **[Testing Master Interview Bank](./Testing/Testing_QA.md):** 28+ Staff/Senior level interview questions, live coding suites (`debounce`, `throttle`, custom hooks), A/B testing engine, and E2E checkout scenarios.
+- **[Assertions & Expect API Mastery](./Testing/Assertions_Expect_API.md):** Jest/Vitest expect engine, `toBe` vs `toEqual` vs `toStrictEqual`, asymmetric matchers, soft assertions (`expect.soft`), `expect.poll`, and custom matchers.
+- **[Testing Master Interview Bank](./Testing/Testing_QA.md):** 29+ Staff/Senior level interview questions, live coding suites (`debounce`, `throttle`, custom hooks), A/B testing engine, and E2E checkout scenarios.
 
 ---
 
@@ -330,3 +332,6 @@ We welcome contributions from the community! Whether you are fixing bugs, improv
 - **Frontend-Lab:** [Practice Machine Coding Questions](https://fe-battle.vercel.app)
 - **React Playground:** [Practice pure React JS, HTML, and CSS (write component tests without libraries)](https://fe-battle.vercel.app/interview/playground)
 - **Web Accessibility Course:** [web.dev / Learn Accessibility](https://web.dev/learn/accessibility)
+- **Jest `expect` API:** [Jest Expect Documentation](https://jestjs.io/docs/expect)
+- **Vitest `expect` API:** [Vitest Expect API Guide](https://vitest.dev/api/expect.html)
+- **Cypress Testing Library:** [Testing Library for Cypress](https://testing-library.com/docs/cypress-testing-library/intro/)

@@ -26,7 +26,8 @@ Every testing methodology, pattern, and practice has been split into dedicated, 
 | **12** | **[Localization (i18n) Testing](./Localization_Testing.md)**        | Pseudo-localization text expansion ($+30\%-50\%$), Right-to-Left (RTL) mirroring, `Intl` multi-locale formatting, pluralization rules.                    |
 | **13** | **[Contract & Mutation Testing](./Contract_Mutation_Testing.md)**   | Consumer-Driven Contracts (Pact) across micro-frontends, Mutation Testing with Stryker Mutator ("Killing Mutants", mutation scores).                      |
 | **14** | **[Mocking Strategy & Lifecycle](./Mocking_Strategy.md)**           | Test Doubles taxonomy (Dummies, Stubs, Spies, Mocks, Fakes, MSW), `mockClear` vs `mockReset` vs `mockRestore`, avoiding mock drift.                       |
-| **15** | **[Testing Master Interview Bank](./Testing_QA.md)**                | 28+ Senior/Staff interview questions, live coding suites (`debounce`, `throttle`, TDD Task Queue, A/B Engine, Checkout E2E, grill defense).               |
+| **15** | **[Assertions & Expect API Mastery](./Assertions_Expect_API.md)**   | Jest/Vitest expect engine, `toBe` vs `toEqual` vs `toStrictEqual`, asymmetric matchers, soft assertions (`expect.soft`), `expect.poll`, custom matchers.  |
+| **16** | **[Testing Master Interview Bank](./Testing_QA.md)**                | 29+ Senior/Staff interview questions, live coding suites (`debounce`, `throttle`, TDD Task Queue, A/B Engine, Checkout E2E, grill defense).               |
 
 ---
 
