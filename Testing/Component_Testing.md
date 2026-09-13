@@ -8,7 +8,10 @@
 
 - [Component \& DOM Testing Architecture](#component--dom-testing-architecture)
   - [Table of Contents](#table-of-contents)
-  - [1. Core Philosophy: React Testing Library (RTL)](#1-core-philosophy-react-testing-library-rtl)
+  - [1. Core Architecture: Jest vs. JSDOM vs. React Testing Library](#1-core-architecture-jest-vs-jsdom-vs-react-testing-library)
+    - [Comparison \& Responsibilities Matrix](#comparison--responsibilities-matrix)
+    - [What JSDOM Simulates vs. Real Browser Limitations](#what-jsdom-simulates-vs-real-browser-limitations)
+  - [2. The React Testing Library (RTL) Philosophy](#2-the-react-testing-library-rtl-philosophy)
   - [2. The Strict Query Priority Hierarchy](#2-the-strict-query-priority-hierarchy)
     - [Why `data-testid` is the Absolute Last Resort](#why-data-testid-is-the-absolute-last-resort)
     - [Query Selection Matrix](#query-selection-matrix)
@@ -23,7 +26,46 @@
 
 ---
 
-## 1. Core Philosophy: React Testing Library (RTL)
+## 1. Core Architecture: Jest vs. JSDOM vs. React Testing Library
+
+Understanding the distinction between the **Test Runner (Jest/Vitest)**, the **DOM Emulator (JSDOM)**, and the **DOM Query Driver (React Testing Library)** is critical for writing fast, reliable tests:
+
+```mermaid
+graph TD
+    A["1. Test Runner: Jest / Vitest<br/>(Runs test files, provides describe/it, expect, mocking, spies, CLI)"]
+    A --> B["2. Environment: JSDOM / HappyDOM<br/>(In-memory JS emulation of window, document, HTMLElement, events)"]
+    B --> C["3. Query Driver: React Testing Library<br/>(Mounts React Virtual DOM into JSDOM's document.body & queries AccTree)"]
+
+    style A fill:#7c3aed,stroke:#fff,color:#fff
+    style B fill:#0284c7,stroke:#fff,color:#fff
+    style C fill:#059669,stroke:#fff,color:#fff
+```
+
+### Comparison & Responsibilities Matrix
+
+| Layer                     | Primary Role                               | What It Can Test                                                                                                      | What It CANNOT Do                                                                                                              |
+| :------------------------ | :----------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| **Jest / Vitest**         | **Test Runner & Assertion Engine**         | Pure functions, business logic, math algorithms, Node.js backend APIs, execution timing (`fakeTimers`), spies/mocks.  | Does not provide a DOM or browser objects (`window`, `document`) on its own.                                                   |
+| **JSDOM**                 | **In-Memory Browser Environment Emulator** | Simulates `window`, `document`, `HTMLElement`, `localStorage`, `addEventListener`, and DOM mutations in pure Node.js. | Has **no visual rendering engine**, no CSS layout calculations (elements have $0\text{px}$ width/height), and no real network. |
+| **React Testing Library** | **DOM Query & Interaction Layer**          | Renders React trees into JSDOM, dispatches user events (`userEvent`), and queries the accessibility tree.             | Does not run tests on its own; depends on Jest/Vitest for execution and assertions.                                            |
+
+---
+
+### What JSDOM Simulates vs. Real Browser Limitations
+
+- ✅ **What JSDOM Does Well (Fast in CLI):**
+  - Renders HTML elements (`<button>`, `<input>`, `<dialog>`).
+  - Simulates DOM event propagation (bubbling, capturing).
+  - Provides in-memory storage (`localStorage`, `sessionStorage`, `cookies`).
+  - Implements WHATWG URL and history APIs.
+- ⚠️ **Limitations of JSDOM (Why you still need Playwright for E2E):**
+  - **Zero CSS Layout Calculation:** `element.getBoundingClientRect()` returns all zeros ($0\times 0\text{px}$). It cannot verify if an element is visually overlapping another element.
+  - **No Real Browser Navigation:** Cannot test actual page redirects or cross-origin iframe embedding.
+  - **No Real GPU/Canvas Rendering:** `<canvas>` and WebGL contexts are empty stubs.
+
+---
+
+## 2. The React Testing Library (RTL) Philosophy
 
 > "The more your tests resemble the way your software is used, the more confidence they can give you." — Kent C. Dodds
 

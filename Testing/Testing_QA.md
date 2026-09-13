@@ -68,6 +68,10 @@ A comprehensive bank of 25+ Senior and Staff-level System Design and Frontend Te
       - [Architectural Guideline:](#architectural-guideline)
     - [Q29: How does Jest test discovery work with dunder (`__tests__`) folders, manual `__mocks__`, and `testMatch`?](#q29-how-does-jest-test-discovery-work-with-dunder-__tests__-folders-manual-__mocks__-and-testmatch)
       - [The Staff Answer](#the-staff-answer-22)
+    - [Q30: What is the difference between Jest and JSDOM, and what are JSDOM's limitations compared to a real browser?](#q30-what-is-the-difference-between-jest-and-jsdom-and-what-are-jsdoms-limitations-compared-to-a-real-browser)
+      - [The Staff Answer](#the-staff-answer-23)
+      - [How They Work Together:](#how-they-work-together)
+      - [JSDOM Limitations (Why E2E with Playwright is Still Required):](#jsdom-limitations-why-e2e-with-playwright-is-still-required)
 
 ---
 
@@ -1075,3 +1079,39 @@ graph TD
    - **For local application modules (e.g., `src/utils/auth.ts`):** Create `src/utils/__mocks__/auth.ts` in the **same directory** as `auth.ts`. Calling `jest.mock('./auth')` inside `src/utils/__tests__/auth.test.ts` automatically resolves to the dunder mock.
 3. **Preventing Test Runner Collisions:**
    - Always place static sample datasets, mock responses, and helper generators in `__fixtures__/` or `__data__/` so Jest doesn't try to execute them as empty test suites.
+
+---
+
+### Q30: What is the difference between Jest and JSDOM, and what are JSDOM's limitations compared to a real browser?
+
+#### The Staff Answer
+
+```text
++-----------------------+------------------------------------+------------------------------------+
+| Dimension             | Jest / Vitest                      | JSDOM / HappyDOM                   |
++-----------------------+------------------------------------+------------------------------------+
+| **What It Is**        | Test Runner & Assertion Engine     | In-Memory Browser Environment      |
+|                       |                                    | Emulator (Pure JavaScript)         |
++-----------------------+------------------------------------+------------------------------------+
+| **Primary Job**       | • Finds & executes test files      | • Emulates `window`, `document`,   |
+|                       | • Manages parallel worker threads  |   `HTMLElement`, and DOM events.   |
+|                       | • Provides `expect`, spies, mocks  | • Allows React components to mount |
+|                       | • Generates code coverage reports  |   and attach listeners in Node.js. |
++-----------------------+------------------------------------+------------------------------------+
+| **Execution Context** | Runs directly in Node.js runtime.  | Runs inside Node.js memory heap.   |
++-----------------------+------------------------------------+------------------------------------+
+| **Can it test logic?**| ✅ Yes (pure math, utils, APIs)    | N/A (JSDOM is an environment, not  |
+|                       | without any DOM needed.            | a test runner).                    |
++-----------------------+------------------------------------+------------------------------------+
+```
+
+#### How They Work Together:
+
+1. **Node Environment (`testEnvironment: 'node'`):** Jest runs pure JavaScript logic (math calculations, backend Express endpoints, state reducers) at blazing speed without the memory overhead of a DOM.
+2. **JSDOM Environment (`testEnvironment: 'jsdom'`):** Jest instantiates a fake global `window` and `document`. React Testing Library renders components into `document.body`, and Jest asserts on the resulting virtual DOM tree.
+
+#### JSDOM Limitations (Why E2E with Playwright is Still Required):
+
+1. **Zero Layout & Geometry Engine:** `getBoundingClientRect()` returns $0\times 0\text{px}$. JSDOM cannot calculate CSS grid reflows, z-index stacking context overlaps, or mobile scroll boundaries.
+2. **No Real CSS Engine:** Does not compute `@media` queries, `:hover` pseudo-classes, or CSS animations.
+3. **No Navigation or Real Networking:** Cannot perform real HTTP handshakes, navigate to foreign domains, or handle multi-tab/iframe isolation.
