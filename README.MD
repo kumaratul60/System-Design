@@ -24,6 +24,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [11. Web Accessibility (a11y) \& WCAG Architecture](#11-web-accessibility-a11y--wcag-architecture)
     - [12. ESLint \& Automated Quality Suite](#12-eslint--automated-quality-suite)
     - [13. Categorized Cheatsheets \& Master Reference](#13-categorized-cheatsheets--master-reference)
+    - [14. Testing \& Quality Engineering Architecture](#14-testing--quality-engineering-architecture)
   - [🛠️ Quick Start \& Local Development](#️-quick-start--local-development)
     - [Development scripts:](#development-scripts)
   - [🤝 Contributing](#-contributing)
@@ -115,6 +116,23 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── dbdecision.md            # Database decision framework & PACELC matrix
 │   ├── typescript.md            # TypeScript types vs interfaces & utility types
 │   └── Performance_Optimization.md # Core Web Vitals & bundle optimization
+├── Testing/                     # Testing & Quality Engineering Architecture
+│   ├── README.md                # Master Hub, 16-Dimension Taxonomy Matrix & Quality Gates
+│   ├── Unit_Testing.md          # Pure functions, fake timers, renderHook, AAA pattern
+│   ├── Component_Testing.md     # RTL query hierarchy, data-testid rationale, act/waitFor
+│   ├── Integration_Testing.md   # State flow integration & MSW network mocking
+│   ├── E2E_Testing.md           # Playwright vs Cypress, Page Object Model, auth state
+│   ├── TDD_BDD.md               # Red-Green-Refactor, Chicago vs London, TaskQueue walkthrough
+│   ├── AB_Testing.md            # Client/Edge/Server bucketing, hashing, FOOC, telemetry
+│   ├── Visual_Regression_Testing.md # DOM vs Pixel diff, Playwright screenshots, Percy
+│   ├── Performance_Load_Testing.md  # Core Web Vitals CI, k6 API load, memory leaks
+│   ├── Accessibility_Testing.md # Axe-core, jest-axe, 35% automated limit, manual a11y
+│   ├── Security_Testing.md      # SAST/DAST, Snyk/npm audit, OWASP ZAP, CSP headers
+│   ├── Cross_Browser_Testing.md # Blink/WebKit/Gecko, Playwright matrix, device clouds
+│   ├── Localization_Testing.md  # Pseudo-localization, RTL mirroring, Intl formatting
+│   ├── Contract_Mutation_Testing.md # Pact consumer-driven contracts & Stryker mutators
+│   ├── Mocking_Strategy.md      # Test doubles, mockClear/Reset/Restore, mock drift
+│   └── Testing_QA.md            # 28+ Staff/Senior Interview Questions & Live Coding Suites
 ├── LLD/                         # Low-Level Design & Object-Oriented Design
 └── Web/                         # Fundamentals & Web Infrastructure
     ├── Headers.md               # Deep dive into HTTP Headers
@@ -242,6 +260,27 @@ Modular, production-ready linting and test-runner automation architecture:
 ### 13. [Categorized Cheatsheets & Master Reference](./cheatsheets/README.md)
 
 Quick-lookup architectural cheat sheets spanning Database Selection, DOM/CSSOM, WASM & Web SDKs, React Fiber & Lanes, Redux Toolkit & Sagas, and Performance Optimization.
+
+### 14. [Testing & Quality Engineering Architecture](./Testing/README.md)
+
+An end-to-end guide to modern software quality engineering, frontend testing, test automation, and interview mastery:
+
+- **[Master Hub & Quality Gates](./Testing/README.md):** 16-Dimension Master Testing Matrix, Testing Pyramid vs Testing Trophy vs Diamond, Top 10 Anti-Patterns, and CI/CD Quality Gates.
+- **[Unit Testing Architecture](./Testing/Unit_Testing.md):** Pure functions, math, data transformers, custom hooks (`renderHook`), deterministic fake timers (`fakeTimers`), and AAA pattern.
+- **[Component & DOM Testing](./Testing/Component_Testing.md):** RTL query hierarchy (`getByRole` $\to$ `getByTestId`), why `data-testid` is the last resort, `act()` mechanics, and `waitFor()` vs `findBy*`.
+- **[Integration Testing & MSW](./Testing/Integration_Testing.md):** State flow integration with React Query/Redux, Mock Service Worker (MSW 2.0), and fault injection (500 errors, latency).
+- **[End-to-End (E2E) Automation](./Testing/E2E_Testing.md):** Playwright vs Cypress vs Selenium, Page Object Model (POM), Auth state reuse (`storageState.json`), and auto-waiting.
+- **[TDD & BDD Methodologies](./Testing/TDD_BDD.md):** Test-Driven Development (Red-Green-Refactor), Chicago vs London schools, and step-by-step Task Queue live walkthrough.
+- **[A/B Testing & Experimentation](./Testing/AB_Testing.md):** Client vs Edge vs Server bucketing, deterministic hashing (`CRC32`), FOOC flicker elimination, and exposure telemetry.
+- **[Visual Regression & Snapshots](./Testing/Visual_Regression_Testing.md):** DOM vs Pixel diffing, Playwright `toHaveScreenshot`, Dockerized font consistency, Percy, and Chromatic.
+- **[Performance & Load Testing](./Testing/Performance_Load_Testing.md):** Core Web Vitals CI assertions (Lighthouse CI), API stress testing with k6 (VUs, p95/p99), and memory leak detection.
+- **[Accessibility (a11y) Testing](./Testing/Accessibility_Testing.md):** Automated Axe (`jest-axe`, `@axe-core/playwright`), 35% automated detection limit, and manual keyboard focus traps.
+- **[Security & Vulnerability Testing](./Testing/Security_Testing.md):** SAST vs DAST pipelines, `npm audit`/Snyk SCA, OWASP ZAP dynamic scanning, and CSP header assertions.
+- **[Cross-Browser & Responsive](./Testing/Cross_Browser_Testing.md):** Blink vs WebKit vs Gecko engines, Playwright multi-engine matrix, and local emulation vs device clouds.
+- **[Localization (i18n) Testing](./Testing/Localization_Testing.md):** Pseudo-localization text expansion ($+30\%-50\%$), Right-to-Left (RTL) mirroring, and `Intl` formatting.
+- **[Contract & Mutation Testing](./Testing/Contract_Mutation_Testing.md):** Consumer-Driven Contracts (Pact) across microservices and Mutation Testing with Stryker Mutator.
+- **[Mocking Strategy & Lifecycle](./Testing/Mocking_Strategy.md):** Test Doubles taxonomy (Dummies, Stubs, Spies, Mocks, Fakes, MSW) and `mockClear` vs `mockReset` vs `mockRestore`.
+- **[Testing Master Interview Bank](./Testing/Testing_QA.md):** 28+ Staff/Senior level interview questions, live coding suites (`debounce`, `throttle`, custom hooks), A/B testing engine, and E2E checkout scenarios.
 
 ---
 
