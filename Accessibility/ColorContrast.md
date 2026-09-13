@@ -431,3 +431,4 @@ To test color contrast validation, Windows High Contrast Mode simulation, and Co
 
 - 🧪 [**`07-color-contrast-and-forced-colors.html`**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/07-color-contrast-and-forced-colors.html) — Live AA/AAA contrast calculator, real-time Protanopia/Deuteranopia/Achromatopsia filters, and Windows Forced Colors simulation.
 - 🚀 [**`index.html` (Master Testbed Hub)**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/index.html) — Full testbed launcher.
+

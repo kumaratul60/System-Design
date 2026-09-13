@@ -136,9 +136,9 @@ flowchart TD
     end
 
     subgraph Modifiers [Live Region Attribute Modifiers]
-        Atomic[aria-atomic: true | false]
-        Relevant[aria-relevant: additions | removals | text | all]
-        Busy[aria-busy: true | false]
+        Atomic["aria-atomic: true | false"]
+        Relevant["aria-relevant: additions | removals | text | all"]
+        Busy["aria-busy: true | false"]
     end
 
     ARIA_Live_Engine --- Modifiers
@@ -923,3 +923,4 @@ If you need to test accessibility features quickly without turning on speech:
 │                          │ Emulate CSS media feature forced-colors: active  │
 └──────────────────────────┴──────────────────────────────────────────────────┘
 ```
+

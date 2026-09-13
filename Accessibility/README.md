@@ -4,6 +4,92 @@
 
 ---
 
+## 🧭 Step-by-Step Module Learning & Navigation Track
+
+Explore this comprehensive accessibility repository sequentially through our 7-stage architectural learning track, or jump directly into any specialized module:
+
+```mermaid
+flowchart LR
+    M1["<b>01. WCAG & Standards</b><br/>POUR & Conformance Levels"] --> M2["<b>02. Focus Management</b><br/>6 Pillars & Skip Links"]
+    M2 --> M3["<b>03. Keyboard a11y</b><br/>APG & Roving tabindex"]
+    M3 --> M4["<b>04. Color & Contrast</b><br/>Luminance & Forced Colors"]
+    M4 --> M5["<b>05. Screen Readers</b><br/>AccTree & Live Regions"]
+    M5 --> M6["<b>06. Tools & CI/CD</b><br/>Axe, DevTools & Rules"]
+    M6 --> M7["<b>07. Interactive Demos</b><br/>8 Live HTML Testbeds"]
+
+    classDef active fill:#2563eb,stroke:#1d4ed8,color:#ffffff,stroke-width:2px;
+    classDef demo fill:#10b981,stroke:#059669,color:#ffffff,stroke-width:2px;
+    class M1,M2,M3,M4,M5,M6 active;
+    class M7 demo;
+```
+
+|  Step  | Module Document                                                                                                                          | Scope & Focus             | Key Takeaways & Deliverables                                                                           |
+| :----: | :--------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ | :----------------------------------------------------------------------------------------------------- |
+| **01** | [**WCAG Standards & Architect Grill**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/WCAG_Accessibility.md)         | Standards & Compliance    | POUR Principles, Conformance Levels (A, AA, AAA), 5 Rules of ARIA, Staff-level interview questions.    |
+| **02** | [**Focus Management & Navigation**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/FocusManagement.md)               | Focus Lifecycles          | 6 Focus Pillars, Native Focusable Tags Table, Custom `tabindex` Matrix, Skip Links, Modal Trapping.    |
+| **03** | [**Keyboard Accessibility & APG Patterns**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/KeyboardAccessibility.md) | Keyboard Engineering      | Roving `tabindex`, Virtual Focus (`aria-activedescendant`), W3C APG Widgets (Tabs, Menus, Comboboxes). |
+| **04** | [**Color Contrast & Visual Accessibility**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ColorContrast.md)         | Visual Systems & Contrast | Relative Luminance Mathematical Formula, 400% Zoom Reflow, Forced Colors / Windows High Contrast.      |
+| **05** | [**Screen Readers & AccTree Architecture**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ScreenReader.md)          | Assistive Tech & AccTree  | Browser AccTree Compilation, OS APIs, ARIA Live Queues, Programmatic DOM Mutations, OS Runbooks.       |
+| **06** | [**Accessibility Tools, Testing & Governance**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/AccessbilityTools.md) | Quality & Automation      | 10 Golden Design Rules, 5-Step Testing Protocol, Axe-core, Playwright CI/CD, DevTools Inspection.      |
+| **07** | [**Interactive Browser Testbed Hub**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/index.html)               | Live Browser Labs         | 8 Standalone HTML interactive testbeds with real-time Event HUDs and zero external dependencies.       |
+
+---
+
+## Table of Contents
+
+- [Web Accessibility (a11y) Master Architectural Reference \& System Design Guide](#web-accessibility-a11y-master-architectural-reference--system-design-guide)
+  - [🧭 Step-by-Step Module Learning \& Navigation Track](#-step-by-step-module-learning--navigation-track)
+  - [Table of Contents](#table-of-contents)
+  - [1. Master Architecture \& Taxonomy Map](#1-master-architecture--taxonomy-map)
+  - [2. Inclusive Design Framework \& Disability Spectrum](#2-inclusive-design-framework--disability-spectrum)
+    - [Comprehensive Modality \& Dimension Matrix](#comprehensive-modality--dimension-matrix)
+  - [3. Assistive Technology (AT) Deep-Dive](#3-assistive-technology-at-deep-dive)
+    - [Detailed Breakdown of Assistive Technologies](#detailed-breakdown-of-assistive-technologies)
+      - [1. Keyboard-Only Navigation](#1-keyboard-only-navigation)
+      - [2. Screen Readers](#2-screen-readers)
+      - [3. Alternative Pointers \& Tracking Devices](#3-alternative-pointers--tracking-devices)
+      - [4. Switch Access \& Scanning Systems](#4-switch-access--scanning-systems)
+      - [5. Screen Magnifiers](#5-screen-magnifiers)
+  - [4. Accessibility Standards: The WCAG Framework](#4-accessibility-standards-the-wcag-framework)
+    - [The POUR Principles in Architecture](#the-pour-principles-in-architecture)
+      - [Principle 1: Perceivable](#principle-1-perceivable)
+      - [Principle 2: Operable](#principle-2-operable)
+      - [Principle 3: Understandable](#principle-3-understandable)
+      - [Principle 4: Robust](#principle-4-robust)
+  - [5. Semantic HTML vs ARIA (Accessible Rich Internet Applications)](#5-semantic-html-vs-aria-accessible-rich-internet-applications)
+    - [What is ARIA?](#what-is-aria)
+    - [The Two Pillars: Accessible HTML vs ARIA](#the-two-pillars-accessible-html-vs-aria)
+    - [How DOM + ARIA Build the Accessibility Tree](#how-dom--aria-build-the-accessibility-tree)
+    - [The ARIA Triad: Roles vs Properties vs States](#the-aria-triad-roles-vs-properties-vs-states)
+    - [Form Labeling Matrix: When to Use Which?](#form-labeling-matrix-when-to-use-which)
+    - [The 5 Golden Rules of WAI-ARIA](#the-5-golden-rules-of-wai-aria)
+    - [The Accessible Name Computation (AccName 1.2) Priority](#the-accessible-name-computation-accname-12-priority)
+  - [6. Practical React Component Recipes for Accessibility](#6-practical-react-component-recipes-for-accessibility)
+    - [Recipe 1: Accessible Icon Button (No Visual Text)](#recipe-1-accessible-icon-button-no-visual-text)
+    - [Recipe 2: Form Field with Label, Hint \& Validation Error](#recipe-2-form-field-with-label-hint--validation-error)
+    - [Recipe 3: Accessible Toggle Switch (`role="switch"`, `aria-checked`)](#recipe-3-accessible-toggle-switch-roleswitch-aria-checked)
+    - [Recipe 4: Accessible Accordion / Disclosure (`aria-expanded`, `aria-controls`)](#recipe-4-accessible-accordion--disclosure-aria-expanded-aria-controls)
+    - [Recipe 5: Live Announcer / Toast (`role="status"`, `aria-live="polite"`)](#recipe-5-live-announcer--toast-rolestatus-aria-livepolite)
+  - [7. Critical Accessibility Edge Cases \& Failure Modes (Frontend \& React)](#7-critical-accessibility-edge-cases--failure-modes-frontend--react)
+    - [Edge Case 1: Focus Loss on Element Deletion (The `document.body` Reset Bug)](#edge-case-1-focus-loss-on-element-deletion-the-documentbody-reset-bug)
+    - [Edge Case 2: Ghost Focus in Collapsed/Animated Subtrees](#edge-case-2-ghost-focus-in-collapsedanimated-subtrees)
+    - [Edge Case 3: Initial Focus on Destructive Actions in Modals (Safety-First Focus)](#edge-case-3-initial-focus-on-destructive-actions-in-modals-safety-first-focus)
+    - [Edge Case 4: Nested Modals \& Stacked Overlays Focus Restoration](#edge-case-4-nested-modals--stacked-overlays-focus-restoration)
+    - [Edge Case 5: Dynamic Live Region Race Conditions](#edge-case-5-dynamic-live-region-race-conditions)
+    - [Edge Case 6: SVG Icon Focus Leaks in Mobile WebKit \& Legacy Engines](#edge-case-6-svg-icon-focus-leaks-in-mobile-webkit--legacy-engines)
+    - [Edge Case 7: High Contrast / Forced Colors Mode Styling Stripping](#edge-case-7-high-contrast--forced-colors-mode-styling-stripping)
+    - [Edge Case 8: Mobile Screen Reader Touch Swipe vs DOM Focus Desynchronization](#edge-case-8-mobile-screen-reader-touch-swipe-vs-dom-focus-desynchronization)
+  - [8. Interactive Standalone HTML Testbeds (Live Browser Demos)](#8-interactive-standalone-html-testbeds-live-browser-demos)
+  - [9. Engineering Roadmap](#9-engineering-roadmap)
+    - [Level 1: Foundations](#level-1-foundations)
+    - [Level 2: Mid-Level Engineering](#level-2-mid-level-engineering)
+    - [Level 3: Senior Architecture](#level-3-senior-architecture)
+    - [Level 4: Arch\&Principal Governance](#level-4-archprincipal-governance)
+  - [10. Knowledge Hub Deep-Dive Directory](#10-knowledge-hub-deep-dive-directory)
+  - [11. Authoritative External Standards \& Learning Courses](#11-authoritative-external-standards--learning-courses)
+
+---
+
 ## 1. Master Architecture & Taxonomy Map
 
 ```mermaid

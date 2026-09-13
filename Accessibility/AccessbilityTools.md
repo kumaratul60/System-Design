@@ -327,3 +327,4 @@ All accessibility patterns and testing techniques in this repository can be eval
 - 📐 [**WebAIM WCAG 2 Checklist**](https://webaim.org/standards/wcag/checklist) — Practical, human-readable breakdown of WCAG 2.1 / 2.2 Success Criteria.
 - 🚀 [**Frontend System Design: Web Accessibility (a11y)**](https://dev.to/zeeshanali0704/frontend-system-design-web-accessibility-a11y-28cf) — Deep-dive architectural guide to accessibility in frontend system design.
 - 🏛️ [**W3C WCAG Standards Overview**](https://www.w3.org/WAI/standards-guidelines/wcag/) — Official W3C Web Accessibility Initiative standards hub.
+
