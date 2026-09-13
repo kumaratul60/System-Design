@@ -73,45 +73,6 @@
         margin-top: 1rem;
       }
     </style>
-
-      button:hover,
-      a.btn:hover {
-        background: #475569;
-      }
-
-      /* Strict Focus Visible Style */
-      button:focus-visible,
-      a.btn:focus-visible,
-      [tabindex='0']:focus-visible {
-        outline: 3px solid var(--focus-ring);
-        outline-offset: 3px;
-      }
-
-      /* Live Keyboard HUD */
-      .keyboard-hud {
-        position: sticky;
-        bottom: 1rem;
-        background: #020617;
-        border: 1px solid var(--primary);
-        border-radius: 8px;
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-family: ui-monospace, SFMono-Regular, monospace;
-        font-size: 0.85rem;
-        color: #38bdf8;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      }
-
-      .key-badge {
-        background: #334155;
-        color: #fff;
-        padding: 0.2rem 0.5rem;
-        border-radius: 4px;
-        border: 1px solid #64748b;
-      }
-    </style>
   </head>
   <body>
     <!-- 1. The Skip Navigation Link -->
@@ -161,7 +122,11 @@
             </div>
             <button type="button" tabindex="-1" id="prog-btn" class="a11y-btn">Bypassed Tab (tabindex="-1")</button>
             <button type="button" class="a11y-btn">Natural Button 2</button>
-            <button type="button" class="a11y-btn a11y-btn-primary" onclick="document.getElementById('prog-btn').focus()">
+            <button
+              type="button"
+              class="a11y-btn a11y-btn-primary"
+              onclick="document.getElementById('prog-btn').focus()"
+            >
               Trigger focus() on tabindex="-1"
             </button>
           </div>
@@ -170,7 +135,7 @@
 
       <!-- Interactive Keyboard Event HUD -->
       <aside class="a11y-hud" aria-live="polite">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center">
           <div><strong>Active Focus:</strong> <span id="hud-focus">&lt;body&gt;</span></div>
           <div><strong>Last Key Pressed:</strong> <span id="hud-key">None</span></div>
         </div>

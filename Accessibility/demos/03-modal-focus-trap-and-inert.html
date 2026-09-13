@@ -73,51 +73,6 @@
         color: #fff;
       }
     </style>
-        width: 90%;
-        max-width: 500px;
-        padding: 2rem;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      }
-
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-
-      .modal-header h2 {
-        font-size: 1.35rem;
-        color: #f8fafc;
-      }
-
-      .modal-body {
-        color: var(--text-muted);
-        margin-bottom: 1.5rem;
-        font-size: 0.95rem;
-      }
-
-      .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-      }
-
-      .btn-icon-close {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 1.25rem;
-        padding: 0.2rem 0.5rem;
-        cursor: pointer;
-      }
-      .btn-icon-close:hover {
-        color: #fff;
-      }
-
-      .hud {
-        background: #020617;
-    </style>
   </head>
   <body>
     <div id="main-app-container" class="a11y-container">
@@ -129,8 +84,9 @@
         <h1>03: Modal Dialog Focus Trapping &amp; Inert</h1>
         <p class="desc">
           Demonstrates the complete modal lifecycle: (1) Background <code>inert</code> isolation, (2) Cyclic
-          <kbd class="a11y-kbd">Tab</kbd>/<kbd class="a11y-kbd">Shift+Tab</kbd> keyboard trapping, (3) <kbd class="a11y-kbd">Escape</kbd> key dismissal, (4) Safety-first
-          initial focus on <strong>Cancel</strong>, and (5) Focus restoration to the origin trigger button.
+          <kbd class="a11y-kbd">Tab</kbd>/<kbd class="a11y-kbd">Shift+Tab</kbd> keyboard trapping, (3)
+          <kbd class="a11y-kbd">Escape</kbd> key dismissal, (4) Safety-first initial focus on <strong>Cancel</strong>,
+          and (5) Focus restoration to the origin trigger button.
         </p>
       </header>
 
@@ -140,7 +96,9 @@
           <p style="margin-bottom: 1rem">
             Click below to open the confirmation dialog. While open, notice you cannot tab into background elements.
           </p>
-          <button type="button" id="open-modal-trigger" class="a11y-btn a11y-btn-danger">Delete Production Cluster</button>
+          <button type="button" id="open-modal-trigger" class="a11y-btn a11y-btn-danger">
+            Delete Production Cluster
+          </button>
         </section>
 
         <section class="a11y-card">
@@ -149,7 +107,13 @@
             <input
               type="text"
               placeholder="Background input"
-              style="padding: 0.5rem 0.8rem; border-radius: var(--a11y-radius-sm); background: #0f172a; color: #fff; border: 1px solid var(--a11y-border)"
+              style="
+                padding: 0.5rem 0.8rem;
+                border-radius: var(--a11y-radius-sm);
+                background: #0f172a;
+                color: #fff;
+                border: 1px solid var(--a11y-border);
+              "
             />
             <button type="button" class="a11y-btn">Background Button</button>
           </div>
