@@ -4,10 +4,10 @@
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
 - [♿ Web Accessibility (a11y) \& WCAG Architectural Reference \& Interview Grill](#-web-accessibility-a11y--wcag-architectural-reference--interview-grill)
-  - [📑 Table of Contents](#-table-of-contents)
+  - [Table of Contents](#table-of-contents)
   - [🏛️ High-Level Architectural Foundations](#️-high-level-architectural-foundations)
     - [Why a11y is a Core Architectural Non-Functional Requirement (NFR)](#why-a11y-is-a-core-architectural-non-functional-requirement-nfr)
     - [The POUR Principles (WCAG Foundation)](#the-pour-principles-wcag-foundation)
