@@ -1,24 +1,81 @@
-# A/B Testing & Feature Experimentation Architecture
+# A/B Testing, Split Testing & Bucket Testing Architecture
 
-> **Scope:** Designing, executing, and statistically validating client-side, edge, and server-side randomized controlled experiments and feature flags.
+> **Scope:** Designing, executing, and statistically validating client-side, edge, and server-side randomized controlled experiments, split-URL routing, bucket allocation algorithms, and feature flags.
 
 ---
 
 ## Table of Contents
 
-- [A/B Testing \& Feature Experimentation Architecture](#ab-testing--feature-experimentation-architecture)
+- [A/B Testing, Split Testing \& Bucket Testing Architecture](#ab-testing-split-testing--bucket-testing-architecture)
   - [Table of Contents](#table-of-contents)
-  - [1. Core Architecture Models: Client vs. Edge vs. Server](#1-core-architecture-models-client-vs-edge-vs-server)
-  - [2. Deterministic Consistent Hashing Algorithm](#2-deterministic-consistent-hashing-algorithm)
-  - [3. Eliminating Flash of Original Content (FOOC)](#3-eliminating-flash-of-original-content-fooc)
-  - [4. Statistical Rigor \& The Peeking Problem](#4-statistical-rigor--the-peeking-problem)
-  - [5. Telemetry: Exposure Tracking vs. Goal Conversions](#5-telemetry-exposure-tracking-vs-goal-conversions)
-  - [6. Complete Production A/B Testing Engine \& Unit Test Suite](#6-complete-production-ab-testing-engine--unit-test-suite)
-  - [7. When to Use vs. When NOT to Use](#7-when-to-use-vs-when-not-to-use)
+  - [1. The Experimentation Umbrella: Why Everything Falls Under "A/B Testing"](#1-the-experimentation-umbrella-why-everything-falls-under-ab-testing)
+  - [2. Terminology \& Taxonomy Breakdown](#2-terminology--taxonomy-breakdown)
+  - [3. Core Architecture Models: Client vs. Edge vs. Server](#3-core-architecture-models-client-vs-edge-vs-server)
+  - [4. Deterministic Consistent Hashing Algorithm](#4-deterministic-consistent-hashing-algorithm)
+  - [5. Eliminating Flash of Original Content (FOOC)](#5-eliminating-flash-of-original-content-fooc)
+  - [6. Statistical Rigor \& The Peeking Problem](#6-statistical-rigor--the-peeking-problem)
+  - [7. Telemetry: Exposure Tracking vs. Goal Conversions](#7-telemetry-exposure-tracking-vs-goal-conversions)
+  - [8. Complete Production A/B Testing Engine \& Unit Test Suite](#8-complete-production-ab-testing-engine--unit-test-suite)
+  - [9. When to Use vs. When NOT to Use](#9-when-to-use-vs-when-not-to-use)
 
 ---
 
-## 1. Core Architecture Models: Client vs. Edge vs. Server
+## 1. The Experimentation Umbrella: Why Everything Falls Under "A/B Testing"
+
+In software engineering, product management, and growth architecture, **"A/B Testing" is widely used as the overarching umbrella term** for all **Randomized Controlled Experiments (RCE)**. 
+
+Under this unified umbrella, **Split Testing**, **Bucket Testing**, **In-Page A/B Testing**, and **Multivariate Testing (MVT)** are simply different **execution layers, routing strategies, or partitioning algorithms** of the exact same end-to-end experiment lifecycle.
+
+```mermaid
+flowchart TD
+    subgraph Umbrella ["☂️ The Experimentation & A/B Testing Umbrella"]
+        direction TB
+        Hypo["1. Hypothesis & KPI Formulation (e.g., Conversion Rate +5%)"]
+        Sample["2. Statistical Power & Sample Sizing (MDE, Alpha=0.05, Beta=0.8)"]
+        
+        subgraph Methods ["3. Experimentation Methodologies & Routing Layers"]
+            AB["🅰️/🅱️ In-Page A/B Testing<br/>(Same URL, component DOM variant)"]
+            Split["🔀 Split URL Testing<br/>(Distinct URLs/stacks: /v1 vs /v2)"]
+            Bucket["🪣 Bucket Allocation Engine<br/>(Deterministic Hashing: CRC32 % 100)"]
+            MVT["🔣 Multivariate Testing (MVT)<br/>(Factorial Matrix: 2x2 Combinations)"]
+        end
+
+        Exposure["4. Viewport Exposure Telemetry (Fired ONLY on sight)"]
+        Stats["5. Statistical Significance Engine (Two-tailed Z-test / Welch's t-test)"]
+        Rollout["6. Automated Ramp / Feature Flag Rollout (0% -> 10% -> 50% -> 100%)"]
+
+        Hypo --> Sample --> Methods
+        Methods --> Exposure --> Stats --> Rollout
+    end
+```
+
+---
+
+## 2. Terminology & Taxonomy Breakdown
+
+While all methods operate under the same experimentation lifecycle, their technical scopes differ:
+
+```text
++----------------------------+------------------------------------------------------+---------------------------------------------------+
+| Testing Sub-Type           | Core Definition & Technical Scope                    | Architectural Implementation Layer                |
++----------------------------+------------------------------------------------------+---------------------------------------------------+
+| **In-Page A/B Testing**    | Comparing version A (Control) against version B      | Single page/component DOM mutation or React       |
+|                            | (Variant) with one isolated visual/logic change.     | feature toggle flag inside the UI bundle.         |
++----------------------------+------------------------------------------------------+---------------------------------------------------+
+| **Split URL Testing**      | Routing traffic between two entirely different URL   | Edge router / Reverse proxy rewrite               |
+| **(Split Testing)**        | endpoints (e.g. `/landing` vs `/landing-v2`).        | (Cloudflare Worker, Next.js Middleware, Nginx).   |
++----------------------------+------------------------------------------------------+---------------------------------------------------+
+| **Bucket Testing**         | The mathematical partitioning mechanism dividing     | Consistent hashing algorithm (`CRC32(ID:salt)%100`|
+| **(Cohort Bucketing)**     | users into discrete cohorts (50/50, 80/20, 33/33/33).| assigns user into a deterministic hash bucket).   |
++----------------------------+------------------------------------------------------+---------------------------------------------------+
+| **Multivariate (MVT)**     | Testing multiple variables simultaneously in all     | Factorial combination matrix                      |
+|                            | permutations (e.g. 2 Headlines × 2 Buttons = 4 var). | ($2 \times 2 = 4$ distinct variant cohorts).      |
++----------------------------+------------------------------------------------------+---------------------------------------------------+
+```
+
+---
+
+## 3. Core Architecture Models: Client vs. Edge vs. Server
 
 ```mermaid
 flowchart TD
@@ -44,7 +101,7 @@ flowchart TD
 
 ---
 
-## 2. Deterministic Consistent Hashing Algorithm
+## 4. Deterministic Consistent Hashing Algorithm
 
 To assign users to variants stickily without database lookups on every request, hash the `(userId + experimentSalt)` into an integer $0-99$:
 
@@ -52,7 +109,7 @@ $$\text{Bucket} = \text{Hash}(\text{userId} + \text{":"} + \text{salt}) \pmod{10
 
 ---
 
-## 3. Eliminating Flash of Original Content (FOOC)
+## 5. Eliminating Flash of Original Content (FOOC)
 
 If client-side experimentation is mandatory:
 
@@ -68,7 +125,7 @@ If client-side experimentation is mandatory:
 
 ---
 
-## 4. Statistical Rigor & The Peeking Problem
+## 6. Statistical Rigor & The Peeking Problem
 
 - **Statistical Significance ($p < 0.05$):** $95\%$ probability that the observed conversion lift is not due to random variance.
 - **The Peeking Problem:** Constantly monitoring live metrics and terminating the test as soon as $p < 0.05$ inflates false positive error rates from $5\%$ to $> 30\%$.
@@ -76,7 +133,7 @@ If client-side experimentation is mandatory:
 
 ---
 
-## 5. Telemetry: Exposure Tracking vs. Goal Conversions
+## 7. Telemetry: Exposure Tracking vs. Goal Conversions
 
 ```mermaid
 sequenceDiagram
@@ -99,7 +156,7 @@ sequenceDiagram
 
 ---
 
-## 6. Complete Production A/B Testing Engine & Unit Test Suite
+## 8. Complete Production A/B Testing Engine & Unit Test Suite
 
 ```typescript
 // ab/experimentEngine.ts
@@ -203,7 +260,7 @@ describe('ExperimentEngine', () => {
 
 ---
 
-## 7. When to Use vs. When NOT to Use
+## 9. When to Use vs. When NOT to Use
 
 | When to Use A/B Testing                                       | When NOT to Use A/B Testing                               |
 | :------------------------------------------------------------ | :-------------------------------------------------------- |

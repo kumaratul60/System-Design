@@ -12,17 +12,17 @@
     - [Comparison \& Responsibilities Matrix](#comparison--responsibilities-matrix)
     - [What JSDOM Simulates vs. Real Browser Limitations](#what-jsdom-simulates-vs-real-browser-limitations)
   - [2. The React Testing Library (RTL) Philosophy](#2-the-react-testing-library-rtl-philosophy)
-  - [2. The Strict Query Priority Hierarchy](#2-the-strict-query-priority-hierarchy)
+  - [3. The Strict Query Priority Hierarchy](#3-the-strict-query-priority-hierarchy)
     - [Why `data-testid` is the Absolute Last Resort](#why-data-testid-is-the-absolute-last-resort)
     - [Query Selection Matrix](#query-selection-matrix)
-  - [3. User Event Streams: `userEvent` vs. `fireEvent`](#3-user-event-streams-userevent-vs-fireevent)
-  - [4. Asynchronous State: `act()`, `waitFor()` \& `findBy*`](#4-asynchronous-state-act-waitfor--findby)
+  - [4. User Event Streams: `userEvent` vs. `fireEvent`](#4-user-event-streams-userevent-vs-fireevent)
+  - [5. Asynchronous State: `act()`, `waitFor()` \& `findBy*`](#5-asynchronous-state-act-waitfor--findby)
     - [How `act()` Works Under the Hood](#how-act-works-under-the-hood)
     - [When DO You Need `act()`?](#when-do-you-need-act)
     - [`waitFor()` Mechanics \& Top 4 Deadly Anti-Patterns](#waitfor-mechanics--top-4-deadly-anti-patterns)
       - [🚫 The 4 Deadly Anti-Patterns:](#-the-4-deadly-anti-patterns)
-  - [5. Testing Error Boundaries \& Portals](#5-testing-error-boundaries--portals)
-  - [6. When to Use vs. When NOT to Use](#6-when-to-use-vs-when-not-to-use)
+  - [6. Testing Error Boundaries \& Portals](#6-testing-error-boundaries--portals)
+  - [7. When to Use vs. When NOT to Use](#7-when-to-use-vs-when-not-to-use)
 
 ---
 
@@ -77,7 +77,7 @@ Component tests simulate how **real sighted users and screen readers** interact 
 
 ---
 
-## 2. The Strict Query Priority Hierarchy
+## 3. The Strict Query Priority Hierarchy
 
 ```mermaid
 graph TD
@@ -109,7 +109,7 @@ graph TD
 
 ---
 
-## 3. User Event Streams: `userEvent` vs. `fireEvent`
+## 4. User Event Streams: `userEvent` vs. `fireEvent`
 
 | Feature               | `fireEvent.click(el)`                                     | `userEvent.click(el)`                                                                                                                          |
 | :-------------------- | :-------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -120,7 +120,7 @@ graph TD
 
 ---
 
-## 4. Asynchronous State: `act()`, `waitFor()` & `findBy*`
+## 5. Asynchronous State: `act()`, `waitFor()` & `findBy*`
 
 ### How `act()` Works Under the Hood
 
@@ -179,63 +179,64 @@ flowchart TD
    await screen.findByRole('status');
    ```
 
-3. **Prefer `findBy*` Over `waitFor(() => getBy*)`:**
+3. **NEVER Make Multiple Assertions in One `waitFor`:**
 
    ```typescript
-   // ⚠️ Verbose:
-   await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
-
-   // ✅ Clean:
-   expect(await screen.findByRole('alert')).toBeInTheDocument();
+   // ❌ If the second assertion fails, the first is repeated on every retry interval.
+   await waitFor(() => {
+     expect(a).toBe(1);
+     expect(b).toBe(2);
+   });
    ```
 
-4. **Testing Absence: Use `waitForElementToBeRemoved`:**
+4. **Prefer `findBy*` Over `waitFor(() => getBy*)`:**
 
    ```typescript
-   // ❌ BAD: getBy throws before waitFor evaluates absence
-   await waitFor(() => expect(screen.getByText(/loading/i)).not.toBeInTheDocument());
+   // ❌ Verbose
+   await waitFor(() => expect(screen.getByText(/loaded/i)).toBeInTheDocument());
 
-   // ✅ CORRECT:
-   await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
+   // ✅ Idiomatic, Cleaner Error Messages
+   expect(await screen.findByText(/loaded/i)).toBeInTheDocument();
    ```
 
 ---
 
-## 5. Testing Error Boundaries & Portals
+## 6. Testing Error Boundaries & Portals
 
 ```typescript
-// components/ErrorBoundary.test.tsx
+// ErrorBoundary.test.tsx
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { vi } from 'vitest';
 import { ErrorBoundary } from './ErrorBoundary';
 
-const CrashingComponent = () => {
-  throw new Error('Uncaught rendering exception');
-};
+function Bomb({ shouldThrow }: { shouldThrow: boolean }) {
+  if (shouldThrow) throw new Error('💥 Explosion');
+  return <div>Safe Component</div>;
+}
 
-describe('ErrorBoundary', () => {
-  it('renders fallback UI when child tree throws', () => {
-    // Suppress console.error logging in test output
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+it('catches render errors and displays fallback UI', () => {
+  // Suppress expected console.error output in test logs
+  const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    render(
-      <ErrorBoundary fallback={<div>Application Error Fallback</div>}>
-        <CrashingComponent />
-      </ErrorBoundary>
-    );
+  render(
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <Bomb shouldThrow={true} />
+    </ErrorBoundary>
+  );
 
-    expect(screen.getByText('Application Error Fallback')).toBeInTheDocument();
-    spy.mockRestore();
-  });
+  expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
+  expect(screen.queryByText(/safe component/i)).not.toBeInTheDocument();
+
+  spy.mockRestore();
 });
 ```
 
 ---
 
-## 6. When to Use vs. When NOT to Use
+## 7. When to Use vs. When NOT to Use
 
-| When to Use Component Testing                               | When NOT to Use Component Testing                       |
-| :---------------------------------------------------------- | :------------------------------------------------------ |
-| ✅ Interactive UI widgets (Modals, Dropdowns, Forms, Tabs). | ❌ Pure math calculations (use Unit Tests).             |
-| ✅ Prop permutations and accessibility tree compliance.     | ❌ Full multi-page browser journeys (use E2E Tests).    |
-| ✅ Local state transitions and conditional rendering.       | ❌ Complex multi-service backend database integrations. |
+| When to Use Component Testing                                      | When NOT to Use Component Testing                               |
+| :----------------------------------------------------------------- | :-------------------------------------------------------------- |
+| ✅ User interaction workflows on single or compound UI components. | ❌ Pure computational math or array sorting algorithms (Unit).  |
+| ✅ Form validation, error message visibility, disabled state.      | ❌ Multi-page user auth & checkout payment gateway (E2E).       |
+| ✅ Accessibility validation (`getByRole`, label linking).          | ❌ Backend microservice contract compatibility (Contract/Pact). |
