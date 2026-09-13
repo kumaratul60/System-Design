@@ -948,6 +948,9 @@ graph TD
 ## 11. Authoritative External Standards & Learning Courses
 
 - 🌐 [**web.dev / Learn Accessibility**](https://web.dev/learn/accessibility) — Google Chrome team's comprehensive, interactive web accessibility course.
-- 📋 [**WebAIM WCAG 2 Checklist**](https://webaim.org/standards/wcag/checklist) — Practical, human-readable breakdown of WCAG 2.1 / 2.2 Success Criteria.
+- 📋 [**Intopia "Not-Checklist" (WCAG Companion)**](https://not-checklist.intopia.digital/) — A practical, non-overwhelming translation of WCAG success criteria for developers, designers, and testers.
+- 📐 [**WebAIM WCAG 2 Checklist**](https://webaim.org/standards/wcag/checklist) — Practical, human-readable breakdown of WCAG 2.1 / 2.2 Success Criteria.
+- 🚀 [**Frontend System Design: Web Accessibility (a11y)**](https://dev.to/zeeshanali0704/frontend-system-design-web-accessibility-a11y-28cf) — Deep-dive guide to accessibility in frontend system design.
+- 🏛️ [**W3C WCAG Standards Overview**](https://www.w3.org/WAI/standards-guidelines/wcag/) — Official W3C Web Accessibility Initiative standards hub.
 - 📐 [**W3C WAI-ARIA Authoring Practices Guide (APG)**](https://www.w3.org/WAI/ARIA/apg/) — Official keyboard interaction design patterns and widget roles.
-- 🏛️ [**W3C Web Content Accessibility Guidelines (WCAG 2.2)**](https://www.w3.org/TR/WCAG22/) — The international standard technical specification.
+- 📜 [**W3C Web Content Accessibility Guidelines (WCAG 2.2 Specification)**](https://www.w3.org/TR/WCAG22/) — The international standard technical specification.

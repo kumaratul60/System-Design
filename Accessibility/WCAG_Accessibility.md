@@ -12,6 +12,7 @@
     - [Why a11y is a Core Architectural Non-Functional Requirement (NFR)](#why-a11y-is-a-core-architectural-non-functional-requirement-nfr)
     - [The POUR Principles (WCAG Foundation)](#the-pour-principles-wcag-foundation)
     - [WCAG Conformance Levels (A vs AA vs AAA)](#wcag-conformance-levels-a-vs-aa-vs-aaa)
+    - [Authoritative WCAG Standards \& Checklists](#authoritative-wcag-standards--checklists)
     - [WCAG 2.2 Key Additions Every Architect Must Know](#wcag-22-key-additions-every-architect-must-know)
   - [📜 The 5 Golden Rules of ARIA](#-the-5-golden-rules-of-aria)
   - [⚖️ When to Use vs When NOT to Use (Decisions \& Anti-Patterns)](#️-when-to-use-vs-when-not-to-use-decisions--anti-patterns)
@@ -56,6 +57,7 @@
       - [Why relying on `data-testid` gives **False Confidence**:](#why-relying-on-data-testid-gives-false-confidence)
       - [When is `data-testid` genuinely justified?](#when-is-data-testid-genuinely-justified)
   - [🏁 Summary: Key Takeaways for Frontend \& System Architects](#-summary-key-takeaways-for-frontend--system-architects)
+  - [🧪 Interactive Browser Testbed Hub](#-interactive-browser-testbed-hub)
 
 ---
 
@@ -101,22 +103,37 @@ Accessibility is not a last-minute styling layer or a cosmetic badge. At enterpr
 
 ### WCAG Conformance Levels (A vs AA vs AAA)
 
+There are three levels of accessibility compliance in the WCAG, which reflect the priority of support:
+
 ```
-        ┌──────────────────────────────────────────────┐
-        │  Level AAA: Specialized / Maximum            │
-        │  (7:1 contrast, sign language, no timeouts) │
-        ├──────────────────────────────────────────────┤
-        │  Level AA: Legal Standard & Enterprise Target│
-        │  (4.5:1 contrast, focus visible, 200% zoom)  │
-        ├──────────────────────────────────────────────┤
-        │  Level A: Absolute Minimum Baseline          │
-        │  (Alt text, keyboard access, no traps)       │
-        └──────────────────────────────────────────────┘
+        ┌────────────────────────────────────────────────────────┐
+        │  AAA: Specialized Support                              │
+        │  (7:1 contrast, sign language, complete timeouts)      │
+        ├────────────────────────────────────────────────────────┤
+        │  AA: Ideal Support (Enterprise & Legal Standard)       │
+        │  (4.5:1 contrast, focus visible, 200% zoom, reflow)    │
+        ├────────────────────────────────────────────────────────┤
+        │  A: Essential Baseline                                 │
+        │  (Alt text, keyboard access, no traps, form labels)    │
+        └────────────────────────────────────────────────────────┘
 ```
 
-- **Level A (Must Have):** Without this, assistive tech users cannot access content at all (e.g., keyboard traps, missing alt tags, form inputs without labels).
-- **Level AA (Enterprise & Legal Standard):** Required standard for global compliance (ADA, EAA, Section 508). Covers color contrast (4.5:1 regular text, 3:1 large text/UI components), visible focus indicators, consistent navigation, and error prevention.
-- **Level AAA (Aspirational / Specialized):** Strict edge cases (7:1 contrast, sign language video alternatives, complete distraction-free timeouts). Not globally mandated for entire general-purpose websites.
+- **Level A (Essential):** If this isn't met, assistive technology may not be able to read, understand, or fully operate the page or view (e.g., severe keyboard traps, missing `alt` attributes, unlabelled form inputs).
+- **Level AA (Ideal Support - Enterprise & Legal Baseline):** Required for multiple government, enterprise, and public body websites (ADA Title III, European Accessibility Act EAA 2025, Section 508). The A11Y Project and global standards benchmark on Level AA compliance. Covers color contrast ($\ge 4.5:1$ text, $\ge 3:1$ UI components), visible focus indicators, 400% zoom reflow, and error prevention.
+- **Level AAA (Specialized Support):** Typically reserved for parts of websites and web apps that serve a specialized audience (e.g., $7:1$ contrast, sign language video alternatives, complete distraction-free timeouts). Not globally mandated across entire general-purpose websites.
+
+> [!NOTE]
+> _The different levels of WCAG support do not necessarily indicate an increased level of difficulty to implement; they represent the breadth and necessity of assistive support._
+
+---
+
+### Authoritative WCAG Standards & Checklists
+
+- 🌐 [**Google Chrome Learn Accessibility**](https://web.dev/learn/accessibility) — Complete interactive course.
+- 📋 [**Intopia "Not-Checklist"**](https://not-checklist.intopia.digital/) — Clear, actionable WCAG companion guide.
+- 📐 [**WebAIM WCAG 2 Checklist**](https://webaim.org/standards/wcag/checklist) — Practical breakdown of WCAG criteria.
+- 🚀 [**Frontend System Design: Web Accessibility (a11y)**](https://dev.to/zeeshanali0704/frontend-system-design-web-accessibility-a11y-28cf) — Architectural guide to frontend a11y.
+- 🏛️ [**W3C WCAG Standards Overview**](https://www.w3.org/WAI/standards-guidelines/wcag/) — Official W3C WAI standards portal.
 
 ---
 
@@ -778,4 +795,3 @@ test.describe('Checkout Flow a11y', () => {
 ## 🧪 Interactive Browser Testbed Hub
 
 To test all the patterns discussed in this document (including focus trapping, roving `tabindex`, combobox virtual focus, live regions, contrast calculators, and zero-ghost-focus accordions), open the [**Interactive Testbed Hub**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/index.html) in your browser.
-
