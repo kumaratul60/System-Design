@@ -94,3 +94,9 @@ temp/
 
 # OS generated files
 Thumbs.db
+
+# AI Agent rules & configurations
+GEMINI.md
+AGENTS.md
+.gemini/
+.agents/

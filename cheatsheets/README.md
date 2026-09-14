@@ -13,8 +13,8 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - 🎨 **[CSS Object Model (CSSOM)](cssom.md)**: Critical Rendering Path, inline vs computed styles, CSS variables, performance optimizations, and Font metrics (Ascenders / Descenders).
 - 🌐🔗 **[How the Web Works: High-Level](web.md)**: Visual 17-step web touchpoints flow, browser pre-checks, and Critical Rendering Path (CRP) maps.
 - ⚙️ **[WebAssembly (WASM) & Web SDK](webassembly-web-sdk.md)**: WASM compilation, Memory Grow trapping, Workers integration, multithreading isolation, public SDK design, loading snippet queues, and storage partitioning.
-- ⚛️ **[React Core & Component State Patterns](react.md)**: React Hooks, rendering lifecycle, and the loading/success/error/empty 4-state component pattern.
-- 🔀 **[React Router](react-router.md)**: Navigation, search params, loaders/actions, and safe usage of `useMatch`.
+- ⚛️ **[React Core & Component State Patterns](ReactInternals/index.md)**: React Hooks, rendering lifecycle, and the loading/success/error/empty 4-state component pattern.
+- 🔀 **[React Router](ReactInternals/index.md)**: Navigation, search params, loaders/actions, and safe usage of `useMatch`.
 - 💾 **[State Management](state-management.md)**: Redux Toolkit (RTK), RTK Query, Listener middleware, and Redux-Saga generators.
 - 📘 **[TypeScript & Typings](typescript.md)**: Types vs Interfaces, enum alternatives, utility types, and React prop/event integration.
 - 🏗️ **[Architecture & Performance](architecture.md)**: State ownership, concurrency patterns, virtualization, traps, and staff-level design questions.
@@ -27,6 +27,8 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - 🛡️ **[Security Architecture Interview Grill](Security_Architect.md)**: SDE-1 to Staff/Architect security concepts, OAuth2/OIDC, CSRF/XSS, CSP, IDOR, Zero Trust, and secure system design.
 - ⚡ **[Performance Optimization](Performance_Optimization.md)**: Core Web Vitals, browser rendering performance, bundle splitting, memory leak debugging, and network optimization.
 - 🔍 **[Regular Expressions (RegEx)](regex.md)**: Match patterns, character classes, quantifiers, lookarounds, logic flow engine, and performance tips.
+- 👷 **[Web Workers & Service Workers](service-workers-and-web-workers.md)**: Dedicated & Shared Workers, Service Worker lifecycle, Caching strategies, Structured Clone vs Transferable Objects, and Background Sync.
+- 📱 **[Progressive Web Applications (PWA)](PWA_Application.md)**: Web App Manifest, Installability lifecycle (`beforeinstallprompt`), App Shell & PRPL, Offline Outbox Sync, and Project Fugu Hardware APIs.
 
 ---
 
@@ -36,60 +38,60 @@ Use this high-level list to find the correct primitive for your specific problem
 
 ### Remember and share data
 
-- [`useState`](react.md#usestate) — Remember a value owned by one component.
-- [`useReducer`](react.md#usereducer) — Centralize several related state updates.
-- [`useLinkedState`](react.md#uselinkedstate-custom-hook-pattern) _(Custom)_ — Keep local editable state in sync with a changing external value.
-- [`createContext`](react.md#createcontext) — Create information a subtree can provide.
-- [`use` / `useContext`](react.md#usecontext) — Read context; `use` also reads Promises.
-- [`useSyncExternalStore`](react.md#usesyncexternalstore) — Subscribe to a store managed outside React.
+- [`useState`](ReactInternals/index.md#usestate) — Remember a value owned by one component.
+- [`useReducer`](ReactInternals/index.md#usereducer) — Centralize several related state updates.
+- [`useLinkedState`](ReactInternals/index.md#uselinkedstate-custom-hook-pattern) _(Custom)_ — Keep local editable state in sync with a changing external value.
+- [`createContext`](ReactInternals/index.md#createcontext) — Create information a subtree can provide.
+- [`use` / `useContext`](ReactInternals/index.md#usecontext) — Read context; `use` also reads Promises.
+- [`useSyncExternalStore`](ReactInternals/index.md#usesyncexternalstore) — Subscribe to a store managed outside React.
 
 ### Connect to the browser
 
-- [`useRef`](react.md#useref) — Keep a DOM node or mutable value without rendering.
-- [`useEffect`](react.md#useeffect) — Synchronize with an external system after paint.
-- [`useLayoutEffect`](react.md#uselayouteffect) — Measure or adjust layout before paint.
-- [`useInsertionEffect`](react.md#useinsertioneffect) — Insert styles before layout effects; mainly for libraries.
-- [`useEffectEvent`](react.md#useeffectevent) — Call the latest logic from an effect without reacting to it.
-- [`useId`](react.md#useid) — Create an accessible ID stable across server and client.
-- [`useImperativeHandle`](react.md#useimperativehandle) — Customize the value exposed through a ref.
+- [`useRef`](ReactInternals/index.md#useref) — Keep a DOM node or mutable value without rendering.
+- [`useEffect`](ReactInternals/index.md#useeffect) — Synchronize with an external system after paint.
+- [`useLayoutEffect`](ReactInternals/index.md#uselayouteffect) — Measure or adjust layout before paint.
+- [`useInsertionEffect`](ReactInternals/index.md#useinsertioneffect) — Insert styles before layout effects; mainly for libraries.
+- [`useEffectEvent`](ReactInternals/index.md#useeffectevent) — Call the latest logic from an effect without reacting to it.
+- [`useId`](ReactInternals/index.md#useid) — Create an accessible ID stable across server and client.
+- [`useImperativeHandle`](ReactInternals/index.md#useimperativehandle) — Customize the value exposed through a ref.
 
 ### Load and reveal UI
 
-- [Hydrate / `hydrateRoot`](react.md#hydration--hydrateroot) — Keep server HTML dormant and load its behavior on demand.
-- [`Suspense`](react.md#suspense) — Show a fallback while descendants wait.
-- [`ErrorBoundary`](react.md#error-boundary) — Replace a failed subtree with an error fallback.
-- [`lazy`](react.md#lazy) — Load a component's code on demand.
-- [`startTransition`](react.md#starttransition--usetransition) — Mark an update as non-urgent.
-- [`useTransition`](react.md#starttransition--usetransition) — Start a transition and read its pending state.
-- [`useDeferredValue`](react.md#usedeferredvalue) — Let a slow child temporarily use an older value.
-- [`Activity`](react.md#activity) — Hide or prerender a subtree while suppressing its effects.
+- [Hydrate / `hydrateRoot`](ReactInternals/index.md#hydration--hydrateroot) — Keep server HTML dormant and load its behavior on demand.
+- [`Suspense`](ReactInternals/index.md#suspense) — Show a fallback while descendants wait.
+- [`ErrorBoundary`](ReactInternals/index.md#error-boundary) — Replace a failed subtree with an error fallback.
+- [`lazy`](ReactInternals/index.md#lazy) — Load a component's code on demand.
+- [`startTransition`](ReactInternals/index.md#starttransition--usetransition) — Mark an update as non-urgent.
+- [`useTransition`](ReactInternals/index.md#starttransition--usetransition) — Start a transition and read its pending state.
+- [`useDeferredValue`](ReactInternals/index.md#usedeferredvalue) — Let a slow child temporarily use an older value.
+- [`Activity`](ReactInternals/index.md#activity) — Hide or prerender a subtree while suppressing its effects.
 
 ### Handle actions and forms
 
-- [`useActionState`](react.md#useactionstate) — Track an action's result and pending state.
-- [`useFormStatus`](react.md#useformstatus) — Read the nearest parent form's active action.
-- [`useOptimistic`](react.md#useoptimistic) — Show an expected result before an action finishes.
-- [`requestFormReset`](react.md#requestformreset) — Request an uncontrolled-form reset from an action or transition.
+- [`useActionState`](ReactInternals/index.md#useactionstate) — Track an action's result and pending state.
+- [`useFormStatus`](ReactInternals/index.md#useformstatus) — Read the nearest parent form's active action.
+- [`useOptimistic`](ReactInternals/index.md#useoptimistic) — Show an expected result before an action finishes.
+- [`requestFormReset`](ReactInternals/index.md#requestformreset) — Request an uncontrolled-form reset from an action or transition.
 
 ### Compose and optimize
 
-- [`Fragment`](react.md#fragment) — Group siblings without an extra DOM element.
-- [`memo`](react.md#memo) — Skip a component render when its props are unchanged.
-- [`useMemo`](react.md#usememo) — Reuse an expensive calculated value.
-- [`useCallback`](react.md#usecallback) — Reuse a function identity when a consumer needs it.
-- [`createPortal`](react.md#createportal) — Render into another DOM container.
-- [View Transition APIs](react.md#view-transitions) — Coordinate browser View Transitions.
+- [`Fragment`](ReactInternals/index.md#fragment) — Group siblings without an extra DOM element.
+- [`memo`](ReactInternals/index.md#memo) — Skip a component render when its props are unchanged.
+- [`useMemo`](ReactInternals/index.md#usememo) — Reuse an expensive calculated value.
+- [`useCallback`](ReactInternals/index.md#usecallback) — Reuse a function identity when a consumer needs it.
+- [`createPortal`](ReactInternals/index.md#createportal) — Render into another DOM container.
+- [View Transition APIs](ReactInternals/index.md#view-transitions) — Coordinate browser View Transitions.
 
 ### Roots, resources, and library tools
 
-- [`createRoot` / `hydrateRoot`](react.md#createroot) — Start a client tree or adopt server HTML.
-- [Resource Hints](react.md#resource-hints) (`preload`, `preinit`, `preconnect`, `prefetchDNS`) — Tell the browser about resources early.
-- [`createElement` / `cloneElement`](react.md#library-apis) — Create or adapt element descriptors.
-- [`isValidElement` / `Children`](react.md#library-apis) — Inspect component children in library code.
-- [`flushSync` / `act`](react.md#library-apis) — Integrate synchronous DOM work or test updates.
-- [`useDebugValue`](react.md#library-apis) — Compatibility hook; development tool labeling.
-- [`setSsrSuspenseTimeout`](react.md#library-apis) — Configure the server's global deadline for unresolved async data.
-- [`version`](react.md#library-apis) — Read the installed React version.
+- [`createRoot` / `hydrateRoot`](ReactInternals/index.md#createroot) — Start a client tree or adopt server HTML.
+- [Resource Hints](ReactInternals/index.md#resource-hints) (`preload`, `preinit`, `preconnect`, `prefetchDNS`) — Tell the browser about resources early.
+- [`createElement` / `cloneElement`](ReactInternals/index.md#library-apis) — Create or adapt element descriptors.
+- [`isValidElement` / `Children`](ReactInternals/index.md#library-apis) — Inspect component children in library code.
+- [`flushSync` / `act`](ReactInternals/index.md#library-apis) — Integrate synchronous DOM work or test updates.
+- [`useDebugValue`](ReactInternals/index.md#library-apis) — Compatibility hook; development tool labeling.
+- [`setSsrSuspenseTimeout`](ReactInternals/index.md#library-apis) — Configure the server's global deadline for unresolved async data.
+- [`version`](ReactInternals/index.md#library-apis) — Read the installed React version.
 
 ---
 
