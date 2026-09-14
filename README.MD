@@ -282,6 +282,7 @@ An end-to-end guide to modern software quality engineering, frontend testing, te
 - **[Contract & Mutation Testing](./Testing/Contract_Mutation_Testing.md):** Consumer-Driven Contracts (Pact) across microservices and Mutation Testing with Stryker Mutator.
 - **[Mocking Strategy & Lifecycle](./Testing/Mocking_Strategy.md):** Test Doubles taxonomy (Dummies, Stubs, Spies, Mocks, Fakes, MSW) and `mockClear` vs `mockReset` vs `mockRestore`.
 - **[Assertions & Expect API Mastery](./Testing/Assertions_Expect_API.md):** Jest/Vitest expect engine, `toBe` vs `toEqual` vs `toStrictEqual`, asymmetric matchers, soft assertions (`expect.soft`), `expect.poll`, and custom matchers.
+- **[Scheduled Automation & SES Engine](./Testing/Scheduled_Automation_SES.md):** 24/7 synthetic browser health checks, step-by-step timers (`performance.now()`), failure screenshots, daily 08:00 AM Amazon SES reports.
 - **[Testing Master Interview Bank](./Testing/Testing_QA.md):** 29+ Staff/Senior level interview questions, live coding suites (`debounce`, `throttle`, custom hooks), A/B testing engine, and E2E checkout scenarios.
 
 ---
