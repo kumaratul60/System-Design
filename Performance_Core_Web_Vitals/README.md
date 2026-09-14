@@ -173,3 +173,5 @@ This directory contains deep dives into each of the touchpoints mentioned above:
 - **[Assets/](./Assets/README.md)**: Techniques for image and code optimization.
 - **[React/](./React/README.md)**: Framework-specific performance patterns.
 - **[Rendering/](./Rendering/README.md)**: Choosing between SSR, CSR, and SSG.
+- **[React-Internals](../cheatsheets/ReactInternals/index.md)**
+- **[EvolutionReact](../cheatsheets/evolutionReact.md)**

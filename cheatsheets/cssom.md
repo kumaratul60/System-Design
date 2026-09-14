@@ -12,6 +12,9 @@ The browser combines the DOM and CSSOM to build the **Render Tree**, which calcu
        HTML ──► [ DOM Construction ] ──────┐
                                            ├─► [ Render Tree ] ──► [ Layout ] ──► [ Paint ] ──► [ Composite ]
        CSS  ──► [ CSSOM Construction ] ────┘
+
+       CSS Bytes → Characters → Tokens → CSSOM Nodes → CSSOM Tree
+
 ```
 
 > [!IMPORTANT]

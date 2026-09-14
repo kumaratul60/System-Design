@@ -3,12 +3,13 @@
 core web vitals: A small set of metrics for how a page is actually feels to a real person using it.
 
 Core Web Vitals are a set of specific factors that Google considers important in a webpage's overall user experience. They are part of Google's "Page Experience" score, which affects SEO ranking.
+[Read here in depth](https://web.dev/articles/vitals)
 
 ## Three to fix,
 
-1.  LCP
-2.  INP
-3.  CLS
+1.  LCP: Loading <=2.5s good, >4.0s Poor
+2.  INP: Responsiveness <=200ms good, >500ms Poor
+3.  CLS: Visual stability <=0.1, >0.25 Poor
 
 ## Three to diagnose
 
@@ -218,6 +219,7 @@ The "Source of Truth" capturing how actual users experience the site in the wild
 
 **Focus:** Visual Stability
 **Definition:** Measures the sum total of all individual layout shift scores for every unexpected layout shift that occurs during the entire lifespan of the page.
+**Cumulative Layout Shift (CLS) is a dimensionless score.**
 
 | Status                   | Threshold  |
 | :----------------------- | :--------- |
@@ -226,6 +228,31 @@ The "Source of Truth" capturing how actual users experience the site in the wild
 | 🔴 **Poor**              | > 0.25     |
 
 **Common Culprits:** Images without dimensions, ads/embeds without reserved space, dynamically injected content, FOIT/FONT (Flash of Invisible/Unstyled Text).
+
+### How the CLS Score is Calculated
+
+The score is calculated by multiplying two fractions:
+
+1. **Impact Fraction:** The percentage of the viewport area that changes position.
+2. **Distance Fraction:** The greatest distance an unstable element moves, divided by the viewport’s largest dimension.
+
+**An Example Calculation**
+
+- A large text block takes up 50% of your screen (Impact Fraction = 0.50).
+- A slow-loading image suddenly pops in above it, pushing that text block down by 20% of the screen height (Distance Fraction = 0.20).
+- CLS Score: 0.50 x 0.20 = 0.10
+
+### Common Causes of CLS
+
+- **Images and videos without dimensions:** Browsers do not reserve space before media loads, causing content below to jump.
+- **Dynamic content:** Ads, banners, or cookie notices injected asynchronously above existing content.
+- **Late-loading web fonts:** Text reflows or changes size when custom fonts render after the fallback font
+
+### How to Fix CLS
+
+- **Set explicit size attributes:** Add width and height dimensions to <img> and <video> elements, or use CSS aspect-ratio.
+- **Reserve layout space:** Allocate dedicated CSS min-height or placeholder containers for dynamic elements like ads or embeds.
+- **Avoid inserting content above existing content:** Render new UI elements below current content unless triggered directly by a user action.
 
 ---
 
@@ -240,7 +267,7 @@ RAIL is a model created by Google to help engineers break down performance into 
 | **I**  | **Idle**      | Maximize idle time for background tasks. | TBT              |
 | **L**  | **Load**      | Deliver interactive content in < 5s.     | LCP / FCP        |
 
-> **Staff Tip:** Users have different expectations for each phase. A 1-second delay in "Response" feels like a broken UI, but a 1-second delay in "Load" is often acceptable.
+> **Tip:** Users have different expectations for each phase. A 1-second delay in "Response" feels like a broken UI, but a 1-second delay in "Load" is often acceptable.
 
 ---
 
@@ -256,8 +283,6 @@ While **INP** tells you _that_ a page was slow, **LoAF** tells you _why_.
 
 ## Interview Deep Dive: Core Web Vitals
 
-### 🟢 Basic (Junior / Mid Level)
-
 **Q: What are Core Web Vitals and why should we care?**
 
 > **Answer:** Core Web Vitals are a set of three metrics (LCP, INP/FID, CLS) that measure loading, interactivity, and visual stability. We care because they provide a standardized way to measure User Experience and they are a direct ranking factor for Google SEO.
@@ -272,8 +297,6 @@ While **INP** tells you _that_ a page was slow, **LoAF** tells you _why_.
 
 ---
 
-### 🟡 Advanced (Senior Level)
-
 **Q: Your LCP is poor (5s), but your JS bundles are tiny and your images are optimized. What else could be wrong?**
 
 > **Answer:** The bottleneck might be **Time to First Byte (TTFB)**. If the server takes 3 seconds to send the initial HTML, the LCP will never be good. Other factors include **Render-Blocking CSS** in the `<head>` or a slow **Resource Load Delay** where the browser doesn't discover the LCP image until late (e.g., it's hidden in a CSS background-image or an external JS file).
@@ -283,8 +306,6 @@ While **INP** tells you _that_ a page was slow, **LoAF** tells you _why_.
 > **Answer:** FID only measures the _first_ interaction and only the _delay_ before processing starts. It often gave "Good" scores to pages that felt sluggish later. **INP (Interaction to Next Paint)** is more comprehensive: it tracks _all_ interactions, includes the _processing time_ and the _presentation delay_ (time to actually paint the result), and reports the worst (or near-worst) interaction on the page.
 
 ---
-
-### 🔴 Staff / Architect Level
 
 **Q: How would you architect a system to monitor Core Web Vitals for a site with 1 million daily users?**
 

@@ -2,6 +2,7 @@
 
 > [!NOTE]
 > This document is part of our **React Deep Dive Series**. Navigate the deep dives here:
+>
 > - **[React Layout & General Internals](./index.md)**
 > - **[Part 1: Core Engine & Architecture](./React_Deep_Dive_Internals.md)**
 > - **[Part 2: Advanced Concurrency & Hooks](./React_Deep_Dive_Advanced.md)**
