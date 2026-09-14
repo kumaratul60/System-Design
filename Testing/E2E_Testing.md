@@ -35,7 +35,7 @@
   - [8. Resilient Locators \& Auto-Waiting Engine](#8-resilient-locators--auto-waiting-engine)
   - [9. Complete Production E2E Suite (Playwright \& Cypress)](#9-complete-production-e2e-suite-playwright--cypress)
   - [10. Debugging: Trace Viewer, Video \& Network HAR](#10-debugging-trace-viewer-video--network-har)
-  - [11. Scheduled 24/7 Automation \& Amazon SES Email Reporting](#11-scheduled-247-automation--amazon-ses-email-reporting)
+  - [11. Scheduled 24/7 Automation, Alerting \& CI/CD Guides](#11-scheduled-247-automation-alerting--cicd-guides)
   - [12. When to Use vs. When NOT to Use](#12-when-to-use-vs-when-not-to-use)
 
 ---
@@ -590,11 +590,13 @@ npx playwright show-trace trace.zip
 
 ---
 
-## 11. Scheduled 24/7 Automation & Amazon SES Email Reporting
+## 11. Scheduled 24/7 Automation, Alerting & CI/CD Guides
 
-For setting up automated daily **08:00 AM** health check suites, step-by-step millisecond execution timing logs (`performance.now()`), automatic failure screenshot capture, and HTML email alerting via **Amazon SES (`@aws-sdk/client-ses`)**, refer to the dedicated guide:
+For setting up automated daily **08:00 AM** health check suites, step-by-step millisecond execution timing logs (`performance.now()`), automatic failure screenshot capture, and HTML email alerting via **Amazon SES (`@aws-sdk/client-ses`)**, or configuring CI/CD pipelines:
 
-👉 **[Scheduled Browser Automation & Amazon SES Reporting Guide](./Scheduled_Automation_SES.md)**
+- 📊 **[Scheduled Browser Automation & Amazon SES Reporting Guide](./Scheduled_Automation_SES.md)**
+- 🚀 **[Autonomous QA Blueprint (Zero Org Repo Access)](./Autonomous_QA_Zero_Access_Guide.md):** For QA engineers with no org repo access (Personal GitHub 100% free CI, Daily 8am CRON + 1-Click Release dropdowns, Linear webhooks).
+- 🏢 **[Enterprise QA & Integrated CI/CD](./Enterprise_QA_Integrated_CI_CD.md):** For teams with full repo access (PR Quality Gates, 4x Playwright sharding, ephemeral PR preview testing, Bitbucket Pipelines).
 
 ---
 

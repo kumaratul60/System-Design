@@ -16,6 +16,7 @@
   - [6. Step 4: Serverless GitHub Actions CRON Workflow (`daily-e2e-check.yml`)](#6-step-4-serverless-github-actions-cron-workflow-daily-e2e-checkyml)
   - [7. Error Handling, Failure Screenshots \& Self-Healing](#7-error-handling-failure-screenshots--self-healing)
   - [8. Production Deployment \& AWS IAM Policies](#8-production-deployment--aws-iam-policies)
+  - [9. Related QA Guides \& Blueprints](#9-related-qa-guides--blueprints)
 
 ---
 
@@ -492,3 +493,11 @@ To allow the automation runner to dispatch emails through Amazon SES, attach thi
   ]
 }
 ```
+
+---
+
+## 9. Related QA Guides & Blueprints
+
+- 🚀 **[Autonomous QA Blueprint (Zero Org Repo Access)](./Autonomous_QA_Zero_Access_Guide.md):** Step-by-step setup using your personal GitHub repository for zero-access environments with daily 8am CRON + 1-click release dropdowns and Linear webhooks.
+- 🏢 **[Enterprise QA & Integrated CI/CD](./Enterprise_QA_Integrated_CI_CD.md):** Complete guide for teams with full org repo access (PR quality gates, 4x Playwright sharding, ephemeral PR previews, Bitbucket Pipelines).
+- 🎭 **[End-to-End (E2E) Browser Automation Architecture](./E2E_Testing.md):** Core Playwright, Cypress, and Puppeteer patterns.

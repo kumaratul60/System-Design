@@ -283,6 +283,8 @@ An end-to-end guide to modern software quality engineering, frontend testing, te
 - **[Mocking Strategy & Lifecycle](./Testing/Mocking_Strategy.md):** Test Doubles taxonomy (Dummies, Stubs, Spies, Mocks, Fakes, MSW) and `mockClear` vs `mockReset` vs `mockRestore`.
 - **[Assertions & Expect API Mastery](./Testing/Assertions_Expect_API.md):** Jest/Vitest expect engine, `toBe` vs `toEqual` vs `toStrictEqual`, asymmetric matchers, soft assertions (`expect.soft`), `expect.poll`, and custom matchers.
 - **[Scheduled Automation & SES Engine](./Testing/Scheduled_Automation_SES.md):** 24/7 synthetic browser health checks, step-by-step timers (`performance.now()`), failure screenshots, daily 08:00 AM Amazon SES reports.
+- **[Autonomous QA (Zero Org Repo Access)](./Testing/Autonomous_QA_Zero_Access_Guide.md):** Complete guide for QA with no org repo/CI access. Free personal GitHub Actions engine, Daily 08:00 AM Cron + 1-Click Release Verification dropdowns, Linear Webhooks.
+- **[Enterprise QA & Integrated CI/CD](./Testing/Enterprise_QA_Integrated_CI_CD.md):** Monorepo vs dedicated QA repo setup, PR Quality Gates, 4x Playwright matrix sharding, PR preview ephemeral testing, Bitbucket Pipelines, and Slack alerting gates.
 - **[Testing Master Interview Bank](./Testing/Testing_QA.md):** 29+ Staff/Senior level interview questions, live coding suites (`debounce`, `throttle`, custom hooks), A/B testing engine, and E2E checkout scenarios.
 
 ---
