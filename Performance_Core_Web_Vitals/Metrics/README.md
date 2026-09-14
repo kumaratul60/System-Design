@@ -13,9 +13,9 @@ Core Web Vitals are a set of specific factors that Google considers important in
 
 ## Three to diagnose
 
-1.  FCP
-2.  TTFB
-3.  TBT
+1.  FCP: Loading <=1.8s
+2.  TTFB: Server <=800ms
+3.  TBT: Responsiveness <=200ms
 
 ---
 
