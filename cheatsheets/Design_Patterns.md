@@ -2,7 +2,7 @@
 
 This guide covers common design patterns and how to implement real-world features correctly.
 
-> [Deep into Design Patterns](https://github.com/kumaratul60/design-patterns)
+> [Deep into Design Patterns](https://github.com/kumaratul60/design-patterns) (https://refactoring.guru/design-patterns)
 
 ## Table of Contents
 
