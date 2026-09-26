@@ -16,22 +16,26 @@ flowchart LR
     M4 --> M5["<b>05. Screen Readers</b><br/>AccTree & Live Regions"]
     M5 --> M6["<b>06. Tools & CI/CD</b><br/>Axe, DevTools & Rules"]
     M6 --> M7["<b>07. Interactive Demos</b><br/>8 Live HTML Testbeds"]
+    M7 --> M8["<b>08. i18n, l10n & RTL</b><br/>Intl, Plurals & BiDi"]
 
     classDef active fill:#2563eb,stroke:#1d4ed8,color:#ffffff,stroke-width:2px;
     classDef demo fill:#10b981,stroke:#059669,color:#ffffff,stroke-width:2px;
+    classDef i18n fill:#8b5cf6,stroke:#7c3aed,color:#ffffff,stroke-width:2px;
     class M1,M2,M3,M4,M5,M6 active;
     class M7 demo;
+    class M8 i18n;
 ```
 
-|  Step  | Module Document                                                                                                                          | Scope & Focus             | Key Takeaways & Deliverables                                                                           |
-| :----: | :--------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ | :----------------------------------------------------------------------------------------------------- |
-| **01** | [**WCAG Standards & Architect Grill**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/WCAG_Accessibility.md)         | Standards & Compliance    | POUR Principles, Conformance Levels (A, AA, AAA), 5 Rules of ARIA, Staff-level interview questions.    |
-| **02** | [**Focus Management & Navigation**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/FocusManagement.md)               | Focus Lifecycles          | 6 Focus Pillars, Native Focusable Tags Table, Custom `tabindex` Matrix, Skip Links, Modal Trapping.    |
-| **03** | [**Keyboard Accessibility & APG Patterns**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/KeyboardAccessibility.md) | Keyboard Engineering      | Roving `tabindex`, Virtual Focus (`aria-activedescendant`), W3C APG Widgets (Tabs, Menus, Comboboxes). |
-| **04** | [**Color Contrast & Visual Accessibility**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ColorContrast.md)         | Visual Systems & Contrast | Relative Luminance Mathematical Formula, 400% Zoom Reflow, Forced Colors / Windows High Contrast.      |
-| **05** | [**Screen Readers & AccTree Architecture**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ScreenReader.md)          | Assistive Tech & AccTree  | Browser AccTree Compilation, OS APIs, ARIA Live Queues, Programmatic DOM Mutations, OS Runbooks.       |
-| **06** | [**Accessibility Tools, Testing & Governance**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/AccessbilityTools.md) | Quality & Automation      | 10 Golden Design Rules, 5-Step Testing Protocol, Axe-core, Playwright CI/CD, DevTools Inspection.      |
-| **07** | [**Interactive Browser Testbed Hub**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/index.html)               | Live Browser Labs         | 8 Standalone HTML interactive testbeds with real-time Event HUDs and zero external dependencies.       |
+|  Step  | Module Document                                                                                                                                 | Scope & Focus             | Key Takeaways & Deliverables                                                                                  |
+| :----: | :---------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------ |
+| **01** | [**WCAG Standards & Architect Grill**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/WCAG_Accessibility.md)                | Standards & Compliance    | POUR Principles, Conformance Levels (A, AA, AAA), 5 Rules of ARIA, Staff-level interview questions.           |
+| **02** | [**Focus Management & Navigation**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/FocusManagement.md)                      | Focus Lifecycles          | 6 Focus Pillars, Native Focusable Tags Table, Custom `tabindex` Matrix, Skip Links, Modal Trapping.           |
+| **03** | [**Keyboard Accessibility & APG Patterns**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/KeyboardAccessibility.md)        | Keyboard Engineering      | Roving `tabindex`, Virtual Focus (`aria-activedescendant`), W3C APG Widgets (Tabs, Menus, Comboboxes).        |
+| **04** | [**Color Contrast & Visual Accessibility**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ColorContrast.md)                | Visual Systems & Contrast | Relative Luminance Mathematical Formula, 400% Zoom Reflow, Forced Colors / Windows High Contrast.             |
+| **05** | [**Screen Readers & AccTree Architecture**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ScreenReader.md)                 | Assistive Tech & AccTree  | Browser AccTree Compilation, OS APIs, ARIA Live Queues, Programmatic DOM Mutations, OS Runbooks.              |
+| **06** | [**Accessibility Tools, Testing & Governance**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/AccessbilityTools.md)        | Quality & Automation      | 10 Golden Design Rules, 5-Step Testing Protocol, Axe-core, Playwright CI/CD, DevTools Inspection.             |
+| **07** | [**Interactive Browser Testbed Hub**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/index.html)                      | Live Browser Labs         | 8 Standalone HTML interactive testbeds with real-time Event HUDs and zero external dependencies.              |
+| **08** | [**i18n, l10n & RTL Accessibility**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/Internationalization_i18n_l10n_a11y.md) | i18n, l10n & RTL a11y     | Native `Intl.*` APIs, 6-form Pluralization rules, Screen reader `lang` switches, BiDi CSS logical properties. |
 
 ---
 
@@ -1020,14 +1024,15 @@ graph TD
 
 ## 10. Knowledge Hub Deep-Dive Directory
 
-| Document                                                                                                                                      | Scope & Target                    | Core Architectural Content                                                                                               |
-| :-------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
-| [**Keyboard Accessibility & Interaction Guide**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/KeyboardAccessibility.md) | Focus & Keyboard Engineering      | Full keyboard event pipelines, `tabindex` rules, Focus Trap hooks, Roving `tabindex` vs virtual focus, Playwright tests. |
-| [**WCAG 2.1/2.2 Reference & Architect Grill**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/WCAG_Accessibility.md)      | Standards & Staff Interview Grill | Comprehensive criteria breakdown, Staff-level scenario interviews, trade-offs, and enterprise remediation blueprints.    |
-| [**Focus Management & Trapping**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/FocusManagement.md)                      | Focus Lifecycles                  | Modal trapping mechanics, SPA routing focus reset, `inert` attribute, virtual list a11y.                                 |
-| [**Screen Readers & Accessibility Tree**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ScreenReader.md)                 | AccTree & Assistive Tech          | AccTree compilation, NVDA/JAWS/VoiceOver heuristics, live region queues, and screen reader testing.                      |
-| [**Color Contrast & High Contrast Themes**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ColorContrast.md)              | Visual Systems & Colors           | APCA vs WCAG contrast math, Forced Colors mode, color-blindness accommodations.                                          |
-| [**Accessibility Tooling & CI/CD Governance**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/AccessbilityTools.md)       | Test Automation & Auditing        | Axe-core, Jest-axe, Playwright automation, ESLint rules, and manual audit protocols.                                     |
+| Document                                                                                                                                                     | Scope & Target                    | Core Architectural Content                                                                                                 |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| [**Keyboard Accessibility & Interaction Guide**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/KeyboardAccessibility.md)                | Focus & Keyboard Engineering      | Full keyboard event pipelines, `tabindex` rules, Focus Trap hooks, Roving `tabindex` vs virtual focus, Playwright tests.   |
+| [**WCAG 2.1/2.2 Reference & Architect Grill**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/WCAG_Accessibility.md)                     | Standards & Staff Interview Grill | Comprehensive criteria breakdown, Staff-level scenario interviews, trade-offs, and enterprise remediation blueprints.      |
+| [**Focus Management & Trapping**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/FocusManagement.md)                                     | Focus Lifecycles                  | Modal trapping mechanics, SPA routing focus reset, `inert` attribute, virtual list a11y.                                   |
+| [**Screen Readers & Accessibility Tree**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ScreenReader.md)                                | AccTree & Assistive Tech          | AccTree compilation, NVDA/JAWS/VoiceOver heuristics, live region queues, and screen reader testing.                        |
+| [**Color Contrast & High Contrast Themes**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/ColorContrast.md)                             | Visual Systems & Colors           | APCA vs WCAG contrast math, Forced Colors mode, color-blindness accommodations.                                            |
+| [**Accessibility Tooling & CI/CD Governance**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/AccessbilityTools.md)                      | Test Automation & Auditing        | Axe-core, Jest-axe, Playwright automation, ESLint rules, and manual audit protocols.                                       |
+| [**i18n, l10n & RTL Accessibility Master Guide**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/Internationalization_i18n_l10n_a11y.md) | i18n, l10n & RTL a11y             | Native `Intl.*` API, 6-form Plural rules, Screen Reader `lang` sync, BiDi CSS logical properties, and pseudo-localization. |
 
 ---
 

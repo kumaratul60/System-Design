@@ -4,32 +4,107 @@ Use this guide as a structured bank of questions to assess candidates across dif
 
 ---
 
-## The Interview Pillars
+## The 6 Core Frontend System Design Scored Domains
+
+> **"This isn't optional trivia. It's a scored category."**
+> Evaluation rubrics at top tech companies treat Accessibility & Internationalization as first-class domain areas right alongside Performance and Security — not afterthought side notes.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                6 Core Frontend System Design Domain Areas                   │
+├──────────────────────────────┬──────────────────────────────────────────────┤
+│  ⚡ Performance              │  🌐 Networking                               │
+├──────────────────────────────┼──────────────────────────────────────────────┤
+│  ♿ **Accessibility (a11y)**   │  🌍 **Internationalization (i18n)**           │
+├──────────────────────────────┼──────────────────────────────────────────────┤
+│  🔒 Security                 │  📈 Scalability                              │
+└──────────────────────────────┴──────────────────────────────────────────────┘
+```
 
 ```mermaid
 mindmap
   root((Candidate Assessment))
+    Frontend System Design
+      Accessibility a11y: AccTree, keyboard, ARIA live
+      Internationalization i18n: Intl API, plurals, RTL
+      Performance: Web Vitals LCP/INP, bundle budget
+      Networking: HTTP/3, caching, offline PWA
+      Security: CSP, XSS, Sanitization, CSRF
+      Scalability: State isolation, Micro-frontends
     React & JS Internals
       Reconciliation (Fiber)
       Hook Lifecycles
-      Strict Mode & Side Effects
-    Performance
-      Web Vitals (LCP/INP)
-      Layout Thrashing
-      Memoization Trade-offs
-    Architecture
-      Micro-frontends
-      State Management Strategy
-      Hybrid Rendering (SSR/CSR)
+      Strict Mode & Concurrent features
     Machine Coding
       Config-Driven UI
-      Recursive Components
+      Semantic HTML vs div soup
       Data Virtualization
     Quality & Culture
       Testing Trophy
-      Visual Regression
+      Automated CI/CD Quality Gates
       Error Boundaries
 ```
+
+---
+
+## 🎯 The Candidate's Rule: "Interviewers Score What You Say Out Loud"
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Thought vs Said Out Loud                           │
+├──────────────────────────────────────┬──────────────────────────────────────┤
+│ 💭 THOUGHT (In your head)            │ 🗣️ SAID ALOUD (Verbalized)           │
+│ "The feed needs an aria-live region   │ "The feed needs an aria-live region  │
+│  for newly arriving posts."          │  for newly arriving posts."          │
+├──────────────────────────────────────┼──────────────────────────────────────┤
+│           SCORED: ── (0 pts)         │           SCORED: ✅ (Scored!)        │
+└──────────────────────────────────────┴──────────────────────────────────────┘
+```
+
+> **Staff-Level Signal:**
+> _"Two or three of these unprompted observations read directly to the interviewer as: 'I have actually shipped real-world products at scale.'"_
+
+---
+
+## 💎 The Two Non-Negotiable Frontend Production Habits
+
+> **"System design is talking about it. Machine coding is doing it."**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   The Two Golden Habits of Senior Frontend Devs             │
+├──────────────────────────────────────┬──────────────────────────────────────┤
+│ 🏷️ HABIT 01: Never Hardcode Strings   │ 🔘 HABIT 02: Semantic HTML First     │
+├──────────────────────────────────────┼──────────────────────────────────────┤
+│ Every user-facing label goes through │ Use `<button>`, `<label>`, `<nav>`.   │
+│ `t()` or `<FormattedMessage>` from   │ Free keyboard navigation, focus ring,│
+│ line one.                            │ and screen reader role for free.     │
+│ 👉 *Retrofitting is the expensive    │ 👉 *`<div onClick>` gets NONE of     │
+│    part.*                            │    this for free.*                   │
+└──────────────────────────────────────┴──────────────────────────────────────┘
+```
+
+### Semantic HTML vs `div + onClick` Breakdown
+
+```jsx
+// ✅ Button.jsx: Real Semantic Button (FREE a11y)
+<button onClick={submit}>
+  Submit
+</button>
+// Status: submitted ✓
+// Keyboard: Focusable, Tab stop, Enter + Space trigger
+// Screen Reader: "Submit, button" (Role: button announced)
+
+// ❌ NotAButton.jsx: Div Soup Anti-pattern (BROKEN a11y)
+<div onClick={submit}>
+  Submit
+</div>
+// Status: nothing happened ✕
+// Keyboard: Tab skips it, Enter does nothing
+// Screen Reader: "Submit" (No role, completely invisible as an action)
+```
+
+---
 
 ---
 

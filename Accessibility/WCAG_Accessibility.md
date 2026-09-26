@@ -9,8 +9,12 @@
 - [♿ Web Accessibility (a11y) \& WCAG Architectural Reference \& Interview Grill](#-web-accessibility-a11y--wcag-architectural-reference--interview-grill)
   - [Table of Contents](#table-of-contents)
   - [🏛️ High-Level Architectural Foundations](#️-high-level-architectural-foundations)
+    - [Frontend System Design: A Core Scored Category](#frontend-system-design-a-core-scored-category)
+      - [The Candidate's Rule: "Interviewers Score What You Say Out Loud"](#the-candidates-rule-interviewers-score-what-you-say-out-loud)
     - [Why a11y is a Core Architectural Non-Functional Requirement (NFR)](#why-a11y-is-a-core-architectural-non-functional-requirement-nfr)
     - [The POUR Principles (WCAG Foundation)](#the-pour-principles-wcag-foundation)
+    - [The 5 Core User Modalities \& Needs](#the-5-core-user-modalities--needs)
+    - [Disability Isn't Only Permanent](#disability-isnt-only-permanent)
     - [WCAG Conformance Levels (A vs AA vs AAA)](#wcag-conformance-levels-a-vs-aa-vs-aaa)
     - [Authoritative WCAG Standards \& Checklists](#authoritative-wcag-standards--checklists)
     - [WCAG 2.2 Key Additions Every Architect Must Know](#wcag-22-key-additions-every-architect-must-know)
@@ -63,6 +67,42 @@
 
 ## 🏛️ High-Level Architectural Foundations
 
+### Frontend System Design: A Core Scored Category
+
+> **"This isn't optional trivia. It's a scored category."**
+> Evaluation rubrics at top tech companies list **Accessibility (a11y)** and **Internationalization (i18n)** right alongside Performance, Security, Networking, and Scalability — **not as side notes**.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 6 Core Frontend System Design Domain Areas                  │
+├──────────────────────────────┬──────────────────────────────────────────────┤
+│  ⚡ Performance              │  🌐 Networking                               │
+├──────────────────────────────┼──────────────────────────────────────────────┤
+│  ♿ **Accessibility (a11y)**   │  🌍 **Internationalization (i18n)**           │
+├──────────────────────────────┼──────────────────────────────────────────────┤
+│  🔒 Security                 │  📈 Scalability                              │
+└──────────────────────────────┴──────────────────────────────────────────────┘
+```
+
+#### The Candidate's Rule: "Interviewers Score What You Say Out Loud"
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Thought vs Said Out Loud                           │
+├──────────────────────────────────────┬──────────────────────────────────────┤
+│ 💭 THOUGHT (In your head)            │ 🗣️ SAID ALOUD (Verbalized)           │
+│ "The feed needs an aria-live region   │ "The feed needs an aria-live region  │
+│  for new items."                     │  for new items."                     │
+├──────────────────────────────────────┼──────────────────────────────────────┤
+│           SCORED: ── (Unscored)      │           SCORED: ✅ (Scored!)        │
+└──────────────────────────────────────┴──────────────────────────────────────┘
+```
+
+> **Staff-Level Signal:**
+> _"Two or three of these unprompted observations read directly to the interviewer as: 'I have shipped products at enterprise scale.'"_
+
+---
+
 ### Why a11y is a Core Architectural Non-Functional Requirement (NFR)
 
 Accessibility is not a last-minute styling layer or a cosmetic badge. At enterprise architecture scale:
@@ -92,12 +132,66 @@ Accessibility is not a last-minute styling layer or a cosmetic badge. At enterpr
 
 ### The POUR Principles (WCAG Foundation)
 
+> **"Four principles. Everything else is detail."**
+> `WCAG 2.2 · Current Version · Official ISO Standard (ISO/IEC 40500)`
+
+```mermaid
+flowchart LR
+    P["<b>P - Perceivable</b><br/>You can sense it — sight, sound or touch."]
+    O["<b>O - Operable</b><br/>You can drive it — keyboard included."]
+    U["<b>U - Understandable</b><br/>It isn't confusing."]
+    R["<b>R - Robust</b><br/>It survives assistive tech."]
+
+    P --- O --- U --- R
+```
+
 | Principle              | Meaning                                                                                                     | Architectural Implementation Requirement                                                                                                                                                                                                                                                      |
 | :--------------------- | :---------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **P - Perceivable**    | Information and UI components must be presentable to users in ways they can perceive.                       | • Provide text alternatives (`alt`, `aria-label`).<br>• Captions and transcripts for media.<br>• Minimum color contrast ratios (4.5:1 text, 3:1 UI components).<br>• Support zoom up to 200% without loss of content/functionality.                                                           |
-| **O - Operable**       | UI components and navigation must be operable via any input method.                                         | • 100% Keyboard navigation (No keyboard traps).<br>• Ample touch targets (min $24 \times 24\text{px}$ in WCAG 2.2, recommended $44 \times 44\text{px}$ / $48 \times 48\text{px}$).<br>• Meaningful focus order and visual focus rings.<br>• Sufficient time limits with extend/pause options. |
-| **U - Understandable** | Information and operation of UI must be understandable.                                                     | • Page language (`<html lang="en">`).<br>• Predictable navigation across pages.<br>• Input assistance: Explicit error identification, descriptive hints, and recovery suggestions.                                                                                                            |
-| **R - Robust**         | Content must be robust enough to be interpreted reliably by diverse user agents and assistive technologies. | • Clean HTML without duplicate IDs.<br>• Adherence to standard ARIA specifications.<br>• Backward/Forward compatibility across modern web platforms.                                                                                                                                          |
+| **P - Perceivable**    | Information and UI components must be presentable to users in ways they can perceive (sight, sound, touch). | • Provide text alternatives (`alt`, `aria-label`).<br>• Captions and transcripts for media.<br>• Minimum color contrast ratios (4.5:1 text, 3:1 UI components).<br>• Support zoom up to 400% without loss of content/functionality.                                                           |
+| **O - Operable**       | UI components and navigation must be operable via any input method (keyboard included).                     | • 100% Keyboard navigation (No keyboard traps).<br>• Ample touch targets (min $24 \times 24\text{px}$ in WCAG 2.2, recommended $44 \times 44\text{px}$ / $48 \times 48\text{px}$).<br>• Meaningful focus order and visual focus rings.<br>• Sufficient time limits with extend/pause options. |
+| **U - Understandable** | Information and operation of UI must be clear and not confusing.                                            | • Page language (`<html lang="en">`) and inline shifts (`<span lang="...">`).<br>• Predictable navigation across pages.<br>• Input assistance: Explicit error identification, descriptive hints, and recovery suggestions.                                                                    |
+| **R - Robust**         | Content must be robust enough to survive diverse assistive technologies.                                    | • Clean HTML without duplicate IDs.<br>• Adherence to standard ARIA specifications.<br>• Backward/Forward compatibility across modern web platforms.                                                                                                                                          |
+
+---
+
+### The 5 Core User Modalities & Needs
+
+> **"Five different people. One product to build."**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           Five Different People. One Product to Build.                      │
+├─────────────┬─────────────┬─────────────┬─────────────┬─────────────────────────────────────┤
+│ 👁️ Blind    │ 👓 Low Vision│ ⌨️ Motor    │ 👂 Deaf     │ 🧠 Cognitive                        │
+├─────────────┼─────────────┼─────────────┼─────────────┼─────────────────────────────────────┤
+│ Navigates   │ Needs real  │ Keyboard    │ Needs       │ Clear plain language, calm declutter│
+│ entirely by │ color       │ only — no   │ captions    │ layout (e.g. 6 dense lines ->       │
+│ screen reader│ contrast    │ mouse at all│ on every    │ 3 clear lines).                     │
+│ (AccTree).  │ (≥ 4.5:1).  │ (Tab/Enter).│ video.      │                                     │
+├─────────────┼─────────────┼─────────────┼─────────────┼─────────────────────────────────────┤
+│ • Headings  │ • High      │ • Tab stops │ • Captions  │ • Simple hierarchy                  │
+│ • Alt text  │   contrast  │ • No traps  │ • Audio     │ • Reduced motion                    │
+│ • AccName   │ • 400% zoom │ • Roving idx│   transcripts│ • Error prevention                 │
+└─────────────┴─────────────┴─────────────┴─────────────┴─────────────────────────────────────┘
+```
+
+---
+
+### Disability Isn't Only Permanent
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        The Inclusive Spectrum Model                         │
+├─────────────────────┬─────────────────────┬─────────────────────────────────┤
+│ PERMANENT           │ TEMPORARY           │ SITUATIONAL                     │
+├─────────────────────┼─────────────────────┼─────────────────────────────────┤
+│ **One arm**         │ **A broken arm**    │ **Holding a baby**              │
+│ A lifelong condition│ Six weeks in a cast │ Checking out one-handed         │
+├─────────────────────┴─────────────────────┴─────────────────────────────────┤
+│          👉 All three need the EXACT SAME one-handed design. 👈              │
+│   "Build for the permanent case — you help almost everyone, some of the time."│
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -795,4 +889,3 @@ test.describe('Checkout Flow a11y', () => {
 ## 🧪 Interactive Browser Testbed Hub
 
 To test all the patterns discussed in this document (including focus trapping, roving `tabindex`, combobox virtual focus, live regions, contrast calculators, and zero-ghost-focus accordions), open the [**Interactive Testbed Hub**](file:///Users/atulkumarawasthi/projects/SystemDesign/Accessibility/demos/index.html) in your browser.
-

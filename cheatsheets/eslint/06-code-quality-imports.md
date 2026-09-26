@@ -36,7 +36,32 @@ import { Button } from '@/components/Button';
 
 ---
 
-## 3. Configuration Snippet
+## 3. Enforcing the Single Source of Truth Import Path (`no-restricted-imports`)
+
+> **"Put the toolkit behind your own components — one import path, always correct as source of truth."**
+> **"You remove the inaccessible option before anyone can reach for it."**
+
+In large engineering organizations, leaving library choices open leads to developers reaching for quick, inaccessible shortcuts (`<div onClick>`).
+
+The architectural solution is to wrap headless primitives (**Radix UI**, **Ariakit**, **React Aria**) inside your Design System (`@/components/ui`), and enforce via ESLint that feature teams only import from the design system barrel:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 Single Source of Truth Import Guardrail                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ❌ DISALLOWED DIRECT IMPORTS:                                               │
+│   import * as Dialog from '@radix-ui/react-dialog';  // Blocked in CI!      │
+│   import { Popover } from 'ariakit/popover';         // Blocked in CI!      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ✅ ENFORCED DESIGN SYSTEM IMPORT:                                           │
+│   import { Modal, Popover, Button } from '@/components/ui';                 │
+│   (Accessible by default, WAI-ARIA wired, focus-trapped, and token-styled)  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Configuration Snippet
 
 ```json
 {
@@ -56,7 +81,23 @@ import { Button } from '@/components/Button';
     "barrel-files/avoid-barrel-files": "warn",
     "unicorn/prefer-node-protocol": "error",
     "unicorn/no-useless-spread": "error",
-    "no-console": ["warn", { "allow": ["warn", "error"] }]
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@radix-ui/react-dialog",
+            "message": "Import <Modal /> from '@/components/ui' to enforce design system accessibility rules."
+          },
+          {
+            "name": "@radix-ui/react-dropdown-menu",
+            "message": "Import <DropdownMenu /> from '@/components/ui'."
+          }
+        ]
+      }
+    ]
   }
 }
 ```

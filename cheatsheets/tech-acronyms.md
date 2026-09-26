@@ -268,3 +268,29 @@ _Systems for tracking changes in code over time._
 - **Git** — A distributed version control system
 - **SVN** — Subversion (A centralized version control system)
 - **Mercurial** — A distributed version control system
+
+---
+
+## 14. Numeronyms (Number-Based Abbreviations)
+
+_Constructed using the first letter, the count of letters omitted in between, and the last letter ("Engineers are lazy typists")._
+
+```
+  i ─── [ 18 letters: nternationalizatio ] ─── n  ==>  i18n (Internationalization)
+  a ─── [ 11 letters: ccessibilit        ] ─── y  ==>  a11y (Accessibility)
+  l ─── [ 10 letters: ocalizatio         ] ─── n  ==>  l10n (Localization)
+  k ─── [  8 letters: ubernete           ] ─── s  ==>  k8s  (Kubernetes)
+  o ─── [ 11 letters: bservabilit        ] ─── y  ==>  o11y (Observability)
+  m ─── [ 17 letters: ultilingualizatio  ] ─── n  ==>  m17n (Multilingualization)
+  g ─── [ 11 letters: lobalizatio        ] ─── n  ==>  g11n (Globalization)
+  c ─── [ 10 letters: oncurrent_clients  ] ─── k  ==>  c10k (10,000 Concurrent Connections)
+```
+
+- **i18n** — Internationalization (The engineering plumbing/infrastructure enabling software to speak any language without a rewrite).
+- **a11y** — Accessibility (Designing digital interfaces usable by people of all physical and cognitive abilities).
+- **l10n** — Localization (The regional data/translations that flow through the i18n plumbing: languages, dates, currencies).
+- **k8s** — Kubernetes (Container orchestration platform).
+- **o11y** — Observability (Metrics, logs, and traces to understand system internal state).
+- **m17n** — Multilingualization (Engineering systems to handle multiple languages and scripts simultaneously).
+- **g11n** — Globalization (The combined business and technical discipline of i18n + l10n to enter global markets).
+- **c10k** — Concurrent 10,000 connections (The web server architectural scalability benchmark).

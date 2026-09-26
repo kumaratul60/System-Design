@@ -299,6 +299,21 @@ export const focusStack = new FocusHistoryManager();
 
 ### Modal Trapping Lifecycle Checklist:
 
+> **"React won't move focus for you. You have to."**
+> **"Open, trap, return. Three lines of intent, every dialog."**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 The 3 Lines of Intent for Every Dialog                      │
+├───────────────────┬─────────────────────────────────────────────────────────┤
+│ 1. On open        │ Move focus INTO the dialog (Heading or Cancel button).  │
+├───────────────────┼─────────────────────────────────────────────────────────┤
+│ 2. While open     │ Trap Tab inside — it must not escape (Tab, Shift+Tab).  │
+├───────────────────┼─────────────────────────────────────────────────────────┤
+│ 3. On close       │ Return focus to whatever opened it (Focus restoration). │
+└───────────────────┴─────────────────────────────────────────────────────────┘
+```
+
 1. **Save Trigger:** `focusStack.pushCurrentFocus()`.
 2. **Isolate Background:** Set `inert` attribute on `#app-shell`.
 3. **Safety-First Initial Focus:** Focus the **Cancel** button (or the dialog heading `<h2 tabindex="-1">`) so pressing <kbd>Space</kbd>/<kbd>Enter</kbd> doesn't accidentally trigger a destructive "Delete" action.
@@ -347,7 +362,72 @@ export function RouteFocusManager({ pageTitle }: { pageTitle: string }) {
 
 ---
 
-## 10. Interactive Testbeds in Repository
+## 10. The Best Fix Isn't a Library — It's a Design-System Decision
+
+> **"Leave the choice open and the inaccessible option keeps getting picked."**
+> **"Put the toolkit behind your own components — one import path, always correct as source of truth."**
+
+Some components are genuinely hard to get right alone (Modals, Comboboxes, Date pickers, Dropdown menus). Headless primitives (**Radix UI**, **shadcn/ui**, **React Aria**, **Ariakit**) solve keyboard navigation, focus trapping, ARIA wiring, and typeahead out of the box.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       The Two Engineering Realities                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ❌ WITHOUT A DESIGN SYSTEM WRAPPER:                                         │
+│   Dev A  ───▶ Accessible primitive (Radix UI)                               │
+│   Dev B  ───▶ Accessible primitive (Ariakit)                                │
+│   Dev C  ───▶ A quick <div onClick> (ships in 5 minutes!)                   │
+│   👉 Result: Inaccessible shortcuts continually leak into production.       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ✅ WITH AN ENTERPRISE DESIGN SYSTEM WRAPPER:                                │
+│   Dev A, Dev B, Dev C  ───▶ import { Modal, Button } from '@/components/ui' │
+│                              (Radix / React Aria lives INSIDE here)         │
+│                              └──▶ Accessible by default (the ONLY version)  │
+│   👉 Result: You remove the inaccessible option before anyone can reach it. │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### ESLint Import Enforcement (`no-restricted-imports`)
+
+Enforce the single import path across your organization so developers cannot import raw headless primitives or bypass design system guardrails:
+
+```json
+{
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@radix-ui/react-dialog",
+            "message": "Please import <Modal /> from '@/components/ui' to ensure design system accessibility compliance."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 11. "Bake It Into Your Tooling, Not Your Memory"
+
+```
+// Avatar.jsx
+<div onClick={open}>
+  <img src={avatar} />
+</div>
+```
+
+Automatically blocked by `eslint-plugin-jsx-a11y`:
+
+- 🚨 `jsx-a11y/no-static-element-interactions`: click handler on a non-interactive element
+- 🚨 `jsx-a11y/alt-text`: img elements must have an alt prop
+
+---
+
+## 12. Interactive Testbeds in Repository
 
 To test these focus management patterns in live, zero-dependency browser testbeds with real-time event HUDs:
 
