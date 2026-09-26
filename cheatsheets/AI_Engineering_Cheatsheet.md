@@ -215,9 +215,9 @@ A traditional web interface relies heavily on mouse precision, visual scanning, 
 
 ```mermaid
 flowchart TD
-    User([User with Disabilities]) <-->|Voice / Natural Language / Keyboard| Bot["<b>AI Accessibility Copilot</b><br/>(DOM-Aware & Action-Equipped)"]
-    Bot <-->|Read / Inspect| DOM["<b>Accessibility Tree & Live DOM</b><br/>ARIA States, Forms, Data Tables"]
-    Bot <-->|Execute Action| Actions["<b>Website Automation Engine</b><br/>Form Autofill, Filter Apply, Navigation, Checkout"]
+    User(["User with Disabilities"]) <-->|"Voice / Text / Keyboard"| Bot["<b>AI Accessibility Copilot</b><br/>(DOM-Aware & Action-Equipped)"]
+    Bot <-->|"Read / Inspect"| DOM["<b>Accessibility Tree & Live DOM</b><br/>ARIA States, Forms, Data Tables"]
+    Bot <-->|"Execute Action"| Actions["<b>Website Automation Engine</b><br/>Form Autofill, Filter Apply, Navigation, Checkout"]
 ```
 
 ---
@@ -439,13 +439,13 @@ The **Context Window** is the maximum sequence length (tokens) that an LLM can a
 An **Embedding** is a mathematical translation of text into a high-dimensional vector space (e.g., 768 to 3072 dimensions) where semantic similarity corresponds to geometric proximity:
 
 ```mermaid
-graph LR
+flowchart LR
     TextA["'King'"] --> VectorA["[0.82, -0.14, 0.95, ...]"]
     TextB["'Queen'"] --> VectorB["[0.80, -0.12, 0.91, ...]"]
     TextC["'Banana'"] --> VectorC["[-0.45, 0.62, -0.11, ...]"]
 
-    VectorA -.->|High Cosine Similarity (0.92)| VectorB
-    VectorA -.->|Low Similarity (0.12)| VectorC
+    VectorA -.->|"High Cosine Similarity: 0.92"| VectorB
+    VectorA -.->|"Low Similarity: 0.12"| VectorC
 ```
 
 #### Similarity Metrics:
@@ -605,12 +605,12 @@ An **AI Agent** is an LLM wrapped in a stateful control loop that autonomously e
 
 ```mermaid
 flowchart TD
-    Start([User Goal]) --> Plan[1. Plan & Reason]
-    Plan --> Action[2. Select & Execute Tool]
-    Action --> Observe[3. Observe Tool Output]
-    Observe --> Reflect{4. Goal Achieved?}
-    Reflect -->|No: Error or Intermediate Step| Plan
-    Reflect -->|Yes| Done([Deliver Final Result])
+    Start(["User Goal"]) --> Plan["1. Plan & Reason"]
+    Plan --> Action["2. Select & Execute Tool"]
+    Action --> Observe["3. Observe Tool Output"]
+    Observe --> Reflect{"4. Goal Achieved?"}
+    Reflect -->|"No: Error or Next Step"| Plan
+    Reflect -->|"Yes: Success"| Done(["Deliver Final Result"])
 ```
 
 ---

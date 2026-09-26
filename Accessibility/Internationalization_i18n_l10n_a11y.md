@@ -177,8 +177,8 @@ Hand-rolling number/currency formats using regex (`num.toString().replace(/\B(?=
 ### Global Formatting Matrix: `en-US` vs `de-DE` vs `ja-JP` vs `ar-EG`
 
 ```mermaid
-graph TD
-    Raw[Raw Value: Number, Date, Currency] --> IntlEngine[Browser Intl.* Engine]
+flowchart TD
+    Raw["Raw Value: Number, Date, Currency"] --> IntlEngine["Browser Intl.* Engine"]
     IntlEngine --> Locale_US["en-US: $19.99 | Dec 25, 2025 | 1,234,567.89 | 2:30 PM"]
     IntlEngine --> Locale_DE["de-DE: 19,99 € | 25. Dez. 2025 | 1.234.567,89 | 14:30"]
     IntlEngine --> Locale_JP["ja-JP: 19.99 € | 2025年12月25日 | 1,234,567.89 | 14:30"]
@@ -352,10 +352,10 @@ When a screen reader (Apple VoiceOver, NVDA, JAWS, Google TalkBack) encounters D
 
 ```mermaid
 sequenceDiagram
-    participant DOM as HTML DOM / AccTree
-    participant Browser as Browser Engine
-    participant SR as Screen Reader (VoiceOver/NVDA)
-    participant TTS as OS Speech Synthesizer
+    participant DOM as "HTML DOM / AccTree"
+    participant Browser as "Browser Engine"
+    participant SR as "Screen Reader (VoiceOver/NVDA)"
+    participant TTS as "OS Speech Synthesizer"
 
     DOM->>Browser: Element with lang="ja"
     Browser->>SR: AccTree Node (Text: "こんにちは", Language: "ja-JP")
@@ -780,9 +780,9 @@ Introducing an AI-powered conversational copilot directly onto a web application
 
 ```mermaid
 flowchart TD
-    User([User with Disabilities]) <-->|Voice / Text / Shortcut| Copilot["<b>AI Accessibility Copilot</b><br/>(Natural Language Interface)"]
-    Copilot <-->|Inspect & Query| Tree["<b>Live DOM & Accessibility Tree</b><br/>States, Roles, Focus, Form Fields"]
-    Copilot <-->|Trigger Actions| Actions["<b>Site Action Dispatcher</b><br/>Autofill, Table Summarization, Navigation, Checkout"]
+    User(["User with Disabilities"]) <-->|"Voice / Text / Shortcut"| Copilot["<b>AI Accessibility Copilot</b><br/>(Natural Language Interface)"]
+    Copilot <-->|"Inspect & Query"| Tree["<b>Live DOM & Accessibility Tree</b><br/>States, Roles, Focus, Form Fields"]
+    Copilot <-->|"Trigger Actions"| Actions["<b>Site Action Dispatcher</b><br/>Autofill, Table Summarization, Navigation, Checkout"]
 ```
 
 ### The 5 High-Impact AI Accessibility Capabilities:

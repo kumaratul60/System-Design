@@ -128,9 +128,9 @@ V8 divides the heap into two generations based on the **Generational Hypothesis*
 ```mermaid
 flowchart LR
     A["New Object Allocated"] --> B["<b>Young Generation</b><br/>(1-64 MB Nursery)<br/>Minor GC (Scavenge)"]
-    B -->|Survives 2 GC cycles| C["<b>Old Generation</b><br/>(Long-lived objects)<br/>Major GC (Mark-Sweep-Compact)"]
-    B -->|Dead / Unreferenced| D["Freed Instantly (Fast)"]
-    C -->|Unreachable Root| E["Collected during Major GC"]
+    B -->|"Survives 2 GC cycles"| C["<b>Old Generation</b><br/>(Long-lived objects)<br/>Major GC (Mark-Sweep-Compact)"]
+    B -->|"Dead / Unreferenced"| D["Freed Instantly (Fast)"]
+    C -->|"Unreachable Root"| E["Collected during Major GC"]
 ```
 
 1. **Minor GC (Scavenge):** Extremely fast (1–3ms). Divides Young Generation into `From-Space` and `To-Space`. Copies alive objects and flips spaces.
@@ -174,9 +174,9 @@ JavaScript is single-threaded, but the browser runtime provides non-blocking con
 ```mermaid
 flowchart TD
     Stack["1. Call Stack<br/>(Synchronous execution until empty)"] --> Micro["2. Microtask Queue<br/>(Promise.then, queueMicrotask, MutationObserver)"]
-    Micro -->|Drain ALL microtasks| CheckRender{"3. Need UI Render?<br/>(60/120 Hz frame boundary)"}
-    CheckRender -->|Yes| RAF["4. requestAnimationFrame & Render<br/>(Recalculate Style, Layout, Paint, Composite)"]
-    CheckRender -->|No| Macro["5. Pick ONE Macrotask<br/>(setTimeout, setInterval, I/O, MessageChannel)"]
+    Micro -->|"Drain ALL microtasks"| CheckRender{"3. Need UI Render?<br/>(60/120 Hz frame boundary)"}
+    CheckRender -->|"Yes"| RAF["4. requestAnimationFrame & Render<br/>(Recalculate Style, Layout, Paint, Composite)"]
+    CheckRender -->|"No"| Macro["5. Pick ONE Macrotask<br/>(setTimeout, setInterval, I/O, MessageChannel)"]
     RAF --> Macro
     Macro --> Stack
 ```
