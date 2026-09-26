@@ -67,7 +67,12 @@ flowchart LR
       - [5. Conversational Form Autofill \& Error Recovery](#5-conversational-form-autofill--error-recovery)
     - [Building a Fully Accessible AI Chatbot Widget (WCAG AAA Checklist)](#building-a-fully-accessible-ai-chatbot-widget-wcag-aaa-checklist)
   - [3. The AI-Native Software Development Lifecycle (SDLC)](#3-the-ai-native-software-development-lifecycle-sdlc)
-    - [End-to-End AI-Native Engineering Workflow](#end-to-end-ai-native-engineering-workflow)
+    - [1. Architecture Decision Records (ADRs)](#1-architecture-decision-records-adrs)
+    - [2. Intent-Driven Development (IDD) \& Technical Implementation Documents](#2-intent-driven-development-idd--technical-implementation-documents)
+    - [3. Spec-First TDD \& BDD: Catching Missing Edge Cases Before Code](#3-spec-first-tdd--bdd-catching-missing-edge-cases-before-code)
+      - [A. TDD (Test-Driven Development) — Red $\\to$ Green $\\to$ Refactor](#a-tdd-test-driven-development--red-to-green-to-refactor)
+      - [B. BDD (Behavior-Driven Development) — Gherkin Acceptance Scenarios](#b-bdd-behavior-driven-development--gherkin-acceptance-scenarios)
+    - [The Edge-Case Discovery Matrix (What to Test Before Implementation)](#the-edge-case-discovery-matrix-what-to-test-before-implementation)
   - [4. LLM Core Internals: Tokens, Chunking \& Context Windows](#4-llm-core-internals-tokens-chunking--context-windows)
     - [What are Tokens? (Tokenization \& Economics)](#what-are-tokens-tokenization--economics)
       - [The Golden Token Rules:](#the-golden-token-rules)
@@ -334,30 +339,190 @@ export function AccessibleAIChatbot() {
 
 ## 3. The AI-Native Software Development Lifecycle (SDLC)
 
-### End-to-End AI-Native Engineering Workflow
+```mermaid
+flowchart TD
+    PRD["<b>1. PRD & Edge-Case Discovery</b><br/>User journeys, functional constraints, non-goals"] --> ADR["<b>2. Architecture Decision Record (ADR)</b><br/>Tradeoff analysis, technology choice, consequences"]
+    ADR --> Spec["<b>3. Intent-Driven Development (IDD) & Specs</b><br/>Technical implementation doc, state machines, API contracts"]
+    Spec --> TDD["<b>4. Spec-First TDD & BDD Test Suites</b><br/>Failing unit, integration & Gherkin scenarios before code"]
+    TDD --> DDL["<b>5. DB Schema & API Contracts</b><br/>PostgreSQL DDL, OpenAPI, Zod validation schemas"]
+    DDL --> Code["<b>6. Implementation & Code Generation</b><br/>Agent writes code strictly constrained to pass TDD tests"]
+    Code --> CI["<b>7. Automated Verification & Evals</b><br/>Axe a11y checks, RAGAS evals, security linting, Canary rollout"]
+```
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                       The Spec-First AI-Native Engineering Pipeline                         │
+├──────┬──────────────────────┬───────────────────────────────────────────────────────────────┤
+│ Step │ SDLC Phase           │ Core Deliverable & AI Superpower                              │
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 01   │ **Ideation & PRD**   │ User stories, acceptance criteria, edge-case discovery matrix.│
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 02   │ **ADR Finalization** │ Architectural Decision Record comparing tradeoffs & risks.   │
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 03   │ **Technical Specs**  │ Intent-Driven Development (IDD) implementation document.      │
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 04   │ **Spec-First TDD/BDD**│ Writing failing tests & Gherkin acceptance journeys FIRST.    │
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 05   │ **DB & API Schema**  │ PostgreSQL DDL, OpenAPI specifications, and Zod contracts.    │
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 06   │ **UI / UX Scaffold** │ Accessible component trees (Radix + Tailwind behind DS).      │
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 07   │ **Implementation**   │ Agent builds implementation code to satisfy failing TDD tests.│
+├──────┼──────────────────────┼───────────────────────────────────────────────────────────────┤
+│ 08   │ **Verification & CI**│ Playwright E2E, axe-core a11y gates, and canary deployments.   │
+└──────┴──────────────────────┴───────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 1. Architecture Decision Records (ADRs)
+
+An **ADR (Architecture Decision Record)** captures a critical architectural choice, its business/technical context, and its positive and negative consequences **before code is written**.
+
+> **Why ADRs are mandatory in AI-Native Engineering:**
+> AI coding agents hallucinate or rewrite architectural layers when boundaries are ambiguous. An ADR provides an **immutable decision anchor** that prevents prompt drift.
+
+```markdown
+# ADR-004: Adopting Server-Sent Events (SSE) over WebSockets for AI Streaming
+
+## Status
+
+Accepted
+
+## Context
+
+Our dashboard requires streaming real-time token outputs from LLM reasoning loops.
+We evaluated WebSockets vs Server-Sent Events (SSE).
+
+## Decision
+
+We will use **Server-Sent Events (SSE)** over HTTP/2 with an NDJSON streaming payload.
+
+## Consequences
+
+### Positive
+
+- Built-in browser reconnection handling via `EventSource`.
+- Works effortlessly through enterprise firewalls, HTTP proxies, and HTTP/2 multiplexing.
+- Simpler backend architecture (unidirectional HTTP stream vs stateful TCP socket management).
+
+### Negative / Tradeoffs
+
+- Unidirectional only (client-to-server messages must use standard HTTP POST).
+- Max 6 concurrent connections limit on legacy HTTP/1.1 (mitigated by HTTP/2).
+```
+
+---
+
+### 2. Intent-Driven Development (IDD) & Technical Implementation Documents
+
+Once the ADR is accepted, engineers draft the **Technical Specification & Implementation Plan (`SPEC.md`)**.
+
+**Intent-Driven Development (IDD)** focuses on explicitly defining the _system's intended behavior, state transitions, and error modes_ before generating implementation code:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                 The 8-Stage AI-Native Engineering Pipeline                  │
-├──────┬──────────────────────┬───────────────────────────────────────────────┤
-│ Step │ SDLC Phase           │ AI-Assisted Action                            │
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 01   │ **Ideation**         │ Brainstorming product features & edge cases.  │
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 02   │ **PRD Generation**   │ Drafting comprehensive PRDs & user stories.   │
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 03   │ **System Design**    │ Architectural diagrams, C4 models, tradeoffs. │
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 04   │ **DB & API Specs**   │ Generating SQL schemas, OpenAPI & Zod types.  │
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 05   │ **UI / UX Scaffold** │ Accessible component trees (Radix + Tailwind).│
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 06   │ **Auth & RBAC**      │ JWT, session handling & permission guards.    │
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 07   │ **Async Workflows**  │ BullMQ background jobs, email sending pipelines│
-├──────┼──────────────────────┼───────────────────────────────────────────────┤
-│ 08   │ **Deployment & CI**  │ Dockerfiles, GitHub Actions, & Canary rollouts│
-└──────┴──────────────────────┴───────────────────────────────────────────────┘
+│                    Technical Implementation Spec Anatomy                    │
+├───────────────────────┬─────────────────────────────────────────────────────┤
+│ 1. Core Intent        │ Exact user problem and system goals.                │
+├───────────────────────┼─────────────────────────────────────────────────────┤
+│ 2. State Machine      │ All valid UI/Server states (Idle, Loading, Error...)│
+├───────────────────────┼─────────────────────────────────────────────────────┤
+│ 3. API Contract       │ Exact request/response schemas with Zod validation. │
+├───────────────────────┼─────────────────────────────────────────────────────┤
+│ 4. Failure Modes      │ How system recovers from 401, 429, 500, & timeouts. │
+├───────────────────────┼─────────────────────────────────────────────────────┤
+│ 5. Edge-Case Matrix   │ Empty arrays, 0 items, unicode text, 100k items.    │
+└───────────────────────┴─────────────────────────────────────────────────────┘
+```
+
+---
+
+### 3. Spec-First TDD & BDD: Catching Missing Edge Cases Before Code
+
+> **The Golden Law of AI Engineering:**
+> **"Never ask an AI to write code without a failing test suite to constrain it."**
+
+Writing tests _before_ implementation code (TDD / BDD) prevents subtle edge-case bugs and ensures the AI agent stops coding the moment all assertions turn green.
+
+#### A. TDD (Test-Driven Development) — Red $\to$ Green $\to$ Refactor
+
+```typescript
+// checkout.service.test.ts (Written BEFORE checkout.service.ts)
+import { describe, it, expect } from 'vitest';
+import { calculateOrderTotal } from './checkout.service';
+
+describe('calculateOrderTotal (TDD Suite)', () => {
+  it('correctly calculates subtotal with 10% tax', () => {
+    const result = calculateOrderTotal({ items: [{ price: 100, qty: 2 }], taxRate: 0.1 });
+    expect(result.total).toBe(220);
+  });
+
+  // 🛡️ Edge Cases generated from Tech Spec
+  it('throws an error if item quantity is zero or negative', () => {
+    expect(() => calculateOrderTotal({ items: [{ price: 50, qty: 0 }], taxRate: 0.1 })).toThrow(
+      'Quantity must be greater than zero',
+    );
+  });
+
+  it('prevents floating-point rounding errors (e.g. 0.1 + 0.2)', () => {
+    const result = calculateOrderTotal({
+      items: [
+        { price: 0.1, qty: 1 },
+        { price: 0.2, qty: 1 },
+      ],
+      taxRate: 0,
+    });
+    expect(result.total).toBe(0.3); // Safe decimal math
+  });
+
+  it('handles empty item array with 0 total without throwing', () => {
+    const result = calculateOrderTotal({ items: [], taxRate: 0.1 });
+    expect(result.total).toBe(0);
+  });
+});
+```
+
+---
+
+#### B. BDD (Behavior-Driven Development) — Gherkin Acceptance Scenarios
+
+**BDD** expresses user journeys in human-readable `Given-When-Then` acceptance criteria that business analysts, developers, and AI agents share:
+
+```gherkin
+Feature: Multilingual Checkout Flow
+
+  Scenario: Arabic user checks out with RTL currency formatting
+    Given the user has selected locale "ar-EG"
+    And the user has 1 item priced at 100 EGP in their cart
+    When the user navigates to the checkout page
+    Then the document direction must be "rtl"
+    And the total amount displayed must match "١٠٠٫٠٠ ج.م."
+    And the primary action button must say "ادفع الآن"
+```
+
+---
+
+### The Edge-Case Discovery Matrix (What to Test Before Implementation)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Edge-Case Discovery Matrix                         │
+├─────────────────────┬───────────────────────────────────────────────────────┤
+│ Category            │ Concrete Edge Cases to Specify in TDD/BDD             │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Boundary Values** │ 0 items, 1 item (singular plural), 10,000 items, max  │
+│                     │ integer overflow ($2^{53}-1$), negative prices.       │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Network Chaos**   │ 10s latency timeout, 429 Rate Limit, 503 Service      │
+│                     │ Unavailable, dropped TCP packet during streaming.     │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Input Mutation**  │ SQL injection payloads (`' OR 1=1`), XSS `<script>`,  │
+│                     │ multi-byte UTF-8 emojis (`👨‍👩‍👧‍👦`), right-to-left Arabic. │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Concurrency**     │ Rapid double-clicking checkout button, token expiry   │
+│                     │ mid-request, out-of-order WebSocket response delivery.│
+└─────────────────────┴───────────────────────────────────────────────────────┘
 ```
 
 ---
