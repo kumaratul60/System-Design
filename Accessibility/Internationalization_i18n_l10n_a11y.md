@@ -131,7 +131,7 @@ flowchart LR
     - [Q1: How do you architect a high-scale design system that supports 40+ locales (including RTL) and WCAG 2.2 Level AA compliance?](#q1-how-do-you-architect-a-high-scale-design-system-that-supports-40-locales-including-rtl-and-wcag-22-level-aa-compliance)
     - [Q2: Why does `aria-label="Welcome"` fail a Spanish or Arabic screen reader user even if Google Translate is active on the page?](#q2-why-does-aria-labelwelcome-fail-a-spanish-or-arabic-screen-reader-user-even-if-google-translate-is-active-on-the-page)
     - [Q3: Scenario: A user opens your web app in Tokyo. Describe the network request waterfall for internationalization assets and how English fallback is maintained.](#q3-scenario-a-user-opens-your-web-app-in-tokyo-describe-the-network-request-waterfall-for-internationalization-assets-and-how-english-fallback-is-maintained)
-  - [10. A Solid Default for Any React Project in 2026](#10-a-solid-default-for-any-react-project-in-2026)
+  - [10. A Solid Default for Modern React Projects](#10-a-solid-default-for-modern-react-projects)
   - [11. Let's Land the Plane: Executive Architecture Cheatsheet](#11-lets-land-the-plane-executive-architecture-cheatsheet)
 
 ---
@@ -888,13 +888,13 @@ Client-side DOM translation engines (like Google Chrome Translation) often trans
 
 ---
 
-## 10. A Solid Default for Any React Project in 2026
+## 10. A Solid Default for Modern React Projects
 
 > **"Same work. Wildly different price."**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                   The 2026 Enterprise Frontend Blueprint                    │
+│                   The Modern Enterprise Frontend Blueprint                  │
 ├───────────────────────┬─────────────────────────────────────────────────────┤
 │ 🌍 Translations       │ `react-i18next` · `next-intl`                       │
 ├───────────────────────┼─────────────────────────────────────────────────────┤
