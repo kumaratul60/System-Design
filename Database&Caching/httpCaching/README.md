@@ -239,8 +239,8 @@ graph TD
     C --> G{"Is Cache Stale?"}
     E --> G
 
-    G -->|No (Fresh)| H["Serve from Cache (200 OK from Cache)"]
-    G -->|Yes (Stale)| I{"P2 Check: Are Validation Headers Present?"}
+    G -->|"No (Fresh)"| H["Serve from Cache (200 OK from Cache)"]
+    G -->|"Yes (Stale)"| I{"P2 Check: Are Validation Headers Present?"}
 
     I -->|Yes| J["Send Conditional Request: If-None-Match (ETag) or If-Modified-Since (Last-Modified)"]
     I -->|No| K["Fetch Fresh Copy from Server (200 OK)"]

@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: X (Twitter) Trends & Hybrid Timeline System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Real-time trending topic detection engine (Count-Min Sketch + Sliding Window Velocity) & hybrid push/pull timeline feed serving 100M DAU with 500M daily tweets.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Real-time trending topic detection engine (Count-Min Sketch + Sliding Window Velocity) & hybrid push/pull timeline feed serving 100M DAU with 500M daily tweets.
 > **Navigation:** ⬅️ [Back to Social & Content Platforms Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -18,7 +18,7 @@
 
 ### ⚡ Non-Functional Requirements (NFR)
 
-1. **Low Read Latency:** 
+1. **Low Read Latency:**
    - Trending Topics API $P_{99} < 30\text{ ms}$.
    - Home Timeline Feed API $P_{99} < 50\text{ ms}$.
 2. **High Availability & Fault Tolerance:** $99.99\%$ uptime ($< 52.5\text{ mins}$ downtime/year) with graceful degradation under traffic surges.
@@ -49,7 +49,7 @@
      * Peak Event Processing QPS: ~50,000 events/sec
 
 2. STORAGE ESTIMATES (5 Years):
-   - Tweet Payload Size: 
+   - Tweet Payload Size:
      * Tweet ID (8B) + User ID (8B) + Content (280 chars ~ 300B) + Metadata (100B) = ~500 Bytes
    - Daily Tweet Data Volume: 500M * 500 Bytes = 250 GB / day
    - 5-Year Persistent Storage (Raw Tweets): 250 GB * 365 * 5 = ~456.25 TB (Stored in Cassandra/ScyllaDB)
@@ -78,15 +78,15 @@
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale & Trade-offs |
-| :--- | :--- | :--- |
-| **API & Edge Layer** | Envoy Proxy + API Gateway (Go/Rust) | Sub-millisecond SSL termination, gRPC-Web proxying, global rate-limiting (Token Bucket), and route protection against DDoS. |
-| **Event Stream Buffer** | Apache Kafka | Distributed partition-based append log providing durable, ordered event queues. Handles 50,000+ peak event writes/sec with multi-subscriber decoupling. |
-| **Stream Processing Engine** | Custom Node.js/TypeScript Worker or Apache Flink | Executes continuous windowed aggregations, sliding time-decay computations, and updating probabilistic structures. |
-| **In-Memory Cache & Leaderboard** | Redis Cluster (ZSET) | Stores pre-computed trending topics leaderboard keyed by score (`ZADD`/`ZREVRANGE`). Also holds hot push-fanout timelines. |
-| **Probabilistic Data Structure** | Count-Min Sketch + Heavy Hitters Min-Heap | Bounded memory ($O(1)$ space) frequency estimation for unbounded streaming data, eliminating heavy DB queries or giant hashtables. |
-| **Primary Persistent Storage** | Apache Cassandra / ScyllaDB | Masterless wide-column distributed NoSQL DB. Optimized for append-heavy write workloads ($25\text{k QPS}$) with tunable consistency (`LOCAL_QUORUM`). |
-| **Celebrity Outbox & Metadata** | PostgreSQL (Sharded with Citus) | Strict ACID compliance for User Profiles, Follower Graph edges, and Celebrity Tweet Outboxes with indexing. |
+| Component                         | Technology Choice                                | Architectural Rationale & Trade-offs                                                                                                                    |
+| :-------------------------------- | :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **API & Edge Layer**              | Envoy Proxy + API Gateway (Go/Rust)              | Sub-millisecond SSL termination, gRPC-Web proxying, global rate-limiting (Token Bucket), and route protection against DDoS.                             |
+| **Event Stream Buffer**           | Apache Kafka                                     | Distributed partition-based append log providing durable, ordered event queues. Handles 50,000+ peak event writes/sec with multi-subscriber decoupling. |
+| **Stream Processing Engine**      | Custom Node.js/TypeScript Worker or Apache Flink | Executes continuous windowed aggregations, sliding time-decay computations, and updating probabilistic structures.                                      |
+| **In-Memory Cache & Leaderboard** | Redis Cluster (ZSET)                             | Stores pre-computed trending topics leaderboard keyed by score (`ZADD`/`ZREVRANGE`). Also holds hot push-fanout timelines.                              |
+| **Probabilistic Data Structure**  | Count-Min Sketch + Heavy Hitters Min-Heap        | Bounded memory ($O(1)$ space) frequency estimation for unbounded streaming data, eliminating heavy DB queries or giant hashtables.                      |
+| **Primary Persistent Storage**    | Apache Cassandra / ScyllaDB                      | Masterless wide-column distributed NoSQL DB. Optimized for append-heavy write workloads ($25\text{k QPS}$) with tunable consistency (`LOCAL_QUORUM`).   |
+| **Celebrity Outbox & Metadata**   | PostgreSQL (Sharded with Citus)                  | Strict ACID compliance for User Profiles, Follower Graph edges, and Celebrity Tweet Outboxes with indexing.                                             |
 
 ---
 
@@ -201,7 +201,7 @@ sequenceDiagram
     TrendWorker->>CMS: increment("#earthquake", count=1)
     CMS->>CMS: Hash key using d=7 functions & increment cell values
     CMS-->>TrendWorker: Estimated count = 1,420
-    
+
     TrendWorker->>CMS: offer("#earthquake", count=1420) into Min-Heap
     TrendWorker->>TrendWorker: Compute Velocity Score (z-score ratio against 1h baseline)
     TrendWorker->>Redis: ZADD trends:global score=VelocityScore member="#earthquake"
@@ -224,7 +224,7 @@ sequenceDiagram
 
     Reader->>GW: GET /v1/timeline/home?limit=20
     GW->>FeedSvc: getHomeFeed(userId)
-    
+
     par Fetch Standard Pushed Feed
         FeedSvc->>Redis: ZREVRANGE timeline:user:{userId} 0 800
         Redis-->>FeedSvc: List of Tweet IDs [T1, T2, T5, ...]
@@ -286,7 +286,7 @@ graph TB
     Mobile --> Envoy
     Envoy --> RL
     Envoy --> Kafka
-    
+
     Kafka --> TopicTweets
     TopicTweets --> Flink
     TopicTweets --> FanoutWorker
@@ -297,8 +297,8 @@ graph TB
     VelCalc -->|ZADD Score| RedisCluster
 
     FanoutWorker --> CelebrityGuard
-    CelebrityGuard -->|< 10k Followers (Push)| RedisCluster
-    CelebrityGuard -->|> 10k Followers (Pull Outbox)| Cassandra
+    CelebrityGuard -->|"< 10k Followers (Push)"| RedisCluster
+    CelebrityGuard -->|"> 10k Followers (Pull Outbox)"| Cassandra
     FanoutWorker --> UserGraph
 
     Envoy -->|Fetch Home Feed| RedisCluster
@@ -357,7 +357,7 @@ export class CountMinSketch {
     this.width = Math.ceil(Math.E / epsilon);
     this.depth = Math.ceil(Math.log(1 / delta));
     this.table = Array.from({ length: this.depth }, () => new Uint32Array(this.width));
-    
+
     // Generate distinct hash seeds for independent Murmur/FNV hash variants
     this.hashSeeds = Array.from({ length: this.depth }, (_, i) => (i + 1) * 0x9e3779b9);
   }
@@ -380,7 +380,7 @@ export class CountMinSketch {
   public increment(item: string, count: number = 1): void {
     const key = item.toLowerCase();
     const currentMin = this.estimate(key);
-    
+
     for (let i = 0; i < this.depth; i++) {
       const col = this.hash(key, this.hashSeeds[i]);
       // Conservative Update Rule: Only increment counters that match the minimum current estimate
@@ -530,7 +530,7 @@ export class RealtimeTrendEngine {
     for (const tag of hashtags) {
       const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
       this.currentSketch.increment(cleanTag);
-      
+
       const currentFreq = this.currentSketch.estimate(cleanTag);
       const baselineFreq = this.baselineSketch.estimate(cleanTag);
       const velocityScore = this.scorer.calculateZScoreVelocity(currentFreq, baselineFreq);
@@ -597,12 +597,7 @@ export class PullFanoutStrategy implements IFanoutStrategy {
       INSERT INTO celebrity_outbox (author_id, tweet_id, content, created_at)
       VALUES (?, ?, ?, ?)
     `;
-    await this.cassandraDb.execute(query, [
-      tweet.authorId,
-      tweet.tweetId,
-      tweet.content,
-      new Date(tweet.timestamp),
-    ]);
+    await this.cassandraDb.execute(query, [tweet.authorId, tweet.tweetId, tweet.content, new Date(tweet.timestamp)]);
   }
 }
 
@@ -614,7 +609,7 @@ export class HybridFanoutManager {
     private pullStrategy: PullFanoutStrategy,
     private userGraphService: any,
     private redisClient: any,
-    private cassandraDb: any
+    private cassandraDb: any,
   ) {}
 
   public async dispatchTweet(tweet: TweetPayload, author: UserProfile): Promise<void> {
@@ -677,6 +672,7 @@ export class HybridFanoutManager {
 ## 8. 🏗️ High-Level Design (HLD) & Scale Bottlenecks Deep Dive
 
 ### 1️⃣ Celebrity Fan-out Protection ("The Justin Bieber Problem")
+
 - **The Bottleneck:** When an account with $100\text{ Million followers}$ posts a tweet, executing a naive push fan-out requires $100\text{ Million Redis writes}$. At $50\text{k QPS}$, a single celebrity tweet locks/saturates Redis nodes for minutes, causing severe cascading queue backpressure.
 - **Architectural Solution (Hybrid Push/Pull Model):**
   - **Dynamic Thresholding:** Accounts with $> 10,000\text{ followers}$ are flagged as `isCelebrity = true`.
@@ -698,6 +694,7 @@ export class HybridFanoutManager {
 ---
 
 ### 2️⃣ Count-Min Sketch Accuracy & Frequency Overestimation
+
 - **The Bottleneck:** Probabilistic hashing in Count-Min Sketch can lead to hash collisions between unrelated tags (e.g., `#IPL2026` colliding with `#Crypto`), artificially inflating estimates for lower-frequency tags.
 - **Architectural Solution:**
   - **Conservative Update Rule:** When incrementing counters across $d=7$ rows, estimate the current minimum value $M = \min_{i} T[i][h_i(x)]$. Only increment table cells where $T[i][h_i(x)] == M$. This reduces overestimation error by up to $80\%$.
@@ -706,17 +703,19 @@ export class HybridFanoutManager {
 ---
 
 ### 3️⃣ Real-Time Velocity vs Absolute Volume (Surge Detection Algorithm)
+
 - **The Bottleneck:** Raw count algorithms cause static high-volume tags (e.g., `#GoodMorning`, `#Cricket`) to permanently lock out breaking news topics (e.g., `#Earthquake`, `#SuperBowl`).
 - **Architectural Solution (Z-Score Acceleration Score):**
   - Compute a rolling velocity score comparing current window frequency ($F_{\text{current}}$, $5\text{ mins}$) against an exponential moving average historical baseline ($F_{\text{baseline}}$, $1\text{ hour}$):
 
 $$S = \frac{F_{\text{current}} - F_{\text{baseline}}}{\sqrt{F_{\text{baseline}} + 1}} \cdot e^{-\lambda \Delta t}$$
 
-  - A sudden jump from $10$ to $5,000$ mentions yields a massive velocity score surge, outranking a static tag holding steady at $50,000$ mentions.
+- A sudden jump from $10$ to $5,000$ mentions yields a massive velocity score surge, outranking a static tag holding steady at $50,000$ mentions.
 
 ---
 
 ### 4️⃣ Anti-Gaming & Bot Prevention Engine
+
 - **The Bottleneck:** Malicious botnets spam targeted hashtags to artificially force topics onto global trends.
 - **Architectural Solution:**
   - **Unique Author Filtering:** Count-Min Sketch ingestion workers ignore duplicate tweets from the same `userId` for a given hashtag within a $15\text{-minute}$ window using a Redis Bloom Filter (`BF.ADD tag:user:{userId} {hashtag}`).
@@ -746,7 +745,7 @@ Transitioning a user from Standard (PUSH) to Celebrity (PULL) status is handled 
 
 1. **Hysteresis Thresholding:** To prevent rapid toggling for users hovering around $10,000$ followers, we use hysteresis bounds (Promote to Celebrity at $> 12,000$ followers; Demote to Standard at $< 8,000$ followers).
 2. **Async Profile Flag Update:** An Event Worker listens to `FOLLOWER_ADDED` events. When a user crosses $12,000$, it sets `user.is_celebrity = true` in PostgreSQL and invalidates the user's profile cache in Redis.
-3. **Graceful Timeline Migration:** 
+3. **Graceful Timeline Migration:**
    - New tweets immediately switch to writing to `celebrity_outbox` in Cassandra.
    - A background thread schedules purging of the author's previous tweets from followers' Redis timelines over a 24-hour window, while the Read Aggregator handles fallback deduplication by checking tweet IDs against both sources during feed fetching.
 

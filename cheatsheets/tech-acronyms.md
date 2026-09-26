@@ -261,6 +261,17 @@ Multi-Agent Systems (Distributed networks of collaborative specialists)
 - **Langflow** — A low-code visual builder UI for prototyping AI flows and converting them into production code/APIs in 1-click.
 - **LlamaIndex** — A data framework specialized for ingestion, hierarchical indexing, and advanced RAG query engines.
 - **DSPy** — A declarative programming framework that algorithmically optimizes (compiles) LLM prompts and weights.
+- **RL** — Reinforcement Learning (Agent, Environment, Action, State, Reward loop)
+- **RLHF** — Reinforcement Learning from Human Feedback (PPO optimization against Reward Models)
+- **DPO** — Direct Preference Optimization (Closed-form analytical loss without a separate reward model)
+- **RLAIF** — Reinforcement Learning from AI Feedback (Constitutional AI-driven alignment)
+- **GRPO** — Group Relative Policy Optimization (Verification-based policy optimization behind reasoning models)
+- **PEFT** — Parameter-Efficient Fine-Tuning (Adapting large models by tuning only a tiny fraction of parameters)
+- **LoRA** — Low-Rank Adaptation (Freezing base weights and injecting trainable low-rank rank decomposition matrices)
+- **QLoRA** — Quantized Low-Rank Adaptation (LoRA over 4-bit NormalFloat base weights for consumer GPU tuning)
+- **GraphRAG** — Knowledge Graph Augmented Retrieval (Extracting entities & hierarchical community summaries for global multi-hop reasoning)
+- **HITL** — Human-in-the-Loop (Interactive human review gates before executing destructive or high-risk agent actions)
+- **SWE-bench** — Software Engineering Benchmark (Autonomous agent benchmark solving real-world GitHub issues)
 - 📖 _For complete deep-dive architecture, see the [AI, GenAI & Agentic Systems Cheatsheet](AI_Engineering_Cheatsheet.md)._
 
 ---

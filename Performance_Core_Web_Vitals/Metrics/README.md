@@ -38,10 +38,10 @@ graph TD
         CLS[CLS: Cumulative Layout Shift]
     end
 
-    FCP -.-> |"Something is on screen"| User1(Perception: Started)
-    LCP -.-> |"Main content is loading/ready"| User2(Perception: Useful) | <=2.5s
-    INP -.-> |"Page is responsive"| User3(Perception: Usable) | <=200ms
-    CLS -.-> |"Page is visually stable"| User4(Perception: Smooth) | <=0.1s
+    FCP -.-> |"Something is on screen"| User1["Perception: Started"]
+    LCP -.-> |"Main content is ready (<=2.5s)"| User2["Perception: Useful"]
+    INP -.-> |"Page is responsive (<=200ms)"| User3["Perception: Usable"]
+    CLS -.-> |"Page is visually stable (<=0.1)"| User4["Perception: Smooth"]
 ```
 
 ---

@@ -56,7 +56,11 @@ flowchart LR
     - [Does ChatGPT Know or Does It Guess? (Sampling Math \& Hallucinations)](#does-chatgpt-know-or-does-it-guess-sampling-math--hallucinations)
       - [Sampling Parameters Decoded:](#sampling-parameters-decoded)
     - [From Base Model to AI Assistant (The 4-Stage Alignment Pipeline)](#from-base-model-to-ai-assistant-the-4-stage-alignment-pipeline)
+    - [Reinforcement Learning in Modern AI (RLHF, DPO, RLAIF, GRPO \& RLVR)](#reinforcement-learning-in-modern-ai-rlhf-dpo-rlaif-grpo--rlvr)
+      - [Why RLVR \& GRPO Created the "Reasoning Model" Revolution (o1 \& DeepSeek-R1):](#why-rlvr--grpo-created-the-reasoning-model-revolution-o1--deepseek-r1)
     - [Can AI Really Think? System 1 (Fast) vs System 2 (Deliberate) Reasoning](#can-ai-really-think-system-1-fast-vs-system-2-deliberate-reasoning)
+    - [The AI Customization Decision Hierarchy (Prompting vs RAG vs LoRA vs Pre-Training)](#the-ai-customization-decision-hierarchy-prompting-vs-rag-vs-lora-vs-pre-training)
+      - [Understanding PEFT \& LoRA (Low-Rank Adaptation) Mechanics:](#understanding-peft--lora-low-rank-adaptation-mechanics)
   - [2. AI for Universal Accessibility (a11y) \& Conversational UI](#2-ai-for-universal-accessibility-a11y--conversational-ui)
     - [Why Add an AI Accessibility Assistant to Any Website?](#why-add-an-ai-accessibility-assistant-to-any-website)
     - [The 5 AI Accessibility Superpowers](#the-5-ai-accessibility-superpowers)
@@ -79,12 +83,17 @@ flowchart LR
     - [What is Chunking? (Strategies Matrix)](#what-is-chunking-strategies-matrix)
     - [What is a Context Window? (KV Cache \& Context Rot)](#what-is-a-context-window-kv-cache--context-rot)
       - [Critical Context Window Challenges:](#critical-context-window-challenges)
+    - [Prompt Caching \& Context Compaction Mechanics](#prompt-caching--context-compaction-mechanics)
+      - [1. The Invariant Prefix Rule for Maximum Cache Hits:](#1-the-invariant-prefix-rule-for-maximum-cache-hits)
+      - [2. Context Compaction \& Eviction Strategies:](#2-context-compaction--eviction-strategies)
+    - [Inference Latency \& Cost Optimization (Serving Architecture)](#inference-latency--cost-optimization-serving-architecture)
   - [5. Semantic Retrieval: Embeddings, Vector DBs \& RAG](#5-semantic-retrieval-embeddings-vector-dbs--rag)
     - [What are Embeddings?](#what-are-embeddings)
       - [Similarity Metrics:](#similarity-metrics)
     - [What is a Vector Database?](#what-is-a-vector-database)
     - [How Does RAG (Retrieval-Augmented Generation) Actually Work?](#how-does-rag-retrieval-augmented-generation-actually-work)
       - [Advanced RAG Patterns:](#advanced-rag-patterns)
+    - [Vector RAG vs GraphRAG: When to Use Which?](#vector-rag-vs-graphrag-when-to-use-which)
   - [6. Tools, Actions \& Structured Outputs](#6-tools-actions--structured-outputs)
     - [What are Actions vs Tools?](#what-are-actions-vs-tools)
     - [How to Guarantee Structured Outputs (JSON Schema / Pydantic)](#how-to-guarantee-structured-outputs-json-schema--pydantic)
@@ -93,10 +102,15 @@ flowchart LR
     - [Context Engineering: Managing Token Real Estate](#context-engineering-managing-token-real-estate)
     - [Security: Prompt Injection \& Jailbreak Defense](#security-prompt-injection--jailbreak-defense)
       - [Defense-in-Depth:](#defense-in-depth)
+    - [OWASP Top 10 for LLMs (AI Security Vulnerability Matrix)](#owasp-top-10-for-llms-ai-security-vulnerability-matrix)
   - [8. Agentic AI: Loops, Memory \& Multi-Agent Topologies](#8-agentic-ai-loops-memory--multi-agent-topologies)
     - [The Anatomy of an Agentic Loop (ReAct / Plan-Execute-Reflect)](#the-anatomy-of-an-agentic-loop-react--plan-execute-reflect)
+    - [Reflexion: Verbal Self-Reflection \& Memory Loops](#reflexion-verbal-self-reflection--memory-loops)
     - [The 3 Types of Agent Memory](#the-3-types-of-agent-memory)
     - [Multi-Agent Topologies](#multi-agent-topologies)
+    - [Agent Loop Guardrails \& Termination Criteria](#agent-loop-guardrails--termination-criteria)
+    - [Human-in-the-Loop (HITL) \& Destructive Action Safety Gates](#human-in-the-loop-hitl--destructive-action-safety-gates)
+    - [Agent Failure Modes \& Self-Healing Recovery](#agent-failure-modes--self-healing-recovery)
   - [9. Context Files \& Declarative Agent Skills (`CLAUDE.md`, `GEMINI.md`, `SKILL.md`)](#9-context-files--declarative-agent-skills-claudemd-geminimd-skillmd)
     - [Rules Files Architecture (`CLAUDE.md`, `CODEX.md`, `GEMINI.md`, `.cursorrules`)](#rules-files-architecture-claudemd-codexmd-geminimd-cursorrules)
     - [Declarative Skills Architecture (`SKILL.md`)](#declarative-skills-architecture-skillmd)
@@ -113,8 +127,11 @@ flowchart LR
     - [Modern Framework Comparison Matrix](#modern-framework-comparison-matrix)
   - [11. Model Context Protocol (MCP): The Universal Agent Interface](#11-model-context-protocol-mcp-the-universal-agent-interface)
     - [Why MCP is Revolutionizing AI Engineering:](#why-mcp-is-revolutionizing-ai-engineering)
+    - [Production AI Gateway Architecture \& Semantic Caching](#production-ai-gateway-architecture--semantic-caching)
   - [12. Guardrails, Safety \& Evaluation (RAGAS / LLM Evals)](#12-guardrails-safety--evaluation-ragas--llm-evals)
     - [The RAGAS Evaluation Framework (Evaluating RAG \& LLM Quality)](#the-ragas-evaluation-framework-evaluating-rag--llm-quality)
+    - [Deterministic Assertions vs LLM-as-a-Judge](#deterministic-assertions-vs-llm-as-a-judge)
+    - [Standard Industry AI \& Agent Benchmarks](#standard-industry-ai--agent-benchmarks)
   - [🔗 Authoritative References \& Deep Links](#-authoritative-references--deep-links)
 
 ---
@@ -179,8 +196,57 @@ flowchart TD
     classDef s fill:#1e293b,stroke:#475569,color:#fff;
     classDef h fill:#0284c7,stroke:#0369a1,color:#fff;
     classDef a fill:#10b981,stroke:#059669,color:#fff;
-    class A,B s; class C h; class D a;
+    class A s; class B h; class C h; class D a;
 ```
+
+---
+
+### Reinforcement Learning in Modern AI (RLHF, DPO, RLAIF, GRPO & RLVR)
+
+**Reinforcement Learning (RL)** is the mathematical engine that transforms raw next-token prediction models into aligned, safe assistants and deep-reasoning cognitive agents:
+
+```mermaid
+flowchart LR
+    State["<b>State (s)</b><br/>Prompt + Context History"] --> Policy["<b>Policy π_θ</b><br/>The LLM Neural Weights"]
+    Policy --> Action["<b>Action (a)</b><br/>Sampled Token Sequence"]
+    Action --> Reward["<b>Reward Signal (r)</b><br/>Human Judge, Code Compiler, or Verifier"]
+    Reward --> Policy
+```
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                          The 5 Modern Reinforcement Learning Paradigms                      │
+├─────────────────────┬─────────────────────────────────┬─────────────────────────────────────┤
+│ Paradigm            │ Optimization Mechanism          │ Real-World Application              │
+├─────────────────────┼─────────────────────────────────┼─────────────────────────────────────┤
+│ **1. RLHF**         │ Trains a separate Reward Model  │ Original ChatGPT (GPT-3.5/4),       │
+│ (RL from Human      │ (RM) on human preference pairs; │ Claude 2. Eliminates toxic/harmful  │
+│  Feedback)          │ optimizes policy via **PPO**.   │ outputs via human rating signals.   │
+├─────────────────────┼─────────────────────────────────┼─────────────────────────────────────┤
+│ **2. DPO**          │ Mathematically derives exact    │ Llama 3, Mistral, Gemma.            │
+│ (Direct Preference  │ loss directly on policy weights;│ **No separate reward model needed**;│
+│  Optimization)      │ 3x faster and stable to train.  │ industry default for alignment.     │
+├─────────────────────┼─────────────────────────────────┼─────────────────────────────────────┤
+│ **3. RLAIF**        │ AI constitutional model acts as │ Anthropic Claude 3 / 3.5 / 3.7.     │
+│ (RL from AI         │ the judge to score and rank     │ Scales alignment without requiring  │
+│  Feedback)          │ billions of training pairs.     │ millions of human crowd-workers.    │
+├─────────────────────┼─────────────────────────────────┼─────────────────────────────────────┤
+│ **4. RLVR / GRPO**  │ Uses **deterministic verifiers**│ **OpenAI o1/o3, DeepSeek-R1, QwQ**. │
+│ (RL with Verifiable │ (Compiler passes tests, math is │ Enables autonomous **Chain-of-      │
+│  Rewards)           │ proven correct) instead of human│ **Thought**, backtracking & search. │
+├─────────────────────┼─────────────────────────────────┼─────────────────────────────────────┤
+│ **5. KTO**          │ Optimizes directly on binary    │ Binary upvote/downvote production   │
+│ (Kahneman-Tversky)  │ thumbs-up / thumbs-down signals │ telemetry tuning without pairs.     │
+└─────────────────────┴─────────────────────────────────┴─────────────────────────────────────┘
+```
+
+#### Why RLVR & GRPO Created the "Reasoning Model" Revolution (o1 & DeepSeek-R1):
+
+- In subjective creative writing, human preferences are noisy and hard to optimize.
+- In **Coding, Math, and Logic**, correctness is **binary and 100% verifiable**:
+  - _Does the generated TypeScript compile with 0 errors?_
+  - _Does the code pass 100% of unit test suites?_
+- By rewarding models strictly on **verification outcomes** via **Group Relative Policy Optimization (GRPO)**, models spontaneously learn **internal self-reflection**, trying multiple paths, catching their own logic errors, and backtracking before generating the final answer.
 
 ---
 
@@ -209,6 +275,42 @@ Modern AI architectures mirror Daniel Kahneman's cognitive framework:
 │                          │ generation, quick lookups.      │ formal verification, chess.    │
 └──────────────────────────┴─────────────────────────────────┴────────────────────────────────┘
 ```
+
+---
+
+### The AI Customization Decision Hierarchy (Prompting vs RAG vs LoRA vs Pre-Training)
+
+How do you adapt an AI model to your enterprise domain? Choose the lowest-complexity tier that solves the problem:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                          The AI Customization Decision Matrix                               │
+├─────────────────────┬───────────────────┬───────────────────┬───────────────────────────────┤
+│ Method              │ Knowledge Source  │ Style / Syntax    │ Cost & Engineering Complexity │
+├─────────────────────┼───────────────────┼───────────────────┼───────────────────────────────┤
+│ **1. Prompt Eng.**  │ In-context only   │ Moderate          │ **Lowest** (Minutes, $0)      │
+├─────────────────────┼───────────────────┼───────────────────┼───────────────────────────────┤
+│ **2. RAG**          │ Dynamic external  │ Unchanged         │ **Low/Med** (Days, Vector DB) │
+│                     │ enterprise data   │ (Base model)      │                               │
+├─────────────────────┼───────────────────┼───────────────────┼───────────────────────────────┤
+│ **3. Fine-Tuning**  │ Static, snapshot  │ **Deeply Adapted**│ **Medium** (Hours GPU,        │
+│ **(LoRA / QLoRA)**  │ in neural weights │ (Tone, JSON, DSL) │ Curated dataset of 1K–10K Q&As│
+├─────────────────────┼───────────────────┼───────────────────┼───────────────────────────────┤
+│ **4. Pre-Training** │ Foundational base │ Native core       │ **Extreme** ($1M+, Months,    │
+│                     │ world knowledge   │ capabilities      │ Trillions of raw tokens)      │
+└─────────────────────┴───────────────────┴───────────────────┴───────────────────────────────┘
+```
+
+#### Understanding PEFT & LoRA (Low-Rank Adaptation) Mechanics:
+
+Instead of updating all 70B weights ($\mathcal{O}(d \times k)$), **LoRA** freezes the pre-trained weight matrix $W_0$ and injects trainable low-rank decomposition rank matrices $A$ and $B$:
+
+$$W = W_0 + \Delta W = W_0 + \frac{\alpha}{r} (B \cdot A)$$
+
+Where $r \ll \min(d, k)$ (typically $r \in [8, 64]$) and $\alpha$ is a scaling hyperparameter.
+
+- **Storage Efficiency:** Reduces trainable parameters by **$99.9\%$** (e.g. from 140GB down to a 50MB LoRA adapter file).
+- **QLoRA (Quantized LoRA):** Quantizes the base model down to **4-bit NormalFloat (NF4)** and applies LoRA backpropagation, allowing fine-tuning a 70B model on a single consumer 24GB GPU.
 
 ---
 
@@ -597,6 +699,55 @@ The **Context Window** is the maximum sequence length (tokens) that an LLM can a
 
 ---
 
+### Prompt Caching & Context Compaction Mechanics
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    Prompt Caching Architecture (Prefix Hit)                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [ Invariant System Prompt + Core Rules + Tool Schemas ] ◀── CACHE HIT (90% Off)│
+│                               ▼                                             │
+│ [ Dynamic Injected RAG Chunks + User Message ]          ◀── UNCACHED TAIL   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 1. The Invariant Prefix Rule for Maximum Cache Hits:
+
+- Place static instructions (`CLAUDE.md`, `GEMINI.md`, tool JSON schemas) strictly at the **top of the prompt**.
+- Never prepend timestamps, dynamic session IDs, or shifting headers to the start of the system prompt; doing so busts the entire KV-cache for all downstream tokens!
+- **Economic Impact:** Cached prompt tokens are up to **90% cheaper** and reduce Time-to-First-Token (TTFT) by up to **80%**.
+
+#### 2. Context Compaction & Eviction Strategies:
+
+- **Sliding Window with Summary Anchor:** Retain the original system prompt + a running 3-bullet executive summary of previous turns + the last 4 active conversation turns.
+- **Raw Tool Output Truncation:** Trim large stdout logs (e.g. 10,000-line test runner output) to only the failing stack traces before feeding back into the agent context.
+
+---
+
+### Inference Latency & Cost Optimization (Serving Architecture)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       LLM Inference Optimization Triad                      │
+├─────────────────────┬─────────────────────────────────┬─────────────────────┤
+│ Technique           │ Core Mechanism                  │ Production Benefit  │
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **Speculative**     │ Small draft model (e.g. 1B)     │ **2x–3x faster**    │
+│ **Decoding**        │ drafts 5 tokens; large target   │ generation with     │
+│                     │ model verifies in 1 pass.       │ zero quality loss.  │
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **Quantization**    │ Compresses FP16 weights to      │ **4x less VRAM**;   │
+│ **(AWQ / GGUF)**    │ INT8 / INT4 bit-precision.      │ runs 70B models on  │
+│                     │                                 │ commodity GPUs.     │
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **PagedAttention**  │ Virtual memory paging for KV    │ **5x higher server  │
+│ **(vLLM)**          │ cache; eliminates GPU memory    │ throughput** via    │
+│                     │ fragmentation.                  │ continuous batching.│
+└─────────────────────┴─────────────────────────────────┴─────────────────────┘
+```
+
+---
+
 ## 5. Semantic Retrieval: Embeddings, Vector DBs & RAG
 
 ### What are Embeddings?
@@ -661,6 +812,29 @@ sequenceDiagram
 - **HyDE (Hypothetical Document Embeddings):** LLM generates a hypothetical ideal answer first, embeds _that_, and uses it to retrieve real source documents.
 - **Hybrid Search (Dense + Sparse / BM25):** Combines vector semantic search with exact keyword matching (BM25) via Reciprocal Rank Fusion (RRF).
 - **Self-RAG / Corrective RAG:** The agent grades the retrieved context quality before answering; if irrelevant, it rewrites the query or falls back to web search.
+- **GraphRAG (Knowledge Graph + Vector Hybrid):** Extracts entities and relationships into a knowledge graph to build hierarchical community summaries. Solves global multi-hop queries across thousands of documents where plain vector search fails.
+
+---
+
+### Vector RAG vs GraphRAG: When to Use Which?
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           Vector RAG vs GraphRAG                            │
+├─────────────────────┬─────────────────────────┬─────────────────────────────┤
+│ Dimension           │ Standard Vector RAG     │ GraphRAG (Knowledge Graphs) │
+├─────────────────────┼─────────────────────────┼─────────────────────────────┤
+│ **Query Type**      │ Local, targeted lookups │ Global dataset synthesis &  │
+│                     │ ("What is X's price?")  │ multi-hop relationship path │
+│                     │                         │ ("How do A, B, & C connect")│
+├─────────────────────┼─────────────────────────┼─────────────────────────────┤
+│ **Index Structure** │ High-dimensional vector │ Entity-Relationship Graph + │
+│                     │ chunks in flat index.   │ Community summaries (Leiden)│
+├─────────────────────┼─────────────────────────┼─────────────────────────────┤
+│ **Indexing Cost**   │ Low ($0.01 / 1k pages)  │ Higher ($0.50 / 1k pages    │
+│                     │ (Single embedding pass) │ via entity extraction LLMs) │
+└─────────────────────┴─────────────────────────┴─────────────────────────────┘
+```
 
 ---
 
@@ -762,6 +936,36 @@ report: UserAuditReport = completion.choices[0].message.parsed
 
 ---
 
+### OWASP Top 10 for LLMs (AI Security Vulnerability Matrix)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          OWASP Top 10 for LLM Applications                  │
+├─────────┬───────────────────────────┬───────────────────────────────────────┤
+│ ID      │ Threat Category           │ Core Mitigation Strategy              │
+├─────────┼───────────────────────────┼───────────────────────────────────────┤
+│ **LLM01**│ **Prompt Injection**      │ Rigid XML tag boundary separation,    │
+│         │ (Direct & Indirect)       │ dual-LLM input classification guard.  │
+├─────────┼───────────────────────────┼───────────────────────────────────────┤
+│ **LLM02**│ **Sensitive Info Leak**   │ Regex PII redacting (Presidio) before │
+│         │ (PII / Secrets in Output) │ embedding or model completion.        │
+├─────────┼───────────────────────────┼───────────────────────────────────────┤
+│ **LLM03**│ **Supply Chain Risks**    │ Verify model hashes (Safetensors) and │
+│         │ (Poisoned weights/plugins)│ audit third-party MCP servers.        │
+├─────────┼───────────────────────────┼───────────────────────────────────────┤
+│ **LLM05**│ **Improper Output Handle**│ Always validate & sanitize LLM code/  │
+│         │ (XSS / SQLi downstream)   │ HTML outputs before rendering to DOM. │
+├─────────┼───────────────────────────┼───────────────────────────────────────┤
+│ **LLM06**│ **Excessive Agency**      │ Human-in-the-loop gates on mutating   │
+│         │ (Unconstrained tool runs) │ actions; granular scoped API tokens.  │
+├─────────┼───────────────────────────┼───────────────────────────────────────┤
+│ **LLM10**│ **Unbounded Consumption** │ Hard session token budgets, per-user  │
+│         │ (Denial of Wallet / DoS)  │ rate limits, and recursion caps.      │
+└─────────┴───────────────────────────┴───────────────────────────────────────┘
+```
+
+---
+
 ## 8. Agentic AI: Loops, Memory & Multi-Agent Topologies
 
 ### The Anatomy of an Agentic Loop (ReAct / Plan-Execute-Reflect)
@@ -776,6 +980,23 @@ flowchart TD
     Observe --> Reflect{"4. Goal Achieved?"}
     Reflect -->|"No: Error or Next Step"| Plan
     Reflect -->|"Yes: Success"| Done(["Deliver Final Result"])
+```
+
+---
+
+### Reflexion: Verbal Self-Reflection & Memory Loops
+
+While basic **ReAct** agents react step-by-step in a single trajectory, **Reflexion** gives agents the ability to learn from failed attempts across multiple trials via **episodic verbal reflection**:
+
+```mermaid
+flowchart TD
+    Task["<b>Task Goal</b>"] --> Actor["<b>Actor Agent (ReAct)</b><br/>Generates action trajectory"]
+    Actor --> Env["<b>Environment / Execution</b><br/>Runs code / tests / tools"]
+    Env --> Eval{"<b>Evaluator</b><br/>Did tests pass?"}
+    Eval -->|"Pass (1.0)"| Success(["<b>Success</b>"])
+    Eval -->|"Fail (0.0)"| SelfReflect["<b>Self-Reflection LLM</b><br/>Generates verbal analysis:<br/><i>'Why did my plan fail? What should I do differently?'</i>"]
+    SelfReflect --> Memory[("<b>Episodic Memory Buffer</b><br/>Stores past failed lessons")]
+    Memory -->|"Inject past reflections into prompt"| Actor
 ```
 
 ---
@@ -818,6 +1039,73 @@ flowchart TD
 │ 3. MAP-REDUCE AGENT BATCHING                                                │
 │    Deploys 20 parallel worker agents across 20 files ──▶ Merges diffs       │
 └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Agent Loop Guardrails & Termination Criteria
+
+Unconstrained agent loops can rapidly consume thousands of dollars in tokens or get trapped in repetitive action cycles. Production agent runtimes enforce 4 essential guardrails:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Agent Runtime Guardrail Suite                      │
+├─────────────────────┬───────────────────────────────────────────────────────┤
+│ Guardrail           │ Failure Mode Prevented & Enforcement Policy           │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Recursion Limit** │ Hard cap on loop iterations (e.g. `max_turns = 15`).  │
+│                     │ Prevents infinite loops when a tool continually fails.│
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Cost & Token Cap**│ Hard budget ceiling per session (e.g. `$2.00` or      │
+│                     │ `100,000` tokens). Halts execution and asks user.     │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Loop Detection**  │ Tracks hash of `(tool_name, arguments)`. If the exact │
+│                     │ same action executes 3x consecutively $\to$ trigger   │
+│                     │ reflection / prompt reformulation.                    │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Tool Timeout**    │ Enforces bounded execution (e.g. 15s timeout per tool)│
+│                     │ to prevent hung processes from freezing the runtime.  │
+└─────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+---
+
+### Human-in-the-Loop (HITL) & Destructive Action Safety Gates
+
+Autonomous agents must distinguish between **safe, idempotent reads** and **destructive, state-mutating writes**:
+
+```mermaid
+flowchart TD
+    Agent["<b>Agent Decision</b><br/>Selected Tool to Execute"] --> Check{"Is Action Destructive?<br/>(e.g., Delete DB, Deploy, Charge Card, Git Push)"}
+    Check -->|"No (Read-Only: search, view_file, lint)"| Exec["<b>Auto-Execute Instantly</b><br/>Zero latency overhead"]
+    Check -->|"Yes (Mutating / High-Risk)"| Gate["<b>Interrupt Execution & Request User Approval</b><br/>Show payload diff & risk level"]
+    Gate --> Decision{"User Decision"}
+    Decision -->|"Approved"| Exec
+    Decision -->|"Rejected / Modified"| Feedback["<b>Inject Rejection Feedback into Context</b><br/>Agent pivots to alternative approach"]
+```
+
+---
+
+### Agent Failure Modes & Self-Healing Recovery
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Agent Self-Healing Matrix                          │
+├─────────────────────┬─────────────────────────────────┬─────────────────────┤
+│ Failure Mode        │ Root Cause                      │ Autonomous Recovery │
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **Tool Schema Error**│ Agent passes invalid JSON args  │ Catch Pydantic error│
+│                     │ or missing required properties. │ and feed schema diff│
+│                     │                                 │ back to agent context│
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **Network 5xx / 429**│ External API timeout or rate    │ Exponential backoff │
+│                     │ limit exhaustion.               │ with jitter (2s, 4s,│
+│                     │                                 │ 8s) + fallback tool.│
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **Reasoning Drift** │ Agent forgets original goal     │ Prompt anchor injection│
+│                     │ after 10+ sub-tool turns.       │ re-asserting user   │
+│                     │                                 │ acceptance criteria.│
+└─────────────────────┴─────────────────────────────────┴─────────────────────┘
 ```
 
 ---
@@ -1122,6 +1410,40 @@ flowchart LR
 
 ---
 
+### Production AI Gateway Architecture & Semantic Caching
+
+In production, frontend and backend services should **never call LLM providers directly**. An **AI Gateway** sits in front of all model invocations to provide resilience, cost control, and sub-millisecond caching:
+
+```mermaid
+flowchart TD
+    Client["<b>Client App / Agent</b>"] --> Gateway["<b>Enterprise AI Gateway</b><br/>(LiteLLM / Portkey / Cloudflare)"]
+    Gateway --> Cache{"<b>Semantic Cache (Redis)</b><br/>Prompt Embedding Sim >= 0.95?"}
+    Cache -->|"Cache HIT (5ms, $0)"| Client
+    Cache -->|"Cache MISS"| Router["<b>Smart Router & Fallback Engine</b>"]
+    Router --> Provider1["<b>Primary: OpenAI (GPT-4o)</b>"]
+    Router -.->|"429 Rate Limit / 5xx Failover"| Provider2["<b>Fallback: Anthropic (Claude 3.5)</b>"]
+    Router -.->|"Cost-Optimized Batching"| Provider3["<b>Local / Fast: Groq / vLLM</b>"]
+```
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          The AI Gateway Feature Suite                       │
+├─────────────────────┬───────────────────────────────────────────────────────┤
+│ Capability          │ Architectural Value                                   │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Semantic Cache**  │ Stores prompt embeddings + responses in Redis. Reuses │
+│                     │ answers for semantically identical questions ($0 cost)│
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Provider Failover**│ If primary LLM provider drops (503 / 429), seamless   │
+│                     │ failover routes to backup provider in <50ms.          │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **Budget & PII Gate**│ Enforces monthly team budgets ($500 cap) and scrubs   │
+│                     │ SSNs/credit cards before passing to external APIs.    │
+└─────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+---
+
 ## 12. Guardrails, Safety & Evaluation (RAGAS / LLM Evals)
 
 ### The RAGAS Evaluation Framework (Evaluating RAG & LLM Quality)
@@ -1143,6 +1465,52 @@ Evaluating AI systems cannot be done with traditional unit test assertions. We m
 ├─────────────────────┼───────────────────────────────────────────────────────┤
 │ **Context Recall**  │ Did the retrieval step fetch all necessary facts to   │
 │                     │ fully answer the question?                            │
+└─────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+---
+
+### Deterministic Assertions vs LLM-as-a-Judge
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Evaluation Methodology Spectrum                       │
+├─────────────────────┬─────────────────────────────────┬─────────────────────┤
+│ Evaluation Type     │ Implementation Mechanism        │ Best Used For       │
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **Deterministic**   │ Regular expressions, JSON       │ Tool argument       │
+│ **Assertions**      │ Schema validation, status codes,│ accuracy, latency,  │
+│                     │ unit test assertions.           │ token cost limits.  │
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **LLM-as-a-Judge**  │ High-capability judge model     │ Qualitative tone,   │
+│                     │ (e.g. GPT-4o) evaluates output  │ semantic coherence, │
+│                     │ against a rubric with CoT.      │ brand safety.       │
+├─────────────────────┼─────────────────────────────────┼─────────────────────┤
+│ **Human-in-the-Loop**│ Expert domain review of         │ Golden benchmark    │
+│ **Spot Audits**     │ sampled production traces.      │ dataset creation.   │
+└─────────────────────┴─────────────────────────────────┴─────────────────────┘
+```
+
+---
+
+### Standard Industry AI & Agent Benchmarks
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         Frontier Agent Benchmarks                           │
+├─────────────────────┬───────────────────────────────────────────────────────┤
+│ Benchmark           │ Target Capability Evaluated                           │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **SWE-bench**       │ Autonomous software engineering: Resolving real-world │
+│                     │ GitHub issues by editing code and passing unit tests. │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **GAIA**            │ General AI Assistants: Multi-modal, multi-step web and│
+│                     │ file reasoning with external tool usage.              │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **HumanEval / MBPP**│ Python function code generation from docstrings.      │
+├─────────────────────┼───────────────────────────────────────────────────────┤
+│ **WebArena**        │ End-to-end web navigation, e-commerce checkout, and   │
+│                     │ complex multi-page UI interaction.                    │
 └─────────────────────┴───────────────────────────────────────────────────────┘
 ```
 
