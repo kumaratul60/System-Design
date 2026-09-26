@@ -23,7 +23,7 @@
     - [1. Semantic HTML vs Custom ARIA Matrix](#1-semantic-html-vs-custom-aria-matrix)
     - [2. Hiding Elements: `inert` vs `aria-hidden` vs `display:none` vs `sr-only`](#2-hiding-elements-inert-vs-aria-hidden-vs-displaynone-vs-sr-only)
       - [Accessible `.sr-only` CSS Implementation](#accessible-sr-only-css-implementation)
-    - [3. The `tabIndex` Master Guide (`0`, `-1`, `<0`, `>0`)](#3-the-tabindex-master-guide-0--1-0-0)
+    - [3. The `tabIndex` Architectural Guide (`0`, `-1`, `<0`, `>0`)](#3-the-tabindex-architectural-guide-0--1-0-0)
       - [Detailed Breakdown by Value:](#detailed-breakdown-by-value)
     - [4. Focus Management: Roving `tabIndex` vs `aria-activedescendant`](#4-focus-management-roving-tabindex-vs-aria-activedescendant)
       - [Decision Matrix: When to choose which?](#decision-matrix-when-to-choose-which)
@@ -306,7 +306,7 @@ There are three levels of accessibility compliance in the WCAG, which reflect th
 
 ---
 
-### 3. The `tabIndex` Master Guide (`0`, `-1`, `<0`, `>0`)
+### 3. The `tabIndex` Architectural Guide (`0`, `-1`, `<0`, `>0`)
 
 The `tabindex` attribute determines whether an element is focusable, how it enters sequential keyboard navigation (`Tab` / `Shift+Tab`), and whether JavaScript can programmatically focus it.
 

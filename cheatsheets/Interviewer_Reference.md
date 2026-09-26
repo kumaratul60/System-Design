@@ -189,3 +189,14 @@ A Staff Engineer is not just a "Faster Coder." They are a **Force Multiplier**. 
 2.  **Visual Regression:** "How do you catch a bug where a CSS change in one component accidentally breaks the layout of another page?"
     - _Look for:_ Snapshot testing vs. Visual Regression tools (Chromatic/Percy).
 3.  **Error Boundaries:** "Where would you strategically place Error Boundaries in a dashboard app to ensure a single widget crash doesn't kill the entire session?"
+
+---
+
+## 🔗 Deep-Dive Architecture References
+
+- 🏛️ [**Core Engineering Pillars & Senior Developer Competency Guide**](Core_Engineering_Pillars.md)
+- 🤖 [**AI Engineering & Agentic Systems Cheatsheet**](AI_Engineering_Cheatsheet.md)
+- 🌐 [**i18n, l10n, RTL & AI a11y Architecture Guide**](../Accessibility/Internationalization_i18n_l10n_a11y.md)
+- ♿ [**Web Accessibility (a11y) & WCAG Guide**](../Accessibility/WCAG_Accessibility.md)
+- 🛡️ [**Security Architecture Interview Grill**](Security_Architect.md)
+- ⚡ [**Performance Optimization Master Guide**](Performance_Optimization.md)

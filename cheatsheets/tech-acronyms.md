@@ -250,13 +250,18 @@ Multi-Agent Systems (Distributed networks of collaborative specialists)
 - **ML** — Machine Learning
 - **DL** — Deep Learning (Neural networks with multiple hidden layers)
 - **NLP** — Natural Language Processing
-- **LLM** — Large Language Model
+- **LLM** — Large Language Model (Next-token probabilistic predictor on Transformer architecture)
 - **GAN** — Generative Adversarial Network
-- **RAG** — Retrieval-Augmented Generation (Queries external knowledge sources/vector databases to ground LLM outputs in verified facts).
-- **Agent** — An autonomous component that leverages an LLM reasoning core, maintains memory, plans actions, and executes tools to achieve a goal.
-- **LangChain** — A modular orchestration framework for building applications powered by LLMs (data pipelines, prompt chaining).
-- **LangGraph** — A library for building stateful, multi-actor agentic loops and graph-based workflow topologies.
-- **Langflow** — A low-code visual builder interface for rapid prototyping of LangChain / LangGraph networks.
+- **RAG** — Retrieval-Augmented Generation (Grounding LLM prompts with semantic vector database retrieval)
+- **MCP** — Model Context Protocol (Anthropic's open standard for client-host-server AI tool integrations)
+- **Agent** — An autonomous component leveraging an LLM reasoning core, maintaining memory, planning actions, and executing tools to achieve goals.
+- **LangChain** — A modular orchestration framework for building applications powered by LLMs (data pipelines, prompt chaining, LCEL).
+- **LangGraph** — A library for building stateful, cyclical, multi-actor agentic loops and graph-based workflow topologies.
+- **LangSmith** — An enterprise platform for tracing, debugging, testing, and evaluating LLM and agent applications.
+- **Langflow** — A low-code visual builder UI for prototyping AI flows and converting them into production code/APIs in 1-click.
+- **LlamaIndex** — A data framework specialized for ingestion, hierarchical indexing, and advanced RAG query engines.
+- **DSPy** — A declarative programming framework that algorithmically optimizes (compiles) LLM prompts and weights.
+- 📖 _For complete deep-dive architecture, see the [AI, GenAI & Agentic Systems Cheatsheet](AI_Engineering_Cheatsheet.md)._
 
 ---
 

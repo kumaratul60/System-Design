@@ -30,6 +30,8 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - 🔍 **[Regular Expressions (RegEx)](regex.md)**: Match patterns, character classes, quantifiers, lookarounds, logic flow engine, and performance tips.
 - 👷 **[Web Workers & Service Workers](service-workers-and-web-workers.md)**: Dedicated & Shared Workers, Service Worker lifecycle, Caching strategies, Structured Clone vs Transferable Objects, and Background Sync.
 - 📱 **[Progressive Web Applications (PWA)](PWA_Application.md)**: Web App Manifest, Installability lifecycle (`beforeinstallprompt`), App Shell & PRPL, Offline Outbox Sync, and Project Fugu Hardware APIs.
+- 🤖 **[AI, GenAI & Agentic Systems Engineering Cheatsheet](AI_Engineering_Cheatsheet.md)**: Evolution from chatbots to agents, AI a11y, SDLC lifecycle, LLMs, tokens, chunking, context windows, embeddings, Vector DBs, RAG, tool calling, structured outputs, agentic loops, rules (`CLAUDE.md`, `GEMINI.md`, `SKILL.md`), MCP, and safety guardrails.
+- 🏛️ **[Core Engineering Pillars & Senior Developer Competency Guide](Core_Engineering_Pillars.md)**: The 12 fundamental engineering pillars (Heap vs Stack, Closures, V8 Garbage Collection, Event Loop, HTTP/3 & Networking, NDJSON streaming, Zod runtime API validation, Core Web Vitals, a11y, i18n, Security, and Resilient Error Handling).
 
 ---
 
