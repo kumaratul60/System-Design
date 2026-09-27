@@ -36,6 +36,7 @@
     - [⚠️ Common Mistake: `overflow-y: none` is INVALID CSS](#️-common-mistake-overflow-y-none-is-invalid-css)
     - [How to Stop Screen Elastic Bounce at Top and Bottom:](#how-to-stop-screen-elastic-bounce-at-top-and-bottom)
     - [`overscroll-behavior` Value Differences:](#overscroll-behavior-value-differences)
+    - [🎯 Real-World Pairing: `overflow-auto` vs. `overflow-y-auto` with `overscroll-y-none`](#-real-world-pairing-overflow-auto-vs-overflow-y-auto-with-overscroll-y-none)
 - [10. The Mac vs. Windows Scrollbar Discrepancy \& `scrollbar-gutter`](#10-the-mac-vs-windows-scrollbar-discrepancy--scrollbar-gutter)
   - [The Problem: The 17px Layout Shift / Content Jitter](#the-problem-the-17px-layout-shift--content-jitter)
     - [The Bug in Action:](#the-bug-in-action)
@@ -474,16 +475,36 @@ body {
 | **`contain`**          | **Traps scroll inside the container**. When the inner element reaches top/bottom, the outer page will NOT scroll. (Keeps local bounce). |              ✅ Yes              |    ❌ No (Local bounce remains)     |
 | **`none`**             | **Traps scroll AND completely removes all elastic rubber-band bouncing** and pull-to-refresh.                                           |              ✅ Yes              |      ✅ **Yes (Zero bounce)**       |
 
+---
+
+#### 🎯 Real-World Pairing: `overflow-auto` vs. `overflow-y-auto` with `overscroll-y-none`
+
+| Combination                             | Native CSS Equivalent                                 | Behavior & Best Use Case                                                                                                                                                                                     |
+| :-------------------------------------- | :---------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`overflow-auto overscroll-y-none`**   | `overflow: auto;`<br>`overscroll-behavior-y: none;`   | • **Bi-directional scrolling** (X + Y axes).<br>• Traps scroll and disables vertical elastic bounce.<br>• **Best for**: 2D Data tables, spreadsheets, canvas viewers, code diffs.                            |
+| **`overflow-y-auto overscroll-y-none`** | `overflow-y: auto;`<br>`overscroll-behavior-y: none;` | • **Strictly 1D Vertical scrolling** (prevents horizontal jitter).<br>• Traps scroll inside dialog & kills rubber-banding.<br>• **Best for**: Modal dialogs, slide-over drawers, chat feeds, dropdown menus. |
+
 ```css
-/* Modal chat window: Traps scroll inside dialog without scrolling the main page */
-.chat-messages-modal {
+/* 1. Standard Modal Dialog / Slide-over Drawer (Gold Standard) */
+.modal-body {
+  /* Tailwind: overflow-y-auto overscroll-y-none */
   overflow-y: auto;
-  overscroll-behavior-y: contain; /* Prevents background page scrolling */
+  overflow-x: hidden; /* Guarantees no accidental horizontal scroll */
+  overscroll-behavior-y: none; /* Traps scroll & stops background page scroll */
 }
 
-/* Standalone Web App / Game Canvas: Eliminates all iOS/macOS rubber-banding */
-.app-container {
-  overscroll-behavior: none;
+/* 2. Large Data Grid / Spreadsheet Container */
+.data-grid {
+  /* Tailwind: overflow-auto overscroll-y-none */
+  overflow: auto; /* Scrolls both X and Y */
+  overscroll-behavior-y: none; /* Disables page bounce when reaching vertical limits */
+}
+
+/* 3. Standalone Web App / Canvas / Game Viewport */
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none; /* Kills both X & Y elastic pull-to-refresh on mobile */
 }
 ```
 
