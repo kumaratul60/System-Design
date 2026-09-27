@@ -283,3 +283,9 @@ Key takeaways
 ✅ Compositing combines painted layers (often using the GPU) to produce the final frame displayed on the screen.
 
 ✅ Frame Budget: To achieve smooth 60 FPS, the browser has about 16.67 ms to complete JavaScript execution, style calculation, layout, paint, compositing, and present the frame. On 120 Hz displays, that budget is only 8.33 ms.
+
+---
+
+## 8. Essential HTML & DOM Resources
+
+- 🧪 **[Periodic Table of HTML Elements](https://blog.alena.rocks/en/artifacts/html-elements/)**: Interactive periodic table covering all 115 HTML Living Standard elements categorized across 11 specification sections (Root, Metadata, Sections, Grouping, Text-level, Edits, Embedded, Tabular, Forms, Interactive, Scripting) with void elements and MDN documentation links.

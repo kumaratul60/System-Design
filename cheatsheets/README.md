@@ -10,6 +10,7 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 
 - 🗄️ **[Database Decisions & Architectures](dbdecision.md)**: A structured framework for choosing databases, selection matrix, case studies, and interview design flows.
 - 🌳 **[Document Object Model (DOM)](DOM.md)**: Live vs Static collections, Shadow DOM, Event delegation, element metrics, and optimization paths.
+- 🧪 **[Periodic Table of HTML Elements](https://blog.alena.rocks/en/artifacts/html-elements/)**: Interactive periodic table covering all 115 HTML Living Standard elements categorized across 11 spec sections with void elements and MDN documentation links.
 - 🎨 **[CSS Object Model (CSSOM)](cssom.md)**: Critical Rendering Path, inline vs computed styles, CSS variables, performance optimizations, and Font metrics (Ascenders / Descenders).
 - 🌐🔗 **[How the Web Works: High-Level](web.md)**: Visual 17-step web touchpoints flow, browser pre-checks, and Critical Rendering Path (CRP) maps.
 - ⚙️ **[WebAssembly (WASM) & Web SDK](webassembly-web-sdk.md)**: WASM compilation, Memory Grow trapping, Workers integration, multithreading isolation, public SDK design, loading snippet queues, and storage partitioning.

@@ -55,3 +55,9 @@ Need scroll progress or scroll-triggered reveal?
         │
         └── animation-timeline: scroll() / view()
 ```
+
+---
+
+## 🔗 Essential Companion Resources
+
+- 🧪 **[Periodic Table of HTML Elements](https://blog.alena.rocks/en/artifacts/html-elements/)**: Interactive periodic table of all 115 HTML Living Standard elements categorized across 11 specification sections (Root, Metadata, Sections, Grouping, Text-level, Edits, Embedded, Tabular, Forms, Interactive, Scripting) with void elements and MDN documentation links.
