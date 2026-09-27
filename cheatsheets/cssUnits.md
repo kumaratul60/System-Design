@@ -42,6 +42,17 @@
 - [Golden Rules](#golden-rules)
 - [Visual Diagrams & Mindmaps](#1-css-units-overview)
 - [CSS Units & Layout Mechanics: In-Depth Architectural Guide](#css-units--layout-mechanics-in-depth-architectural-guide)
+- [CSS Transitions](#css-transitions)
+  - [Transition Timing Function Values](#transition-timing-function-values)
+  - [Which Properties You Can Animate Using CSS Transitions](#which-properties-you-can-animate-using-css-transitions)
+  - [Performance & Hardware Acceleration](#performance-and-hardware-acceleration-rendering-pipeline)
+- [CSS Animations](#css-animations)
+  - [The CSS Animation Properties](#the-css-animation-properties)
+  - [The `animation` Shorthand Syntax](#the-animation-shorthand-syntax)
+  - [Keyframe Definition Syntax (`@keyframes`)](#keyframe-definition-syntax-keyframes)
+  - [JavaScript Events for CSS Animations](#javascript-events-for-css-animations)
+  - [CSS Transitions vs. CSS Animations](#css-transitions-vs-css-animations)
+  - [Practical Animation Examples](#practical-animation-examples)
 
 ---
 
@@ -2941,3 +2952,463 @@ You have a 3-column CSS Grid displaying product cards. Each card contains a titl
 ## Key Engineering Takeaway
 
 > Standard CSS Grid creates isolated formatting contexts inside child items, preventing elements like card buttons from aligning across variable-height siblings. CSS `subgrid` solves this by allowing nested components to span and participate directly in the parent grid's rows or columns (`grid-template-rows: subgrid`), ensuring baseline alignment across modular components without hardcoded heights or JavaScript.
+
+---
+
+# CSS Transitions
+
+## Overview & Syntax
+
+CSS Transitions allow you to change property values smoothly over a given duration, rather than having the change happen instantaneously.
+
+```css
+/* Shorthand Syntax */
+/* transition: <property> <duration> <timing-function> <delay>; */
+
+.button {
+  background-color: #3b82f6;
+  transform: translateY(0);
+  transition:
+    transform 200ms ease,
+    background-color 200ms ease;
+}
+
+.button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+}
+```
+
+---
+
+## Transition Timing Function Values
+
+The `transition-timing-function` property specifies the **acceleration curve** of the transition, controlling how intermediate values are calculated during execution.
+
+### Built-in Easing Curves
+
+| Value                  | Acceleration Curve Description                                                       | Equivalent `cubic-bezier()`        | Best Use Case                                                         |
+| :--------------------- | :----------------------------------------------------------------------------------- | :--------------------------------- | :-------------------------------------------------------------------- |
+| **`ease`** _(Default)_ | Starts moderately fast, accelerates in the middle, and decelerates gently to a stop. | `cubic-bezier(0.25, 0.1, 0.25, 1)` | General UI interactions, modal entrances, button hovers.              |
+| **`linear`**           | Constant, unchanging speed from start to end.                                        | `cubic-bezier(0, 0, 1, 1)`         | Color shifts, spinners, background gradients, timers.                 |
+| **`ease-in`**          | Starts slow and accelerates until the end.                                           | `cubic-bezier(0.42, 0, 1, 1)`      | Exit transitions (elements leaving or dropping off the screen).       |
+| **`ease-out`**         | Starts fast and decelerates to a gentle stop.                                        | `cubic-bezier(0, 0, 0.58, 1)`      | Entrance transitions (drawers opening, dialogs popping up, tooltips). |
+| **`ease-in-out`**      | Starts slow, speeds up in the middle, and decelerates to a gentle stop.              | `cubic-bezier(0.42, 0, 0.58, 1)`   | Looping state switches, accordions, carousel slides.                  |
+
+### Advanced Timing Functions
+
+- **`cubic-bezier(x1, y1, x2, y2)`**: Defines a custom cubic Bézier curve via 4 control point coordinates ($P_1, P_2$). For bouncy/spring effects, $y_2$ can exceed $1.0$ (e.g. `cubic-bezier(0.34, 1.56, 0.64, 1)`).
+- **`steps(n, jump-term)`**: Divides the transition into $n$ discrete intervals instead of continuous smooth interpolation. Common for frame-by-frame sprite sheet animations or retro digital clock displays.
+
+### Hover Comparison Example
+
+> **Tip:** Hover the same element with each timing value swapped in to feel the difference in responsiveness and physical inertia:
+
+```css
+.box-linear {
+  transition: transform 0.4s linear;
+}
+.box-ease {
+  transition: transform 0.4s ease;
+}
+.box-ease-in {
+  transition: transform 0.4s ease-in;
+}
+.box-ease-out {
+  transition: transform 0.4s ease-out;
+}
+.box-ease-in-out {
+  transition: transform 0.4s ease-in-out;
+}
+.box-spring {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.box:hover {
+  transform: translateX(120px);
+}
+```
+
+---
+
+## Which Properties You Can Animate Using CSS Transitions
+
+Not every CSS property can be transitioned. To be animatable, a property must have an intermediate, mathematically interpolatable value (such as numbers, lengths, percentages, colors, or coordinates). Discrete properties like `display: block` to `display: none` cannot smoothly interpolate (though modern CSS supports discrete transitions via `@starting-style` and `transition-behavior: allow-discrete`).
+
+### Complete Alphabetical Reference of Animatable Properties
+
+- `background`
+- `background-color`
+- `background-position`
+- `background-size`
+- `border`
+- `border-color`
+- `border-width`
+- `border-bottom`
+- `border-bottom-color`
+- `border-bottom-left-radius`
+- `border-bottom-right-radius`
+- `border-bottom-width`
+- `border-left`
+- `border-left-color`
+- `border-left-width`
+- `border-radius`
+- `border-right`
+- `border-right-color`
+- `border-right-width`
+- `border-spacing`
+- `border-top`
+- `border-top-color`
+- `border-top-left-radius`
+- `border-top-right-radius`
+- `border-top-width`
+- `bottom`
+- `box-shadow`
+- `caret-color`
+- `clip`
+- `color`
+- `column-count`
+- `column-gap`
+- `column-rule`
+- `column-rule-color`
+- `column-rule-width`
+- `column-width`
+- `columns`
+- `content`
+- `filter`
+- `flex`
+- `flex-basis`
+- `flex-grow`
+- `flex-shrink`
+- `font`
+- `font-size`
+- `font-size-adjust`
+- `font-stretch`
+- `font-weight`
+- `grid-area`
+- `grid-auto-columns`
+- `grid-auto-flow`
+- `grid-auto-rows`
+- `grid-column-end`
+- `grid-column-gap`
+- `grid-column-start`
+- `grid-column`
+- `grid-gap`
+- `grid-row-end`
+- `grid-row-gap`
+- `grid-row-start`
+- `grid-row`
+- `grid-template-areas`
+- `grid-template-columns`
+- `grid-template-rows`
+- `grid-template`
+- `grid`
+- `height`
+- `left`
+- `letter-spacing`
+- `line-height`
+- `margin`
+- `margin-bottom`
+- `margin-left`
+- `margin-right`
+- `margin-top`
+- `max-height`
+- `max-width`
+- `min-height`
+- `min-width`
+- `opacity`
+- `order`
+- `outline`
+- `outline-color`
+- `outline-offset`
+- `outline-width`
+- `padding`
+- `padding-bottom`
+- `padding-left`
+- `padding-right`
+- `padding-top`
+- `perspective`
+- `perspective-origin`
+- `quotes`
+- `right`
+- `tab-size`
+- `text-decoration`
+- `text-decoration-color`
+- `text-indent`
+- `text-shadow`
+- `top`
+- `transform`
+- `vertical-align`
+- `visibility`
+- `width`
+- `word-spacing`
+- `z-index`
+
+---
+
+## Performance and Hardware Acceleration (Rendering Pipeline)
+
+While all the properties above are animatable, they perform with drastically different efficiency depending on which stage of the browser rendering pipeline they trigger:
+
+```
+┌───────────────────────────────────────────────────────────┐
+│              Browser Rendering Pipeline                   │
+│                                                           │
+│  JavaScript / CSS →  [ Layout ]  →  [ Paint ]  → [ Composite ]  │
+│                       (Reflow)      (Repaint)      (GPU)  │
+└───────────────────────────────────────────────────────────┘
+```
+
+### 1. Compositor-Only Properties (⚡ 60fps / 120fps Hardware Accelerated)
+
+These properties bypass both Layout (reflow) and Paint. They are calculated directly on the **GPU Compositor Thread**:
+
+- **Properties:** `transform` (`translate`, `scale`, `rotate`), `opacity`, `filter`.
+- **Architectural Rule:** Always prefer transitioning `transform: translateY(-4px)` over `top: -4px` or `margin-top: -4px`.
+
+### 2. Paint-Only Properties (⚠️ Medium Cost)
+
+These bypass Layout calculations but trigger a **Repaint** of the element's raster pixels across CPU/GPU:
+
+- **Properties:** `color`, `background-color`, `border-color`, `box-shadow`, `outline-color`, `visibility`.
+- **Architectural Rule:** Safe for hover and focus micro-interactions, but avoid animating continuously across large screen surfaces.
+
+### 3. Layout / Reflow Triggering Properties (❌ High Cost / Janky)
+
+These force the browser to recalculate the exact geometry and position of the element and all of its surrounding siblings in the DOM tree:
+
+- **Properties:** `width`, `height`, `padding`, `margin`, `top`, `left`, `right`, `bottom`, `font-size`, `grid-*`, `flex-*`.
+- **Architectural Rule:** Avoid transitioning these during high-frequency animations. Prefer using `transform: scale()` or container transforms instead of animating `width`/`height`.
+
+---
+
+## Best Practices & Golden Rules for CSS Transitions
+
+1. **Never use `transition: all` in production**: Specifying `all` forces the browser to check and recalculate every single style rule on every frame. Always specify exact transition properties (e.g. `transition: opacity 0.2s ease, transform 0.2s ease;`).
+2. **Respect User Accessibility (`prefers-reduced-motion`)**:
+   ```css
+   @media (prefers-reduced-motion: reduce) {
+     *,
+     *::before,
+     *::after {
+       animation-duration: 0.01ms !important;
+       transition-duration: 0.01ms !important;
+     }
+   }
+   ```
+3. **Use `will-change` sparingly**: Only promote elements to their own GPU compositor layer when active performance profiling indicates rendering lag:
+   ```css
+   .card-layer {
+     will-change: transform, opacity;
+   }
+   ```
+
+---
+
+# CSS Animations
+
+## Overview
+
+Unlike CSS Transitions (which require a trigger like `:hover` or class changes to interpolate between two states: _Initial → Final_), **CSS Animations** allow for complex, multi-stage, recurring, and self-triggering animations using `@keyframes`.
+
+---
+
+## The CSS Animation Properties
+
+CSS animations offer a variety of discrete parameters you can configure:
+
+| Property                        | Description                                                                                          | Allowed Values & Default                                                                                                                       |
+| :------------------------------ | :--------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`animation-name`**            | The identifier referencing a keyframe timeline created with `@keyframes`.                            | Name identifier (e.g. `spin`, `fadeSlide`). Default: `none`.                                                                                   |
+| **`animation-duration`**        | How long one complete cycle of the animation takes to finish.                                        | Time in seconds (`s`) or milliseconds (`ms`). Default: `0s`.                                                                                   |
+| **`animation-timing-function`** | The acceleration curve governing intermediate values.                                                | `ease` (default), `linear`, `ease-in`, `ease-out`, `ease-in-out`, `cubic-bezier()`, `steps()`.                                                 |
+| **`animation-delay`**           | The amount of time to wait before starting execution after the animation is applied.                 | Positive time (`200ms`) or negative time (`-500ms` jumps immediately into mid-animation). Default: `0s`.                                       |
+| **`animation-iteration-count`** | How many times the animation sequence should repeat.                                                 | A positive integer (`3`) or `infinite` (loops forever). Default: `1`.                                                                          |
+| **`animation-direction`**       | The playback direction across iteration cycles.                                                      | `normal` (forward), `reverse` (backward), `alternate` (forward then backward), `alternate-reverse` (backward then forward). Default: `normal`. |
+| **`animation-fill-mode`**       | How styles are applied to the element **before** it starts (during delay) and **after** it finishes. | `none` (default), `forwards` (retains final keyframe styles), `backwards` (applies 1st keyframe during delay), `both` (applies both rules).    |
+| **`animation-play-state`**      | Controls runtime execution pause/resume.                                                             | `running` (default), `paused`.                                                                                                                 |
+
+---
+
+## The `animation` Shorthand Syntax
+
+The `animation` property is a single shorthand combining all individual properties in the following standard order:
+
+$$\text{animation: } \langle\text{name}\rangle\ \langle\text{duration}\rangle\ \langle\text{timing-function}\rangle\ \langle\text{delay}\rangle\ \langle\text{iteration-count}\rangle\ \langle\text{direction}\rangle\ \langle\text{fill-mode}\rangle\ \langle\text{play-state}\rangle\text{;}$$
+
+### Standard Examples:
+
+```css
+/* Full shorthand with all properties */
+.container {
+  animation: spin 10s linear 0s infinite normal forwards running;
+}
+
+/* Common concise forms */
+.spinner {
+  animation: spin 10s linear infinite;
+}
+
+.toast-notification {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.badge-pulse {
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+```
+
+> **Note on Time Parsing**: When both `duration` and `delay` are provided, the browser always parses the **first time value as `duration`** and the **second time value as `delay`**.
+
+---
+
+## Keyframe Definition Syntax (`@keyframes`)
+
+A `@keyframes` rule defines the style milestones at percentage markers along the timeline ($0\%$ to $100\%$):
+
+```css
+/* Simple 2-point keyframe (from / to) */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Multi-stage percentage keyframe */
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+```
+
+---
+
+## JavaScript Events for CSS Animations
+
+You can synchronize JavaScript application logic with CSS animation lifecycles using standard DOM event listeners:
+
+| Event Name               | Dispatched When                                                                                        | Event Object Properties                               |
+| :----------------------- | :----------------------------------------------------------------------------------------------------- | :---------------------------------------------------- |
+| **`animationstart`**     | The animation begins playing (after any declared `animation-delay` completes).                         | `e.animationName`, `e.elapsedTime`, `e.pseudoElement` |
+| **`animationend`**       | The animation sequence finishes its final iteration. _(Does NOT fire if `iteration-count: infinite`)._ | `e.animationName`, `e.elapsedTime`, `e.pseudoElement` |
+| **`animationiteration`** | One cycle finishes and the next iteration starts.                                                      | `e.animationName`, `e.elapsedTime`, `e.pseudoElement` |
+| **`animationcancel`**    | The animation is aborted early (e.g., element removed from DOM or `animation-name` changed).           | `e.animationName`, `e.elapsedTime`                    |
+
+### JavaScript Code Implementation
+
+```javascript
+const container = document.querySelector('.container');
+
+// 1. Animation Started
+container.addEventListener('animationstart', (e) => {
+  console.log(`Animation "${e.animationName}" started at ${e.elapsedTime}s`);
+});
+
+// 2. Each Iteration Cycle
+container.addEventListener('animationiteration', (e) => {
+  console.log(`Completed an iteration of "${e.animationName}". Total elapsed: ${e.elapsedTime}s`);
+});
+
+// 3. Animation Completed
+container.addEventListener('animationend', (e) => {
+  console.log(`Animation "${e.animationName}" ended. Cleaning up node...`);
+  // Example: remove element from DOM after exit animation
+  container.remove();
+});
+```
+
+### ⚠️ Critical Gotcha with `animationstart` on Initial Page Load:
+
+> If an animation runs immediately on page load (without a delay or trigger class), your JavaScript bundle might execute **after** the CSS animation has already begun rendering. In that scenario, the initial `animationstart` event will have already fired and your listener will miss it.
+>
+> **Fix**: Trigger the animation by attaching a CSS class from JavaScript (`element.classList.add('animate-spin')`) _after_ your event listeners have been registered.
+
+---
+
+## CSS Transitions vs. CSS Animations
+
+| Feature            | CSS Transitions                                                         | CSS Animations                                                      |
+| :----------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------ |
+| **State Triggers** | Requires an explicit trigger (`:hover`, `:focus`, class toggle via JS). | Runs automatically on render or continuously in loops.              |
+| **Milestones**     | Only 2 states: _A (Start) → B (End)_.                                   | Unlimited intermediate keyframes ($0\% \dots 50\% \dots 100\%$).    |
+| **Looping**        | Cannot loop natively without JavaScript re-triggers.                    | Loops indefinitely with `animation-iteration-count: infinite`.      |
+| **Direction**      | Reverses on state retreat (e.g. mouse leave).                           | Custom direction control (`normal`, `reverse`, `alternate`).        |
+| **Use Cases**      | Interactive UI state changes (buttons, hover effects, menus).           | Continuous loaders, spinners, complex choreography, splash effects. |
+
+---
+
+## Practical Animation Examples
+
+### 1. 60 FPS Infinite Spinner (GPU Accelerated)
+
+```css
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  will-change: transform;
+}
+```
+
+### 2. Shimmer Skeleton Loader (Content Loading Placeholder)
+
+```css
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-card {
+  width: 100%;
+  height: 120px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+```
+
+### 3. Modal Entrance with `animation-fill-mode: forwards`
+
+```css
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal {
+  animation: modalEnter 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+```
