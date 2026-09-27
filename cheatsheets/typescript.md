@@ -1028,35 +1028,45 @@ export {}; // Ensure file is treated as a module
 
 ## 16. Compiler Options Worth Knowing (`tsconfig.json`)
 
-Always enable strict modes in production configurations:
+Always enable strict modes and modular boundaries in production configurations:
 
-- **`strict`**: Enforces all strict type-checking flags automatically (`noImplicitAny`, `strictNullChecks`, etc.). Enabling this is the baseline for any type-safe project.
-- **`noImplicitAny`**: Raises an error if a variable's type falls back to `any` implicitly because the compiler cannot infer it. Prevents accidental escape hatches.
-- **`strictNullChecks`**: Makes `null` and `undefined` distinct types that must be explicitly checked. Without this, `null` can be assigned to `string` or `number` variables, leading to runtime crashes.
-- **`exactOptionalPropertyTypes`**: Ensures that optional properties (`age?: number`) cannot be explicitly assigned `undefined` (e.g., `user.age = undefined` is blocked) unless the type is explicitly unioned with `undefined` (`age?: number | undefined`).
-- **`noUncheckedIndexedAccess`**: Adds `| undefined` automatically to lookup elements retrieved from objects/arrays via indexes. Forces safety when accessing elements dynamically.
+- **`strict`**: Enforces all strict type-checking flags automatically (`noImplicitAny`, `strictNullChecks`, `strictFunctionTypes`, `strictBindCallApply`, `useUnknownInCatchVariables`, etc.).
+- **`exactOptionalPropertyTypes`**: Ensures that optional properties (`age?: number`) cannot be explicitly assigned `undefined` (e.g., `user.age = undefined` is blocked) unless explicitly typed `number | undefined`.
+- **`noUncheckedIndexedAccess`**: Adds `| undefined` automatically to lookup elements retrieved from objects/arrays via indexes.
   ```ts
   const array: string[] = ['apple'];
-  const item = array[5]; // Inferred as: string | undefined (instead of string)
+  const item = array[5]; // Inferred as: string | undefined (forces bounds check!)
   ```
-- **`noImplicitOverride`**: Ensures class methods that override a base class method are explicitly marked using the `override` keyword, preventing accidental method overrides.
-- **`isolatedModules`**: Enforces compiling each file as an independent module. Essential when using modern transpilers (Vite, esbuild, Babel) that compile files one by one and do not perform cross-file type checks during transpilation.
-- **`skipLibCheck`**: Skips type checking of `.d.ts` declaration files (including `node_modules`). Massively speeds up build and hot-reload times while trusting library type definitions.
+- **`noImplicitOverride`**: Requires class methods that override a base method to use the `override` keyword.
+- **`noImplicitReturns`**: Ensures all branching code paths in a function explicitly return a value.
+- **`noFallthroughCasesInSwitch`**: Prevents accidental fall-through bugs between switch cases missing a `break` or `return`.
+- **`forceConsistentCasingInFileNames`**: Prevents OS-specific import bugs (e.g., macOS/Windows being case-insensitive while Linux CI fails on `User.ts` vs `user.ts`).
+- **`isolatedModules`**: Ensures each file can be transpiled safely in isolation by modern bundlers (Vite, esbuild, SWC).
+- **`verbatimModuleSyntax`** _(TS 5.0+)_: The modern standard replacing legacy module flags. Enforces strict `import type` vs `import` so bundlers know with 100% certainty what to erase without AST cross-file analysis.
+- **`skipLibCheck`**: Skips type checking of `.d.ts` declaration files (including `node_modules`), dramatically speeding up compile and hot-reload times.
 
 ### Recommended `tsconfig.json` Configuration
 
 ```json
 {
   "compilerOptions": {
+    /* 1. Base Type Safety */
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
+
+    /* 2. Additional Strictness (Not included in "strict") */
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* 3. Modern Bundler & Module Interop (TS 5.0+) */
+    "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "verbatimModuleSyntax": true,
+
+    /* 4. Performance & Build Speed */
+    "skipLibCheck": true
   }
 }
 ```
