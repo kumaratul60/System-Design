@@ -21,6 +21,13 @@ This is a comprehensive collection of interview questions, ranging from core fun
 - **Q:** What is the difference between `npm install` and `npm ci`?
 - **Q:** How would you re-render a component when the window is resized?
 
+### CSS & Layout Engines
+
+- **Q:** An element is set to `width: 100vw` and it’s causing a horizontal scrollbar on desktop. Why?
+  - **Answer**: `100vw` includes the width of the vertical scrollbar track (~15-17px on Windows/Linux), whereas the document layout (`100%`) excludes it. Because `100vw > 100%`, it overflows horizontally. Fix with `width: 100%` or `scrollbar-gutter: stable`.
+- **Q:** Why does `width: 100%` with `margin: 1rem` overflow even when `box-sizing: border-box` is set?
+  - **Answer**: `box-sizing: border-box` only contains padding and border within the declared width; margins remain outside the border box ($100\% + 2\text{rem}$). Fix with `width: auto`.
+
 ---
 
 ## 🟡 Level 2: Senior / SDE-2 (Implementation & Trade-offs)

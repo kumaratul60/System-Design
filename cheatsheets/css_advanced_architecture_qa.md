@@ -22,18 +22,19 @@
 - [14. Mobile Viewport Quirks: `100vh` vs `100%` vs `100dvh`](#14-mobile-viewport-quirks-100vh-vs-100-vs-100dvh)
 - [15. Application Scale (`rem`) vs Component Scale (`em`)](#15-application-scale-rem-vs-component-scale-em)
 - [16. `em` Compounding in Nested Component Hierarchies](#16-em-compounding-in-nested-component-hierarchies)
+- [17. The `100vw` Desktop Horizontal Scrollbar Bug](#17-the-100vw-desktop-horizontal-scrollbar-bug)
 
 ---
 
-# 1. CSS Grid Responsive RAM Overflow Fix (`minmax(min(450px, 100%), 1fr)`)
+## 1. CSS Grid Responsive RAM Overflow Fix (`minmax(min(450px, 100%), 1fr)`)
 
-## The Problem
+### The Problem
 
 Your auto-grid uses `grid-template-columns: repeat(auto-fit, minmax(450px, 1fr))`. On a narrow mobile screen (e.g., viewport width = $360\text{px}$), the grid overflows horizontally and introduces an unwanted horizontal scrollbar. What do you change `minmax()` to?
 
 ---
 
-## 1. WHAT: The RAM (Repeat, Auto, Minmax) Responsive Pattern
+### 1. WHAT: The RAM (Repeat, Auto, Minmax) Responsive Pattern
 
 The correct property change is:
 
@@ -47,7 +48,7 @@ The correct property change is:
 
 ---
 
-## 2. WHY: How Grid Track Sizing Evaluates
+### 2. WHY: How Grid Track Sizing Evaluates
 
 In `repeat(auto-fit, minmax(450px, 1fr))`:
 
@@ -55,12 +56,12 @@ In `repeat(auto-fit, minmax(450px, 1fr))`:
 2. When the viewport or parent container width is smaller than `450px` (e.g. `360px` on a mobile device), the browser grid algorithm refuses to shrink the column below `450px`.
 3. Because $450\text{px} > 360\text{px}$, the grid track breaks out of the viewport by $90\text{px}$.
 
-### Why `min(450px, 100%)` Fixes It:
+#### Why `min(450px, 100%)` Fixes It:
 
 - **On Desktop / Tablet screens ($> 450\text{px}$)**: `min(450px, 100%)` evaluates to `450px`. Columns are at least $450\text{px}$ wide and wrap automatically into multiple columns.
 - **On Mobile screens ($< 450\text{px}$, e.g. $360\text{px}$)**: `min(450px, 100%)` evaluates to `100%` ($360\text{px}$). The column shrinks to perfectly match the full screen width without overflowing.
 
-### Why other options fail:
+#### Why other options fail:
 
 - `minmax(0, 1fr)` ❌ — Allows columns to collapse to 0, which breaks card wrapping and packs dozens of microscopic columns onto wide desktop screens.
 - `minmax(450px, 100%)` ❌ — The minimum limit is still `450px`, so narrow screens still overflow.
@@ -68,7 +69,7 @@ In `repeat(auto-fit, minmax(450px, 1fr))`:
 
 ---
 
-## 3. HOW: Production Code Example
+### 3. HOW: Production Code Example
 
 ```css
 .card-grid {
@@ -84,21 +85,21 @@ In `repeat(auto-fit, minmax(450px, 1fr))`:
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > When building auto-wrapping CSS Grids using `repeat(auto-fit, minmax(MIN, 1fr))`, hardcoding a fixed pixel value for `MIN` causes horizontal overflow on screens narrower than `MIN`. Wrapping the minimum in `min(MIN, 100%)` dynamically clamps the track minimum to `100%` of the viewport on narrow devices, eliminating mobile overflow bugs without media queries.
 
 ---
 
-# 2. The `width: 100%` + `margin` + `box-sizing: border-box` Paradox
+## 2. The `width: 100%` + `margin` + `box-sizing: border-box` Paradox
 
-## The Problem
+### The Problem
 
 A block element has `width: 100%`, `padding: 1rem`, and `margin: 1rem`. It overflows its parent container horizontally. You add `box-sizing: border-box`, but it **still overflows**. Why?
 
 ---
 
-## 1. WHAT: The Box Model Hierarchy
+### 1. WHAT: The Box Model Hierarchy
 
 The CSS Box Model is structured in 4 concentric layers:
 
@@ -122,7 +123,7 @@ The CSS Box Model is structured in 4 concentric layers:
 
 ---
 
-## 2. WHY: The Mathematical Formula
+### 2. WHY: The Mathematical Formula
 
 When you write `width: 100%`, the element's border box takes up **100% of the parent's content width**.
 
@@ -135,7 +136,7 @@ Because $100\% + 2\text{rem} > 100\%$, the element overflows the parent's right 
 
 ---
 
-## 3. HOW: Solutions & Best Practices
+### 3. HOW: Solutions & Best Practices
 
 ```css
 /* ✅ Idiomatic CSS Fix: Use width: auto */
@@ -156,21 +157,21 @@ Because $100\% + 2\text{rem} > 100\%$, the element overflows the parent's right 
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > `box-sizing: border-box` includes padding and borders inside the declared width, but margins always live outside the border box. Declaring `width: 100%` with margins causes the total width to be $100\% + 2 \times \text{margin}$. The correct solution is removing `width: 100%` and relying on `width: auto`, which automatically accommodates margins within normal block formatting flow.
 
 ---
 
-# 3. Perimeter Border-Edge Alignment (`offset-path: border-box`)
+## 3. Perimeter Border-Edge Alignment (`offset-path: border-box`)
 
-## The Problem
+### The Problem
 
 You have a decorative element inside a `.card` (`position: relative`). You want it to sit precisely on the card's outer border line so it can move anywhere around the perimeter. Which CSS property achieves this?
 
 ---
 
-## 1. WHAT: CSS Motion Path & Geometry Boxes
+### 1. WHAT: CSS Motion Path & Geometry Boxes
 
 The property is **`offset-path: border-box;`**.
 
@@ -178,7 +179,7 @@ The CSS Motion Path specification accepts `<geometry-box>` keywords (`border-box
 
 ---
 
-## 2. WHY: How `offset-path: border-box` Works
+### 2. WHY: How `offset-path: border-box` Works
 
 - `offset-path: border-box;` tells the browser to generate a motion path matching the **exact perimeter rectangle of the containing block's border box**.
 - `offset-distance: <percentage>` moves the element along the perimeter ($0\%$ to $100\%$).
@@ -186,7 +187,7 @@ The CSS Motion Path specification accepts `<geometry-box>` keywords (`border-box
 
 ---
 
-## 3. HOW: Code Implementation
+### 3. HOW: Code Implementation
 
 ```css
 .card {
@@ -218,21 +219,21 @@ The CSS Motion Path specification accepts `<geometry-box>` keywords (`border-box
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > `offset-path: border-box` uses the containing block's border box geometry as a continuous 2D motion path. Combined with `offset-distance` and `offset-anchor: 50% 50%`, it enables smooth positioning and animation of decorative elements along a component's outer border perimeter.
 
 ---
 
-# 4. Why Vertical Percentage Padding/Margin Resolves Against Width
+## 4. Why Vertical Percentage Padding/Margin Resolves Against Width
 
-## The Problem
+### The Problem
 
 If you declare `padding-top: 50%` or `margin-top: 20%` on a child element, why does the browser compute the pixel value from the parent's **width** instead of its **height**?
 
 ---
 
-## 1. WHAT: Inline-Axis Percentage Resolution
+### 1. WHAT: Inline-Axis Percentage Resolution
 
 In standard CSS layout specifications (CSS Box Model Level 3 & CSS2):
 
@@ -240,7 +241,7 @@ In standard CSS layout specifications (CSS Box Model Level 3 & CSS2):
 
 ---
 
-## 2. WHY: Preventing Infinite Layout Reflow Loops
+### 2. WHY: Preventing Infinite Layout Reflow Loops
 
 If vertical padding/margins resolved against parent **height**:
 
@@ -253,7 +254,7 @@ By resolving vertical padding/margins against the **width** (which is already kn
 
 ---
 
-## 3. HOW: Modern Aspect Ratio vs Legacy Padding Hack
+### 3. HOW: Modern Aspect Ratio vs Legacy Padding Hack
 
 ```css
 /* ❌ Legacy Aspect Ratio Hack */
@@ -273,21 +274,21 @@ By resolving vertical padding/margins against the **width** (which is already kn
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Vertical padding and margins resolve against the parent's width (inline size) to prevent cyclic height recalculation loops. For responsive boxes, replace legacy vertical padding hacks with the native `aspect-ratio` property.
 
 ---
 
-# 5. Container Query Units Fallback Behavior (`cqi` without Container)
+## 5. Container Query Units Fallback Behavior (`cqi` without Container)
 
-## The Problem
+### The Problem
 
 If no ancestor element declares `container-type`, but an element uses `cqi` units, what does it measure?
 
 ---
 
-## 1. WHAT: The Viewport Fallback Rule
+### 1. WHAT: The Viewport Fallback Rule
 
 According to **W3C CSS Containment Level 3**:
 
@@ -299,28 +300,28 @@ According to **W3C CSS Containment Level 3**:
 
 ---
 
-## 2. WHY: The Asymmetry Between `@container` and `cqi` Units
+### 2. WHY: The Asymmetry Between `@container` and `cqi` Units
 
 | CSS Feature                                 | Behavior When NO `container-type` Exists                               |
 | :------------------------------------------ | :--------------------------------------------------------------------- |
 | **`@container (min-width: 400px) { ... }`** | **Fails / Evaluates to `false`**. Styles inside the block are ignored. |
 | **`font-size: 5cqi;` or `width: 50cqi;`**   | **Executes anyway!** Falls back to 5% / 50% of the browser's viewport. |
 
-### Practical Danger:
+#### Practical Danger:
 
 If a developer forgets `container-type: inline-size` on a wrapper, a component placed in a narrow `250px` sidebar will calculate `cqi` based on a full `1920px` screen viewport, causing text to blow up and overflow the sidebar.
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Container query units do not fail or resolve to zero without a container—they silently fall back to the Small Viewport (`svi`/`svw`). Always ensure `container-type: inline-size` is declared on the component wrapper.
 
 ---
 
-# 6. `cqi` (Container Query Inline) vs `cqw` & `writing-mode`
+## 6. `cqi` (Container Query Inline) vs `cqw` & `writing-mode`
 
-## 1. WHAT: Logical vs Physical Container Dimensions
+### 1. WHAT: Logical vs Physical Container Dimensions
 
 - **`cqw` (Container Query Width)**: A **physical unit** tied strictly to the horizontal X-axis.
 - **`cqi` (Container Query Inline)**: A **logical unit** that adapts dynamically to the document or component `writing-mode`.
@@ -332,7 +333,7 @@ If a developer forgets `container-type: inline-size` on a wrapper, a component p
 
 ---
 
-## 2. WHY: `cqi` is the Modern Best Practice
+### 2. WHY: `cqi` is the Modern Best Practice
 
 1. **Internationalization (i18n)**: Automatically adapts when components render in vertical writing systems without manual CSS overrides.
 2. **Logical Property Consistency**: Pairs with `padding-inline`, `margin-inline`, and `inline-size`.
@@ -340,26 +341,26 @@ If a developer forgets `container-type: inline-size` on a wrapper, a component p
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > `cqi` is a logical unit representing 1% of the container's inline size. In horizontal text it matches `cqw`, but in vertical writing modes it tracks height. It should be preferred over physical `cqw` for internationalized modular design systems.
 
 ---
 
-# 7. Major Pitfalls of Container Query Units
+## 7. Major Pitfalls of Container Query Units
 
-## 1. Silent Viewport Fallback
+### 1. Silent Viewport Fallback
 
 - **Problem**: Forgetting `container-type: inline-size`.
 - **Consequence**: `cqi` measures the entire browser window instead of the component width.
 
-## 2. Infinite Reflow Loops with `container-type: size`
+### 2. Infinite Reflow Loops with `container-type: size`
 
 - **Problem**: Setting `container-type: size` on a container whose height depends on child text wrapping.
 - **Consequence**: Child text wraps -> container height changes -> query re-evaluates -> infinite layout loop.
 - **Fix**: Use `container-type: inline-size`. Only use `size` if the container has a strictly fixed `height`.
 
-## 3. Unclamped Typography
+### 3. Unclamped Typography
 
 - **Problem**: Writing raw `font-size: 4cqi`.
 - **Consequence**: Text becomes microscopic ($6\text{px}$) in narrow widgets and massive ($50\text{px}$) in wide panels.
@@ -368,35 +369,35 @@ If a developer forgets `container-type: inline-size` on a wrapper, a component p
   font-size: clamp(0.9rem, 3.5cqi + 0.5rem, 2rem);
   ```
 
-## 4. `display: inline` Containers
+### 4. `display: inline` Containers
 
 - **Problem**: Adding `container-type` to a `<span>`.
 - **Consequence**: Container queries do not function because inline elements do not generate block formatting or containment boxes. Must be `block`, `inline-block`, `grid`, or `flex`.
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Build container query components with `container-type: inline-size`, constrain typography with `clamp()`, and name nested containers with `container-name` to prevent inheritance collisions.
 
 ---
 
-# 8. CSS `subgrid` for Multi-Column Baseline Alignment
+## 8. CSS `subgrid` for Multi-Column Baseline Alignment
 
-## The Problem
+### The Problem
 
 In a 3-column card grid, each card has a title, variable-length description, and footer button. Because text lengths vary, buttons across sibling cards do not align horizontally.
 
 ---
 
-## 1. WHAT & WHY: Isolated Formatting vs Subgrid
+### 1. WHAT & WHY: Isolated Formatting vs Subgrid
 
 - **Standard Grid**: Each card creates an isolated formatting context. Card A cannot share row heights with Card B.
 - **Subgrid (`grid-template-rows: subgrid`)**: Allows child cards to span rows of the parent grid and participate directly in the parent's track sizing.
 
 ---
 
-## 2. HOW: Code Implementation
+### 2. HOW: Code Implementation
 
 ```css
 .card-grid {
@@ -426,22 +427,22 @@ In a 3-column card grid, each card has a title, variable-length description, and
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > `grid-template-rows: subgrid` allows nested component elements to adopt and participate in the parent grid's tracks, ensuring perfect vertical alignment across variable-content sibling cards.
 
 ---
 
-# 9. Native Staggered Animations with `sibling-index()` & `sibling-count()`
+## 9. Native Staggered Animations with `sibling-index()` & `sibling-count()`
 
-## 1. WHAT: CSS Values and Units Level 5
+### 1. WHAT: CSS Values and Units Level 5
 
 - **`sibling-index()`**: Returns the 1-based index integer of the element among its siblings.
 - **`sibling-count()`**: Returns the total number of siblings in the parent container.
 
 ---
 
-## 2. HOW: Staggered Animations & Radial Layouts
+### 2. HOW: Staggered Animations & Radial Layouts
 
 ```css
 /* Pure CSS Staggered List */
@@ -460,22 +461,22 @@ In a 3-column card grid, each card has a title, variable-length description, and
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > `sibling-index()` and `sibling-count()` enable pure, native CSS staggered animations and geometric distributions without Sass `@for` loops or inline JavaScript custom properties.
 
 ---
 
-# 10. Form Validation UX: `:user-invalid` vs `:invalid`
+## 10. Form Validation UX: `:user-invalid` vs `:invalid`
 
-## 1. The Flaw in `:invalid`
+### 1. The Flaw in `:invalid`
 
 - `:invalid` matches immediately on page load before the user has touched the form.
 - Pristine `<input required>` elements flash red error borders immediately, creating hostile UX.
 
 ---
 
-## 2. The Solution: `:user-invalid`
+### 2. The Solution: `:user-invalid`
 
 - `:user-invalid` matches **only after** the user has interacted with the input (typed and blurred, or attempted to submit).
 
@@ -493,21 +494,21 @@ input:user-valid {
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Replace `:invalid` with `:user-invalid` to ensure validation error states only appear after user interaction, eliminating the need for client-side JavaScript `touched` state tracking.
 
 ---
 
-# 11. Conditional `border-radius` Using `cqi` and `sign()`
+## 11. Conditional `border-radius` Using `cqi` and `sign()`
 
-## The Problem
+### The Problem
 
 When a card fits into a desktop grid ($> 500\text{px}$), it should have `border-radius: 16px`. When it collapses into a mobile full-bleed layout ($\le 500\text{px}$), the border-radius should dynamically become `0px`.
 
 ---
 
-## HOW: Code Implementation
+### HOW: Code Implementation
 
 ```css
 .card-wrapper {
@@ -530,15 +531,15 @@ When a card fits into a desktop grid ($> 500\text{px}$), it should have `border-
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Combining container inline units (`100cqi`) with `sign()` or `clamp()` creates mathematical switch logic in pure CSS, enabling conditional styling (like full-bleed flattening) without media queries.
 
 ---
 
-# 12. Modern CSS Colors: Space-Separated Syntax, `oklch()`, & `color-mix()`
+## 12. Modern CSS Colors: Space-Separated Syntax, `oklch()`, & `color-mix()`
 
-## 1. Space-Separated Syntax
+### 1. Space-Separated Syntax
 
 Modern CSS unifies all color functions to space-separated arguments with a `/` for alpha:
 
@@ -550,14 +551,14 @@ color: oklch(0.65 0.25 140 / 0.5);
 
 ---
 
-## 2. Why `oklch()` is Superior for Design Systems
+### 2. Why `oklch()` is Superior for Design Systems
 
 - In sRGB and HSL, perceived brightness varies wildly across hues (yellow looks brighter than blue at the same $50\%$ lightness).
 - `oklch()` is **perceptually uniform**: equal lightness values have identical perceived luminance to the human eye, preventing accessible contrast ratios ($4.5:1$) from breaking when swapping palette hues.
 
 ---
 
-## 3. Dynamic Tinting with `color-mix()`
+### 3. Dynamic Tinting with `color-mix()`
 
 ```css
 /* Mix 20% primary with 80% white in oklch space */
@@ -566,22 +567,22 @@ background: color-mix(in oklch, var(--primary) 20%, white);
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > `oklch()` ensures perceptually uniform palettes that maintain WCAG accessibility compliance across theme swaps, while `color-mix()` replaces Sass color functions with native browser calculations.
 
 ---
 
-# 13. CSS Pixels (`px`) vs Physical Retina Pixels & DPR
+## 13. CSS Pixels (`px`) vs Physical Retina Pixels & DPR
 
-## 1. WHAT: Abstract CSS Pixels vs Hardware Dots
+### 1. WHAT: Abstract CSS Pixels vs Hardware Dots
 
 - **CSS Pixel (`px`)**: A logical, abstract unit of coordinate space.
 - **Physical Pixel**: An actual microscopic hardware LED/OLED emitter on the screen.
 
 ---
 
-## 2. WHY: Device Pixel Ratio (DPR)
+### 2. WHY: Device Pixel Ratio (DPR)
 
 $$\text{Physical Pixels} = \text{CSS Pixels} \times \text{Device Pixel Ratio (DPR)}$$
 
@@ -591,21 +592,21 @@ $$\text{Physical Pixels} = \text{CSS Pixels} \times \text{Device Pixel Ratio (DP
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > CSS pixels represent angular resolution to ensure physical layout dimensions remain identical across displays, while high-DPI screens use higher DPRs to render vector curves, fonts, and borders with superior sharpness.
 
 ---
 
-# 14. Mobile Viewport Quirks: `100vh` vs `100%` vs `100dvh`
+## 14. Mobile Viewport Quirks: `100vh` vs `100%` vs `100dvh`
 
-## 1. The Mobile Viewport Bug with `100vh`
+### 1. The Mobile Viewport Bug with `100vh`
 
 On mobile browsers (iOS Safari, Chrome Android), dynamic address bars expand and collapse. Standard `100vh` calculates assuming the address bar is hidden, causing `100vh` containers to overflow the visible screen and cut off bottom action buttons.
 
 ---
 
-## 2. Modern Viewport Units Solution
+### 2. Modern Viewport Units Solution
 
 - **`100svh` (Small Viewport)**: Safe height assuming toolbars are fully expanded.
 - **`100lvh` (Large Viewport)**: Max height assuming toolbars are fully collapsed.
@@ -620,15 +621,15 @@ On mobile browsers (iOS Safari, Chrome Android), dynamic address bars expand and
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Use `100dvh` for dynamic fullscreen mobile layouts and `100svh` for guaranteed visible space to prevent mobile browser address bars from obscuring UI buttons.
 
 ---
 
-# 15. Application Scale (`rem`) vs Component Scale (`em`)
+## 15. Application Scale (`rem`) vs Component Scale (`em`)
 
-## 1. Sizing Boundaries
+### 1. Sizing Boundaries
 
 - **`rem` (Application Scale)**: Based on root `html` font size ($16\text{px}$). Scales globally with user accessibility preferences. Use for typography, layout grids, container max-widths, and design system spacing tokens.
 - **`em` (Component Scale)**: Based on the immediate element/parent font size. Scales proportionally with local typography. Use for button padding, inline icons, badges, and chips.
@@ -642,15 +643,15 @@ On mobile browsers (iOS Safari, Chrome Android), dynamic address bars expand and
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Explicit architectural boundaries dictate using `rem` for global typography and layout rhythm, and `em` strictly for component-internal spacing that must scale with font variations.
 
 ---
 
-# 16. `em` Compounding in Nested Component Hierarchies
+## 16. `em` Compounding in Nested Component Hierarchies
 
-## 1. The Hidden Compounding Bug
+### 1. The Hidden Compounding Bug
 
 When nested elements repeatedly use `em` for typography:
 $$\text{Grandchild} = 20\text{px} \times 1.5 \times 1.5 = 45\text{px}$$
@@ -660,13 +661,67 @@ Typography compounds exponentially, causing reusable components to break dependi
 
 ---
 
-## 2. Best Practice Rule
+### 2. Best Practice Rule
 
 - **Never use `em` for font sizes** in nested component trees.
 - **Use `rem` for all typography**, and restrict `em` exclusively to internal paddings and icons.
 
 ---
 
-## Key Engineering Takeaway
+### Key Engineering Takeaway
 
 > Prevent unintended `em` compounding by enforcing `rem` for typography across design systems, reserving `em` only for component-internal padding and icon alignment.
+
+---
+
+## 17. The `100vw` Desktop Horizontal Scrollbar Bug
+
+### The Problem
+
+**Q: An element is set to `width: 100vw` and it’s causing a horizontal scrollbar on desktop. Why?**
+
+- [x] **100vw includes the width of the page’s scrollbar** _(Correct)_
+- [ ] 100vw is relative to the nearest positioned ancestor, not the viewport
+- [ ] 100vw measures the document width, which grows with content
+- [ ] 100vw rounds up to the nearest whole pixel
+
+---
+
+### 1. WHAT: The Viewport Width vs Document Width Mismatch
+
+- **`100vw`** measures the entire width of the browser viewport window from edge to edge, including the space occupied by the vertical scrollbar (~15px–17px on Windows/Linux desktop).
+- **`100%`** measures the available content box width of the root containing block (`<html>` or `<body>`), which excludes the vertical scrollbar.
+
+```
+┌────────────────────────────────────────────────────────────┐
+│ 100vw (Full Viewport Width INCLUDING Scrollbar)             │
+├──────────────────────────────────────────────┬─────────────┤
+│ 100% (Available Document Layout Width)       │ Scrollbar   │
+│                                              │ (~15-17px)  │
+└──────────────────────────────────────────────┴─────────────┘
+  ◄─────────────────── 100vw > 100% ────────────────────────►
+  💥 Result: Element overflows document by 17px → Horizontal Scrollbar!
+```
+
+---
+
+### 2. WHY: Architectural Mechanics
+
+1. On operating systems with classic persistent scrollbars (Windows, Linux), a vertical scrollbar consumes layout space along the viewport's inline axis.
+2. An element styled with `width: 100vw` calculates its width based on the total viewport window.
+3. Because the document's maximum horizontal space is limited to `100vw - scrollbarWidth`, rendering `100vw` causes the element to overflow horizontally by exactly the width of the scrollbar.
+4. On macOS with overlay scrollbars (which have 0px layout width), this bug often goes unnoticed during local development until tested on Windows or when a physical mouse is connected to macOS.
+
+---
+
+### 3. HOW: Architectural Solutions
+
+1. **Use `width: 100%`**: Resolves against the containing block, automatically accounting for any scrollbar width.
+2. **Apply `scrollbar-gutter: stable`**: Permanently reserves the scrollbar track space to prevent layout shifts and width mismatches.
+3. **Use Modern Logical Inset Units (`100vi`)**: Resolves against the inline viewport size.
+
+---
+
+### Key Engineering Takeaway
+
+> Never use `100vw` for full-width layout containers on the root document. Always prefer `width: 100%` or pair with `scrollbar-gutter: stable` to avoid the 17px desktop scrollbar overflow bug.

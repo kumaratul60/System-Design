@@ -20,6 +20,7 @@
     - [`lh` \& `rlh` (Line Height Units)](#lh--rlh-line-height-units)
   - [2. Viewport Units](#2-viewport-units)
     - [`vw` \& `vh`](#vw--vh)
+      - [⚠️ Interview Gotcha: The `100vw` Desktop Horizontal Scrollbar Bug](#️-interview-gotcha-the-100vw-desktop-horizontal-scrollbar-bug)
     - [`vmin` \& `vmax`](#vmin--vmax)
     - [Modern Viewport Units (`svh` / `lvh` / `dvh`, `svw` / `lvw` / `dvw`)](#modern-viewport-units-svh--lvh--dvh-svw--lvw--dvw)
   - [3. Container Query Units](#3-container-query-units)
@@ -196,6 +197,29 @@ Represents the **height of the lowercase letter "x"** in the current font. Used 
   font-size: 6vw; /* Warning: Can get too small on mobile or massive on 4K; pair with clamp() */
 }
 ```
+
+#### ⚠️ Interview Gotcha: The `100vw` Desktop Horizontal Scrollbar Bug
+
+**Q: An element is set to `width: 100vw` and it’s causing a horizontal scrollbar on desktop. Why?**
+
+- [x] **100vw includes the width of the page’s scrollbar** _(Correct)_
+- [ ] 100vw is relative to the nearest positioned ancestor, not the viewport
+- [ ] 100vw measures the document width, which grows with content
+- [ ] 100vw rounds up to the nearest whole pixel
+
+```
+┌────────────────────────────────────────────────────────────┐
+│ 100vw (Full Viewport Width INCLUDING Scrollbar)             │
+├──────────────────────────────────────────────┬─────────────┤
+│ 100% (Available Document Layout Width)       │ Scrollbar   │
+│                                              │ (~15-17px)  │
+└──────────────────────────────────────────────┴─────────────┘
+  ◄─────────────────── 100vw > 100% ────────────────────────►
+  💥 Result: Element overflows by 17px → Horizontal Scrollbar!
+```
+
+- **Why it happens**: `100vw` measures the **entire browser viewport**, including the vertical scrollbar track (~15px–17px on Windows/Linux). But `100%` calculates width **excluding the scrollbar** (the available layout space of `<html>`). Therefore, `100vw` is larger than the document width, producing an unwanted horizontal scrollbar.
+- **The Solution**: Use `width: 100%` for full-width containers, or use `scrollbar-gutter: stable`, or use modern logical `width: 100vi` / container units.
 
 ---
 

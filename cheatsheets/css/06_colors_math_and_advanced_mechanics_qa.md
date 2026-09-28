@@ -150,3 +150,15 @@ To position and animate an element along the outer perimeter border edge of a co
 ### Q4: How does CSS Subgrid differ from standard CSS Grid?
 
 > **Answer**: Standard CSS Grid creates isolated formatting contexts inside children, preventing elements (like card buttons) from aligning across variable-height siblings. CSS `subgrid` lets nested components adopt parent track sizing (`grid-template-rows: subgrid`), ensuring baseline alignment across rows without hardcoded heights.
+
+### Q5: An element is set to `width: 100vw` and it’s causing a horizontal scrollbar on desktop. Why?
+
+> **Answer**: **`100vw` includes the width of the page’s vertical scrollbar** (~15–17px on Windows/Linux).
+>
+> 1. **The Cause**: The viewport width (`100vw`) measures from the left edge of the browser window to the right edge, spanning across any vertical scrollbar. However, the available document layout width (`100%`) is calculated **excluding** the vertical scrollbar. As a result, `100vw` is wider than the document root by exactly the scrollbar's width, forcing an unwanted horizontal scrollbar.
+> 2. **Options Evaluation**:
+>    - [x] **100vw includes the width of the page’s scrollbar** _(Correct)_
+>    - [ ] 100vw is relative to the nearest positioned ancestor, not the viewport _(Incorrect: `100vw` is always viewport-relative)_
+>    - [ ] 100vw measures the document width, which grows with content _(Incorrect: `100vw` measures viewport, not document)_
+>    - [ ] 100vw rounds up to the nearest whole pixel _(Incorrect: subpixel rounding is not the primary cause)_
+> 3. **The Fix**: Use `width: 100%` instead of `100vw`, or add `scrollbar-gutter: stable` to `html`, or use modern inline viewport units `100vi`.
