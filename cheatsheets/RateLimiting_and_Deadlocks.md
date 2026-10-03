@@ -1,13 +1,13 @@
 # 🛡️ Distributed Rate Limiting & Deadlocks Engineering Master Cheat Sheet
 
-A production-grade, architectural, and interview-ready reference guide covering **Concurrency Deadlocks** and **Distributed Rate Limiting**.
+An architectural and interview-ready reference guide covering **Concurrency Deadlocks** and **Distributed Rate Limiting**.
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
 - [🛡️ Distributed Rate Limiting \& Deadlocks Engineering Master Cheat Sheet](#️-distributed-rate-limiting--deadlocks-engineering-master-cheat-sheet)
-  - [📑 Table of Contents](#-table-of-contents)
+  - [Table of Contents](#table-of-contents)
 - [PART 1: Deadlocks in Concurrent \& Distributed Systems](#part-1-deadlocks-in-concurrent--distributed-systems)
   - [1.1 Core Definition \& The 4 Coffman Conditions](#11-core-definition--the-4-coffman-conditions)
   - [1.2 Deadlock vs. Livelock vs. Starvation](#12-deadlock-vs-livelock-vs-starvation)
@@ -15,6 +15,7 @@ A production-grade, architectural, and interview-ready reference guide covering 
     - [The Crash Scenario: Bank Account Transfer](#the-crash-scenario-bank-account-transfer)
     - [The Buggy Code (Go)](#the-buggy-code-go)
     - [The Fix: Global Lock Ordering (Eliminates Circular Wait)](#the-fix-global-lock-ordering-eliminates-circular-wait)
+    - [The Buggy Code \& Fix (TypeScript / Node.js)](#the-buggy-code--fix-typescript--nodejs)
   - [1.4 Real-World Case Study 2: Database Row-Level Lock Inversion (`FOR UPDATE`)](#14-real-world-case-study-2-database-row-level-lock-inversion-for-update)
     - [Database Fixes:](#database-fixes)
   - [1.5 Real-World Case Study 3: MySQL InnoDB Gap Lock Deadlock (`REPEATABLE READ`)](#15-real-world-case-study-3-mysql-innodb-gap-lock-deadlock-repeatable-read)
@@ -28,6 +29,7 @@ A production-grade, architectural, and interview-ready reference guide covering 
   - [1.8 Real-World Case Study 6: Shared-to-Exclusive Lock Upgrade Deadlock (`S` $\\to$ `X`)](#18-real-world-case-study-6-shared-to-exclusive-lock-upgrade-deadlock-s-to-x)
     - [The Fix:](#the-fix-1)
   - [1.9 Real-World Case Study 7: Unbuffered Channel \& Goroutine Deadlock (Go)](#19-real-world-case-study-7-unbuffered-channel--goroutine-deadlock-go)
+    - [The TypeScript / JavaScript Equivalent: Circular Promise Deadlock](#the-typescript--javascript-equivalent-circular-promise-deadlock)
   - [1.10 Real-World Case Study 8: Priority Inversion \& The Mars Pathfinder Incident](#110-real-world-case-study-8-priority-inversion--the-mars-pathfinder-incident)
     - [The Remedy: Priority Inheritance Protocol (PIP)](#the-remedy-priority-inheritance-protocol-pip)
   - [1.11 Deadlock Types: Resource, Communication \& Distributed](#111-deadlock-types-resource-communication--distributed)
@@ -54,7 +56,7 @@ A production-grade, architectural, and interview-ready reference guide covering 
     - [Strategy 2: Multi-Tiered Local In-Memory Fallback](#strategy-2-multi-tiered-local-in-memory-fallback)
     - [Strategy 3: Circuit Breakers (Resilience4j / Envoy)](#strategy-3-circuit-breakers-resilience4j--envoy)
     - [Strategy 4: Redis Architectural Redundancy](#strategy-4-redis-architectural-redundancy)
-  - [2.7 Critical Edge Cases \& Production Pitfalls](#27-critical-edge-cases--production-pitfalls)
+  - [2.7 Critical Edge Cases \& Real-World Pitfalls](#27-critical-edge-cases--real-world-pitfalls)
     - [1. Clock Skew across Distributed Nodes](#1-clock-skew-across-distributed-nodes)
     - [2. The IP Spoofing Trap (`X-Forwarded-For`)](#2-the-ip-spoofing-trap-x-forwarded-for)
     - [3. Key Cardinality \& Memory Explosion](#3-key-cardinality--memory-explosion)
@@ -191,6 +193,85 @@ func SafeTransfer(from, to *Account, amount float64) {
 }
 ```
 
+### The Buggy Code & Fix (TypeScript / Node.js)
+
+In Node.js, JavaScript is single-threaded, but **asynchronous concurrency (`async`/`await`) with in-memory mutexes (or distributed locks)** suffers from the exact same ABBA deadlock. Two concurrent promises waiting on each other will hang forever, leaking memory and exhausting connection pools:
+
+```typescript
+// Minimal async mutex primitive
+class AsyncMutex {
+  private queue: (() => void)[] = [];
+  private locked = false;
+
+  async acquire(): Promise<() => void> {
+    return new Promise((resolve) => {
+      const release = () => {
+        if (this.queue.length > 0) {
+          const next = this.queue.shift()!;
+          next();
+        } else {
+          this.locked = false;
+        }
+      };
+
+      if (!this.locked) {
+        this.locked = true;
+        resolve(release);
+      } else {
+        this.queue.push(() => resolve(release));
+      }
+    });
+  }
+}
+
+interface Account {
+  id: number;
+  balance: number;
+  mutex: AsyncMutex;
+}
+
+// ❌ BUGGY (TypeScript): Promise deadlock under concurrent reverse transfers
+async function buggyTransfer(from: Account, to: Account, amount: number): Promise<void> {
+  const releaseFrom = await from.mutex.acquire();
+  try {
+    // Simulate async I/O / context switch
+    await new Promise((r) => setTimeout(r, 10));
+
+    // If a reverse transfer (B -> A) runs concurrently, this promise NEVER resolves!
+    const releaseTo = await to.mutex.acquire();
+    try {
+      from.balance -= amount;
+      to.balance += amount;
+    } finally {
+      releaseTo();
+    }
+  } finally {
+    releaseFrom();
+  }
+}
+
+// ✅ FIXED (TypeScript): Global ID ordering guarantees no circular wait
+async function safeTransfer(from: Account, to: Account, amount: number): Promise<void> {
+  if (from.id === to.id) return;
+
+  // Deterministic total ordering based on immutable account ID
+  const [first, second] = from.id < to.id ? [from, to] : [to, from];
+
+  const releaseFirst = await first.mutex.acquire();
+  try {
+    const releaseSecond = await second.mutex.acquire();
+    try {
+      from.balance -= amount;
+      to.balance += amount;
+    } finally {
+      releaseSecond();
+    }
+  } finally {
+    releaseFirst();
+  }
+}
+```
+
 ---
 
 ## 1.4 Real-World Case Study 2: Database Row-Level Lock Inversion (`FOR UPDATE`)
@@ -228,7 +309,7 @@ SELECT * FROM accounts WHERE id = 10 FOR UPDATE; -- BLOCKED waiting for T1!
 
 ## 1.5 Real-World Case Study 3: MySQL InnoDB Gap Lock Deadlock (`REPEATABLE READ`)
 
-One of the most insidious production deadlocks occurs without locking existing rows at all, due to **Gap Locks** in MySQL's default `REPEATABLE READ` isolation level.
+One of the most insidious real-world deadlocks occurs without locking existing rows at all, due to **Gap Locks** in MySQL's default `REPEATABLE READ` isolation level.
 
 ### The Trap:
 
@@ -379,6 +460,53 @@ func SafeChannel() {
     ch <- 42
     val := <-ch
     println(val)
+}
+```
+
+### The TypeScript / JavaScript Equivalent: Circular Promise Deadlock
+
+In Node.js, when two asynchronous tasks depend on deferred promises that wait on each other before resolving, the event loop remains alive but tasks freeze indefinitely:
+
+```typescript
+// ❌ BUGGY (TypeScript): Circular Promise Deadlock
+function buggyPromiseDeadlock(): Promise<void> {
+  let resolveA: (val: string) => void;
+  let resolveB: (val: string) => void;
+
+  const promiseA = new Promise<string>((res) => {
+    resolveA = res;
+  });
+  const promiseB = new Promise<string>((res) => {
+    resolveB = res;
+  });
+
+  // Task 1: Waits for A before resolving B
+  promiseA.then((val) => resolveB(`From A: ${val}`));
+
+  // Task 2: Waits for B before resolving A
+  promiseB.then((val) => resolveA(`From B: ${val}`));
+
+  // Neither promiseA nor promiseB is ever resolved!
+  // Node.js process hangs / HTTP request times out.
+  return Promise.all([promiseA, promiseB]).then(() => {});
+}
+
+// ✅ FIXED (TypeScript): Introduce uncoupling, default resolution, or Promise.race timeout
+async function safePromiseResolution(): Promise<void> {
+  const timeoutMs = 2000;
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Operation timed out: Deadlock prevention')), timeoutMs),
+  );
+
+  const task = (async () => {
+    // Decoupled execution: task A resolves independently
+    const resultA = await Promise.resolve('Data A');
+    const resultB = await Promise.resolve(`Data B depends on ${resultA}`);
+    return { resultA, resultB };
+  })();
+
+  // Guard all interdependent promises with Promise.race
+  await Promise.race([task, timeout]);
 }
 ```
 
@@ -751,7 +879,7 @@ Every app instance maintains an in-memory cache (e.g., Caffeine in Java, LRU in 
 
 ---
 
-## 2.7 Critical Edge Cases & Production Pitfalls
+## 2.7 Critical Edge Cases & Real-World Pitfalls
 
 ### 1. Clock Skew across Distributed Nodes
 
@@ -798,12 +926,20 @@ Rate limiting should never live solely in application code:
 
 - **The Bug:** If a mega-client or viral tenant generates 50,000 requests/sec, all requests hit a single Redis instance hosting that specific key, pegging that Redis CPU core at 100%.
 - **The Fix:** Salt / shard the rate limiting key across $M$ sub-buckets:
-  ```go
-  // Partition global quota of 50,000 across 10 sub-keys (5,000 each)
-  shardIndex := rand.Intn(10)
-  key := fmt.Sprintf("ratelimit:%s:shard:%d", userID, shardIndex)
-  ```
-  This distributes the 50,000 req/sec across different Redis Cluster nodes.
+
+```go
+// Go: Partition global quota of 50,000 across 10 sub-keys (5,000 each)
+shardIndex := rand.Intn(10)
+key := fmt.Sprintf("ratelimit:%s:shard:%d", userID, shardIndex)
+```
+
+```typescript
+// TypeScript / Node.js: Distribute key across 10 sub-keys
+const shardIndex = Math.floor(Math.random() * 10);
+const key = `ratelimit:${userId}:shard:${shardIndex}`;
+```
+
+This distributes the 50,000 req/sec across different Redis Cluster nodes.
 
 ### 7. Cost-Based & Multi-Dimensional Rate Limiting
 
@@ -820,11 +956,46 @@ When receiving an `HTTP 429 Too Many Requests`, clients must avoid synchronized 
   $$\text{sleep} = \text{random}(0, \min(\text{max\_backoff}, \text{base} \times 2^{\text{attempt}}))$$
 
 ```go
-// Client retry logic with Full Jitter
+// Go: Client retry logic with Full Jitter
 func CalculateBackoff(attempt int, base, max time.Duration) time.Duration {
     temp := float64(base) * math.Pow(2, float64(attempt))
     ceiling := math.Min(float64(max), temp)
     return time.Duration(rand.Float64() * ceiling)
+}
+```
+
+```typescript
+// TypeScript: HTTP 429 Retry Engine with Full Jitter
+async function fetchWithRetry<T>(
+  url: string,
+  options: RequestInit,
+  maxAttempts = 5,
+  baseMs = 100,
+  maxMs = 10000,
+): Promise<Response> {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const response = await fetch(url, options);
+
+    if (response.status !== 429) {
+      return response; // Return on success or non-rate-limited error
+    }
+
+    // Check for standard server-specified Retry-After header
+    const retryAfterHeader = response.headers.get('Retry-After');
+    let backoffMs: number;
+
+    if (retryAfterHeader) {
+      backoffMs = parseInt(retryAfterHeader, 10) * 1000;
+    } else {
+      // Full Jitter: Math.random() * min(maxMs, baseMs * 2^attempt)
+      const calculatedMax = Math.min(maxMs, baseMs * Math.pow(2, attempt));
+      backoffMs = Math.floor(Math.random() * calculatedMax);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, backoffMs));
+  }
+
+  throw new Error(`Max retry attempts (${maxAttempts}) exceeded for ${url}`);
 }
 ```
 
