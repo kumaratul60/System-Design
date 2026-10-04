@@ -4,10 +4,10 @@ A comprehensive reference covering both **Frontend-Focused** (Client-side, Brows
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
 - [⚖️ Load Balancing Algorithms \& Architectures Master Cheat Sheet](#️-load-balancing-algorithms--architectures-master-cheat-sheet)
-  - [📑 Table of Contents](#-table-of-contents)
+  - [Table of Contents](#table-of-contents)
 - [1. Full-Stack Load Balancing Spectrum](#1-full-stack-load-balancing-spectrum)
 - [2. Frontend \& Edge-Focused Load Balancing](#2-frontend--edge-focused-load-balancing)
   - [2.1 Client-Side Load Balancing (Browser / Mobile / WebRTC)](#21-client-side-load-balancing-browser--mobile--webrtc)
