@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Snake and Ladder Game
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a high-concurrency real-time multiplayer board game service serving 500,000 active sessions with sub-5ms turn latency.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a high-concurrency real-time multiplayer board game service serving 500,000 active sessions with sub-5ms turn latency.
 > **Navigation:** ⬅️ [Back to Games & Puzzles Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Custom Board Setup:** Support arbitrary board sizes ($N \times N$ or 100 cells) with dynamic placement of snakes and ladders.
 2. **Cycle Validation:** Graph validation engine to guarantee snake/ladder placements do not create infinite loops or deadlocks.
 3. **Multi-Player Support:** Support 2 to $K$ players taking turns sequentially.
@@ -16,6 +17,7 @@
 5. **Exact Terminal Landing:** Win condition requires reaching the exact end cell (cell 100). If dice roll exceeds 100, the move is skipped.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Low Latency Execution:** Move processing and jump resolution in $P_{99} < 5\text{ms}$.
 2. **Determinism & Thread Safety:** Concurrent move requests per game room are processed atomically.
 3. **Extensibility:** Easily add custom board obstacles (e.g. Trampolines, Teleporters, Freeze Traps).
@@ -36,13 +38,13 @@ Total RAM Requirement: 500k * 2 KB = 1 GB RAM total (Fits easily in a Redis clus
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
+| Component                 | Technology Choice           | Architectural Rationale                                                            |
+| :------------------------ | :-------------------------- | :--------------------------------------------------------------------------------- |
 | **API Gateway & Sockets** | Socket.io / Node.js Cluster | Bidirectional event streaming for dice rolls, turn switching, and room broadcasts. |
-| **Dice Generator Engine** | Strategy Pattern (C++ / TS) | Decouples random roll generation from loaded testing dice or multi-dice logic. |
-| **Board Jump Lookup** | HashMap / Graph Adjacency | $O(1)$ constant time lookup for snake bite or ladder climb destinations. |
-| **State Storage** | Redis Cluster | Low-latency in-memory session state storage with atomic Lua scripts. |
-| **Cycle Validator** | Kahn's Algorithm / DFS | Detects circular jump dependencies during board creation ($O(V + E)$). |
+| **Dice Generator Engine** | Strategy Pattern (C++ / TS) | Decouples random roll generation from loaded testing dice or multi-dice logic.     |
+| **Board Jump Lookup**     | HashMap / Graph Adjacency   | $O(1)$ constant time lookup for snake bite or ladder climb destinations.           |
+| **State Storage**         | Redis Cluster               | Low-latency in-memory session state storage with atomic Lua scripts.               |
+| **Cycle Validator**       | Kahn's Algorithm / DFS      | Detects circular jump dependencies during board creation ($O(V + E)$).             |
 
 ---
 
@@ -155,7 +157,10 @@ export interface IDice {
 }
 
 export class StandardDice implements IDice {
-  constructor(private readonly count: number = 1, private readonly sides: number = 6) {}
+  constructor(
+    private readonly count: number = 1,
+    private readonly sides: number = 6,
+  ) {}
 
   public roll(): number {
     let total = 0;
@@ -168,14 +173,14 @@ export class StandardDice implements IDice {
 
 export enum JumperType {
   SNAKE = 'SNAKE',
-  LADDER = 'LADDER'
+  LADDER = 'LADDER',
 }
 
 export class Jumper {
   constructor(
     public readonly start: number,
     public readonly end: number,
-    public readonly type: JumperType
+    public readonly type: JumperType,
   ) {}
 }
 
@@ -184,7 +189,7 @@ export class Player {
 
   constructor(
     public readonly id: string,
-    public readonly name: string
+    public readonly name: string,
   ) {}
 }
 
@@ -213,7 +218,7 @@ export class Board {
       const jumper = this.jumps.get(target)!;
       return {
         nextPos: jumper.end,
-        event: jumper.type === JumperType.SNAKE ? 'SNAKE_BITE' : 'LADDER_CLIMB'
+        event: jumper.type === JumperType.SNAKE ? 'SNAKE_BITE' : 'LADDER_CLIMB',
       };
     }
 
@@ -228,7 +233,7 @@ export class SnakeLadderGame {
   constructor(
     private readonly board: Board,
     players: Player[],
-    private readonly dice: IDice = new StandardDice()
+    private readonly dice: IDice = new StandardDice(),
   ) {
     this.playerQueue = [...players];
   }
@@ -253,7 +258,7 @@ export class SnakeLadderGame {
       player: currentPlayer,
       roll: rollValue,
       newPosition: currentPlayer.position,
-      event
+      event,
     };
   }
 }
@@ -277,16 +282,18 @@ flowchart LR
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: How do you mathematically ensure that snake/ladder configurations do not create infinite cycles?</strong></summary>
 
 **Answer:** Represent the board jump mapping as a directed graph $G = (V, E)$ where vertices are board cell numbers ($1 \dots 100$) and edges exist for normal movement ($i \to i+1$) and jump tiles ($start \to end$). Run cycle detection using DFS coloring or Topological Sort (Kahn's algorithm). If a back-edge is found during initialization, reject the board configuration.
+
 </details>
 
 <details>
 <summary><strong>Q2: How would you scale this design to support 1 Million concurrent game rooms?</strong></summary>
 
 **Answer:** Game rooms are completely decoupled state machines. Partition Redis state by `gameId` across a sharded Redis cluster. Terminate WebSockets at stateless gateway nodes and route messages to game instances using consistent hashing on `gameId`.
+
 </details>

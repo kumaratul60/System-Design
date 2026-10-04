@@ -1,8 +1,8 @@
 # 🛠️ Enterprise System Design & LLD Blueprint: Design Tic-Tac-Toe
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Category:** Games & Puzzles (Problem 1 of 4)  
-> **Difficulty:** `Easy` / Core OOD Foundation  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Category:** Games & Puzzles (Problem 1 of 4)
+> **Difficulty:** `Easy` / Core OOD Foundation
 > **Navigation:** ⬅️ [Back to Games & Puzzles Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -10,6 +10,7 @@
 ## 1. 🎯 Requirements & Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Customizable Grid Size:** Support $N \times N$ board sizes (default $3 \times 3$, scalable to $N=100$).
 2. **Multi-Player Support:** Support 2 or $K$ players, each assigned a unique symbol (e.g. `X`, `O`, `△`).
 3. **Move Validation & Execution:** Validate player moves (in-bounds, cell un-occupied). Update board state atomically.
@@ -18,6 +19,7 @@
 6. **Bot / AI Player:** Support pluggable AI bot difficulty levels (Random, Minimax).
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Low Latency:** Turn execution and win detection completed in $<1\text{ms}$.
 2. **Memory Efficiency:** Minimal state footprint ($O(N)$ auxiliary space for $O(1)$ win checking).
 3. **Extensibility & SOLID Principles:** Easily add new win conditions (e.g., 4-in-a-row on $10 \times 10$ grid) without modifying core board code.
@@ -41,12 +43,12 @@ Peak Scale:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Rationale |
-| :--- | :--- | :--- |
-| **Language** | Java / TypeScript / C++ | Strong Object-Oriented polymorphism, static typing, and memory predictability. |
-| **State Machine** | Enum / State Pattern | Explicit transition states: `WAITING`, `IN_PROGRESS`, `FINISHED_WIN`, `FINISHED_DRAW`. |
-| **Win Checking** | Prefix / Count Arrays | $O(1)$ checking per move avoiding $O(N)$ row/col scanning loops. |
-| **Bot Logic** | Strategy Pattern / Minimax | Pluggable algorithm execution for single-player vs AI mode. |
+| Component         | Technology Choice          | Rationale                                                                              |
+| :---------------- | :------------------------- | :------------------------------------------------------------------------------------- |
+| **Language**      | Java / TypeScript / C++    | Strong Object-Oriented polymorphism, static typing, and memory predictability.         |
+| **State Machine** | Enum / State Pattern       | Explicit transition states: `WAITING`, `IN_PROGRESS`, `FINISHED_WIN`, `FINISHED_DRAW`. |
+| **Win Checking**  | Prefix / Count Arrays      | $O(1)$ checking per move avoiding $O(N)$ row/col scanning loops.                       |
+| **Bot Logic**     | Strategy Pattern / Minimax | Pluggable algorithm execution for single-player vs AI mode.                            |
 
 ---
 
@@ -129,20 +131,20 @@ classDiagram
 export enum Symbol {
   X = 'X',
   O = 'O',
-  EMPTY = '-'
+  EMPTY = '-',
 }
 
 export enum GameStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   WON = 'WON',
-  DRAW = 'DRAW'
+  DRAW = 'DRAW',
 }
 
 export class Move {
   constructor(
     public readonly player: Player,
     public readonly row: number,
-    public readonly col: number
+    public readonly col: number,
   ) {}
 }
 
@@ -150,7 +152,7 @@ export class Player {
   constructor(
     public readonly id: string,
     public readonly name: string,
-    public readonly symbol: Symbol
+    public readonly symbol: Symbol,
   ) {}
 }
 
@@ -193,7 +195,7 @@ export class Board {
   }
 
   public isFull(): boolean {
-    return this.grid.every(row => row.every(cell => cell !== Symbol.EMPTY));
+    return this.grid.every((row) => row.every((cell) => cell !== Symbol.EMPTY));
   }
 }
 
@@ -251,16 +253,18 @@ export class TicTacToeGame {
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: How do you achieve O(1) win checking for an arbitrary N x N board?</strong></summary>
 
 **Answer:** Rather than scanning all $N$ cells in a row/column on each turn ($O(N)$), maintain integer accumulators: `rowSum[N]`, `colSum[N]`, `diagSum`, and `antiDiagSum`. Assign $+1$ for Player 1 (`X`) and $-1$ for Player 2 (`O`). Upon placing a mark at `(r, c)`, update `rowSum[r] += val` and `colSum[c] += val`. A win is triggered when `|rowSum[r]| == N` or `|colSum[c]| == N`. This guarantees exact $O(1)$ constant time complexity and $O(N)$ space.
+
 </details>
 
 <details>
 <summary><strong>Q2: How would you scale this design for 1,000,000 active concurrent games?</strong></summary>
 
 **Answer:** Games are isolated, stateless domain entities. Store game state in an in-memory Redis cluster partitioned by `gameId`. Use WebSockets terminated at API Gateways with sticky sessions or Redis Pub/Sub event router to push state updates to players.
+
 </details>

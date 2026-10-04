@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design In-Memory File System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Production-grade POSIX-compliant In-Memory Virtual File System (VFS) with lock-free path resolution, dynamic chunk allocation, and nested tree synchronization.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Production-grade POSIX-compliant In-Memory Virtual File System (VFS) with lock-free path resolution, dynamic chunk allocation, and nested tree synchronization.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -46,12 +46,12 @@ Data Block Chunking:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Tree Data Structure** | N-ary Inode Tree + Hash Index | Hash map directory entries provide $O(1)$ child lookup at each path resolution depth level. |
-| **Concurrency Guard** | Hierarchical ReadWriteLock per Node | Allows concurrent parallel reads across distinct directory branches without lock contention. |
-| **Path Resolver** | Lexical Lexer & Canonicalizer | Normalizes Unix paths into clean absolute token arrays prior to tree navigation. |
-| **File Storage Pool** | Chunked Byte Buffer Array | Prevents array resize reallocation overhead by growing files in discrete 4KB chunk blocks. |
+| Component               | Technology Choice                   | Architectural Rationale                                                                      |
+| :---------------------- | :---------------------------------- | :------------------------------------------------------------------------------------------- |
+| **Tree Data Structure** | N-ary Inode Tree + Hash Index       | Hash map directory entries provide $O(1)$ child lookup at each path resolution depth level.  |
+| **Concurrency Guard**   | Hierarchical ReadWriteLock per Node | Allows concurrent parallel reads across distinct directory branches without lock contention. |
+| **Path Resolver**       | Lexical Lexer & Canonicalizer       | Normalizes Unix paths into clean absolute token arrays prior to tree navigation.             |
+| **File Storage Pool**   | Chunked Byte Buffer Array           | Prevents array resize reallocation overhead by growing files in discrete 4KB chunk blocks.   |
 
 ---
 
@@ -320,7 +320,11 @@ export class DirectoryNode extends INode {
 
 // 3. SymLink Node Implementation
 export class SymLinkNode extends INode {
-  constructor(name: string, inodeId: number, public targetPath: string) {
+  constructor(
+    name: string,
+    inodeId: number,
+    public targetPath: string,
+  ) {
     super(name, inodeId);
   }
 
@@ -332,7 +336,7 @@ export class SymLinkNode extends INode {
 // 4. Path Resolver Engine
 export class PathResolver {
   public static tokenize(path: string): string[] {
-    return path.split('/').filter(p => p.length > 0 && p !== '.');
+    return path.split('/').filter((p) => p.length > 0 && p !== '.');
   }
 
   public static resolve(root: DirectoryNode, path: string, currentDir: DirectoryNode, depth: number = 0): INode {
@@ -401,7 +405,12 @@ export class InMemoryFileSystem {
     if (!fileName) throw new Error('Invalid file path');
 
     const parentPath = path.startsWith('/') ? '/' + tokens.join('/') : tokens.join('/');
-    const parentNode = tokens.length === 0 ? (path.startsWith('/') ? this.root : this.currentDir) : (PathResolver.resolve(this.root, parentPath, this.currentDir) as DirectoryNode);
+    const parentNode =
+      tokens.length === 0
+        ? path.startsWith('/')
+          ? this.root
+          : this.currentDir
+        : (PathResolver.resolve(this.root, parentPath, this.currentDir) as DirectoryNode);
 
     if (parentNode.getType() !== NodeType.DIRECTORY) throw new Error('Parent path is not a directory');
 
@@ -434,19 +443,19 @@ export class InMemoryFileSystem {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 - **Atomic Directory Renames (`rename("/a/b", "/x/y")`):**
-  - *Challenge:* Renaming across directory trees can cause deadlocks if threads acquire locks in opposite order (e.g. thread 1 locks `/a` then `/x`, thread 2 locks `/x` then `/a`).
-  - *Solution:* Enforce global **Inode ID Lock Ordering**. Always acquire locks in ascending order of Inode IDs during multi-node operations.
+  - _Challenge:_ Renaming across directory trees can cause deadlocks if threads acquire locks in opposite order (e.g. thread 1 locks `/a` then `/x`, thread 2 locks `/x` then `/a`).
+  - _Solution:_ Enforce global **Inode ID Lock Ordering**. Always acquire locks in ascending order of Inode IDs during multi-node operations.
 - **Symbolic Link Resolution Loops:** Circular links (`/a/link1 -> /b/link2` and `/b/link2 -> /a/link1`) cause stack overflow. Maintain a `depth` counter in `PathResolver` and raise `ELOOP` when depth exceeds 40.
 - **Garbage Collection of Deleted Deep Trees (`rm -rf`):** Deleting a directory containing 1M files triggers synchronous GC spikes. Decouple deletion by removing parent directory link immediately and passing subtree root to background cleanup queue.
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you implement atomic directory renames without global lock bottlenecks?</summary>
 
-**Answer:**  
+**Answer:**
 Sort target parent directory inodes by unique numerical `inodeId` before lock acquisition. Thread 1 moving `/dirA` to `/dirB` locks `min(inodeA, inodeB)` first, then `max(inodeA, inodeB)`. This strict total locking order mathematically eliminates circular lock wait conditions (deadlocks).
 
 </details>
@@ -454,7 +463,7 @@ Sort target parent directory inodes by unique numerical `inodeId` before lock ac
 <details>
 <summary>❓ Why use 4KB chunked byte arrays for file storage instead of dynamically resized arrays?</summary>
 
-**Answer:**  
+**Answer:**
 Resizing continuous native memory byte arrays requires `realloc()`, which allocates new memory blocks and copies existing data, causing $O(N)$ write spikes and memory fragmentation. Fixed 4KB page chunks allow appending data in $O(1)$ time by pushing a new 4KB array to the chunk list.
 
 </details>
@@ -462,7 +471,7 @@ Resizing continuous native memory byte arrays requires `realloc()`, which alloca
 <details>
 <summary>❓ How do hard links differ from symbolic soft links in this class hierarchy?</summary>
 
-**Answer:**  
-A **Symbolic Soft Link** (`SymLinkNode`) is a distinct inode storing a target path string. If the target file is deleted, the symlink becomes dangling. A **Hard Link** creates an additional entry key in `DirectoryNode.children` pointing directly to the *same existing `FileNode` reference*, incrementing its internal reference counter (`linkCount++`).
+**Answer:**
+A **Symbolic Soft Link** (`SymLinkNode`) is a distinct inode storing a target path string. If the target file is deleted, the symlink becomes dangling. A **Hard Link** creates an additional entry key in `DirectoryNode.children` pointing directly to the _same existing `FileNode` reference_, incrementing its internal reference counter (`linkCount++`).
 
 </details>

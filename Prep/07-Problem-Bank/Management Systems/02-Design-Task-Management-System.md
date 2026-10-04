@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Task Management System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an enterprise-grade Jira/Asana-style Task Management System supporting flexible workflows, task dependencies, status state machines, undo/redo operations, and real-time activity auditing.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an enterprise-grade Jira/Asana-style Task Management System supporting flexible workflows, task dependencies, status state machines, undo/redo operations, and real-time activity auditing.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -51,14 +51,14 @@ Storage Estimates (5 Years):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Frontend Framework** | React / Next.js + Zustand | Optimistic UI updates for instant drag-and-drop kanban board state transitions. |
-| **Backend API** | Node.js / TypeScript (GraphQL + REST) | Unified schema querying complex project-task-user relationships without over-fetching. |
-| **Primary Database** | PostgreSQL | Relational integrity, transactional guarantees, and JSONB support for dynamic task custom fields. |
-| **Audit Log Store** | Cassandra / DynamoDB | Append-only write-heavy store for high-throughput immutable task history events. |
-| **Search Engine** | Elasticsearch | Inverted indexing for instant fuzzy text search and multi-facet filtering across millions of tasks. |
-| **Real-time Engine** | Socket.io / WebSockets | Bi-directional streaming for live board updates when teammates update tasks. |
+| Component              | Technology Choice                     | Architectural Rationale                                                                             |
+| :--------------------- | :------------------------------------ | :-------------------------------------------------------------------------------------------------- |
+| **Frontend Framework** | React / Next.js + Zustand             | Optimistic UI updates for instant drag-and-drop kanban board state transitions.                     |
+| **Backend API**        | Node.js / TypeScript (GraphQL + REST) | Unified schema querying complex project-task-user relationships without over-fetching.              |
+| **Primary Database**   | PostgreSQL                            | Relational integrity, transactional guarantees, and JSONB support for dynamic task custom fields.   |
+| **Audit Log Store**    | Cassandra / DynamoDB                  | Append-only write-heavy store for high-throughput immutable task history events.                    |
+| **Search Engine**      | Elasticsearch                         | Inverted indexing for instant fuzzy text search and multi-facet filtering across millions of tasks. |
+| **Real-time Engine**   | Socket.io / WebSockets                | Bi-directional streaming for live board updates when teammates update tasks.                        |
 
 ---
 
@@ -212,12 +212,12 @@ sequenceDiagram
 
 ## 6. 🎨 Design Patterns Selection
 
-| Pattern Name | Application in Task Management System | Architectural Benefit |
-| :--- | :--- | :--- |
-| **State Pattern** | Task Lifecycle (`ITaskState`) | Encapsulates status transition validation into dedicated state objects, preventing massive `if-else` branching. |
-| **Command Pattern** | `TaskCommandInvoker`, `ICommand` | Decouples status/assignee mutations into executable objects, providing clean multi-level Undo/Redo functionality. |
-| **Observer Pattern** | `ITaskObserver`, `AuditLogger` | Event-driven architecture triggering activity logs and WebSocket alerts when tasks change state. |
-| **Factory Method Pattern** | `TaskFactory` | Centralizes task instantiation (epics, stories, bugs) with initial state injection. |
+| Pattern Name               | Application in Task Management System | Architectural Benefit                                                                                             |
+| :------------------------- | :------------------------------------ | :---------------------------------------------------------------------------------------------------------------- |
+| **State Pattern**          | Task Lifecycle (`ITaskState`)         | Encapsulates status transition validation into dedicated state objects, preventing massive `if-else` branching.   |
+| **Command Pattern**        | `TaskCommandInvoker`, `ICommand`      | Decouples status/assignee mutations into executable objects, providing clean multi-level Undo/Redo functionality. |
+| **Observer Pattern**       | `ITaskObserver`, `AuditLogger`        | Event-driven architecture triggering activity logs and WebSocket alerts when tasks change state.                  |
+| **Factory Method Pattern** | `TaskFactory`                         | Centralizes task instantiation (epics, stories, bugs) with initial state injection.                               |
 
 ---
 
@@ -260,7 +260,10 @@ export interface ITaskObserver {
 
 export class AuditLoggerObserver implements ITaskObserver {
   public onTaskUpdated(event: TaskUpdatedEvent): void {
-    console.log(`[AUDIT LOG] Task ${event.taskId} | Action: ${event.action} | Time: ${event.timestamp.toISOString()} | Details:`, event.details);
+    console.log(
+      `[AUDIT LOG] Task ${event.taskId} | Action: ${event.action} | Time: ${event.timestamp.toISOString()} | Details:`,
+      event.details,
+    );
   }
 }
 
@@ -382,7 +385,7 @@ export class Task {
     public readonly taskId: string,
     public title: string,
     public description: string,
-    public priority: TaskPriority
+    public priority: TaskPriority,
   ) {
     this.state = new BacklogState();
   }
@@ -418,7 +421,9 @@ export class Task {
   }
 
   public hasUnresolvedDependencies(): boolean {
-    return this.dependencies.some((dep) => dep.getState().name !== TaskStatusName.CLOSED && dep.getState().name !== TaskStatusName.DONE);
+    return this.dependencies.some(
+      (dep) => dep.getState().name !== TaskStatusName.CLOSED && dep.getState().name !== TaskStatusName.DONE,
+    );
   }
 }
 
@@ -436,7 +441,7 @@ export class UpdateStatusCommand implements ICommand {
 
   constructor(
     private task: Task,
-    private targetState: ITaskState
+    private targetState: ITaskState,
   ) {
     this.previousState = task.getState();
   }
@@ -493,7 +498,12 @@ export class TaskCommandInvoker {
 function runTaskManagementTest() {
   console.log('--- INITIALIZING TASK MANAGEMENT SYSTEM ---');
 
-  const task1 = new Task('TASK-101', 'Setup Database Schema', 'Create initial PostgreSQL tables', TaskPriority.P0_CRITICAL);
+  const task1 = new Task(
+    'TASK-101',
+    'Setup Database Schema',
+    'Create initial PostgreSQL tables',
+    TaskPriority.P0_CRITICAL,
+  );
   const task2 = new Task('TASK-102', 'Implement API Endpoint', 'Build GraphQL resolvers', TaskPriority.P1_HIGH);
 
   const auditLogger = new AuditLoggerObserver();
@@ -570,15 +580,15 @@ graph TB
 ### ⚡ Critical Scale Bottlenecks & Architectural Fixes
 
 1. **Lost Update Anomaly on Concurrent Edits:**
-   - *Problem:* Two developers edit Task #402 descriptions simultaneously. Developer B overwrites Developer A's changes without realizing it.
-   - *Solution:* Enforce **Optimistic Concurrency Control (OCC)** using a version field (`WHERE task_id = $1 AND version = $2`). If version check fails, reject write with HTTP 409 Conflict.
+   - _Problem:_ Two developers edit Task #402 descriptions simultaneously. Developer B overwrites Developer A's changes without realizing it.
+   - _Solution:_ Enforce **Optimistic Concurrency Control (OCC)** using a version field (`WHERE task_id = $1 AND version = $2`). If version check fails, reject write with HTTP 409 Conflict.
 2. **High-Frequency Graph Dependency Traversal:**
-   - *Problem:* Complex nested project dependencies cause deep SQL query recursion.
-   - *Solution:* Store task dependency graphs using adjacency lists cached in Redis, or utilize PostgreSQL `WITH RECURSIVE` CTEs bounded to max depth 10.
+   - _Problem:_ Complex nested project dependencies cause deep SQL query recursion.
+   - _Solution:_ Store task dependency graphs using adjacency lists cached in Redis, or utilize PostgreSQL `WITH RECURSIVE` CTEs bounded to max depth 10.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you prevent circular dependency deadlocks when linking tasks (e.g. Task A depends on B, B depends on A)?</summary>

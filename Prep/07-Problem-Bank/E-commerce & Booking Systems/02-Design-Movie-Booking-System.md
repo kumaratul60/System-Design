@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Movie Booking System (BookMyShow / Fandango)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a high-concurrency movie ticket reservation platform serving 10M DAU, handling blockbuster release seat spikes with zero double-bookings and sub-50ms seat map rendering.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a high-concurrency movie ticket reservation platform serving 10M DAU, handling blockbuster release seat spikes with zero double-bookings and sub-50ms seat map rendering.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | ⬅️ [Back to Problem Bank Index](../README.md)
 
 ---
@@ -48,14 +48,14 @@ Storage Calculations (3-Year Projection):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Layer / Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Frontend Framework** | React / Next.js + WebSockets | Canvas/SVG rendering for fast interactive seat maps; WebSocket client for real-time seat lock state updates. |
-| **API Gateway** | Kong / Envoy Gateway | JWT auth, TLS termination, IP rate limiting, and WebSocket connection upgrade management. |
-| **Primary Relational DB** | PostgreSQL (Amazon Aurora) | Strict relational integrity and ACID transactions (`SELECT ... FOR UPDATE` or SQL constraints) for seat booking confirmations. |
-| **Distributed Seat Lock Cache**| Redis Cluster (Single-threaded Shards) | Atomic Redis Bitmaps / Keys with 600-second TTL for zero-latency temporary seat locking. |
-| **Real-time Push Gateway** | WebSocket Cluster (Socket.io / Go) | Broadcast seat lock state transitions to all active users viewing the same showtime grid. |
-| **Async Message Bus** | Apache Kafka | Decoupled ticket generation, email/SMS notifications, and analytics processing. |
+| Layer / Component               | Technology Choice                      | Architectural Rationale                                                                                                        |
+| :------------------------------ | :------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend Framework**          | React / Next.js + WebSockets           | Canvas/SVG rendering for fast interactive seat maps; WebSocket client for real-time seat lock state updates.                   |
+| **API Gateway**                 | Kong / Envoy Gateway                   | JWT auth, TLS termination, IP rate limiting, and WebSocket connection upgrade management.                                      |
+| **Primary Relational DB**       | PostgreSQL (Amazon Aurora)             | Strict relational integrity and ACID transactions (`SELECT ... FOR UPDATE` or SQL constraints) for seat booking confirmations. |
+| **Distributed Seat Lock Cache** | Redis Cluster (Single-threaded Shards) | Atomic Redis Bitmaps / Keys with 600-second TTL for zero-latency temporary seat locking.                                       |
+| **Real-time Push Gateway**      | WebSocket Cluster (Socket.io / Go)     | Broadcast seat lock state transitions to all active users viewing the same showtime grid.                                      |
+| **Async Message Bus**           | Apache Kafka                           | Decoupled ticket generation, email/SMS notifications, and analytics processing.                                                |
 
 ---
 
@@ -136,7 +136,7 @@ sequenceDiagram
 
     Customer->>Gateway: POST /api/v1/showtimes/:id/hold-seats { seatIds: ["A1", "A2"] }
     Gateway->>BookingSvc: holdSeats(userId, showtimeId, seatIds)
-    
+
     rect rgb(240, 248, 255)
         Note over BookingSvc,Redis: Atomic Redis Lock Execution
         BookingSvc->>Redis: EVAL lua_hold_seats(showtimeId, seatIds, userId, ttl: 600)
@@ -156,7 +156,7 @@ sequenceDiagram
         Customer->>Gateway: POST /api/v1/bookings/confirm { holdToken, paymentDetails }
         Gateway->>BookingSvc: confirmBooking(holdToken, paymentDetails)
         BookingSvc->>Payment: processPayment(amount)
-        
+
         alt Payment Successful
             Payment-->>BookingSvc: PAYMENT_SUCCESS
             BookingSvc->>DB: BEGIN TX; INSERT INTO bookings; UPDATE show_seats SET state='BOOKED'; COMMIT;
@@ -260,10 +260,10 @@ export interface PricingStrategy {
 export class DynamicSeatPricingStrategy implements PricingStrategy {
   calculatePrice(basePrice: number, tier: SeatTier, showtimeDate: Date): number {
     let price = basePrice;
-    
+
     // Tier multipliers
     if (tier === SeatTier.PREMIUM) price *= 1.25;
-    if (tier === SeatTier.VIP) price *= 1.60;
+    if (tier === SeatTier.VIP) price *= 1.6;
 
     // Weekend surge (Fri-Sun)
     const day = showtimeDate.getDay();
@@ -318,7 +318,7 @@ export class SeatLockService {
     showtimeId: string,
     seatIds: string[],
     holdToken: string,
-    ttlSeconds: number = 600
+    ttlSeconds: number = 600,
   ): Promise<boolean> {
     const keys = [showtimeId];
     const args = [holdToken, ttlSeconds.toString(), ...seatIds];
@@ -349,7 +349,7 @@ export class BookingManager {
   constructor(
     private seatLockService: SeatLockService,
     private dbPool: DatabasePool,
-    private pricingStrategy: PricingStrategy
+    private pricingStrategy: PricingStrategy,
   ) {}
 
   async confirmBooking(
@@ -358,7 +358,7 @@ export class BookingManager {
     seatIds: string[],
     holdToken: string,
     basePrice: number,
-    showtimeDate: Date
+    showtimeDate: Date,
   ): Promise<{ bookingId: string; totalAmount: number }> {
     const client = await this.dbPool.getTransactionClient();
     try {
@@ -366,9 +366,9 @@ export class BookingManager {
 
       // 1. Double check SQL Row Lock for ShowSeats to guarantee persistent consistency
       const selectSeatsQuery = `
-        SELECT seat_id, tier, state 
-        FROM show_seats 
-        WHERE showtime_id = $1 AND seat_id = ANY($2) 
+        SELECT seat_id, tier, state
+        FROM show_seats
+        WHERE showtime_id = $1 AND seat_id = ANY($2)
         FOR UPDATE
       `;
       const seatRows = await client.query(selectSeatsQuery, [showtimeId, seatIds]);
@@ -393,13 +393,13 @@ export class BookingManager {
       const bookingId = `bk_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       await client.query(
         `INSERT INTO bookings (id, user_id, showtime_id, total_amount, status, created_at) VALUES ($1, $2, $3, $4, 'CONFIRMED', NOW())`,
-        [bookingId, userId, showtimeId, totalAmount]
+        [bookingId, userId, showtimeId, totalAmount],
       );
 
       // 4. Update ShowSeats state to BOOKED
       await client.query(
         `UPDATE show_seats SET state = 'BOOKED', booking_id = $1 WHERE showtime_id = $2 AND seat_id = ANY($3)`,
-        [bookingId, showtimeId, seatIds]
+        [bookingId, showtimeId, seatIds],
       );
 
       await client.query('COMMIT');
@@ -423,24 +423,26 @@ export class BookingManager {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Blockbuster Release Thundering Herd Problem
+
 - **Problem:** 100,000 requests hit the seat layout endpoint of a single IMAX screening within 5 seconds of opening.
-- **Solution:** 
+- **Solution:**
   1. Cache the entire seat map structure (static geometry, seat numbers, tiers) on CDN edge nodes.
   2. Cache dynamic availability state as a Redis Bitfield/Bitmap (`GETBIT showtime:123:availability seat_index`).
   3. When seats are held, update the bit (`SETBIT showtime:123:availability seat_index 1`) in single-digit microseconds.
 
 ### 2. Synchronization of Real-time Seat Maps Across Clients
+
 - **Problem:** User A holds Seat F10. User B, C, D looking at the same showtime grid must see F10 turn orange instantly without constantly polling the backend.
 - **Solution:** Publish seat status events to a Redis Pub/Sub topic channel `showtime:123:events`. WebSocket gateway instances subscribed to this topic broadcast `{ type: "SEAT_HOLD", seatId: "F10" }` frames down open WebSocket channels to connected clients.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you handle network failure right after the customer's payment succeeds, before your server confirms the booking?</summary>
 
-**Answer:**  
+**Answer:**
 We implement an **Idempotent Payment Callback Webhook**. The payment gateway sends an asynchronous server-to-server webhook containing the `holdToken` and `transactionId`. Even if the client's browser disconnected, the backend process consumes the webhook, verifies the active Redis seat hold using the `holdToken`, acquires SQL `FOR UPDATE` row locks, converts the seats to `BOOKED`, and emails/SMS the ticket QR code to the registered user.
 
 </details>
@@ -448,7 +450,7 @@ We implement an **Idempotent Payment Callback Webhook**. The payment gateway sen
 <details>
 <summary>❓ Why use Redis Bitmaps / Keys for temporary seat holds instead of storing holds directly in PostgreSQL?</summary>
 
-**Answer:**  
+**Answer:**
 PostgreSQL row locks during heavy seat reservation competition cause high database connection pool exhaustion, lock contention, and high latencies (>500ms). Redis holds locks in-memory using atomic Lua scripts in $<2\text{ms}$. Storing temporary locks in Redis protects the primary relational database from read/write query storms, reserving PostgreSQL exclusively for durable, finalized bookings.
 
 </details>
@@ -456,7 +458,8 @@ PostgreSQL row locks during heavy seat reservation competition cause high databa
 <details>
 <summary>❓ How do you prevent users from writing automated scripts/bots to lock up entire theater seat maps?</summary>
 
-**Answer:**  
+**Answer:**
+
 1. **CAPTCHA Challenge:** Trigger Google reCAPTCHA / Cloudflare Turnstile prior to executing the `holdSeats` API call.
 2. **Account Rate Limits:** Enforce sliding window limits (maximum 2 active hold tokens per user account; max 10 seat hold requests per hour per IP).
 3. **Session Verification:** Require verified mobile phone number OTP prior to permitting seat holds during high-demand movie drops.

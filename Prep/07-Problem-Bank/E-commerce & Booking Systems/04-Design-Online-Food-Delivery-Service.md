@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Online Food Delivery Service (DoorDash / Uber Eats / Zomato)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a three-sided marketplace platform (Customers, Restaurants, Drivers) serving 20M DAU, handling 125,000 location pings/sec, dynamic driver dispatch via Uber H3 spatial indexing, and sub-second order tracking.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a three-sided marketplace platform (Customers, Restaurants, Drivers) serving 20M DAU, handling 125,000 location pings/sec, dynamic driver dispatch via Uber H3 spatial indexing, and sub-second order tracking.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | ⬅️ [Back to Problem Bank Index](../README.md)
 
 ---
@@ -47,15 +47,15 @@ Storage & Data Calculations (3-Year Projection):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Layer / Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Mobile & Web Apps** | React Native (iOS/Android) + Next.js | Shared cross-platform UI code for Customer, Driver, and Merchant apps; Native Mapbox integration. |
-| **API & Ingestion Gateway** | Netty / gRPC Gateway | High-throughput async Netty gateway handling 125,000 TCP/gRPC location pings/sec with minimal overhead. |
-| **Spatial Indexing & Cache** | Redis Geospatial + Uber H3 Index | Maps lat/lng to H3 hexagonal cell indices for $O(1)$ fast spatial proximity queries (`GEORADIUS` / H3 cells). |
-| **Core Relational DB** | PostgreSQL (Amazon Aurora) | ACID transactions for Order states, Menus, Payments, and Merchant profiles. |
-| **Location History Storage** | Apache Cassandra / ClickHouse | Write-heavy columnar database optimized for append-only driver GPS trajectory logging. |
-| **Dispatch & Routing Engine** | Go Microservice + OSRM (Open Source Routing Machine) | Computes real-time road distances, routing ETAs, and optimal driver assignment matching. |
-| **Event Stream & Messaging** | Apache Kafka | Decouples location ping streams, order lifecycle transitions, and notification dispatchers. |
+| Layer / Component             | Technology Choice                                    | Architectural Rationale                                                                                       |
+| :---------------------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| **Mobile & Web Apps**         | React Native (iOS/Android) + Next.js                 | Shared cross-platform UI code for Customer, Driver, and Merchant apps; Native Mapbox integration.             |
+| **API & Ingestion Gateway**   | Netty / gRPC Gateway                                 | High-throughput async Netty gateway handling 125,000 TCP/gRPC location pings/sec with minimal overhead.       |
+| **Spatial Indexing & Cache**  | Redis Geospatial + Uber H3 Index                     | Maps lat/lng to H3 hexagonal cell indices for $O(1)$ fast spatial proximity queries (`GEORADIUS` / H3 cells). |
+| **Core Relational DB**        | PostgreSQL (Amazon Aurora)                           | ACID transactions for Order states, Menus, Payments, and Merchant profiles.                                   |
+| **Location History Storage**  | Apache Cassandra / ClickHouse                        | Write-heavy columnar database optimized for append-only driver GPS trajectory logging.                        |
+| **Dispatch & Routing Engine** | Go Microservice + OSRM (Open Source Routing Machine) | Computes real-time road distances, routing ETAs, and optimal driver assignment matching.                      |
+| **Event Stream & Messaging**  | Apache Kafka                                         | Decouples location ping streams, order lifecycle transitions, and notification dispatchers.                   |
 
 ---
 
@@ -251,11 +251,17 @@ export interface GeoLocation {
 }
 
 export interface DispatchStrategy {
-  findBestDriver(restaurantLoc: GeoLocation, availableDrivers: { driverId: string; location: GeoLocation }[]): string | null;
+  findBestDriver(
+    restaurantLoc: GeoLocation,
+    availableDrivers: { driverId: string; location: GeoLocation }[],
+  ): string | null;
 }
 
 export class NearestDriverStrategy implements DispatchStrategy {
-  findBestDriver(restaurantLoc: GeoLocation, availableDrivers: { driverId: string; location: GeoLocation }[]): string | null {
+  findBestDriver(
+    restaurantLoc: GeoLocation,
+    availableDrivers: { driverId: string; location: GeoLocation }[],
+  ): string | null {
     if (availableDrivers.length === 0) return null;
 
     let bestDriverId: string | null = null;
@@ -299,19 +305,14 @@ export class RedisSpatialGridManager {
 
   async updateDriverLocation(driverId: string, location: GeoLocation): Promise<void> {
     // Stores driver location into Redis Geospatial Index
-    await this.redis.geoadd(
-      this.geoKey,
-      location.longitude,
-      location.latitude,
-      driverId
-    );
+    await this.redis.geoadd(this.geoKey, location.longitude, location.latitude, driverId);
     // Also record status
     await this.redis.hset(`driver:${driverId}:status`, 'last_ping', Date.now());
   }
 
   async findNearbyDrivers(
     restaurantLoc: GeoLocation,
-    radiusKm: number = 3
+    radiusKm: number = 3,
   ): Promise<{ driverId: string; location: GeoLocation }[]> {
     // GEORADIUS query returning nearby drivers within radius
     const results = await this.redis.georadius(
@@ -320,7 +321,7 @@ export class RedisSpatialGridManager {
       restaurantLoc.latitude,
       radiusKm,
       'km',
-      'WITHCOORD'
+      'WITHCOORD',
     );
 
     return (results as any[]).map(([driverId, [lng, lat]]) => ({
@@ -342,18 +343,18 @@ export class DispatchEngine {
   constructor(
     private spatialManager: RedisSpatialGridManager,
     private dispatchStrategy: DispatchStrategy,
-    private redis: Redis
+    private redis: Redis,
   ) {}
 
   async assignDriverToOrder(
     orderId: string,
-    restaurantLocation: GeoLocation
+    restaurantLocation: GeoLocation,
   ): Promise<{ success: boolean; assignedDriverId?: string }> {
     const radiusSteps = [2, 5, 8]; // Search radius expansion in km
 
     for (const radius of radiusSteps) {
       const candidates = await this.spatialManager.findNearbyDrivers(restaurantLocation, radius);
-      
+
       // Filter out busy drivers
       const availableCandidates = [];
       for (const candidate of candidates) {
@@ -367,13 +368,7 @@ export class DispatchEngine {
 
       if (selectedDriverId) {
         // Atomic Lock: Reserve driver for 30s offer period
-        const locked = await this.redis.set(
-          `driver:${selectedDriverId}:busy`,
-          orderId,
-          'EX',
-          30,
-          'NX'
-        );
+        const locked = await this.redis.set(`driver:${selectedDriverId}:busy`, orderId, 'EX', 30, 'NX');
 
         if (locked === 'OK') {
           return { success: true, assignedDriverId: selectedDriverId };
@@ -391,26 +386,29 @@ export class DispatchEngine {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Ingestion Bottleneck of 125,000 Driver Pings/Sec
+
 - **Problem:** Updating PostgreSQL with 125,000 driver GPS coordinates every second will crash database disk I/O immediately.
-- **Solution:** 
+- **Solution:**
   1. Driver mobile apps emit compressed binary gRPC location frames every 4 seconds to lightweight Netty ingestion proxy servers.
   2. Netty streams pings directly into a high-throughput Kafka topic (`driver-locations-raw`).
   3. A Flink stream processor updates the Redis Geospatial cache in real time for instant dispatching queries while flushing historical raw coordinates asynchronously into Cassandra in 10-second micro-batches.
 
 ### 2. Handling Driver Offer Rejections (The Cascade Problem)
+
 - **Problem:** If a driver rejects an order offer or ignores the 30-second notification window during peak dinner rush, order preparation cools down while waiting for matching.
 - **Solution:** Implement **Batch Multi-Offer Pre-Calculation**. The dispatch engine ranks top 3 candidate drivers simultaneously. If Driver 1 rejects or times out after 15 seconds, the engine instantly transitions the notification offer to pre-fetched Driver 2 without re-running spatial routing algorithms.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you compute real-time ETA when accounting for weather, traffic, and kitchen preparation delays?</summary>
 
-**Answer:**  
-ETA is calculated as a composite formula:  
+**Answer:**
+ETA is calculated as a composite formula:
 $$\text{Total ETA} = \text{Prep Time} (T_{\text{prep}}) + \text{Driver-to-Restaurant Travel Time} (T_{\text{pickup}}) + \text{Restaurant-to-Customer Travel Time} (T_{\text{delivery}})$$
+
 1. $T_{\text{prep}}$ is predicted using a Machine Learning model trained on historic merchant completion times for specific menu items and current kitchen queue length.
 2. $T_{\text{pickup}}$ and $T_{\text{delivery}}$ are calculated using OSRM / Google Maps Distance Matrix APIs weighted by real-time traffic speeds obtained from driver movement vectors.
 
@@ -419,7 +417,7 @@ $$\text{Total ETA} = \text{Prep Time} (T_{\text{prep}}) + \text{Driver-to-Restau
 <details>
 <summary>❓ Why use Uber H3 Spatial Index over standard GeoHash or QuadTrees?</summary>
 
-**Answer:**  
+**Answer:**
 Standard GeoHash quadrangles produce variable cell areas near the poles and severe edge-discontinuity artifacts where neighboring points fall into completely different string prefixes. Uber H3 uses regular hexagonal cells. Hexagons have uniform distance between cell centroids and all 6 adjacent neighbor cells, simplifying smooth spatial radial search algorithms and continuous surge pricing map overlays without edge distortion.
 
 </details>
@@ -427,11 +425,12 @@ Standard GeoHash quadrangles produce variable cell areas near the poles and seve
 <details>
 <summary>❓ How do you guarantee exact multi-party payment settlement between Platform, Merchant, and Driver?</summary>
 
-**Answer:**  
+**Answer:**
 We utilize the **Saga Pattern with Transactional Ledger DB**. Payments are held in a platform Escrow account. Upon driver marking `DELIVERED`, an asynchronous Saga orchestrator emits accounting ledger transactions into an immutable double-entry ledger table (PostgreSQL / AWS QLDB):
+
 - Debit Platform Escrow: \$30.00
 - Credit Merchant Balance: \$22.00
 - Credit Driver Balance: \$5.00 (Fee) + \$3.00 (Tip)
-Payouts are settled daily via ACH / Stripe Connect transfers.
+  Payouts are settled daily via ACH / Stripe Connect transfers.
 
 </details>

@@ -9,7 +9,7 @@ This guide covers common design patterns and how to implement real-world feature
 - [React Design Patterns \& Common Tasks](#react-design-patterns--common-tasks)
   - [Table of Contents](#table-of-contents)
   - [1. HOC vs Render Props vs Custom Hooks](#1-hoc-vs-render-props-vs-custom-hooks)
-  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+  - [Harness "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: What is the "Compound Components" pattern and why is it superior for library authors?](#q1-what-is-the-compound-components-pattern-and-why-is-it-superior-for-library-authors)
     - [Q2: Explain "Inversion of Control" (IoC) in the context of React Hooks.](#q2-explain-inversion-of-control-ioc-in-the-context-of-react-hooks)
     - [Q3: How do you handle "Portals" and the "Z-Index War" in a large application?](#q3-how-do-you-handle-portals-and-the-z-index-war-in-a-large-application)
@@ -42,7 +42,7 @@ Custom Hooks have largely replaced HOCs and Render Props for **logic reuse.** Ho
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What is the "Compound Components" pattern and why is it superior for library authors?
 

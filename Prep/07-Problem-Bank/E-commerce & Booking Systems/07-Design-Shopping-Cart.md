@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Shopping Cart System (Amazon / Shopify)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a high-throughput multi-tenant shopping cart engine serving 50M DAU, processing sub-20ms cart mutations, guest-to-user session cart merging, dynamic promo code stacking, and live price/inventory validation.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a high-throughput multi-tenant shopping cart engine serving 50M DAU, processing sub-20ms cart mutations, guest-to-user session cart merging, dynamic promo code stacking, and live price/inventory validation.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | ⬅️ [Back to Problem Bank Index](../README.md)
 
 ---
@@ -46,14 +46,14 @@ Storage & Memory Calculations (3-Year Projection):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Layer / Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Frontend State** | React + Zustand / Redux Toolkit | Optimistic UI updates for immediate cart state changes before server HTTP confirmation. |
-| **API Gateway** | Envoy API Gateway | Handles guest session cookie parsing, JWT user auth verification, rate limiting, and CORS headers. |
-| **Primary Cart Cache** | Redis Cluster (ElastiCache) | Ultra-fast in-memory JSON document storage (`JSON.SET` / Hash maps) for sub-5ms cart reads and writes. |
-| **Persistent Cart DB** | Amazon DynamoDB / Cassandra | Distributed NoSQL database providing single-digit millisecond latency key-value persistence partitioned by `userId` or `sessionId`. |
-| **Pricing & Stock Service** | gRPC Microservices | Provides real-time unit price and stock availability checks prior to cart render and checkout initiation. |
-| **Event Bus** | Apache Kafka | Streams cart abandonment events for retargeting emails and analytics pipelines. |
+| Layer / Component           | Technology Choice               | Architectural Rationale                                                                                                             |
+| :-------------------------- | :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend State**          | React + Zustand / Redux Toolkit | Optimistic UI updates for immediate cart state changes before server HTTP confirmation.                                             |
+| **API Gateway**             | Envoy API Gateway               | Handles guest session cookie parsing, JWT user auth verification, rate limiting, and CORS headers.                                  |
+| **Primary Cart Cache**      | Redis Cluster (ElastiCache)     | Ultra-fast in-memory JSON document storage (`JSON.SET` / Hash maps) for sub-5ms cart reads and writes.                              |
+| **Persistent Cart DB**      | Amazon DynamoDB / Cassandra     | Distributed NoSQL database providing single-digit millisecond latency key-value persistence partitioned by `userId` or `sessionId`. |
+| **Pricing & Stock Service** | gRPC Microservices              | Provides real-time unit price and stock availability checks prior to cart render and checkout initiation.                           |
+| **Event Bus**               | Apache Kafka                    | Streams cart abandonment events for retargeting emails and analytics pipelines.                                                     |
 
 ---
 
@@ -117,7 +117,7 @@ sequenceDiagram
 
     User->>Gateway: POST /api/v1/auth/login { credentials, guestSessionId: "sess_881" }
     Gateway->>CartSvc: mergeCart(guestSessionId: "sess_881", userId: "usr_4401")
-    
+
     rect rgb(240, 248, 255)
         Note over CartSvc,Redis: Atomic Cart Merge Execution
         CartSvc->>Redis: GET cart:sess_881
@@ -235,7 +235,10 @@ export abstract class CartCalculatorDecorator implements ICartCalculator {
 
 // Concrete Decorator 1: Percentage Discount
 export class PercentageDiscountDecorator extends CartCalculatorDecorator {
-  constructor(wrapped: ICartCalculator, private percentage: number) {
+  constructor(
+    wrapped: ICartCalculator,
+    private percentage: number,
+  ) {
     super(wrapped);
   }
 
@@ -247,7 +250,10 @@ export class PercentageDiscountDecorator extends CartCalculatorDecorator {
 
 // Concrete Decorator 2: Sales Tax
 export class TaxDecorator extends CartCalculatorDecorator {
-  constructor(wrapped: ICartCalculator, private taxRate: number) {
+  constructor(
+    wrapped: ICartCalculator,
+    private taxRate: number,
+  ) {
     super(wrapped);
   }
 
@@ -302,10 +308,7 @@ export class RedisCartRepository {
 export class CartMergeService {
   constructor(private cartRepo: RedisCartRepository) {}
 
-  async mergeGuestCartIntoUserCart(
-    guestSessionId: string,
-    userId: string
-  ): Promise<CartPayload> {
+  async mergeGuestCartIntoUserCart(guestSessionId: string, userId: string): Promise<CartPayload> {
     const guestCart = await this.cartRepo.getCart(guestSessionId);
     let userCart = await this.cartRepo.getCart(userId);
 
@@ -356,23 +359,25 @@ export class CartMergeService {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Stale Cart Prices & Out-of-Stock Checkout Failures
+
 - **Problem:** A user leaves an item in their cart for 2 weeks. The merchant raises the price from \$50 to \$80 or out-of-stock occurs.
 - **Solution:** Do NOT lock price or stock inside the long-lived cart repository. Cart items store `productId`, `sku`, and `quantity`. When the user fetches their cart or transitions to checkout, the Cart Service calls the Pricing & Inventory service in parallel (`Promise.all`) to re-hydrate current live unit prices and stock availability badges.
 
 ### 2. High Memory Footprint on 100 Million Active Carts
+
 - **Problem:** Storing 100 Million full JSON cart documents in Redis consumes massive RAM.
-- **Solution:** 
+- **Solution:**
   1. Compress JSON payloads using Gzip / MessagePack before saving to Redis.
   2. Implement a two-tiered caching model: Active cart keys stay in Redis with a 7-day LRU eviction policy; inactive carts persist in DynamoDB NoSQL database, re-hydrated back into Redis only on user request.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>x❓ How do you prevent race conditions when a user adds items to their cart simultaneously from multiple browser tabs?</summary>
 
-**Answer:**  
+**Answer:**
 We use **Optimistic Locking with Versioning / ETag Headers** or Redis Lua scripts for atomic updates. Each cart update request submits the `version` number (`ETag`). If another tab mutated the cart payload in Redis first, the version check fails with HTTP 412 (Precondition Failed), prompting the client UI to refetch the latest cart state and re-apply the mutation.
 
 </details>
@@ -380,7 +385,7 @@ We use **Optimistic Locking with Versioning / ETag Headers** or Redis Lua script
 <details>
 <summary>❓ How do you handle coupon stacking abuse (e.g. combining two mutually exclusive 50% coupons)?</summary>
 
-**Answer:**  
+**Answer:**
 Every coupon entity possesses a `stackableCategory` and `exclusivityGroup` property. The `PromotionEngine` evaluates coupon arrays against an immutable dependency rules engine. If a user attempts to add an exclusive coupon code to a cart already containing a restricted promo, the engine rejects the addition and returns an explicit policy error code (`COUPON_MUTUALLY_EXCLUSIVE`).
 
 </details>
@@ -388,7 +393,7 @@ Every coupon entity possesses a `stackableCategory` and `exclusivityGroup` prope
 <details>
 <summary>❓ How do you detect and trigger Abandoned Cart email campaigns without querying the main database?</summary>
 
-**Answer:**  
+**Answer:**
 We leverage **Kafka Delay Queues / TTL Event Streams**. When a cart is updated, we publish a `CART_UPDATED` event to Kafka with a 24-hour delay window. If no `CHECKOUT_COMPLETED` event is received for that `userId` within 24 hours, an downstream `AbandonedCartWorker` reads the message from the delay topic, fetches the cart payload, and triggers a personalized discount reminder email.
 
 </details>

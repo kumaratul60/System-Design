@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Distributed Task Scheduler
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** High-precision, fault-tolerant distributed task scheduling engine processing millions of scheduled tasks per day with sub-second accuracy and DAG dependency resolution.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** High-precision, fault-tolerant distributed task scheduling engine processing millions of scheduled tasks per day with sub-second accuracy and DAG dependency resolution.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -47,12 +47,12 @@ Memory & Storage Estimates (30-Day Persistence):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Scheduler Core Data Structure** | Hierarchical Timing Wheel / Min-Heap | Hierarchical Timing Wheel provides $O(1)$ task insertion and expiration, replacing $O(\log N)$ heap pops under high concurrency. |
-| **Persistence Store** | PostgreSQL (`FOR UPDATE SKIP LOCKED`) | Relational transactional safety allows multiple master schedulers to safely claim tasks without lock contention. |
-| **Worker Queue Stream** | Apache Kafka / Redis Streams | High-throughput distributed message queue decoupling scheduler trigger loops from worker execution. |
-| **Consensus & Coordination** | Etcd / Apache ZooKeeper | Distributed leader election for Master Schedulers and worker node cluster membership heartbeats. |
+| Component                         | Technology Choice                     | Architectural Rationale                                                                                                          |
+| :-------------------------------- | :------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------- |
+| **Scheduler Core Data Structure** | Hierarchical Timing Wheel / Min-Heap  | Hierarchical Timing Wheel provides $O(1)$ task insertion and expiration, replacing $O(\log N)$ heap pops under high concurrency. |
+| **Persistence Store**             | PostgreSQL (`FOR UPDATE SKIP LOCKED`) | Relational transactional safety allows multiple master schedulers to safely claim tasks without lock contention.                 |
+| **Worker Queue Stream**           | Apache Kafka / Redis Streams          | High-throughput distributed message queue decoupling scheduler trigger loops from worker execution.                              |
+| **Consensus & Coordination**      | Etcd / Apache ZooKeeper               | Distributed leader election for Master Schedulers and worker node cluster membership heartbeats.                                 |
 
 ---
 
@@ -244,7 +244,7 @@ export class RetryPolicy {
   constructor(
     public maxRetries: number = 3,
     public initialBackoffMs: number = 1000,
-    public backoffMultiplier: number = 2
+    public backoffMultiplier: number = 2,
   ) {}
 
   public getNextRetryDelayMs(attempt: number): number {
@@ -264,7 +264,7 @@ export class Task {
     public scheduledTimeMs: number,
     public payload: TaskPayload,
     public retryPolicy: RetryPolicy = new RetryPolicy(),
-    public dependencies: string[] = []
+    public dependencies: string[] = [],
   ) {}
 }
 
@@ -274,7 +274,7 @@ export class HierarchicalTimingWheel {
 
   constructor(
     private tickMs: number = 1000, // 1 Second ticks
-    private wheelSize: number = 60 // 60 Seconds wheel
+    private wheelSize: number = 60, // 60 Seconds wheel
   ) {}
 
   public addTask(task: Task): void {
@@ -291,7 +291,7 @@ export class HierarchicalTimingWheel {
     this.buckets.delete(bucketIndex);
 
     // Return tasks due for execution
-    return tasks.filter(t => t.scheduledTimeMs <= currentTimestampMs);
+    return tasks.filter((t) => t.scheduledTimeMs <= currentTimestampMs);
   }
 }
 
@@ -394,20 +394,20 @@ export class TaskSchedulerEngine {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 - **Min-Heap vs Hierarchical Timing Wheel Comparison:**
-  - *Min-Heap:* $O(\log N)$ insertion and deletion. Under millions of concurrent tasks, heap rebalancing creates severe lock contention.
-  - *Hierarchical Timing Wheel:* $O(1)$ insertion and expiration by bucketing tasks into time slots (Seconds, Minutes, Hours wheels), reducing CPU overhead dramatically.
+  - _Min-Heap:_ $O(\log N)$ insertion and deletion. Under millions of concurrent tasks, heap rebalancing creates severe lock contention.
+  - _Hierarchical Timing Wheel:_ $O(1)$ insertion and expiration by bucketing tasks into time slots (Seconds, Minutes, Hours wheels), reducing CPU overhead dramatically.
 - **Master Node Failure Recovery:** Active-Passive Master Schedulers maintain Etcd heartbeats. If the active leader fails, standby nodes elect a new leader. The new leader scans PostgreSQL for tasks with `status IN ('PENDING', 'QUEUED')` and populates its local Timing Wheel.
-- **Preventing Double Execution (Database Claim Locking):** Multiple worker instances consume messages from Kafka. To prevent concurrent processing of duplicate messages, workers perform an atomic claim query:  
+- **Preventing Double Execution (Database Claim Locking):** Multiple worker instances consume messages from Kafka. To prevent concurrent processing of duplicate messages, workers perform an atomic claim query:
   `UPDATE tasks SET status='RUNNING', worker_id=$1 WHERE id=$2 AND status='QUEUED'`
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How does a Hierarchical Timing Wheel achieve O(1) task scheduling efficiency?</summary>
 
-**Answer:**  
+**Answer:**
 Instead of sorting all tasks in a global binary heap, a Timing Wheel uses a circular array of buckets representing time slots (e.g. 60 1-second buckets). Inserting a task calculates `slot = (execution_time / 1000) % 60` in $O(1)$ time. When the clock ticks to a slot, all tasks in that bucket are expired simultaneously in $O(1)$ pointer operations.
 
 </details>
@@ -415,7 +415,7 @@ Instead of sorting all tasks in a global binary heap, a Timing Wheel uses a circ
 <details>
 <summary>❓ How do you guarantee Exactly-Once task execution in a distributed network with retries?</summary>
 
-**Answer:**  
+**Answer:**
 Network retries guarantee At-Least-Once delivery. To achieve **Exactly-Once processing**, require each task payload to carry a unique client **Idempotency Key**. Workers wrap execution logic inside a database transaction that verifies and writes the idempotency key to an `executed_tasks` table. If the key exists, the worker skips re-execution and immediately returns the previous cached result.
 
 </details>
@@ -423,7 +423,7 @@ Network retries guarantee At-Least-Once delivery. To achieve **Exactly-Once proc
 <details>
 <summary>❓ How do you handle cyclic dependency deadlocks in user-defined DAG workflows?</summary>
 
-**Answer:**  
+**Answer:**
 Run **Kahn's Algorithm (Topological Sort)** or DFS cycle detection during DAG task graph submission (`scheduleTask`). If in-degree processing detects a cycle (a node visited twice without resolving in-degree to 0), reject the entire submission synchronously with a `InvalidDAGException("Cyclic dependency detected: Task A -> B -> A")`.
 
 </details>

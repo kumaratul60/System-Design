@@ -58,12 +58,12 @@ Real-Time Telemetry QPS:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Control System Runtime** | Node.js / TypeScript / C++ Embedded Core | Ultra-low latency event loop processes real-time floor proximity interrupts and CAN bus hardware updates. |
-| **Scheduling Engine** | LOOK Algorithm / Zone Allocation Strategy | Superior to naive FCFS (First Come First Served) and SSTF (Shortest Seek Time First). Prevents starvation by sweeping continuously upward and downward. |
-| **Inter-Car Messaging** | Shared In-Memory Controller / Ring Buffer | Ultra-fast $< 1\text{ms}$ IPC (Inter-Process Communication) state synchronization between group dispatcher and individual car controllers. |
-| **Real-time Monitoring** | WebSockets / Socket.IO | Pushes live 3D visual position and state updates of all 8 elevators to building security & facility management consoles. |
+| Component                  | Technology Choice                         | Architectural Rationale                                                                                                                                 |
+| :------------------------- | :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Control System Runtime** | Node.js / TypeScript / C++ Embedded Core  | Ultra-low latency event loop processes real-time floor proximity interrupts and CAN bus hardware updates.                                               |
+| **Scheduling Engine**      | LOOK Algorithm / Zone Allocation Strategy | Superior to naive FCFS (First Come First Served) and SSTF (Shortest Seek Time First). Prevents starvation by sweeping continuously upward and downward. |
+| **Inter-Car Messaging**    | Shared In-Memory Controller / Ring Buffer | Ultra-fast $< 1\text{ms}$ IPC (Inter-Process Communication) state synchronization between group dispatcher and individual car controllers.              |
+| **Real-time Monitoring**   | WebSockets / Socket.IO                    | Pushes live 3D visual position and state updates of all 8 elevators to building security & facility management consoles.                                |
 
 ---
 
@@ -162,7 +162,7 @@ sequenceDiagram
     GroupDispatcher->>Strategy: selectBestCar(Fleet, 10, UP)
     Strategy-->>GroupDispatcher: Car 1 (Distance: 6 floors, matching UP direction)
     GroupDispatcher->>Car1: addDestination(10)
-    
+
     loop Engine Tick Execution
         Car1->>Motor: moveTowardsTarget()
         Car1->>Car1: Floor Sensor Triggered (Floor 5..6..7..8..9..10)
@@ -326,7 +326,8 @@ export class IdleState extends BaseElevatorState {
     }
 
     // Determine initial direction
-    const hasUpAbove = Array.from(upRequests).some(f => f > currentFloor) || Array.from(downRequests).some(f => f > currentFloor);
+    const hasUpAbove =
+      Array.from(upRequests).some((f) => f > currentFloor) || Array.from(downRequests).some((f) => f > currentFloor);
     if (hasUpAbove) {
       context.setDirection(Direction.UP);
       context.setState(new MovingUpState());
@@ -404,7 +405,8 @@ export class DoorOpenState extends BaseElevatorState {
     }
 
     this.timer++;
-    if (this.timer >= 2) { // 2 tick door dwell time
+    if (this.timer >= 2) {
+      // 2 tick door dwell time
       context.setDoorStatus(DoorStatus.CLOSED);
       console.log(`[Hardware] Elevator Doors CLOSED`);
       context.setState(new IdleState());
@@ -443,17 +445,39 @@ export class ElevatorController implements IElevatorController {
     this.currentState = new IdleState();
   }
 
-  getCarId(): string { return this.carId; }
-  setState(state: IElevatorState): void { this.currentState = state; }
-  getCurrentFloor(): number { return this.currentFloor; }
-  setCurrentFloor(floor: number): void { this.currentFloor = floor; }
-  getDirection(): Direction { return this.direction; }
-  setDirection(direction: Direction): void { this.direction = direction; }
-  getUpRequests(): Set<number> { return this.upRequests; }
-  getDownRequests(): Set<number> { return this.downRequests; }
-  getDoorStatus(): DoorStatus { return this.doorStatus; }
-  setDoorStatus(status: DoorStatus): void { this.doorStatus = status; }
-  getWeightKg(): number { return this.currentWeightKg; }
+  getCarId(): string {
+    return this.carId;
+  }
+  setState(state: IElevatorState): void {
+    this.currentState = state;
+  }
+  getCurrentFloor(): number {
+    return this.currentFloor;
+  }
+  setCurrentFloor(floor: number): void {
+    this.currentFloor = floor;
+  }
+  getDirection(): Direction {
+    return this.direction;
+  }
+  setDirection(direction: Direction): void {
+    this.direction = direction;
+  }
+  getUpRequests(): Set<number> {
+    return this.upRequests;
+  }
+  getDownRequests(): Set<number> {
+    return this.downRequests;
+  }
+  getDoorStatus(): DoorStatus {
+    return this.doorStatus;
+  }
+  setDoorStatus(status: DoorStatus): void {
+    this.doorStatus = status;
+  }
+  getWeightKg(): number {
+    return this.currentWeightKg;
+  }
 
   addRequest(floor: number): void {
     if (floor > this.currentFloor) this.upRequests.add(floor);
@@ -534,20 +558,21 @@ graph TB
 ### ⚠️ Scalability & Edge Case Bottlenecks
 
 1. **Morning Up-Peak Traffic Bottleneck (Starvation at Upper Floors):**
-   - *Problem:* All passengers enter at Floor 1 going up. Higher floors experience extreme wait times for DOWN calls.
-   - *Resolution:* **Zone Allocation Strategy**. 4 cars are statically assigned to lower floors (1-25) and 4 cars to upper floors (26-50), returning immediately to Floor 1 after discharging passengers.
+   - _Problem:_ All passengers enter at Floor 1 going up. Higher floors experience extreme wait times for DOWN calls.
+   - _Resolution:_ **Zone Allocation Strategy**. 4 cars are statically assigned to lower floors (1-25) and 4 cars to upper floors (26-50), returning immediately to Floor 1 after discharging passengers.
 2. **Elevator Churn & Energy Optimization:**
-   - *Problem:* Moving a 2,000 kg elevator car for a single passenger consumes excessive energy.
-   - *Resolution:* Dispatch controller enforces a 3-second request batching window in off-peak hours, grouping hall calls heading in the same direction before initiating motor movement.
+   - _Problem:_ Moving a 2,000 kg elevator car for a single passenger consumes excessive energy.
+   - _Resolution:_ Dispatch controller enforces a 3-second request batching window in off-peak hours, grouping hall calls heading in the same direction before initiating motor movement.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. Why is the LOOK scheduling algorithm preferred over SCAN or SSTF (Shortest Seek Time First)?</summary>
 
 **Answer:**
+
 - **SSTF** causes extreme passenger starvation: a car moving between floors 10-12 will continuously serve calls nearby, ignoring a passenger waiting at floor 50.
 - **SCAN** moves all the way to the top floor (Floor 50) and bottom floor (Floor 1) regardless of whether requests exist at the extremities.
 - **LOOK** resolves both: it services requests in the current direction of travel, but reverses direction immediately once no further requests exist ahead, minimizing empty travel distance and energy consumption.
@@ -558,6 +583,7 @@ graph TB
 <summary>❓ 2. How do you handle emergency fire alarm overrides across all 8 elevators concurrently?</summary>
 
 **Answer:**
+
 1. Fire Alarm System triggers an interrupt signal directly to the hardware bus (CAN bus broadcast).
 2. `ElevatorGroupController.handleEmergency()` sets all car controllers to `EmergencyState`.
 3. Existing destination request queues (`upRequests`, `downRequests`) are purged instantly.

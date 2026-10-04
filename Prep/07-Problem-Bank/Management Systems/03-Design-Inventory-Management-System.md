@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Multi-Warehouse Inventory Management System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Designing a high-throughput, multi-tenant inventory management system supporting multi-warehouse stock reservation, TTL cart holds, low-stock reordering alerts, and oversell prevention.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Designing a high-throughput, multi-tenant inventory management system supporting multi-warehouse stock reservation, TTL cart holds, low-stock reordering alerts, and oversell prevention.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -10,9 +10,9 @@
 
 ### 📋 Functional Requirements (FR)
 
-1. **SKU & Multi-Warehouse Tracking:** Catalog items by Stock Keeping Unit (SKU). Track inventory quantities across multiple geographic warehouses: *Total Quantity*, *Available Quantity*, *Reserved Quantity (Cart Hold)*, and *In-Transit Quantity*.
+1. **SKU & Multi-Warehouse Tracking:** Catalog items by Stock Keeping Unit (SKU). Track inventory quantities across multiple geographic warehouses: _Total Quantity_, _Available Quantity_, _Reserved Quantity (Cart Hold)_, and _In-Transit Quantity_.
 2. **Flash Sale Reservation Hold (TTL):** Support 15-minute temporary inventory reservations during checkout. If customer completes payment, convert reservation to committed sale; if checkout expires, automatically release held stock back to available pool.
-3. **Multi-Warehouse Allocation Strategy:** Intelligently allocate item fulfillment from warehouses based on selectable policies (e.g., *Nearest Warehouse to Customer*, *FIFO / Oldest Batch First*, *Single Warehouse Fulfillment Optimization*).
+3. **Multi-Warehouse Allocation Strategy:** Intelligently allocate item fulfillment from warehouses based on selectable policies (e.g., _Nearest Warehouse to Customer_, _FIFO / Oldest Batch First_, _Single Warehouse Fulfillment Optimization_).
 4. **Low-Stock Alerting & Auto-Reorder:** Trigger automated notification alerts and purchase order recommendations when SKU stock drops below a predefined safety threshold.
 5. **Stock Adjustment & Audit Trail:** Track stock movements (restock, return, shrinkage, damage, transfer) with complete audit trail and ledger reconciliation.
 
@@ -49,13 +49,13 @@ Storage & Ledger Footprint:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Backend Framework** | Go / TypeScript Node.js | Low-overhead concurrent execution handling high-throughput cart reservations. |
-| **In-Memory Buffer Lock** | Redis Cluster + Lua Scripts | Atomic operations (`DECRBY`, `HINCRBY`) preventing overselling with zero lock contention overhead. |
-| **Primary Relational DB** | PostgreSQL (Partitioned) | Transactional ACID updates for committed purchase orders and inventory ledger entries. |
-| **Event Streaming Bus** | Apache Kafka | Event-driven architecture publishing `StockReserved`, `StockReleased`, and `LowStockDetected` events. |
-| **Analytical Store** | ClickHouse / Snowflake | High-speed columnar analytics running inventory valuation and shrinkage reports across warehouses. |
+| Component                 | Technology Choice           | Architectural Rationale                                                                               |
+| :------------------------ | :-------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **Backend Framework**     | Go / TypeScript Node.js     | Low-overhead concurrent execution handling high-throughput cart reservations.                         |
+| **In-Memory Buffer Lock** | Redis Cluster + Lua Scripts | Atomic operations (`DECRBY`, `HINCRBY`) preventing overselling with zero lock contention overhead.    |
+| **Primary Relational DB** | PostgreSQL (Partitioned)    | Transactional ACID updates for committed purchase orders and inventory ledger entries.                |
+| **Event Streaming Bus**   | Apache Kafka                | Event-driven architecture publishing `StockReserved`, `StockReleased`, and `LowStockDetected` events. |
+| **Analytical Store**      | ClickHouse / Snowflake      | High-speed columnar analytics running inventory valuation and shrinkage reports across warehouses.    |
 
 ---
 
@@ -181,7 +181,7 @@ sequenceDiagram
   - `IAllocationStrategy` encapsulates selection algorithms across multiple warehouses.
   - `LowStockNotifierObserver` triggers supplier reorders without modifying inventory state transitions.
 - **Open/Closed Principle (OCP):**
-  - New allocation strategies (e.g., *Cross-Docking Direct Ship*, *Expiry Date FEFO*) implement `IAllocationStrategy` without altering checkout flows.
+  - New allocation strategies (e.g., _Cross-Docking Direct Ship_, _Expiry Date FEFO_) implement `IAllocationStrategy` without altering checkout flows.
   - New alert mechanisms (e.g., Slack webhook, SMS trigger) add new observers implementing `IInventoryObserver`.
 - **Liskov Substitution Principle (LSP):**
   - All warehouse allocation implementations fulfill `IAllocationStrategy` contracts predictably.
@@ -194,12 +194,12 @@ sequenceDiagram
 
 ## 6. 🎨 Design Patterns Selection
 
-| Pattern Name | Application in Inventory Management System | Architectural Benefit |
-| :--- | :--- | :--- |
-| **Strategy Pattern** | `IAllocationStrategy` | Flexible warehouse selection (Nearest location vs stock balancing). |
-| **Observer Pattern** | `IInventoryObserver` | Decouples low-stock reorder alerts and audit log writing from reservation execution path. |
-| **Command Pattern** | `StockAdjustmentCommand` | Encapsulates stock movement operations with rollback capability during audit reconciliations. |
-| **Singleton Pattern** | `InventoryManager` | Centralizes cache locking and reservation state coordination across memory spaces. |
+| Pattern Name          | Application in Inventory Management System | Architectural Benefit                                                                         |
+| :-------------------- | :----------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| **Strategy Pattern**  | `IAllocationStrategy`                      | Flexible warehouse selection (Nearest location vs stock balancing).                           |
+| **Observer Pattern**  | `IInventoryObserver`                       | Decouples low-stock reorder alerts and audit log writing from reservation execution path.     |
+| **Command Pattern**   | `StockAdjustmentCommand`                   | Encapsulates stock movement operations with rollback capability during audit reconciliations. |
+| **Singleton Pattern** | `InventoryManager`                         | Centralizes cache locking and reservation state coordination across memory spaces.            |
 
 ---
 
@@ -239,14 +239,18 @@ export class LowStockNotifierObserver implements IInventoryObserver {
 
   public onStockChanged(event: StockChangedEvent): void {
     if (event.newQty <= this.safetyThreshold) {
-      console.log(`[LOW STOCK ALERT] SKU ${event.skuId} at Warehouse ${event.warehouseId} dropped to ${event.newQty} (Threshold: ${this.safetyThreshold}). Auto-triggering Purchase Order!`);
+      console.log(
+        `[LOW STOCK ALERT] SKU ${event.skuId} at Warehouse ${event.warehouseId} dropped to ${event.newQty} (Threshold: ${this.safetyThreshold}). Auto-triggering Purchase Order!`,
+      );
     }
   }
 }
 
 export class AuditLedgerObserver implements IInventoryObserver {
   public onStockChanged(event: StockChangedEvent): void {
-    console.log(`[LEDGER AUDIT] ${event.timestamp.toISOString()} | SKU: ${event.skuId} | WH: ${event.warehouseId} | Action: ${event.action} | Delta: ${event.newQty - event.previousQty}`);
+    console.log(
+      `[LEDGER AUDIT] ${event.timestamp.toISOString()} | SKU: ${event.skuId} | WH: ${event.warehouseId} | Action: ${event.action} | Delta: ${event.newQty - event.previousQty}`,
+    );
   }
 }
 
@@ -259,7 +263,7 @@ export class WarehouseInventory {
     public readonly skuId: string,
     public readonly warehouseId: string,
     public availableQuantity: number,
-    public reservedQuantity: number = 0
+    public reservedQuantity: number = 0,
   ) {}
 
   public reserve(amount: number): boolean {
@@ -295,7 +299,7 @@ export class InventoryReservation {
     public readonly skuId: string,
     public readonly warehouseId: string,
     public readonly quantity: number,
-    public readonly expiresAt: Date
+    public readonly expiresAt: Date,
   ) {}
 
   public isExpired(): boolean {
@@ -371,7 +375,13 @@ export class InventoryManager {
 
     const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000);
     const reservationId = `RES-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-    const reservation = new InventoryReservation(reservationId, skuId, selectedWarehouse.warehouseId, quantity, expiresAt);
+    const reservation = new InventoryReservation(
+      reservationId,
+      skuId,
+      selectedWarehouse.warehouseId,
+      quantity,
+      expiresAt,
+    );
 
     this.reservations.set(reservationId, reservation);
 
@@ -385,7 +395,9 @@ export class InventoryManager {
       timestamp: new Date(),
     });
 
-    console.log(`[RESERVATION SUCCESS] Reserved ${quantity} of SKU ${skuId} at WH ${selectedWarehouse.warehouseId}. Reservation ID: ${reservationId}`);
+    console.log(
+      `[RESERVATION SUCCESS] Reserved ${quantity} of SKU ${skuId} at WH ${selectedWarehouse.warehouseId}. Reservation ID: ${reservationId}`,
+    );
     return reservation;
   }
 
@@ -403,7 +415,9 @@ export class InventoryManager {
     targetWH.commit(reservation.quantity);
     reservation.status = ReservationStatus.COMMITTED;
 
-    console.log(`[COMMIT SUCCESS] Committed ${reservation.quantity} of SKU ${reservation.skuId} for Reservation ${reservationId}`);
+    console.log(
+      `[COMMIT SUCCESS] Committed ${reservation.quantity} of SKU ${reservation.skuId} for Reservation ${reservationId}`,
+    );
   }
 
   public releaseExpiredReservations(): void {
@@ -414,7 +428,9 @@ export class InventoryManager {
         if (targetWH) {
           targetWH.release(res.quantity);
           res.status = ReservationStatus.EXPIRED;
-          console.log(`[TTL EXPIRED] Automatically released ${res.quantity} stock back to available pool for SKU ${res.skuId}`);
+          console.log(
+            `[TTL EXPIRED] Automatically released ${res.quantity} stock back to available pool for SKU ${res.skuId}`,
+          );
         }
       }
     }
@@ -500,15 +516,15 @@ graph TB
 ### ⚡ Critical Scale Bottlenecks & Architectural Fixes
 
 1. **Redis Hot Key Bottleneck during Flash Sales:**
-   - *Problem:* 100,000 requests per second hit a single Redis key for a viral item (`stock:SKU-VIRAL`).
-   - *Solution:* Implement **Key Partitioning / Stock Splitting**. Divide stock into 10 virtual buckets (`stock:SKU-VIRAL:bucket_1` to `10`) across Redis cluster shards. Routers direct checkout traffic randomly across buckets, multiplying throughput linearly.
+   - _Problem:_ 100,000 requests per second hit a single Redis key for a viral item (`stock:SKU-VIRAL`).
+   - _Solution:_ Implement **Key Partitioning / Stock Splitting**. Divide stock into 10 virtual buckets (`stock:SKU-VIRAL:bucket_1` to `10`) across Redis cluster shards. Routers direct checkout traffic randomly across buckets, multiplying throughput linearly.
 2. **Ghost Inventory / Unreleased Cart Holds:**
-   - *Problem:* Application server crashes after reserving Redis stock, leaving reservations permanently locked.
-   - *Solution:* Attach explicit TTLs directly to Redis key reservations using `SET SKU-VIRAL:res:123 "HOLD" EX 900`. Redis automatically drops expired holds if central server misses heartbeat.
+   - _Problem:_ Application server crashes after reserving Redis stock, leaving reservations permanently locked.
+   - _Solution:_ Attach explicit TTLs directly to Redis key reservations using `SET SKU-VIRAL:res:123 "HOLD" EX 900`. Redis automatically drops expired holds if central server misses heartbeat.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you prevent inventory overselling using Redis Lua scripts?</summary>

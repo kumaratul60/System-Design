@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Restaurant Management System & Kitchen Display System (KDS)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an enterprise-grade digital restaurant management system, real-time Kitchen Display System (KDS), split-bill payment engine, and table allocation machine.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an enterprise-grade digital restaurant management system, real-time Kitchen Display System (KDS), split-bill payment engine, and table allocation machine.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -11,9 +11,9 @@
 ### 📋 Functional Requirements (FR)
 
 1. **Table Layout & Reservation Management:** Manage multi-zone floor layouts (Indoor, Patio, VIP Booths). Track dynamic table states: `FREE`, `RESERVED`, `OCCUPIED`, `BILLING`, `CLEANING`. Automatically allocate tables based on party size.
-2. **Order Placement & Kitchen Routing (KDS):** Allow waitstaff to place orders containing items with custom modifiers (e.g., *Medium Rare*, *No Onion*, *Extra Cheese*). Route ticket items dynamically to designated kitchen prep stations (*Grill*, *Salad/Cold*, *Fryer*, *Bar*).
+2. **Order Placement & Kitchen Routing (KDS):** Allow waitstaff to place orders containing items with custom modifiers (e.g., _Medium Rare_, _No Onion_, _Extra Cheese_). Route ticket items dynamically to designated kitchen prep stations (_Grill_, _Salad/Cold_, _Fryer_, _Bar_).
 3. **Real-Time Order Lifecycle State Machine:** Track order item states: `PLACED` $\rightarrow$ `PREPARING` $\rightarrow$ `READY_TO_SERVE` $\rightarrow$ `SERVED` $\rightarrow$ `CANCELLED`. Notify waitstaff via handheld pagers when order items are marked `READY_TO_SERVE`.
-4. **Flexible Bill Splitting Engine:** Support complex split-billing strategies: *Equal N-Way Split*, *Itemized Split*, *Seat-based Split*, or *Custom Amount Split*, applying configurable tax rates and tip percentages.
+4. **Flexible Bill Splitting Engine:** Support complex split-billing strategies: _Equal N-Way Split_, _Itemized Split_, _Seat-based Split_, or _Custom Amount Split_, applying configurable tax rates and tip percentages.
 5. **Offline POS Resilience:** Maintain full POS ordering capability locally when internet connectivity drops, syncing completed transactions upon reconnection.
 
 ### ⚡ Non-Functional Requirements (NFR)
@@ -49,13 +49,13 @@ Storage Estimates (5 Years):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Edge Hardware Controller** | Local Outlet Edge Server (Node.js/Go) | On-premise server guaranteeing sub-10ms KDS rendering and zero internet dependency. |
-| **Real-time Protocol** | WebSockets (Socket.io) / gRPC Streams | Instant bi-directional streaming for order tickets between Waiter Tablets and KDS displays. |
-| **Primary Relational DB** | PostgreSQL | Complex relational joins for floor layouts, menu catalog modifiers, and split payments. |
-| **Local Offline Cache** | SQLite + IndexedDB | Embedded store enabling offline POS operations during network outages. |
-| **Event Broker** | Redis Pub/Sub / MQTT | Lightweight low-latency messaging routing ticket items to specific kitchen station monitors. |
+| Component                    | Technology Choice                     | Architectural Rationale                                                                      |
+| :--------------------------- | :------------------------------------ | :------------------------------------------------------------------------------------------- |
+| **Edge Hardware Controller** | Local Outlet Edge Server (Node.js/Go) | On-premise server guaranteeing sub-10ms KDS rendering and zero internet dependency.          |
+| **Real-time Protocol**       | WebSockets (Socket.io) / gRPC Streams | Instant bi-directional streaming for order tickets between Waiter Tablets and KDS displays.  |
+| **Primary Relational DB**    | PostgreSQL                            | Complex relational joins for floor layouts, menu catalog modifiers, and split payments.      |
+| **Local Offline Cache**      | SQLite + IndexedDB                    | Embedded store enabling offline POS operations during network outages.                       |
+| **Event Broker**             | Redis Pub/Sub / MQTT                  | Lightweight low-latency messaging routing ticket items to specific kitchen station monitors. |
 
 ---
 
@@ -197,8 +197,8 @@ sequenceDiagram
   - `OrderItem` tracks item preparation status.
   - `ISplitBillStrategy` handles payment splitting arithmetic exclusively.
 - **Open/Closed Principle (OCP):**
-  - New kitchen stations (e.g., *Sushi Bar*, *Pizza Oven*) add values to `KitchenStation` without altering core ordering workflows.
-  - New billing split methods (e.g., *Seat-based Split*, *Custom Dollar Amount Split*) implement `ISplitBillStrategy` seamlessly.
+  - New kitchen stations (e.g., _Sushi Bar_, _Pizza Oven_) add values to `KitchenStation` without altering core ordering workflows.
+  - New billing split methods (e.g., _Seat-based Split_, _Custom Dollar Amount Split_) implement `ISplitBillStrategy` seamlessly.
 - **Liskov Substitution Principle (LSP):**
   - Concrete split bill strategies (`EqualSplitStrategy`, `ItemizedSplitStrategy`) can be used interchangeably by the payment processor.
 - **Interface Segregation Principle (ISP):**
@@ -210,12 +210,12 @@ sequenceDiagram
 
 ## 6. 🎨 Design Patterns Selection
 
-| Pattern Name | Application in Restaurant Management System | Architectural Benefit |
-| :--- | :--- | :--- |
-| **State Pattern** | `TableStatus`, `OrderStatus` | Prevents illegal state transitions (e.g., seating a party at an `OCCUPIED` table). |
-| **Strategy Pattern** | `ISplitBillStrategy` | Flexible payment splitting algorithms (Equal division vs itemized grouping). |
-| **Observer Pattern** | `KitchenEventObserver` | Publishes live ticket notifications to KDS screens and waiter handhelds on status change. |
-| **Command Pattern** | `OrderModifierCommand` | Encapsulates order changes (cancel dish, add extra sauce) with audit trails for manager approval. |
+| Pattern Name         | Application in Restaurant Management System | Architectural Benefit                                                                             |
+| :------------------- | :------------------------------------------ | :------------------------------------------------------------------------------------------------ |
+| **State Pattern**    | `TableStatus`, `OrderStatus`                | Prevents illegal state transitions (e.g., seating a party at an `OCCUPIED` table).                |
+| **Strategy Pattern** | `ISplitBillStrategy`                        | Flexible payment splitting algorithms (Equal division vs itemized grouping).                      |
+| **Observer Pattern** | `KitchenEventObserver`                      | Publishes live ticket notifications to KDS screens and waiter handhelds on status change.         |
+| **Command Pattern**  | `OrderModifierCommand`                      | Encapsulates order changes (cancel dish, add extra sauce) with audit trails for manager approval. |
 
 ---
 
@@ -254,7 +254,7 @@ export class MenuItem {
     public readonly itemId: string,
     public readonly name: string,
     public readonly price: number,
-    public readonly targetStation: KitchenStation
+    public readonly targetStation: KitchenStation,
   ) {}
 }
 
@@ -267,7 +267,7 @@ export class Table {
 
   constructor(
     public readonly tableNumber: number,
-    public readonly capacity: number
+    public readonly capacity: number,
   ) {}
 
   public occupy(): void {
@@ -296,7 +296,7 @@ export class OrderItem {
   constructor(
     public readonly orderItemId: string,
     public readonly menuItem: MenuItem,
-    public readonly modifiers: string[] = []
+    public readonly modifiers: string[] = [],
   ) {}
 
   public updateStatus(newStatus: OrderStatus): void {
@@ -310,7 +310,7 @@ export class Order {
   constructor(
     public readonly orderId: string,
     public readonly tableNumber: number,
-    public readonly createdAt: Date = new Date()
+    public readonly createdAt: Date = new Date(),
   ) {}
 
   public addItem(item: OrderItem): void {
@@ -331,7 +331,7 @@ export class BillPayment {
 
   constructor(
     public readonly paymentId: string,
-    public readonly amountDue: number
+    public readonly amountDue: number,
   ) {}
 
   public markPaid(): void {
@@ -405,7 +405,9 @@ export class RestaurantManager {
 
     for (const item of items) {
       order.addItem(item);
-      console.log(`[KDS ROUTER] Routed '${item.menuItem.name}' to ${item.menuItem.targetStation} station (Status: PLACED)`);
+      console.log(
+        `[KDS ROUTER] Routed '${item.menuItem.name}' to ${item.menuItem.targetStation} station (Status: PLACED)`,
+      );
     }
 
     this.activeOrders.set(orderId, order);
@@ -435,7 +437,9 @@ export class RestaurantManager {
     table.markBilling();
 
     const payments = splitStrategy.split(order, param);
-    console.log(`[BILLING] Order ${orderId} total $${order.getTotalAmount()} split into ${payments.length} payment(s):`);
+    console.log(
+      `[BILLING] Order ${orderId} total $${order.getTotalAmount()} split into ${payments.length} payment(s):`,
+    );
     payments.forEach((p) => console.log(`  - ${p.paymentId}: $${p.amountDue}`));
 
     table.vacate();
@@ -510,15 +514,15 @@ graph TB
 ### ⚡ Critical Scale Bottlenecks & Architectural Fixes
 
 1. **Internet Connection Outage during Dinner Rush:**
-   - *Problem:* Cloud connectivity drops; waiters cannot place orders or collect bills.
-   - *Solution:* Deploy **Local Edge Gateway (On-Premises Server)**. POS tablets communicate with the edge server over local Wi-Fi LAN using SQLite / IndexedDB. Orders continue seamlessly. When internet restores, Edge Server reconciles transaction logs to the cloud DB asynchronously.
+   - _Problem:_ Cloud connectivity drops; waiters cannot place orders or collect bills.
+   - _Solution:_ Deploy **Local Edge Gateway (On-Premises Server)**. POS tablets communicate with the edge server over local Wi-Fi LAN using SQLite / IndexedDB. Orders continue seamlessly. When internet restores, Edge Server reconciles transaction logs to the cloud DB asynchronously.
 2. **KDS Broadcast Lag on Busy Friday Nights:**
-   - *Problem:* 50 orders submitted per minute cause lag on KDS screens due to unoptimized WebSocket fan-out.
-   - *Solution:* Utilize lightweight MQTT pub/sub topics partitioned by station (`outlet_12/kitchen/grill`, `outlet_12/kitchen/bar`). KDS screens subscribe only to relevant topics, reducing network payload by 80%.
+   - _Problem:_ 50 orders submitted per minute cause lag on KDS screens due to unoptimized WebSocket fan-out.
+   - _Solution:_ Utilize lightweight MQTT pub/sub topics partitioned by station (`outlet_12/kitchen/grill`, `outlet_12/kitchen/bar`). KDS screens subscribe only to relevant topics, reducing network payload by 80%.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you prevent double-seating a table when two hostesses select Table 12 at the exact same instant?</summary>

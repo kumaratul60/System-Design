@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Logging Framework
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Ultra-low latency, non-blocking, zero-lock logging engine capable of processing 100,000+ logs/sec per node with microsecond execution overhead.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Ultra-low latency, non-blocking, zero-lock logging engine capable of processing 100,000+ logs/sec per node with microsecond execution overhead.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -45,12 +45,12 @@ Ring Buffer Capacity:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Concurrency Core** | Lock-free Ring Buffer (Disruptor) | Uses Atomic CAS (Compare-And-Swap) sequence barriers instead of mutex locks to achieve sub-microsecond non-blocking execution. |
-| **I/O Engine** | Memory-Mapped Files (`mmap`) / Buffered Streams | Eliminates user-space to kernel-space context switching overhead during file writes. |
-| **Formatting Engine** | Zero-Allocation JSON Serializer | Pre-allocates buffer byte arrays to avoid trigger Garbage Collection (GC) pauses under heavy log pressure. |
-| **Context Propagation** | Async Local Storage / ThreadLocal (MDC) | Automatically carries trace identifiers (`traceId`, `spanId`) through async promise chains. |
+| Component               | Technology Choice                               | Architectural Rationale                                                                                                        |
+| :---------------------- | :---------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| **Concurrency Core**    | Lock-free Ring Buffer (Disruptor)               | Uses Atomic CAS (Compare-And-Swap) sequence barriers instead of mutex locks to achieve sub-microsecond non-blocking execution. |
+| **I/O Engine**          | Memory-Mapped Files (`mmap`) / Buffered Streams | Eliminates user-space to kernel-space context switching overhead during file writes.                                           |
+| **Formatting Engine**   | Zero-Allocation JSON Serializer                 | Pre-allocates buffer byte arrays to avoid trigger Garbage Collection (GC) pauses under heavy log pressure.                     |
+| **Context Propagation** | Async Local Storage / ThreadLocal (MDC)         | Automatically carries trace identifiers (`traceId`, `spanId`) through async promise chains.                                    |
 
 ---
 
@@ -283,7 +283,9 @@ export class JSONFormatter implements IFormatter {
       logger: event.loggerName,
       message: event.message,
       context: event.context || {},
-      error: event.error ? { name: event.error.name, message: event.error.message, stack: event.error.stack } : undefined,
+      error: event.error
+        ? { name: event.error.name, message: event.error.message, stack: event.error.stack }
+        : undefined,
     });
   }
 }
@@ -330,7 +332,7 @@ export class CompositeAppender implements IAppender {
   }
 
   public async close(): Promise<void> {
-    await Promise.all(this.appenders.map(a => a.close()));
+    await Promise.all(this.appenders.map((a) => a.close()));
   }
 }
 
@@ -346,7 +348,7 @@ export class AsyncRingBufferLogger {
     private name: string,
     private levelThreshold: LogLevel,
     private appender: IAppender,
-    capacityPowerOfTwo: number = 16 // 65536 slots
+    capacityPowerOfTwo: number = 16, // 65536 slots
   ) {
     this.capacity = 1 << capacityPowerOfTwo;
     this.buffer = new Array<LogEvent>(this.capacity);
@@ -403,20 +405,20 @@ export class AsyncRingBufferLogger {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 - **Ring Buffer Overflow Policy:** When the ring buffer fills up under massive spike conditions:
-  - *Drop Strategy:* Drop lowest priority (`DEBUG`/`TRACE`) messages to save main thread execution.
-  - *Block Strategy:* Block main thread (causes application latency spike).
-  - *Fallback File Strategy:* Write directly to an unbuffered fallback emergency log file.
+  - _Drop Strategy:_ Drop lowest priority (`DEBUG`/`TRACE`) messages to save main thread execution.
+  - _Block Strategy:_ Block main thread (causes application latency spike).
+  - _Fallback File Strategy:_ Write directly to an unbuffered fallback emergency log file.
 - **MDC Context Leakage in Async Promise Pools:** In node.js/Go, async tasks pick up recycled threads. MDC values (`traceId`) must be cleared using `AsyncLocalStorage.run()` wrappers to prevent cross-request context leakage.
 - **Garbage Collection (GC) Pressure:** Instantiating millions of `LogEvent` short-lived objects per second triggers frequent V8/JVM GC pauses. Use object pooling (`LogEvent` object pool) to reuse allocated instances.
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How does the LMAX Disruptor Ring Buffer achieve non-blocking concurrency without mutex locks?</summary>
 
-**Answer:**  
+**Answer:**
 It relies on **Atomic CAS (Compare-And-Swap)** instructions operating on monotonically increasing sequence numbers, paired with power-of-two array capacities. Array index calculation uses lightning-fast bitwise AND (`sequence & (capacity - 1)`). Multiple producer threads update sequence numbers via atomic hardware operations without kernel mutex lock acquisition.
 
 </details>
@@ -424,7 +426,7 @@ It relies on **Atomic CAS (Compare-And-Swap)** instructions operating on monoton
 <details>
 <summary>❓ How do you handle graceful shutdown so queued log entries are not lost on process kill?</summary>
 
-**Answer:**  
+**Answer:**
 Register process signal handlers (`SIGTERM`, `SIGINT`). Upon receipt, stop accepting new incoming log statements, disable the interval timer, execute a final synchronous ring buffer `flush()`, and invoke `close()` on all appenders to flush underlying file descriptor operating system OS page caches.
 
 </details>
@@ -432,7 +434,7 @@ Register process signal handlers (`SIGTERM`, `SIGINT`). Upon receipt, stop accep
 <details>
 <summary>❓ Why use memory-mapped files (`mmap`) for high-speed file appenders?</summary>
 
-**Answer:**  
+**Answer:**
 Standard `write()` syscalls copy log buffers from user space to kernel page cache. `mmap` maps a disk file directly into process virtual memory space. Log writes become simple memory assignments (`memcpy`), allowing OS page flusher threads to handle disk writes asynchronously without context switches.
 
 </details>

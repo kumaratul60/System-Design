@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Google Docs Collaborative Editor
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Production-grade Real-Time Collaborative Document Editor with Operational Transformation (OT) / CRDTs, Vector Clocks, WebSocket Pub/Sub Gateway, Redis Cache/Presence, and Node.js Event Loop.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Production-grade Real-Time Collaborative Document Editor with Operational Transformation (OT) / CRDTs, Vector Clocks, WebSocket Pub/Sub Gateway, Redis Cache/Presence, and Node.js Event Loop.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -57,15 +57,15 @@ Bandwidth & Memory Footprint:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Transport Layer** | WebSockets (WSS) + HTTP/2 Fallback | Full-duplex, low-overhead bidirectional streaming required for sub-50ms operation exchange. |
-| **Conflict Resolution Engine** | Operational Transformation (OT) / CRDTs | Server-backed OT (TP1/TP2 transformation functions) guarantees light client payloads & central serializability. |
-| **Connection Gateway Fleet** | Node.js (ws) / Go Goroutines | Non-blocking asynchronous I/O event loops capable of handling 50k+ open TCP sockets per host node. |
-| **Pub/Sub Room Router** | Redis Cluster / NATS Core | Ephemeral pub/sub topic channels mapped per document ID (`doc:room:<id>`) for instant node-to-node broadcast fanout. |
-| **Session & Presence Cache** | Redis In-Memory Key-Value | Fast $O(1)$ cursor coordinate & user presence storage with TTL expiration heartbeats. |
-| **Operation Log (WAL)** | Apache Cassandra / AWS DynamoDB | Append-only partition key schema (`document_id`, `revision_id`) supporting massive write throughput. |
-| **Document Snapshot Store** | S3 / MinIO Object Storage | Immutable compressed document snapshot storage (Protobuf/JSON) for cold storage & quick room initial load. |
+| Component                      | Technology Choice                       | Architectural Rationale                                                                                              |
+| :----------------------------- | :-------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| **Transport Layer**            | WebSockets (WSS) + HTTP/2 Fallback      | Full-duplex, low-overhead bidirectional streaming required for sub-50ms operation exchange.                          |
+| **Conflict Resolution Engine** | Operational Transformation (OT) / CRDTs | Server-backed OT (TP1/TP2 transformation functions) guarantees light client payloads & central serializability.      |
+| **Connection Gateway Fleet**   | Node.js (ws) / Go Goroutines            | Non-blocking asynchronous I/O event loops capable of handling 50k+ open TCP sockets per host node.                   |
+| **Pub/Sub Room Router**        | Redis Cluster / NATS Core               | Ephemeral pub/sub topic channels mapped per document ID (`doc:room:<id>`) for instant node-to-node broadcast fanout. |
+| **Session & Presence Cache**   | Redis In-Memory Key-Value               | Fast $O(1)$ cursor coordinate & user presence storage with TTL expiration heartbeats.                                |
+| **Operation Log (WAL)**        | Apache Cassandra / AWS DynamoDB         | Append-only partition key schema (`document_id`, `revision_id`) supporting massive write throughput.                 |
+| **Document Snapshot Store**    | S3 / MinIO Object Storage               | Immutable compressed document snapshot storage (Protobuf/JSON) for cold storage & quick room initial load.           |
 
 ---
 
@@ -373,7 +373,11 @@ export class TextOperation {
   }
 
   // 3. Operational Transformation core logic (TP1 Inclusion Transformation)
-  public static transform(opA: TextOperation, opB: TextOperation, prioritySide: 'left' | 'right'): [TextOperation, TextOperation] {
+  public static transform(
+    opA: TextOperation,
+    opB: TextOperation,
+    prioritySide: 'left' | 'right',
+  ): [TextOperation, TextOperation] {
     if (opA.baseLength !== opB.baseLength) {
       throw new Error(`Base lengths mismatch for transform: ${opA.baseLength} vs ${opB.baseLength}`);
     }
@@ -381,7 +385,8 @@ export class TextOperation {
     const aPrime = new TextOperation();
     const bPrime = new TextOperation();
 
-    let idxA = 0, idxB = 0;
+    let idxA = 0,
+      idxB = 0;
     const compsA = [...opA.components];
     const compsB = [...opB.components];
 
@@ -466,7 +471,10 @@ export class DocumentSessionManager {
   private serverRevision: number = 0;
   private history: TextOperation[] = [];
 
-  constructor(public readonly docId: string, initialText: string = '') {
+  constructor(
+    public readonly docId: string,
+    initialText: string = '',
+  ) {
     this.content = initialText;
   }
 
@@ -479,9 +487,15 @@ export class DocumentSessionManager {
   }
 
   // Processes an incoming client operation submitted against clientRevision
-  public processClientOp(clientId: string, clientRevision: number, op: TextOperation): { transformedOp: TextOperation; newRevision: number } {
+  public processClientOp(
+    clientId: string,
+    clientRevision: number,
+    op: TextOperation,
+  ): { transformedOp: TextOperation; newRevision: number } {
     if (clientRevision > this.serverRevision) {
-      throw new Error(`Client revision ${clientRevision} cannot be greater than server revision ${this.serverRevision}`);
+      throw new Error(
+        `Client revision ${clientRevision} cannot be greater than server revision ${this.serverRevision}`,
+      );
     }
 
     let transformedOp = op;
@@ -541,6 +555,7 @@ executeCollaborativeEditingSimulation();
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Document Room Sharding & Stateful Worker Architecture
+
 - **State Location:** Operational Transformation requires strict linear ordering per document. Therefore, each active document room is pinned to a single active **Room Worker Node** via consistent hashing on `document_id`.
 - **Primary-Backup Replication:** The Room Worker maintains the in-memory OT operation queue. Mutated states are asynchronously written to Cassandra (WAL) and replicated to a passive standby worker node.
 - **Node Crash Recovery:** If a primary Room Worker fails, the router re-assigns the `document_id` to a standby worker, which loads the latest S3 document snapshot and replays un-compacted Cassandra WAL ops to re-hydrate state in $< 500\text{ ms}$.
@@ -557,22 +572,25 @@ Document Room Sharding Lifecycle:
 ```
 
 ### 2. Mega-Document Scaling (1,000 Concurrent Editors / Room)
+
 - **Problem:** If 1,000 editors in a single document submit 5 keystrokes/sec, a naive server broadcasts $1,000 \times 5 = 5,000$ packets/sec to all 1,000 connections ($5,000,000$ messages/sec total), causing WebSocket connection thread starvation and client CPU spikes.
 - **Solution 1: Inbound Micro-Batching & Outbound Coalescing:** The Room Worker buffers incoming operations inside a 50ms window, composes them into a single aggregated `TextOperation`, and broadcasts one consolidated patch frame per tick.
 - **Solution 2: Presence Sampling & Spatial Cursor Filtering:** Cursor position telemetry is throttled to 10Hz and spatially filtered — clients only receive cursor updates for users currently viewing the same viewport/page region.
 
 ### 3. Log Compaction & Snapshotting Strategy
+
 - **Problem:** Over time, a document accumulates hundreds of thousands of operations. Replaying all historical ops on room creation introduces prohibitive latency ($O(N)$ execution).
 - **Solution:** Every 1,000 operations or 5 minutes, a background worker serializes the current text payload into a compressed Protobuf blob and writes it to AWS S3 (`s3://docs-snapshots/<docId>/rev_<revision>.pb`). Historical operations prior to the snapshot are pruned or archived to cold storage (S3 Glacier).
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ Operational Transformation (OT) vs Conflict-free Replicated Data Types (CRDTs): What are the core architectural trade-offs for Google Docs scale?</summary>
 
-**Answer:**  
+**Answer:**
+
 - **Operational Transformation (OT):** Requires a central server to establish total order of operations. Advantages include extremely small wire payloads (a few bytes per keystroke) and simple client-side logic. Disadvantages: Requires central server coordination; handling offline editing over long durations requires complex transformation history buffers ($O(N)$ transformed ops).
 - **CRDTs (e.g., Yjs, Automerge, RGA):** Enable peer-to-peer peer independence without a central server by assigning globally unique, causally-ordered IDs (vector timestamps + site IDs) to every character. Advantages: Seamless offline editing and peer-to-peer syncing. Disadvantages: High memory overhead (tombstones and metadata per character inflate document size by $10\times - 100\times$), making mega-documents sluggish on browser clients without garbage collection.
 - **Google Docs Choice:** Centralized OT is chosen because Google Docs is server-centric, prioritizing minimal client payload size and centralized authorization over pure P2P offline independence.
@@ -582,7 +600,8 @@ Document Room Sharding Lifecycle:
 <details>
 <summary>❓ How does the system handle an offline client that reconnects after 2 hours with 500 local un-synced operations?</summary>
 
-**Answer:**  
+**Answer:**
+
 1. **Client Buffer:** While offline, the client buffers local edits in a local operation queue, maintaining a `clientRevision` pointer equal to the server revision when it went offline.
 2. **Reconnection & Rebase Protocol:** Upon WebSocket reconnect, the client sends a `SYNC_REQUEST(clientRevision, localOpList)`.
 3. **Server OT Pipeline:** If the server is currently at `serverRevision = clientRevision + 5000`, the server fetches historical server operations from index `clientRevision` to `serverRevision`.
@@ -594,9 +613,10 @@ Document Room Sharding Lifecycle:
 <details>
 <summary>❓ What prevents race conditions and data corruption when two users insert text at the exact same cursor position simultaneously?</summary>
 
-**Answer:**  
-Race conditions are prevented by the server-side **TP1 Transformation Property** and deterministic tie-breaking.  
+**Answer:**
+Race conditions are prevented by the server-side **TP1 Transformation Property** and deterministic tie-breaking.
 When User A and User B submit operations $O_A$ and $O_B$ at position 5 against the same revision:
+
 1. The server serializes execution using an in-memory event lock per document room.
 2. If $O_A$ arrives first, it is committed as Revision $R+1$.
 3. When $O_B$ arrives (stale revision $R$), the OT Engine calls `transform(O_B, O_A, prioritySide='right')`.
@@ -608,7 +628,8 @@ When User A and User B submit operations $O_A$ and $O_B$ at position 5 against t
 <details>
 <summary>❓ How do you guarantee zero lost keystrokes if the underlying WebSocket connection drops mid-keystroke?</summary>
 
-**Answer:**  
+**Answer:**
+
 - **Client Un-acknowledged Queue (ACK Buffer):** When a user types, the local edit is immediately rendered in the UI (optimistic execution) and pushed into an `unackedOps` array.
 - **Explicit Server ACKs:** The client does NOT remove an operation from `unackedOps` until it receives an explicit `{ type: 'ACK', serverRevision }` frame over WebSocket.
 - **Resumption Buffer Flush:** If the WSS connection breaks, the socket automatically attempts exponential backoff reconnection. Upon re-establishing the TCP socket, the client re-sends all operations inside `unackedOps`. The server deduplicates operations using the client's monotonic operation sequence numbers.

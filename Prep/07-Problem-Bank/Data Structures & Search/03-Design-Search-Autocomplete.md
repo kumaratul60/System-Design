@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Search Autocomplete System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a sub-20ms real-time search query autocomplete suggestion engine serving 50,000 QPS using a Trie (Prefix Tree) and Priority Queue.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a sub-20ms real-time search query autocomplete suggestion engine serving 50,000 QPS using a Trie (Prefix Tree) and Priority Queue.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,12 +9,14 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Real-time Prefix Search:** Return Top 5 most frequent search queries matching user typed prefix (e.g., `"sys"` -> `["system design", "system32", "sysadmin"]`).
 2. **Frequency Ranking:** Rank suggestions dynamically by historical search volume frequency.
 3. **Query Ingestion:** Background ingestion pipeline to update query frequencies without locking real-time read lookups.
 4. **Case & Normalization:** Case-insensitive prefix matching and whitespace trimming.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Ultra-Low Latency:** Return suggestions in $P_{99} < 20\text{ms}$ per keystroke.
 2. **High Availability & Scale:** Handle 50,000 QPS Peak search traffic.
 
@@ -34,11 +36,11 @@ Target Latency: < 20ms TTFB
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Prefix Index** | Trie (Prefix Tree) | $O(L)$ lookup time complexity where $L$ is prefix string length. |
-| **Top-K Cache** | MinHeap / Pre-computed List | Pre-calculates Top-K queries directly at each `TrieNode` to avoid $O(N)$ tree traversals. |
-| **Async Pipeline** | Kafka + MapReduce / Spark | Aggregates user search logs in batch intervals to recalculate query frequencies. |
+| Component          | Technology Choice           | Architectural Rationale                                                                   |
+| :----------------- | :-------------------------- | :---------------------------------------------------------------------------------------- |
+| **Prefix Index**   | Trie (Prefix Tree)          | $O(L)$ lookup time complexity where $L$ is prefix string length.                          |
+| **Top-K Cache**    | MinHeap / Pre-computed List | Pre-calculates Top-K queries directly at each `TrieNode` to avoid $O(N)$ tree traversals. |
+| **Async Pipeline** | Kafka + MapReduce / Spark   | Aggregates user search logs in batch intervals to recalculate query frequencies.          |
 
 ---
 
@@ -97,7 +99,7 @@ classDiagram
 export class Suggestion {
   constructor(
     public query: string,
-    public frequency: number
+    public frequency: number,
   ) {}
 }
 
@@ -110,7 +112,7 @@ export class TrieNode {
 
   public updateTopK(query: string, frequency: number, k: number = 5): void {
     // Check if query exists in cache
-    const existingIdx = this.topKSuggestions.findIndex(s => s.query === query);
+    const existingIdx = this.topKSuggestions.findIndex((s) => s.query === query);
     if (existingIdx !== -1) {
       this.topKSuggestions[existingIdx].frequency = frequency;
     } else {
@@ -168,7 +170,7 @@ export class AutocompleteSystem {
     }
 
     // O(1) Instant retrieval of pre-computed Top K suggestions
-    return curr.topKSuggestions.map(s => s.query);
+    return curr.topKSuggestions.map((s) => s.query);
   }
 }
 ```
@@ -188,10 +190,11 @@ flowchart LR
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: How do you achieve O(L) time complexity per autocomplete request instead of O(L + N)?</strong></summary>
 
 **Answer:** Standard Trie prefix search takes $O(L)$ to traverse the prefix of length $L$, but requires $O(N)$ depth-first search to gather all matching child words under that node. By **pre-computing and caching the Top-K suggestions directly at every `TrieNode`**, retrieving Top-K suggestions after reaching the prefix node executes in **$O(1)$ constant time complexity**, yielding overall $O(L)$ latency.
+
 </details>

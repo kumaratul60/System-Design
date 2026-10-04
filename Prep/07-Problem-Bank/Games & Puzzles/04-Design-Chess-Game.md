@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Chess Game Engine
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a production-grade, multi-tenant Chess engine supporting millions of active games, move validation, PGN notation, and Checkmate state machines.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a production-grade, multi-tenant Chess engine supporting millions of active games, move validation, PGN notation, and Checkmate state machines.
 > **Navigation:** ⬅️ [Back to Games & Puzzles Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,12 +9,14 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Polymorphic Piece & Board Representation:** $8 \times 8$ board supporting 6 piece types (King, Queen, Rook, Bishop, Knight, Pawn) with customized geometric move validation.
 2. **Special Move Rules:** Support Castling (Kingside & Queenside), En Passant, and Pawn Promotion.
 3. **Check / Checkmate / Stalemate Verification:** Evaluate check conditions after every turn by verifying if the active player's King is threatened.
 4. **Move History & Notation:** Record moves in PGN (Portable Game Notation) with full undo/redo and game replay capability.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Low Latency Validation:** Move validation and check evaluation in $P_{99} < 10\text{ms}$.
 2. **State Determinism:** Thread-safe state transition per move.
 
@@ -33,12 +35,12 @@ Total RAM Footprint: 200k * 5 KB = 1 GB (Cached in Redis Cluster)
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
+| Component            | Technology Choice        | Architectural Rationale                                     |
+| :------------------- | :----------------------- | :---------------------------------------------------------- |
 | **Engine Framework** | Object-Oriented TS / C++ | Polymorphic piece classes with encapsulation of move rules. |
-| **Move Validation** | Strategy Pattern | Decouples piece movement rules from board rendering. |
-| **State Storage** | Redis Cluster | Low-latency state storage partitioned by `gameId`. |
-| **Real-time Sync** | WebSockets (Socket.io) | Sub-50ms turn event broadcasting to white & black clients. |
+| **Move Validation**  | Strategy Pattern         | Decouples piece movement rules from board rendering.        |
+| **State Storage**    | Redis Cluster            | Low-latency state storage partitioned by `gameId`.          |
+| **Real-time Sync**   | WebSockets (Socket.io)   | Sub-50ms turn event broadcasting to white & black clients.  |
 
 ---
 
@@ -149,11 +151,14 @@ sequenceDiagram
 ```typescript
 export enum Color {
   WHITE = 'WHITE',
-  BLACK = 'BLACK'
+  BLACK = 'BLACK',
 }
 
 export class Position {
-  constructor(public readonly row: number, public readonly col: number) {}
+  constructor(
+    public readonly row: number,
+    public readonly col: number,
+  ) {}
 
   public equals(other: Position): boolean {
     return this.row === other.row && this.col === other.col;
@@ -269,10 +274,11 @@ export class ChessGame {
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: How do you differentiate Checkmate from Stalemate?</strong></summary>
 
 **Answer:** If `isKingInCheck(color)` is `true` and every possible legal move for all pieces of `color` still leaves the King in check, the result is **Checkmate** (Win for opponent). If `isKingInCheck(color)` is `false` but the active player has zero valid legal moves available, the result is **Stalemate** (Draw).
+
 </details>

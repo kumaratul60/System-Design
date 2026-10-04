@@ -102,7 +102,7 @@
   - [31.3 The 7 OSI (Open Systems Interconnection) Layers (Brief Intro)](#313-the-7-osi-open-systems-interconnection-layers-brief-intro)
     - [31.4 Protocol to OSI Mapping](#314-protocol-to-osi-mapping)
     - [31.5 Why this matters for "How the Web Works":](#315-why-this-matters-for-how-the-web-works)
-  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+  - [Harness "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: How does "Resource Prioritization" work in HTTP/2 vs. HTTP/3?](#q1-how-does-resource-prioritization-work-in-http2-vs-http3)
     - [Q2: Explain the "Preload Scanner" and why it's the browser's most important performance optimization.](#q2-explain-the-preload-scanner-and-why-its-the-browsers-most-important-performance-optimization)
     - [Q3: What is "Layout Thrashing" and how do you detect it in a large-scale React app?](#q3-what-is-layout-thrashing-and-how-do-you-detect-it-in-a-large-scale-react-app)
@@ -1381,7 +1381,7 @@ flowchart TD
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: How does "Resource Prioritization" work in HTTP/2 vs. HTTP/3?
 

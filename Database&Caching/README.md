@@ -32,7 +32,7 @@ This module covers both backend distributed data strategies and frontend client-
       - [Service Worker Architectural Core](#service-worker-architectural-core)
       - [API Caching \& Fetch Policies Core](#api-caching--fetch-policies-core)
       - [State Management \& Lifecycle Guide](#state-management--lifecycle-guide)
-  - [Part 3: Senior/Staff Level "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
+  - [Part 3: Harness "Grill" Questions](#part-3-seniorstaff-level-grill-questions)
     - [Q1: ETag vs. Last-Modified—which should be preferred for visual resources?](#q1-etag-vs-last-modifiedwhich-should-be-preferred-for-visual-resources)
     - [Q2: Why use `Cache-Control: no-cache` if you intend to cache the resource?](#q2-why-use-cache-control-no-cache-if-you-intend-to-cache-the-resource)
     - [Q3: How do you handle updates for files using `Cache-Control: immutable`?](#q3-how-do-you-handle-updates-for-files-using-cache-control-immutable)
@@ -371,7 +371,7 @@ Managing global application data states requires selecting appropriate library p
 
 ---
 
-## Part 3: Senior/Staff Level "Grill" Questions
+## Part 3: Harness "Grill" Questions
 
 - **[Database & Caching Q&A Guide (21 Core Questions)](./Database_Caching_QA.md):** Detailed explanations covering frontend normalization, HTTP caching headers, Service Worker proxies, API query caching, state management, LocalStorage, SessionStorage, Cookie security, and IndexedDB integrations.
 

@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Library Management System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Designing a scalable university/public library management system handling multi-catalog book search, barcode physical copy tracking, borrowing limits, automated hold queues, and fine calculations.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Designing a scalable university/public library management system handling multi-catalog book search, barcode physical copy tracking, borrowing limits, automated hold queues, and fine calculations.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -10,10 +10,10 @@
 
 ### 📋 Functional Requirements (FR)
 
-1. **Catalog vs Copy Model:** Separate conceptual `Book` metadata (ISBN, Title, Authors, Subject) from physical `BookCopy` records (Barcode ID, Rack Location, Copy Status: *Available*, *Borrowed*, *Reserved*, *Lost*).
-2. **Member Account Management:** Support distinct member types (*Student*, *Faculty*, *Regular User*) with enforced business limits (e.g., Student: max 5 books for 14 days; Faculty: max 10 books for 30 days).
+1. **Catalog vs Copy Model:** Separate conceptual `Book` metadata (ISBN, Title, Authors, Subject) from physical `BookCopy` records (Barcode ID, Rack Location, Copy Status: _Available_, _Borrowed_, _Reserved_, _Lost_).
+2. **Member Account Management:** Support distinct member types (_Student_, _Faculty_, _Regular User_) with enforced business limits (e.g., Student: max 5 books for 14 days; Faculty: max 10 books for 30 days).
 3. **Checkout, Renewal & Return:** Process book checkouts, renewals (if no holds exist), and returns. Automatically calculate late return fines based on member-specific fine strategies.
-4. **Reservation Hold Queue:** Allow members to place reservations on currently checked-out titles. Maintain a FIFO reservation queue; when a copy is returned, transition copy status to *Reserved* for the head member of the hold queue.
+4. **Reservation Hold Queue:** Allow members to place reservations on currently checked-out titles. Maintain a FIFO reservation queue; when a copy is returned, transition copy status to _Reserved_ for the head member of the hold queue.
 5. **Catalog Search & Discovery:** Fast multi-attribute catalog search by title, author, category, or ISBN.
 
 ### ⚡ Non-Functional Requirements (NFR)
@@ -50,13 +50,13 @@ Storage Estimates (5 Years):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Backend Framework** | Node.js / TypeScript | Clean object-oriented domain abstraction for complex borrowing rules and state machines. |
-| **Primary Relational DB** | PostgreSQL | Strict ACID guarantees for checkout transactions, reservation queues, and fine ledgers. |
-| **Search Engine** | Elasticsearch | Inverted index search with fuzzy matching, prefix completion, and faceted filtering (Author, Genre). |
-| **In-Memory Cache** | Redis | Caching popular catalog searches and holding distributed locks during copy reservation checkout. |
-| **Notification Engine** | RabbitMQ / Kafka | Asynchronous queue dispatching SMS/Email alerts for overdue books and reserved item availability. |
+| Component                 | Technology Choice    | Architectural Rationale                                                                              |
+| :------------------------ | :------------------- | :--------------------------------------------------------------------------------------------------- |
+| **Backend Framework**     | Node.js / TypeScript | Clean object-oriented domain abstraction for complex borrowing rules and state machines.             |
+| **Primary Relational DB** | PostgreSQL           | Strict ACID guarantees for checkout transactions, reservation queues, and fine ledgers.              |
+| **Search Engine**         | Elasticsearch        | Inverted index search with fuzzy matching, prefix completion, and faceted filtering (Author, Genre). |
+| **In-Memory Cache**       | Redis                | Caching popular catalog searches and holding distributed locks during copy reservation checkout.     |
+| **Notification Engine**   | RabbitMQ / Kafka     | Asynchronous queue dispatching SMS/Email alerts for overdue books and reserved item availability.    |
 
 ---
 
@@ -187,8 +187,8 @@ sequenceDiagram
   - `BookCopy` manages physical location and barcode copy state.
   - `IFineStrategy` handles monetary fine penalty calculations exclusively.
 - **Open/Closed Principle (OCP):**
-  - New membership tiers (e.g., *Senior Researcher*, *Guest*) implement `Member` subclassing without modifying checkout core code.
-  - New fine policies (e.g., *Holiday Grace Period*, *Lost Book Flat Fee*) implement `IFineStrategy` seamlessly.
+  - New membership tiers (e.g., _Senior Researcher_, _Guest_) implement `Member` subclassing without modifying checkout core code.
+  - New fine policies (e.g., _Holiday Grace Period_, _Lost Book Flat Fee_) implement `IFineStrategy` seamlessly.
 - **Liskov Substitution Principle (LSP):**
   - `StudentMember` and `FacultyMember` can be substituted wherever a base `Member` reference is expected.
 - **Interface Segregation Principle (ISP):**
@@ -200,12 +200,12 @@ sequenceDiagram
 
 ## 6. 🎨 Design Patterns Selection
 
-| Pattern Name | Application in Library System | Architectural Benefit |
-| :--- | :--- | :--- |
-| **Strategy Pattern** | `IFineStrategy` | Member-specific overdue fine calculation algorithms (Student vs Faculty rates). |
-| **State Pattern** | `CopyStatus` | Manages physical book availability transitions (`AVAILABLE`, `BORROWED`, `RESERVED`). |
-| **Observer Pattern** | `HoldQueueNotifier` | Automatically alerts the next waiting member in line when a reserved title is returned. |
-| **Factory Method Pattern** | `MemberFactory` | Instantiates member domain objects with default borrowing limits. |
+| Pattern Name               | Application in Library System | Architectural Benefit                                                                   |
+| :------------------------- | :---------------------------- | :-------------------------------------------------------------------------------------- |
+| **Strategy Pattern**       | `IFineStrategy`               | Member-specific overdue fine calculation algorithms (Student vs Faculty rates).         |
+| **State Pattern**          | `CopyStatus`                  | Manages physical book availability transitions (`AVAILABLE`, `BORROWED`, `RESERVED`).   |
+| **Observer Pattern**       | `HoldQueueNotifier`           | Automatically alerts the next waiting member in line when a reserved title is returned. |
+| **Factory Method Pattern** | `MemberFactory`               | Instantiates member domain objects with default borrowing limits.                       |
 
 ---
 
@@ -252,7 +252,7 @@ export abstract class Member {
     public readonly memberId: string,
     public readonly name: string,
     public readonly maxBooksAllowed: number,
-    public readonly maxBorrowDays: number
+    public readonly maxBorrowDays: number,
   ) {}
 
   public abstract getFineStrategy(): IFineStrategy;
@@ -290,7 +290,7 @@ export class Book {
   constructor(
     public readonly isbn: string,
     public readonly title: string,
-    public readonly author: string
+    public readonly author: string,
   ) {}
 }
 
@@ -300,7 +300,7 @@ export class BookCopy {
   constructor(
     public readonly barcode: string,
     public readonly isbn: string,
-    public readonly rackNumber: string
+    public readonly rackNumber: string,
   ) {}
 
   public markBorrowed(): void {
@@ -328,7 +328,7 @@ export class LendingRecord {
     public readonly memberId: string,
     public readonly barcode: string,
     public readonly checkoutDate: Date,
-    public readonly dueDate: Date
+    public readonly dueDate: Date,
   ) {}
 
   public completeReturn(returnDate: Date, fine: number): void {
@@ -391,7 +391,9 @@ export class LibraryManager {
     const record = new LendingRecord(recordId, memberId, barcode, now, dueDate);
     this.lendingRecords.set(barcode, record);
 
-    console.log(`[CHECKOUT SUCCESS] ${member.name} checked out '${barcode}'. Due on ${dueDate.toISOString().split('T')[0]}`);
+    console.log(
+      `[CHECKOUT SUCCESS] ${member.name} checked out '${barcode}'. Due on ${dueDate.toISOString().split('T')[0]}`,
+    );
     return record;
   }
 
@@ -413,14 +415,18 @@ export class LibraryManager {
 
     record.completeReturn(returnDate, fine);
 
-    console.log(`[RETURN SUCCESS] Barcode ${barcode} returned. Overdue: ${overdueDays} days. Fine Assessed: $${fine.toFixed(2)}`);
+    console.log(
+      `[RETURN SUCCESS] Barcode ${barcode} returned. Overdue: ${overdueDays} days. Fine Assessed: $${fine.toFixed(2)}`,
+    );
 
     // Check Reservation Queue for this ISBN
     const queue = this.reservationQueues.get(copy.isbn) || [];
     if (queue.length > 0) {
       const nextMemberId = queue.shift()!;
       copy.markReserved();
-      console.log(`[HOLD NOTIFICATION] Book ISBN ${copy.isbn} marked RESERVED for next member in queue: ${nextMemberId}`);
+      console.log(
+        `[HOLD NOTIFICATION] Book ISBN ${copy.isbn} marked RESERVED for next member in queue: ${nextMemberId}`,
+      );
     }
 
     return fine;
@@ -430,7 +436,9 @@ export class LibraryManager {
     const queue = this.reservationQueues.get(isbn) || [];
     queue.push(memberId);
     this.reservationQueues.set(isbn, queue);
-    console.log(`[RESERVATION QUEUED] Member ${memberId} added to hold queue for ISBN ${isbn} (Position: ${queue.length})`);
+    console.log(
+      `[RESERVATION QUEUED] Member ${memberId} added to hold queue for ISBN ${isbn} (Position: ${queue.length})`,
+    );
   }
 }
 
@@ -505,15 +513,15 @@ graph TB
 ### ⚡ Critical Scale Bottlenecks & Architectural Fixes
 
 1. **Race Conditions on Hold Queue Fulfillment:**
-   - *Problem:* When a popular book is returned, two librarians scan it at different desks simultaneously.
-   - *Solution:* Wrap return processing inside a Redis distributed lock `SET lock:isbn:123 NX EX 5` or database row-level locking (`SELECT * FROM book_copies WHERE barcode = $1 FOR UPDATE`).
+   - _Problem:_ When a popular book is returned, two librarians scan it at different desks simultaneously.
+   - _Solution:_ Wrap return processing inside a Redis distributed lock `SET lock:isbn:123 NX EX 5` or database row-level locking (`SELECT * FROM book_copies WHERE barcode = $1 FOR UPDATE`).
 2. **Catalog Full-Text Search Latency:**
-   - *Problem:* Searching 1M titles with fuzzy text matching causes high CPU load in SQL databases.
-   - *Solution:* Offload search to Elasticsearch clusters utilizing ngram tokenizers for real-time keystroke suggestions under 20ms.
+   - _Problem:_ Searching 1M titles with fuzzy text matching causes high CPU load in SQL databases.
+   - _Solution:_ Offload search to Elasticsearch clusters utilizing ngram tokenizers for real-time keystroke suggestions under 20ms.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you handle lost books and unreturned items after 60 days?</summary>

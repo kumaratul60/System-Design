@@ -21,7 +21,7 @@ This guide provides deep answers to performance-related questions, focusing on b
     - [2. How Tree Shaking Works (and Why It Breaks):](#2-how-tree-shaking-works-and-why-it-breaks)
   - [7. Web Workers: Offloading the Main Thread](#7-web-workers-offloading-the-main-thread)
   - [8. React 18 Concurrent Features: `useTransition` \& `useDeferredValue`](#8-react-18-concurrent-features-usetransition--usedeferredvalue)
-  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+  - [Harness "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: Why is "Over-optimization" with `useMemo` potentially worse than not using it at all?](#q1-why-is-over-optimization-with-usememo-potentially-worse-than-not-using-it-at-all)
     - [Q2: What is the "Zombie Child" problem and how does it relate to performance/correctness?](#q2-what-is-the-zombie-child-problem-and-how-does-it-relate-to-performancecorrectness)
     - [Q3: Explain "Cumulative Layout Shift" (CLS) and why Skeleton Screens can sometimes _increase_ it.](#q3-explain-cumulative-layout-shift-cls-and-why-skeleton-screens-can-sometimes-increase-it)
@@ -246,7 +246,7 @@ React 18 introduced **Concurrent Rendering**, allowing React to interrupt a rend
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Why is "Over-optimization" with `useMemo` potentially worse than not using it at all?
 

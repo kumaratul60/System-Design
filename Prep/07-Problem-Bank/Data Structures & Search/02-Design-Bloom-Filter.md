@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Bloom Filter
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a space-efficient probabilistic data structure for instant set membership queries with 0% false negatives and configurable false positive probability $p$.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a space-efficient probabilistic data structure for instant set membership queries with 0% false negatives and configurable false positive probability $p$.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,12 +9,14 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Add Item:** Insert element key into Bloom Filter bit vector using $k$ independent hash functions.
 2. **Might Contain Check:** Query membership. Returns `false` (guaranteed item is **NOT** in set) or `true` (item **MIGHT** be in set with false positive probability $p$).
 3. **Zero False Negatives:** If element exists in filter, query must **NEVER** return `false`.
 4. **Configurable Error Tolerance:** Configurable target capacity $n$ and acceptable false positive rate $p$ (e.g. $p = 0.01 = 1\%$).
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Space Savings:** Require up to $95\%$ less memory than a HashMap (e.g., 100M items stored in ~120 MB RAM).
 2. **Sub-Microsecond Latency:** Query execution in $< 1\mu\text{s}$ using bitwise operations.
 
@@ -40,10 +42,10 @@ Bit Array Footprint: 114.2 MB vs HashMap (~4 GB) -> 35x Memory Compression
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Bit Array** | Uint8Array / BitSet | Dense contiguous binary array allocation. |
-| **Hash Functions** | Murmur3 / FNV-1a / CityHash | High-avalanche, non-cryptographic fast hashing. |
+| Component          | Technology Choice                | Architectural Rationale                                                                               |
+| :----------------- | :------------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **Bit Array**      | Uint8Array / BitSet              | Dense contiguous binary array allocation.                                                             |
+| **Hash Functions** | Murmur3 / FNV-1a / CityHash      | High-avalanche, non-cryptographic fast hashing.                                                       |
 | **Double Hashing** | Kirsch-Mitzenmacher Optimization | Simulates $k$ hash functions using only 2 hash functions: $h_i(x) = h_1(x) + i \cdot h_2(x) \pmod m$. |
 
 ---
@@ -99,9 +101,7 @@ export class BloomFilter<T extends string | number> {
     }
 
     // m = - (n * ln(p)) / (ln(2))^2
-    this.sizeBits = Math.ceil(
-      -(expectedElements * Math.log(falsePositiveRate)) / Math.pow(Math.log(2), 2)
-    );
+    this.sizeBits = Math.ceil(-(expectedElements * Math.log(falsePositiveRate)) / Math.pow(Math.log(2), 2));
 
     // k = (m / n) * ln(2)
     this.numHashFunctions = Math.round((this.sizeBits / expectedElements) * Math.log(2));
@@ -165,10 +165,11 @@ export class BloomFilter<T extends string | number> {
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: Why does a standard Bloom Filter NOT support element deletion?</strong></summary>
 
 **Answer:** Multiple inserted elements may hash to the same bit position. Setting a bit from `1` to `0` during deletion could clear bits shared by other elements, causing catastrophic false negatives. To support deletion, use a **Counting Bloom Filter** (uses 4-bit integer counters instead of single bits).
+
 </details>

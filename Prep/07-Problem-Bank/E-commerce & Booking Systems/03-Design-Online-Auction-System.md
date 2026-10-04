@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Online Auction System (eBay / Sotheby's)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an ultra-low-latency real-time online bidding platform serving 10M DAU, processing sub-20ms bid validations, auto-proxy bidding, anti-sniping extensions, and financial escrow settlements.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an ultra-low-latency real-time online bidding platform serving 10M DAU, processing sub-20ms bid validations, auto-proxy bidding, anti-sniping extensions, and financial escrow settlements.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | ⬅️ [Back to Problem Bank Index](../README.md)
 
 ---
@@ -46,14 +46,14 @@ Storage Calculations (5-Year Projection):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Layer / Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Client Frontend** | Next.js 14 + React + Socket.io | Fast SSR for auction catalog; persistent WebSocket connection for real-time live bid feeds and countdown timer sync. |
-| **API Gateway** | Envoy API Gateway | Handles gRPC / WebSocket proxying, rate limiting, and JWT authentication token inspection. |
-| **In-Memory Bidding Engine** | Redis Cluster (Lua Scripting) | Executes atomic bid validation, auto-proxy calculations, and top-bid state updates in $<1\text{ms}$. |
-| **Persistent Bid Ledger DB** | PostgreSQL / CockroachDB | Append-only partitioned table storing immutable bid logs with foreign key constraints to user and auction tables. |
-| **Event Bus & Stream Processor**| Apache Kafka + Flink | Streams raw bid logs for real-time analytics, fraud detection (shill bidding detection), and search index updates. |
-| **Real-time Push Gateway** | Go WebSocket Microservice | Dedicated lightweight Go WebSocket nodes subscribed to Redis Pub/Sub channels to broadcast top bids to millions of client devices. |
+| Layer / Component                | Technology Choice              | Architectural Rationale                                                                                                            |
+| :------------------------------- | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **Client Frontend**              | Next.js 14 + React + Socket.io | Fast SSR for auction catalog; persistent WebSocket connection for real-time live bid feeds and countdown timer sync.               |
+| **API Gateway**                  | Envoy API Gateway              | Handles gRPC / WebSocket proxying, rate limiting, and JWT authentication token inspection.                                         |
+| **In-Memory Bidding Engine**     | Redis Cluster (Lua Scripting)  | Executes atomic bid validation, auto-proxy calculations, and top-bid state updates in $<1\text{ms}$.                               |
+| **Persistent Bid Ledger DB**     | PostgreSQL / CockroachDB       | Append-only partitioned table storing immutable bid logs with foreign key constraints to user and auction tables.                  |
+| **Event Bus & Stream Processor** | Apache Kafka + Flink           | Streams raw bid logs for real-time analytics, fraud detection (shill bidding detection), and search index updates.                 |
+| **Real-time Push Gateway**       | Go WebSocket Microservice      | Dedicated lightweight Go WebSocket nodes subscribed to Redis Pub/Sub channels to broadcast top bids to millions of client devices. |
 
 ---
 
@@ -126,7 +126,7 @@ sequenceDiagram
 
     Bidder->>Gateway: POST /api/v1/auctions/:id/bid { amount: 150.00 }
     Gateway->>Engine: submitBid(userId, auctionId, 150.00)
-    
+
     rect rgb(240, 248, 255)
         Note over Engine,Redis: Step 1: Atomic Lua Validation & Execution
         Engine->>Redis: EVAL lua_place_bid(auctionId, userId, amount, minInc)
@@ -304,12 +304,7 @@ export class RedisBiddingEngine {
     return {1, "SUCCESS", newBidAmount, userId, endTime, isExtended}
   `;
 
-  async submitBid(
-    auctionId: string,
-    userId: string,
-    amount: number,
-    minIncrement: number
-  ): Promise<BidResult> {
+  async submitBid(auctionId: string, userId: string, amount: number, minIncrement: number): Promise<BidResult> {
     const auctionKey = `auction:${auctionId}`;
     const now = Math.floor(Date.now() / 1000);
     const antiSnipeWindowSeconds = 120; // 2 minutes
@@ -324,7 +319,7 @@ export class RedisBiddingEngine {
       minIncrement,
       now,
       antiSnipeWindowSeconds,
-      extensionSeconds
+      extensionSeconds,
     );
 
     const [status, code, highestBid, highestBidder, newEndTime, isExtended] = res;
@@ -356,14 +351,14 @@ export class RedisBiddingEngine {
 export class ProxyBiddingManager {
   constructor(
     private biddingEngine: RedisBiddingEngine,
-    private incrementStrategy: BidIncrementStrategy
+    private incrementStrategy: BidIncrementStrategy,
   ) {}
 
   async processAutoProxy(
     auctionId: string,
     newBidderId: string,
     maxProxyAmount: number,
-    currentHighestBid: number
+    currentHighestBid: number,
   ): Promise<BidResult> {
     const minInc = this.incrementStrategy.getMinIncrement(currentHighestBid);
     const nextBidAmount = currentHighestBid + minInc;
@@ -379,12 +374,7 @@ export class ProxyBiddingManager {
     }
 
     // Submit minimal increment on behalf of proxy user
-    return await this.biddingEngine.submitBid(
-      auctionId,
-      newBidderId,
-      nextBidAmount,
-      minInc
-    );
+    return await this.biddingEngine.submitBid(auctionId, newBidderId, nextBidAmount, minInc);
   }
 }
 ```
@@ -394,22 +384,25 @@ export class ProxyBiddingManager {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Eliminating Race Conditions on High-Frequency Bidding
+
 - **Problem:** Thousands of bids arrive concurrently in the last 10 seconds of a high-value auction. SQL-based `UPDATE auctions SET price = X` queries cause deadlock cascading and lost updates.
 - **Solution:** Process incoming bids in memory on single-threaded Redis Lua scripts. Redis processes commands sequentially per key, guaranteeing strict serializability. Bids are acknowledged back to clients in $<5\text{ms}$ while an asynchronous Kafka pipeline streams bids to disk PostgreSQL databases.
 
 ### 2. Anti-Sniping Timer Drift across Client WebSockets
+
 - **Problem:** Client devices running local Javascript timers experience clock drift, leading to confusion when an auction is extended by anti-sniping rules.
 - **Solution:** Client applications display remaining time calculated strictly against server UNIX timestamps returned via WebSocket messages. Server pushes explicit `AUCTION_EXTENDED` event payloads with authoritative `newEndTime` values to synchronize all active clients.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you prevent "Shill Bidding" (sellers using fake accounts to bump up auction prices)?</summary>
 
-**Answer:**  
+**Answer:**
 We employ an asynchronous Flink/Kafka Machine Learning Pipeline that analyzes bidding behavior patterns. Flags are triggered if:
+
 1. Two accounts share identical IP addresses or device fingerprints.
 2. A bidder frequently bids on a specific seller's items but retracts or loses payments 100% of the time.
 3. Bid amounts escalate rapidly without standard market increments. Suspicious accounts are automatically frozen from placing further bids pending fraud review.
@@ -419,7 +412,7 @@ We employ an asynchronous Flink/Kafka Machine Learning Pipeline that analyzes bi
 <details>
 <summary>❓ What happens if the Redis master node hosting an active auction crashes during the final seconds of a bidding war?</summary>
 
-**Answer:**  
+**Answer:**
 We use **Redis Sentinel / Redis Cluster with Synchronous Replication (WAIT command)** or Multi-Region Distributed State Engines (like Dragonfly / Redis Enterprise Active-Active). Furthermore, if a Redis master node fails, the Envoy API gateway temporarily pauses bid execution for 2 seconds while failover occurs. If failover takes longer than 5 seconds, an emergency system circuit breaker automatically extends all expiring auctions by 15 minutes once the cluster recovers.
 
 </details>
@@ -427,7 +420,8 @@ We use **Redis Sentinel / Redis Cluster with Synchronous Replication (WAIT comma
 <details>
 <summary>❓ How do you handle buyer payment failure after an auction officially ends?</summary>
 
-**Answer:**  
+**Answer:**
+
 1. Upon placing a bid, the system executes a **Payment Pre-Authorization Hold** (e.g. $10% of bid amount or credit card card check).
 2. When the auction ends, if the primary winner's full charge fails after 24 hours, the system automatically triggers a **Second-Chance Offer** to the second-highest bidder at their highest submitted bid price via Saga execution.
 

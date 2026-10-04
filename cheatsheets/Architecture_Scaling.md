@@ -16,7 +16,7 @@ This guide covers how to scale React applications both technically and organizat
   - [4. State Management in Large Applications](#4-state-management-in-large-applications)
   - [5. Multi-team Collaboration: Micro-frontends (MFEs)](#5-multi-team-collaboration-micro-frontends-mfes)
   - [6. Scalable Testing Strategies](#6-scalable-testing-strategies)
-  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+  - [Harness "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: Micro-frontends (MFEs) - Is "Module Federation" always the best choice?](#q1-micro-frontends-mfes---is-module-federation-always-the-best-choice)
     - [Q2: What is the "State Density" problem in large React apps?](#q2-what-is-the-state-density-problem-in-large-react-apps)
     - [Q3: How do you handle "Versioning" in an MFE architecture with independent deployments?](#q3-how-do-you-handle-versioning-in-an-mfe-architecture-with-independent-deployments)
@@ -195,7 +195,7 @@ Use the **Testing Trophy** approach (prioritizing integration tests):
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Micro-frontends (MFEs) - Is "Module Federation" always the best choice?
 

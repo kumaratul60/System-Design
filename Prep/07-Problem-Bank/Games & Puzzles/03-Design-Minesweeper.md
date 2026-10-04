@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Minesweeper Game Engine
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a production-grade Minesweeper engine supporting real-time online leaderboards, deferred mine generation, and efficient 0-neighbor BFS cascades.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a production-grade Minesweeper engine supporting real-time online leaderboards, deferred mine generation, and efficient 0-neighbor BFS cascades.
 > **Navigation:** ⬅️ [Back to Games & Puzzles Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Configurable Grid Dimensions:** Board size $M \times N$ with $K$ hidden mines (e.g. Beginner $9\times9$, Expert $30\times16$).
 2. **Guaranteed First-Click Safety:** First cell clicked by player is guaranteed to never contain a mine. Mine initialization occurs after first click.
 3. **Zero-Neighbor BFS Cascade Reveal:** Unearthing a cell with 0 adjacent mines automatically reveals all connected 0-neighbor regions via Breadth First Search (BFS) / Depth First Search (DFS).
@@ -16,6 +17,7 @@
 5. **Win / Loss State Evaluation:** Game ends in loss if mine is revealed; ends in victory when all non-mine cells are unearthed.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Low Latency:** Cascade unearthing execution in $P_{99} < 2\text{ms}$.
 2. **Memory Efficiency:** State per grid cell uses 1 byte flags array.
 3. **Security:** Mine positions are never sent to client API until revealed or game ends (prevents memory inspection cheating).
@@ -36,11 +38,11 @@ Data Footprint: 100k sessions * 1 KB = 100 MB RAM total
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
+| Component          | Technology Choice     | Architectural Rationale                                                                        |
+| :----------------- | :-------------------- | :--------------------------------------------------------------------------------------------- |
 | **Cascade Engine** | BFS Algorithm (Queue) | Breadth First Search prevents stack overflow errors compared to recursive DFS on large boards. |
-| **Grid Storage** | 2D Array / Bitmask | Compact in-memory array representation. |
-| **Session Cache** | Redis Cluster | Stores hidden mine matrix server-side to prevent client-side inspect cheating. |
+| **Grid Storage**   | 2D Array / Bitmask    | Compact in-memory array representation.                                                        |
+| **Session Cache**  | Redis Cluster         | Stores hidden mine matrix server-side to prevent client-side inspect cheating.                 |
 
 ---
 
@@ -139,7 +141,7 @@ sequenceDiagram
 export enum CellState {
   UNREVEALED = 'UNREVEALED',
   REVEALED = 'REVEALED',
-  FLAGGED = 'FLAGGED'
+  FLAGGED = 'FLAGGED',
 }
 
 export class Cell {
@@ -147,7 +149,10 @@ export class Cell {
   public state: CellState = CellState.UNREVEALED;
   public adjacentMines: number = 0;
 
-  constructor(public readonly row: number, public readonly col: number) {}
+  constructor(
+    public readonly row: number,
+    public readonly col: number,
+  ) {}
 }
 
 export class MinesweeperBoard {
@@ -157,11 +162,9 @@ export class MinesweeperBoard {
   constructor(
     public readonly rows: number = 10,
     public readonly cols: number = 10,
-    public readonly mineCount: number = 10
+    public readonly mineCount: number = 10,
   ) {
-    this.grid = Array.from({ length: rows }, (_, r) =>
-      Array.from({ length: cols }, (_, c) => new Cell(r, c))
-    );
+    this.grid = Array.from({ length: rows }, (_, r) => Array.from({ length: cols }, (_, c) => new Cell(r, c)));
   }
 
   public placeMines(safeRow: number, safeCol: number): void {
@@ -193,7 +196,8 @@ export class MinesweeperBoard {
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
         if (dr === 0 && dc === 0) continue;
-        const nr = r + dr, nc = c + dc;
+        const nr = r + dr,
+          nc = c + dc;
         if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols && this.grid[nr][nc].isMine) {
           count++;
         }
@@ -222,7 +226,8 @@ export class MinesweeperBoard {
         const [currR, currC] = queue.shift()!;
         for (let dr = -1; dr <= 1; dr++) {
           for (let dc = -1; dc <= 1; dc++) {
-            const nr = currR + dr, nc = currC + dc;
+            const nr = currR + dr,
+              nc = currC + dc;
             if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols) {
               const neighbor = this.grid[nr][nc];
               if (neighbor.state === CellState.UNREVEALED && !neighbor.isMine) {
@@ -252,10 +257,11 @@ export class MinesweeperBoard {
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: Why use BFS Queue instead of recursive DFS for 0-neighbor cascades?</strong></summary>
 
 **Answer:** Deep recursive DFS can lead to `Maximum Call Stack Size Exceeded` errors on large grid sizes (e.g. $1000 \times 1000$). Iterative BFS using an explicit memory Queue guarantees $O(V + E)$ traversal while maintaining stack safety.
+
 </details>

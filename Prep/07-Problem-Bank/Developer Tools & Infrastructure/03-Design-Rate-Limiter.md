@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Rate Limiter
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Distributed rate limiter processing 1,000,000+ requests/sec across multi-tier API Gateways with sub-millisecond execution overhead.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Distributed rate limiter processing 1,000,000+ requests/sec across multi-tier API Gateways with sub-millisecond execution overhead.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -46,12 +46,12 @@ Memory Footprint Calculation:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **API Gateway Layer** | Envoy Proxy / Kong | High-performance C++/Lua proxy enforcing rate limit policy at the network edge. |
-| **In-Memory Store** | Redis Cluster + Lua Scripts | Atomic, single-threaded execution of sliding window logic prevents race conditions without heavy distributed locks. |
-| **Local L1 Cache** | Guava / Memory LRU Cache | In-memory local cache on Gateway nodes buffers local counters to reduce Redis network roundtrips for ultra-hot IPs. |
-| **Rule Sync Service** | Etcd / Consul | Provides instant push-notifications to API Gateways when rate limit rules change. |
+| Component             | Technology Choice           | Architectural Rationale                                                                                             |
+| :-------------------- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+| **API Gateway Layer** | Envoy Proxy / Kong          | High-performance C++/Lua proxy enforcing rate limit policy at the network edge.                                     |
+| **In-Memory Store**   | Redis Cluster + Lua Scripts | Atomic, single-threaded execution of sliding window logic prevents race conditions without heavy distributed locks. |
+| **Local L1 Cache**    | Guava / Memory LRU Cache    | In-memory local cache on Gateway nodes buffers local counters to reduce Redis network roundtrips for ultra-hot IPs. |
+| **Rule Sync Service** | Etcd / Consul               | Provides instant push-notifications to API Gateways when rate limit rules change.                                   |
 
 ---
 
@@ -147,7 +147,7 @@ sequenceDiagram
     Rules-->>GW: Returns Rule { max: 100, window: 60s }
     GW->>Strategy: isAllowed("user_101:orders", Rule)
     Strategy->>Redis: EVALSHA sliding_window_lua_script 1 "user_101:orders" 100 60 timestamp
-    
+
     alt Redis Execution Success
         Redis-->>Strategy: Returns { allowed: 1, remaining: 42, reset: 18 }
     else Redis Outage / Connection Error
@@ -245,7 +245,12 @@ export interface ITokenStore {
 export class InMemoryTokenStore implements ITokenStore {
   private windows: Map<string, { currentWindow: number; prevCount: number; currentCount: number }> = new Map();
 
-  public async evalSlidingWindow(key: string, limit: number, windowSec: number, nowMs: number): Promise<RateLimitResult> {
+  public async evalSlidingWindow(
+    key: string,
+    limit: number,
+    windowSec: number,
+    nowMs: number,
+  ): Promise<RateLimitResult> {
     const windowMs = windowSec * 1000;
     const currentWindowBucket = Math.floor(nowMs / windowMs);
     const windowOffset = (nowMs % windowMs) / windowMs;
@@ -299,7 +304,7 @@ export class SlidingWindowCounterStrategy implements IRateLimiterStrategy {
 export class RateLimiterEngine {
   constructor(
     private strategy: IRateLimiterStrategy,
-    private failOpen: boolean = true
+    private failOpen: boolean = true,
   ) {}
 
   public async evaluate(clientIdentifier: string, rules: RateLimitRule[]): Promise<RateLimitResult> {
@@ -328,22 +333,22 @@ export class RateLimiterEngine {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 - **Race Conditions in Distributed Environments:** Multiple concurrent API Gateways accessing Redis can cause read-modify-write race conditions.
-  - *Solution:* Encapsulate the calculation inside an **Atomic Redis Lua Script**. Redis executes Lua scripts as a single atomic unit, blocking other commands until completion.
+  - _Solution:_ Encapsulate the calculation inside an **Atomic Redis Lua Script**. Redis executes Lua scripts as a single atomic unit, blocking other commands until completion.
 - **Fail-Open vs Fail-Closed Policy:**
-  - *Fail-Open:* If Redis cluster fails, allow requests through. Prevents complete API outage for payment/checkout services.
-  - *Fail-Closed:* If Redis fails, block requests. Used for high-security endpoints (e.g. login brute-force protection).
+  - _Fail-Open:_ If Redis cluster fails, allow requests through. Prevents complete API outage for payment/checkout services.
+  - _Fail-Closed:_ If Redis fails, block requests. Used for high-security endpoints (e.g. login brute-force protection).
 - **Memory Optimization: Sliding Window Log vs Counter:**
-  - *Sliding Window Log:* Stores raw timestamp set (`ZADD`). High memory ($O(N)$ requests), accurate.
-  - *Sliding Window Counter:* Stores 2 static integer counters (previous and current window). Low memory ($O(1)$ space), $99.7\%$ accuracy. Preferred for production scale.
+  - _Sliding Window Log:_ Stores raw timestamp set (`ZADD`). High memory ($O(N)$ requests), accurate.
+  - _Sliding Window Counter:_ Stores 2 static integer counters (previous and current window). Low memory ($O(1)$ space), $99.7\%$ accuracy. Preferred for production scale.
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>%❓ Why is Sliding Window Counter preferred over Fixed Window Counter in enterprise gateways?</summary>
 
-**Answer:**  
+**Answer:**
 Fixed Window Counter suffers from **Boundary Spike Bursting**. If a limit is 100 req/min, a client can send 100 requests at 00:59 and another 100 requests at 01:01, resulting in 200 requests within a 2-second window. Sliding Window Counter computes a weighted average of the previous window, effectively smoothing out boundary traffic spikes.
 
 </details>
@@ -351,7 +356,7 @@ Fixed Window Counter suffers from **Boundary Spike Bursting**. If a limit is 100
 <details>
 <summary>❓ How do you synchronize rate limits across multi-region data centers without cross-region latency?</summary>
 
-**Answer:**  
+**Answer:**
 Use **Local Rate Limiting with Batch Token Sync**. Each regional API Gateway maintains a local Token Bucket. A background process asynchronously requests bulk tokens (e.g. 1,000 tokens) from the central Redis store every 500ms. If a region loses cross-region connectivity, it falls back to operating independently on its local quota allocation.
 
 </details>
@@ -359,7 +364,7 @@ Use **Local Rate Limiting with Batch Token Sync**. Each regional API Gateway mai
 <details>
 <summary>❓ What Lua script optimization prevents Redis CPU saturation under 1M QPS?</summary>
 
-**Answer:**  
+**Answer:**
 Use `EVALSHA` instead of `EVAL` to avoid sending the full Lua script string over the network on every request. Pre-load the script SHA1 digest into Redis memory using `SCRIPT LOAD`. Additionally, partition Redis keys using `{user_id}` Hash Tags to ensure requests for a single user land on the same Redis cluster shard.
 
 </details>

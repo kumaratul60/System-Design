@@ -48,7 +48,7 @@ _Build a "Defense in Depth" fortress._
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What is "Trusted Types" and why is it the "Final Boss" of DOM XSS defense?
 

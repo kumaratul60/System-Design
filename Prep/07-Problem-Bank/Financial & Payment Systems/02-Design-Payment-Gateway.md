@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Payment Gateway
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a resilient, multi-tenant Payment Gateway & PSP Orchestrator handling 100M daily transactions, zero double-charges, 99.999% uptime, smart routing, and Saga-based distributed reconciliation.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a resilient, multi-tenant Payment Gateway & PSP Orchestrator handling 100M daily transactions, zero double-charges, 99.999% uptime, smart routing, and Saga-based distributed reconciliation.
 > **Navigation:** ⬅️ [Back to Financial & Payment Systems Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -49,14 +49,14 @@ Total Active DB Storage: ~36.5 TB (Partitioned CockroachDB / Sharded PostgreSQL 
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **API Gateway** | Kong / Envoy | Client rate limiting, TLS termination, WAF (Web Application Firewall), and HMAC signature verification. |
-| **Core Payment Orchestrator** | Node.js (TypeScript) / Go | High concurrency non-blocking I/O for external PSP API requests, strict typing. |
-| **Primary Transaction DB** | CockroachDB / PostgreSQL | Distributed SQL with serializable transaction isolation (`SERIALIZABLE`) and multi-region replication. |
-| **Distributed Lock & Idempotency**| Redis Cluster (Redlock) | Atomic key validation (`SETNX`) with TTL for sub-10ms idempotency verification. |
-| **Message Queue / Webhook Bus** | Apache Kafka | Partitioned by `merchant_id` for ordered webhook processing and resilient DLQ (Dead Letter Queue) retries. |
-| **PCI Vault** | HashiCorp Vault / Tokenization Service | Isolated hardware/software vault storing encrypted card PANs and issuing non-sensitive tokens. |
+| Component                          | Technology Choice                      | Architectural Rationale                                                                                    |
+| :--------------------------------- | :------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
+| **API Gateway**                    | Kong / Envoy                           | Client rate limiting, TLS termination, WAF (Web Application Firewall), and HMAC signature verification.    |
+| **Core Payment Orchestrator**      | Node.js (TypeScript) / Go              | High concurrency non-blocking I/O for external PSP API requests, strict typing.                            |
+| **Primary Transaction DB**         | CockroachDB / PostgreSQL               | Distributed SQL with serializable transaction isolation (`SERIALIZABLE`) and multi-region replication.     |
+| **Distributed Lock & Idempotency** | Redis Cluster (Redlock)                | Atomic key validation (`SETNX`) with TTL for sub-10ms idempotency verification.                            |
+| **Message Queue / Webhook Bus**    | Apache Kafka                           | Partitioned by `merchant_id` for ordered webhook processing and resilient DLQ (Dead Letter Queue) retries. |
+| **PCI Vault**                      | HashiCorp Vault / Tokenization Service | Isolated hardware/software vault storing encrypted card PANs and issuing non-sensitive tokens.             |
 
 ---
 
@@ -151,7 +151,7 @@ sequenceDiagram
 
     Merchant->>GW: POST /v1/payments/charge { Idempotency-Key: "IK_9921", amount: 5000 }
     GW->>GW: Acquire Redis Distributed Lock("lock:IK_9921")
-    
+
     alt Idempotency Key Exists in DB
         GW-->>Merchant: Return Cached Prior Transaction Result (Http 200)
     end
@@ -160,9 +160,9 @@ sequenceDiagram
     Orch->>DB: INSERT INTO payment_intents (status='INITIATED')
     Orch->>Router: selectPSP(amount, currency, cardBin)
     Router-->>Orch: Return StripeAdapter (Highest success rate 99.4%)
-    
+
     Orch->>PSP: POST /v1/charges (Outbound HTTP)
-    
+
     alt Synchronous Approval (3DS Challenge Success)
         PSP-->>Orch: HTTP 200 { pspTxId: "ch_stripe_123", status: "AUTHORIZED" }
         Orch->>DB: UPDATE payment_intents SET status='AUTHORIZED', psp_ref='ch_stripe_123'
@@ -293,7 +293,7 @@ export class PaymentContext {
 
   constructor(
     public readonly request: PaymentRequest,
-    initialState?: IPaymentState
+    initialState?: IPaymentState,
   ) {
     this.state = initialState || new InitiatedState();
     this.status = 'INITIATED';
@@ -361,8 +361,12 @@ export class AuthorizedState implements IPaymentState {
 }
 
 export class CapturedState implements IPaymentState {
-  async authorize(): Promise<void> { throw new Error('Payment already CAPTURED'); }
-  async capture(): Promise<void> { throw new Error('Payment already CAPTURED'); }
+  async authorize(): Promise<void> {
+    throw new Error('Payment already CAPTURED');
+  }
+  async capture(): Promise<void> {
+    throw new Error('Payment already CAPTURED');
+  }
 
   async refund(context: PaymentContext, adapter: IPSPAdapter): Promise<void> {
     const res = await adapter.refund(context.pspReference!, context.request.amount);
@@ -375,15 +379,27 @@ export class CapturedState implements IPaymentState {
 }
 
 export class FailedState implements IPaymentState {
-  async authorize(): Promise<void> { throw new Error('Cannot authorize FAILED payment'); }
-  async capture(): Promise<void> { throw new Error('Cannot capture FAILED payment'); }
-  async refund(): Promise<void> { throw new Error('Cannot refund FAILED payment'); }
+  async authorize(): Promise<void> {
+    throw new Error('Cannot authorize FAILED payment');
+  }
+  async capture(): Promise<void> {
+    throw new Error('Cannot capture FAILED payment');
+  }
+  async refund(): Promise<void> {
+    throw new Error('Cannot refund FAILED payment');
+  }
 }
 
 export class RefundedState implements IPaymentState {
-  async authorize(): Promise<void> { throw new Error('Payment already REFUNDED'); }
-  async capture(): Promise<void> { throw new Error('Payment already REFUNDED'); }
-  async refund(): Promise<void> { throw new Error('Payment already REFUNDED'); }
+  async authorize(): Promise<void> {
+    throw new Error('Payment already REFUNDED');
+  }
+  async capture(): Promise<void> {
+    throw new Error('Payment already REFUNDED');
+  }
+  async refund(): Promise<void> {
+    throw new Error('Payment already REFUNDED');
+  }
 }
 
 // ============================================================================
@@ -444,9 +460,9 @@ export class SmartPSPRouter {
   public selectOptimalPSP(req: PaymentRequest): IPSPAdapter {
     // Dynamic routing strategy based on success rate, vendor cost, & payment method
     if (req.currency === 'USD') {
-      return this.adapters.find(a => a.name === 'Stripe') || this.adapters[0];
+      return this.adapters.find((a) => a.name === 'Stripe') || this.adapters[0];
     }
-    return this.adapters.find(a => a.name === 'Adyen') || this.adapters[0];
+    return this.adapters.find((a) => a.name === 'Adyen') || this.adapters[0];
   }
 }
 
@@ -458,12 +474,12 @@ export class PaymentOrchestrator {
   constructor(
     private router: SmartPSPRouter,
     private redisClient: any,
-    private dbClient: any
+    private dbClient: any,
   ) {}
 
   public async processPayment(req: PaymentRequest): Promise<{ paymentId: string; status: PaymentStatus }> {
     const lockKey = `lock:idempotency:${req.idempotencyKey}`;
-    
+
     // 1. Acquire Distributed Lock (SET key token NX EX 30)
     const acquired = await this.redisClient.set(lockKey, 'LOCKED', 'NX', 'EX', 30);
     if (!acquired) {
@@ -472,10 +488,9 @@ export class PaymentOrchestrator {
 
     try {
       // 2. Check Database for Existing Transaction Record
-      const existing = await this.dbClient.query(
-        `SELECT payment_id, status FROM payments WHERE idempotency_key = $1`,
-        [req.idempotencyKey]
-      );
+      const existing = await this.dbClient.query(`SELECT payment_id, status FROM payments WHERE idempotency_key = $1`, [
+        req.idempotencyKey,
+      ]);
 
       if (existing.rows.length > 0) {
         return {
@@ -495,7 +510,15 @@ export class PaymentOrchestrator {
       await this.dbClient.query(
         `INSERT INTO payments (payment_id, merchant_id, idempotency_key, amount, currency, status, psp_reference)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [req.paymentId, req.merchantId, req.idempotencyKey, req.amount, req.currency, context.status, context.pspReference]
+        [
+          req.paymentId,
+          req.merchantId,
+          req.idempotencyKey,
+          req.amount,
+          req.currency,
+          context.status,
+          context.pspReference,
+        ],
       );
 
       return { paymentId: req.paymentId, status: context.status };
@@ -512,22 +535,28 @@ export class PaymentOrchestrator {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Exactly-Once Processing & Idempotency Key Lifecycle
+
 Network timeouts during payment processing present a severe risk of double-charging.
+
 - **Solution:** A two-tier idempotency guard:
   1. **Fast Guard:** Redis `SETNX` distributed lock with 30s expiry during in-flight processing.
   2. **Durable Guard:** PostgreSQL/CockroachDB unique constraint on `idempotency_key`. If a retry arrives after 1 minute, the database returns the original transaction record instantly without calling the PSP API again.
 
 ### 2. Handling Out-of-Order Webhooks vs API Responses
+
 Under high network latency, a PSP webhook notification (`PAYMENT_CAPTURED`) can reach the gateway **BEFORE** the synchronous API HTTP response returns to the Gateway.
+
 - **Solution:** Strict state machine enforcement. Webhooks check current DB status. If status is `INITIATED`, the state transitions directly to `CAPTURED`. Subsequent API responses check DB status and recognize the captured state safely.
 
 ### 3. Saga Pattern vs 2PC for Distributed Reconciliation
+
 Two-Phase Commit (2PC) blocks database rows across third-party networks, causing extreme lock contention and latency spikes.
+
 - **Solution:** **Orchestrated Saga Pattern**. Each step (Tokenization $\rightarrow$ Authorization $\rightarrow$ Ledger Capture) commits locally. If PSP authorization fails, the orchestrator triggers compensating actions (`CancelAuth`, `ReleaseHold`).
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you prevent double-charging if the PSP API call times out after 10 seconds?</summary>
@@ -550,6 +579,7 @@ Raw card numbers (PAN) never touch application memory or primary databases. The 
 
 **Answer:**
 The Reconciliation Engine executes a **3-Way Match Algorithm** comparing:
+
 1. Internal Payment Gateway Transaction Logs.
 2. PSP Settlement CSV/Parquet Reports (downloaded via SFTP/S3).
 3. Bank Settlement Statements.

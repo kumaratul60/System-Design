@@ -48,7 +48,7 @@ Optimizing the delivery and size of resources to minimize latency and bandwidth.
     - [1. HTTP Caching (Cache-Control)](#1-http-caching-cache-control)
     - [2. Service Worker Caching](#2-service-worker-caching)
   - [Key Topics Summary](#key-topics-summary)
-  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+  - [Harness "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: What is "TCP Slow Start" and how does it affect initial page load?](#q1-what-is-tcp-slow-start-and-how-does-it-affect-initial-page-load)
     - [Q2: Explain "Domain Sharding" and why it's an anti-pattern in HTTP/2+.](#q2-explain-domain-sharding-and-why-its-an-anti-pattern-in-http2)
     - [Q3: How do "103 Early Hints" differ from "HTTP/2 Server Push"?](#q3-how-do-103-early-hints-differ-from-http2-server-push)
@@ -508,7 +508,7 @@ A programmable proxy between the browser and the network, allowing for fine-grai
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What is "TCP Slow Start" and how does it affect initial page load?
 

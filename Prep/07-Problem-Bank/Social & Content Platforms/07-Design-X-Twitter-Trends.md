@@ -723,7 +723,7 @@ $$S = \frac{F_{\text{current}} - F_{\text{baseline}}}{\sqrt{F_{\text{baseline}} 
 
 ---
 
-## 9. ❓ Collapsed Senior/Staff Level Grill Q&A
+## 9. ❓ Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you handle Count-Min Sketch frequency inflation caused by heavy hash collisions in streaming data?</summary>

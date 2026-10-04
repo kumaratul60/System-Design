@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Real-Time Chat Application
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a production-grade, highly concurrent messaging platform (WhatsApp / Slack / Messenger scale) supporting 1-on-1 and group chats, WebSocket session gateways, presence status, typing indicators, and reliable delivery receipts.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a production-grade, highly concurrent messaging platform (WhatsApp / Slack / Messenger scale) supporting 1-on-1 and group chats, WebSocket session gateways, presence status, typing indicators, and reliable delivery receipts.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -53,13 +53,13 @@ Gateway Connection Memory Sizing:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **WebSocket Connection Gateway** | Go / Node.js (ws / Netty) | Epoll-based non-blocking network thread loops supporting 200,000 concurrent open sockets per instance with minimal RAM footprint. |
-| **Session & Presence Registry** | Redis Cluster (In-Memory Hash) | Maintains mapping of `UserId -> GatewayInstanceId` and presence heartbeat state with sub-2ms lookup latency. |
-| **Message Store (Persistence)** | ScyllaDB / Apache Cassandra | Wide-column NoSQL database optimized for heavy sequential write workloads partitioned by `(conversation_id, bucket_page)`. |
-| **Async Bus & Event Stream** | Apache Kafka | Decouples incoming message streams from presence counters, media indexing, push notification workers, and delivery metrics. |
-| **Media Attachments Storage** | Cloudflare R2 / AWS S3 + CDN | Presigned upload URL mechanism for image/video attachments with global edge caching. |
+| Component                        | Technology Choice              | Architectural Rationale                                                                                                           |
+| :------------------------------- | :----------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| **WebSocket Connection Gateway** | Go / Node.js (ws / Netty)      | Epoll-based non-blocking network thread loops supporting 200,000 concurrent open sockets per instance with minimal RAM footprint. |
+| **Session & Presence Registry**  | Redis Cluster (In-Memory Hash) | Maintains mapping of `UserId -> GatewayInstanceId` and presence heartbeat state with sub-2ms lookup latency.                      |
+| **Message Store (Persistence)**  | ScyllaDB / Apache Cassandra    | Wide-column NoSQL database optimized for heavy sequential write workloads partitioned by `(conversation_id, bucket_page)`.        |
+| **Async Bus & Event Stream**     | Apache Kafka                   | Decouples incoming message streams from presence counters, media indexing, push notification workers, and delivery metrics.       |
+| **Media Attachments Storage**    | Cloudflare R2 / AWS S3 + CDN   | Presigned upload URL mechanism for image/video attachments with global edge caching.                                              |
 
 ---
 
@@ -337,7 +337,7 @@ export class RedisSessionRegistry implements ISessionRegistry {
   async getGatewayNodes(userId: string): Promise<string[]> {
     const devices = this.userSockets.get(userId);
     if (!devices) return [];
-    return Array.from(devices.values()).map(s => s.gatewayNodeId);
+    return Array.from(devices.values()).map((s) => s.gatewayNodeId);
   }
 
   getSession(userId: string, deviceId: string): UserSession | undefined {
@@ -418,9 +418,7 @@ export class MessageDeliveryEngine {
   }
 
   async processDeliveryReceipt(receipt: DeliveryReceipt): Promise<void> {
-    console.log(
-      `[ReceiptEngine] Message ${receipt.messageId} marked as ${receipt.status} by user ${receipt.userId}`,
-    );
+    console.log(`[ReceiptEngine] Message ${receipt.messageId} marked as ${receipt.status} by user ${receipt.userId}`);
     // Notify sender via WebSocket of status update
   }
 
@@ -458,17 +456,18 @@ export class MessageDeliveryEngine {
 - **Problem:** Sending a message to a group channel with 100,000 members requires 100,000 socket writes. Processing this synchronously blocks the server thread and saturates bandwidth.
 - **Solution (Server-Side Batching & Dynamic Fan-Out):**
   1. Group messages are published to a Kafka topic `group.messages` partitioned by `conversation_id`.
-  2. A dedicated group worker fleet fetches the message and queries the Redis Session Store to partition recipients by their *current active Gateway Node ID*.
+  2. A dedicated group worker fleet fetches the message and queries the Redis Session Store to partition recipients by their _current active Gateway Node ID_.
   3. Instead of sending 100,000 individual messages across nodes, workers publish **1 bulk payload per Gateway Node** containing the list of target socket IDs on that node.
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you resolve out-of-order message rendering when mobile clients operate over unreliable cellular connections?</summary>
 
 **Answer:**
+
 1. **Server-Assigned Monotonic Sequence Numbers:** Wall-clock timestamps are inaccurate across distributed client devices. The server assigns an incrementing 64-bit Sequence ID (`sequence_id`) per conversation:
    $$\text{SequenceID}_{\text{new}} = \text{AtomicIncrement}(\text{Conversation}_{\text{id}})$$
 2. **Client-Side Re-ordering Window:** Mobile clients maintain a local buffer sorted by `sequence_id`. If a gap is detected (e.g., received seq 104 and 106, missing 105), the client renders seq 104 and issues a sync fetch request: `GET /v1/conversations/:id/messages?after=104&limit=5`.
@@ -479,6 +478,7 @@ export class MessageDeliveryEngine {
 <summary>❓ 2. How do you prevent presence heartbeat updates for 10M users from overwhelming Redis write capacity?</summary>
 
 **Answer:**
+
 1. **Heartbeat Batching & Throttling:** Sockets send heartbeats every 30 seconds rather than constantly.
 2. **Local Gateway Aggregation:** Gateway nodes aggregate heartbeats locally in memory and flush updates to Redis using pipeline commands (`MSET` / `PIPELINE`) every 5 seconds.
 3. **Lazy Presence Fetching (Pull vs Push):** Rather than broadcasting online/offline state to all contacts of a user, presence status is fetched **on-demand** only when a user opens an active chat thread with a contact.
@@ -489,6 +489,7 @@ export class MessageDeliveryEngine {
 <summary>❓ 3. How do you handle database sharding in ScyllaDB/Cassandra for message history lookup?</summary>
 
 **Answer:**
+
 1. **Composite Primary Key Strategy:**
    - Partition Key: `(conversation_id, bucket_page)`
    - Clustering Key: `sequence_id DESC`
@@ -502,6 +503,7 @@ export class MessageDeliveryEngine {
 <summary>❓ 4. How is End-to-End Encryption (E2EE) implemented without breaking server-side delivery receipts?</summary>
 
 **Answer:**
+
 1. **Signal Protocol (Double Ratchet Engine):** Encryption keys are negotiated strictly client-to-client using Diffie-Hellman pre-key bundles.
 2. **Opaque Server Payload:** The backend server only sees base64-encoded encrypted ciphertexts and metadata (`sender_id`, `recipient_id`, `message_id`, `sequence_id`).
 3. **Payload-Agnostic Receipts:** The delivery receipt lifecycle (`SERVER_ACK`, `DELIVERED`, `READ`) operates entirely on plain unencrypted envelope headers (`message_id`). The server routes delivery acknowledgments without needing to decrypt the payload.

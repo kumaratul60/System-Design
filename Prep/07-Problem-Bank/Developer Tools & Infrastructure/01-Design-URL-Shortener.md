@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design URL Shortener
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** High-throughput, low-latency URL shortening & redirection engine processing 10B+ redirects/month with sub-10ms response times.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** High-throughput, low-latency URL shortening & redirection engine processing 10B+ redirects/month with sub-10ms response times.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -39,7 +39,7 @@ System Throughput Metrics:
 Capacity & Storage Estimates (5-Year Horizon):
 - Base62 Characters: [0-9, a-z, A-Z] (62 possible characters)
 - Short Key Length: 7 characters -> 62^7 = 3.52 Trillion unique keys (eliminates collisions for centuries)
-- Average Payload Size per Mapping: 
+- Average Payload Size per Mapping:
   - short_key (7 B) + long_url (500 B) + user_id (16 B) + created_at (8 B) + expires_at (8 B) = ~540 Bytes
 - Storage per Year: 100M * 12 * 540 Bytes = ~64.8 GB / year
 - 5-Year Storage Total: 64.8 GB * 5 = ~324 GB (Easily fits in managed NoSQL cluster like DynamoDB / Cassandra)
@@ -54,14 +54,14 @@ Memory & Caching Estimates (Pareto 80/20 Rule):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **API Gateway** | Envoy / Nginx | Multi-region SSL termination, rate limiting, and geo-proximity routing. |
-| **Microservice Runtime** | Node.js / TypeScript | Event-loop non-blocking I/O ideal for high-throughput read redirects. |
+| Component                        | Technology Choice                       | Architectural Rationale                                                                                                           |
+| :------------------------------- | :-------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| **API Gateway**                  | Envoy / Nginx                           | Multi-region SSL termination, rate limiting, and geo-proximity routing.                                                           |
+| **Microservice Runtime**         | Node.js / TypeScript                    | Event-loop non-blocking I/O ideal for high-throughput read redirects.                                                             |
 | **Key Generation Service (KGS)** | Dedicated In-Memory Service + ZooKeeper | Pre-allocates range keys (e.g., node 1 takes `0-1M`, node 2 takes `1M-2M`) to guarantee $O(1)$ key generation without DB locking. |
-| **Primary Data Store** | DynamoDB / Apache Cassandra | Distributed Key-Value store partitioned by `short_key` for sub-5ms lookup latency. |
-| **Caching Layer** | Redis Cluster (LRU Eviction) | Caching top 20% hot links to eliminate database read load during viral traffic events. |
-| **Analytics Stream** | Apache Kafka + ClickHouse | Asynchronous event streaming to prevent click logging from adding latency to HTTP redirect responses. |
+| **Primary Data Store**           | DynamoDB / Apache Cassandra             | Distributed Key-Value store partitioned by `short_key` for sub-5ms lookup latency.                                                |
+| **Caching Layer**                | Redis Cluster (LRU Eviction)            | Caching top 20% hot links to eliminate database read load during viral traffic events.                                            |
+| **Analytics Stream**             | Apache Kafka + ClickHouse               | Asynchronous event streaming to prevent click logging from adding latency to HTTP redirect responses.                             |
 
 ---
 
@@ -310,7 +310,7 @@ export class URLShortenerEngine {
     private repository: IURLRepository,
     private cache: ICacheService,
     private kgs: KeyGeneratorService,
-    private analytics: IAnalyticsPublisher
+    private analytics: IAnalyticsPublisher,
   ) {}
 
   public async shortenUrl(longUrl: string, customAlias?: string, ttlSeconds?: number): Promise<string> {
@@ -371,19 +371,19 @@ export class URLShortenerEngine {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 - **HTTP 301 vs 302 Redirect Trade-Offs:**
-  - *HTTP 301 (Moved Permanently):* Browser caches the target URL locally. Reduces backend server traffic to zero for repeat visits, but completely bypasses analytics tracking.
-  - *HTTP 302 (Found / Temporary):* Every click reaches the API Gateway, ensuring $100\%$ accurate analytics capturing at the expense of higher read server QPS.
+  - _HTTP 301 (Moved Permanently):_ Browser caches the target URL locally. Reduces backend server traffic to zero for repeat visits, but completely bypasses analytics tracking.
+  - _HTTP 302 (Found / Temporary):_ Every click reaches the API Gateway, ensuring $100\%$ accurate analytics capturing at the expense of higher read server QPS.
 - **KGS Node Failure & ZooKeeper Recovery:** If a node crashes, unused keys pre-allocated to its memory buffer are discarded. Because Base62 supports $3.5$ Trillion keys, wasting $100,000$ keys on crash recovery has negligible impact.
 - **Database Partitioning Strategy:** Partition DynamoDB by `short_key` partition key hash. This guarantees perfectly uniform key distribution across all storage nodes.
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you handle cache stampedes when a short link for a viral news story expires?</summary>
 
-**Answer:**  
+**Answer:**
 Implement **Mutex Locking with Redis Single-Flight / Probabilistic Early Expiration (XFetch)**. When a hot key expires in Redis, only the first worker acquiring a lightweight lock (`SET key lock NX EX 5`) queries DynamoDB while other concurrent requests wait or temporarily serve stale data. Alternatively, set background worker revalidation tasks before absolute cache expiration occurs.
 
 </details>
@@ -391,7 +391,7 @@ Implement **Mutex Locking with Redis Single-Flight / Probabilistic Early Expirat
 <details>
 <summary>❓ What happens if a user submits a custom alias that collides with auto-generated KGS keys?</summary>
 
-**Answer:**  
+**Answer:**
 Custom aliases and auto-generated keys share the same namespace in the storage layer (`short_key` primary key). Custom aliases require an explicit synchronous existence check (`repository.exists(alias)`). If valid, it is written immediately. To prevent KGS overlap, pre-allocated KGS numerical ranges can be prefixed or isolated from custom user strings.
 
 </details>
@@ -399,7 +399,7 @@ Custom aliases and auto-generated keys share the same namespace in the storage l
 <details>
 <summary>❓ How do you prevent malicious actors from using your URL shortener for phishing campaigns?</summary>
 
-**Answer:**  
+**Answer:**
 Integrate an asynchronous security pipeline. When a long URL is submitted, pass it through Google Safe Browsing API / VirusTotal webhooks via background worker queue. If flagged, update the URL status in database to `SUSPENDED` and replace redirect targets with a warning landing page.
 
 </details>

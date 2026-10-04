@@ -454,7 +454,7 @@ For a comprehensive understanding of React's architecture, follow this deep dive
 
 ---
 
-## 🎯 Senior/Staff Level "Grill" Questions: LLD Nuances
+## 🎯 Harness "Grill" Questions: LLD Nuances
 
 When evaluating LLD at senior and staff levels, focus switches from _"Do you know the pattern?"_ to _"Do you understand the memory, concurrency, and maintenance costs of this abstraction?"_
 

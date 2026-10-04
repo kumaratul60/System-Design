@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Streaming Median Finder
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an enterprise-grade real-time streaming numeric accumulator capable of dynamically calculating the exact median of continuous data streams in $O(1)$ time complexity while inserting incoming elements in $O(\log N)$ time using a dual balanced heap architecture (Max-Heap + Min-Heap).  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an enterprise-grade real-time streaming numeric accumulator capable of dynamically calculating the exact median of continuous data streams in $O(1)$ time complexity while inserting incoming elements in $O(\log N)$ time using a dual balanced heap architecture (Max-Heap + Min-Heap).
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Dynamic Number Stream Processing:** `addNum(num: number): void` accepts continuous incoming integer/float values in $O(\log N)$ time.
 2. **$O(1)$ Median Retrieval:** `findMedian(): number` calculates and returns the current exact median in $O(1)$ time.
 3. **Odd/Even Stream Balancing:**
@@ -17,6 +18,7 @@
 4. **Heap Size Invariant:** Maintain $| \text{Size}(\text{MaxHeap}) - \text{Size}(\text{MinHeap}) | \le 1$ at all times.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Throughput & Latency:** Support $>1,000,000$ numerical events per second with sub-microsecond insertion latency ($P_{99} < 50\mu\text{s}$).
 2. **Zero Allocation Steady State:** Minimize memory thrashing during continuous binary heap rebalancing.
 3. **Precision:** High-precision double floating point arithmetic for median calculation.
@@ -45,11 +47,11 @@ Time Complexity Guarantees:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Lower Half Storage** | Max-Heap (`PriorityQueue<T>`) | Stores the lower $\lfloor N/2 \rfloor$ elements. Top element is the largest value of the lower half. |
-| **Upper Half Storage** | Min-Heap (`PriorityQueue<T>`) | Stores the upper $\lceil N/2 \rceil$ elements. Top element is the smallest value of the upper half. |
-| **Heap Storage Structure** | Continuous Dynamic Array (`number[]`) | Flat memory layout offers maximum CPU L1/L2 cache locality compared to tree-pointer nodes. |
+| Component                  | Technology Choice                     | Architectural Rationale                                                                              |
+| :------------------------- | :------------------------------------ | :--------------------------------------------------------------------------------------------------- |
+| **Lower Half Storage**     | Max-Heap (`PriorityQueue<T>`)         | Stores the lower $\lfloor N/2 \rfloor$ elements. Top element is the largest value of the lower half. |
+| **Upper Half Storage**     | Min-Heap (`PriorityQueue<T>`)         | Stores the upper $\lceil N/2 \rceil$ elements. Top element is the smallest value of the upper half.  |
+| **Heap Storage Structure** | Continuous Dynamic Array (`number[]`) | Flat memory layout offers maximum CPU L1/L2 cache locality compared to tree-pointer nodes.           |
 
 ---
 
@@ -98,7 +100,7 @@ sequenceDiagram
     else Value > MaxHeap Top
         Finder->>MinH: push(7)
     end
-    
+
     Finder->>Finder: Check Balance Invariant
     alt Size(MaxH) > Size(MinH) + 1
         Finder->>MaxH: pop() -> val
@@ -107,7 +109,7 @@ sequenceDiagram
         Finder->>MinH: pop() -> val
         Finder->>MaxH: push(val)
     end
-    
+
     Stream->>Finder: findMedian()
     Finder-->>Stream: return Top(MaxH) or Average(Top(MaxH), Top(MinH))
 ```
@@ -187,16 +189,10 @@ export class PriorityQueue<T> {
       const left = 2 * current + 1;
       const right = 2 * current + 2;
 
-      if (
-        left < length &&
-        this.comparator(this.heap[left], this.heap[candidate]) < 0
-      ) {
+      if (left < length && this.comparator(this.heap[left], this.heap[candidate]) < 0) {
         candidate = left;
       }
-      if (
-        right < length &&
-        this.comparator(this.heap[right], this.heap[candidate]) < 0
-      ) {
+      if (right < length && this.comparator(this.heap[right], this.heap[candidate]) < 0) {
         candidate = right;
       }
 
@@ -283,7 +279,7 @@ flowchart TD
     StreamSource[High Volume Telemetry Stream] --> Kafka[Apache Kafka Telemetry Partition]
     Kafka --> Worker1[Stream Worker Node 1]
     Kafka --> Worker2[Stream Worker Node 2]
-    
+
     Worker1 --> TDigest1[Local T-Digest / Quantile Sketch]
     Worker2 --> TDigest2[Local T-Digest / Quantile Sketch]
 
@@ -297,12 +293,13 @@ flowchart TD
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: Why is a dual heap preferred over a single self-balancing Binary Search Tree (AVL / Red-Black Tree)?</strong></summary>
 
 **Answer:**
+
 1. **Cache Locality:** Dual heaps are backed by contiguous dynamic flat arrays, eliminating pointer chasing and maximizing CPU L1/L2 cache prefetching.
 2. **O(1) Access:** `findMedian()` reads array index 0 directly in $O(1)$ cycles, while order-statistic tree node lookup requires traversing tree pointers.
 3. **Implementation Simplicity:** BST rebalancing requires complex tree rotations (RR, LL, RL, LR), whereas heap sift operations are linear array swaps.
@@ -313,6 +310,7 @@ flowchart TD
 
 **Answer:**
 When elements expire outside window $K$, they must be removed from the heaps:
+
 - **Lazy Eviction with Hash Map:** Maintain a `Map<number, number>` tracking expired counts. When popping from heap top, check if element is expired; if so, pop and discard.
 - **Order-Statistic Tree (Treap / Segment Tree):** Supports $O(\log K)$ index insertion, deletion, and $K/2$-th rank lookup directly.
 </details>
@@ -322,6 +320,7 @@ When elements expire outside window $K$, they must be removed from the heaps:
 
 **Answer:**
 Exact distributed median requires gathering all 10M records into a centralized node ($O(N)$ data movement). In enterprise systems, approximate quantiles are computed using **T-Digest** sketches:
+
 1. Each worker node maintains a compact local `T-Digest` sketch (~10 KB footprint).
 2. Sketches are periodically sent to an aggregator node.
 3. Sketches are mergeable ($T_{global} = \text{Merge}(T_1, T_2, \dots, T_k)$), allowing computation of $P_{50}$ (Median), $P_{95}$, and $P_{99}$ with $<0.5\%$ error bounds.

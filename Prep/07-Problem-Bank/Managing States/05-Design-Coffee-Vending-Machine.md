@@ -56,12 +56,12 @@ Telemetry Data Payload:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Control System Core** | Node.js / TypeScript on Linux Embedded (ARM Cortex-A72) | Non-blocking event loop handles asynchronous sensor sampling (PID temperature control, flow meters) alongside UI animations seamlessly. |
-| **State Machine Framework** | Hierarchical Finite State Machine (HFSM) via State Pattern | Prevents invalid actuator sequences (e.g. running grinder without beans or opening steam valve when boiler temperature is low). |
-| **Hardware Driver Interface** | GPIO / Modbus RTU over RS-485 | Standard industrial automation protocol controlling motor drivers, solenoid valves, thermistors, and pressure transducers. |
-| **Local Audit Database** | SQLite with WAL (Write-Ahead Logging) | Logs individual cup extraction profiles, error state history, and cleaning timestamps for local diagnostic analysis. |
+| Component                     | Technology Choice                                          | Architectural Rationale                                                                                                                 |
+| :---------------------------- | :--------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| **Control System Core**       | Node.js / TypeScript on Linux Embedded (ARM Cortex-A72)    | Non-blocking event loop handles asynchronous sensor sampling (PID temperature control, flow meters) alongside UI animations seamlessly. |
+| **State Machine Framework**   | Hierarchical Finite State Machine (HFSM) via State Pattern | Prevents invalid actuator sequences (e.g. running grinder without beans or opening steam valve when boiler temperature is low).         |
+| **Hardware Driver Interface** | GPIO / Modbus RTU over RS-485                              | Standard industrial automation protocol controlling motor drivers, solenoid valves, thermistors, and pressure transducers.              |
+| **Local Audit Database**      | SQLite with WAL (Write-Ahead Logging)                      | Logs individual cup extraction profiles, error state history, and cleaning timestamps for local diagnostic analysis.                    |
 
 ---
 
@@ -176,7 +176,7 @@ sequenceDiagram
     Customer->>Machine: selectRecipe("Latte", CustomOptions)
     Machine->>Inventory: checkIngredients(Water: 180ml, Beans: 14g, Milk: 120ml)
     Inventory-->>Machine: Ingredients Available (OK)
-    
+
     Machine->>Machine: Transition to HeatingState
     Machine->>Boiler: heatToTemperature(93°C)
     Boiler-->>Machine: Temperature Reached (93.2°C)
@@ -196,7 +196,7 @@ sequenceDiagram
     Machine->>Waste: ejectSpentPuck()
     Waste-->>Machine: Puck Ejected into Waste Bin (Puck Count = +1)
     Machine->>Inventory: consumeIngredients(LatteRecipe)
-    
+
     Machine->>Machine: Transition to IdleState
     Machine-->>Customer: "Latte Ready! Enjoy."
 ```
@@ -306,9 +306,9 @@ export class IngredientReservoirManager {
 
   constructor() {
     this.levels.set(IngredientType.WATER, 3000); // 3000 ml
-    this.levels.set(IngredientType.BEANS, 1000);  // 1000 g
-    this.levels.set(IngredientType.MILK, 1500);   // 1500 ml
-    this.levels.set(IngredientType.SUGAR, 500);   // 500 g
+    this.levels.set(IngredientType.BEANS, 1000); // 1000 g
+    this.levels.set(IngredientType.MILK, 1500); // 1500 ml
+    this.levels.set(IngredientType.SUGAR, 500); // 500 g
     this.levels.set(IngredientType.WASTE_BIN, 5); // 5 pucks currently inside (max 50)
 
     this.maxCapacities.set(IngredientType.WASTE_BIN, 50);
@@ -397,7 +397,9 @@ export class IdleState extends BaseCoffeeMachineState {
       return;
     }
 
-    console.log(`[Recipe Selected] Selected: ${recipe.name} (${recipe.waterVolumeMl}ml water, ${recipe.beanWeightGrams}g beans)`);
+    console.log(
+      `[Recipe Selected] Selected: ${recipe.name} (${recipe.waterVolumeMl}ml water, ${recipe.beanWeightGrams}g beans)`,
+    );
     context.setActiveRecipe(recipe);
     context.setState(new HeatingState());
     context.startBrewing(context);
@@ -420,7 +422,7 @@ export class HeatingState extends BaseCoffeeMachineState {
     console.log(`[Hardware Boiler] Heating water to ${recipe.waterTempC}°C...`);
     // Simulated PID delay
     console.log(`[Hardware Boiler] Target temperature reached (${recipe.waterTempC}°C).`);
-    
+
     context.setState(new GrindingState());
     return context.startBrewing(context);
   }
@@ -447,7 +449,7 @@ export class BrewingState extends BaseCoffeeMachineState {
     const recipe = context.getActiveRecipe()!;
 
     console.log(`[Hardware Pump] Extracting espresso (${recipe.waterVolumeMl}ml at 9-Bar pressure)...`);
-    
+
     if (recipe.milkVolumeMl > 0) {
       context.setState(new MilkFrothingState());
       return context.startBrewing(context);
@@ -479,7 +481,7 @@ export class MilkFrothingState extends BaseCoffeeMachineState {
     context.getInventory().consumeIngredients(recipe);
     console.log(`[Hardware Ejector] Ejecting spent coffee puck.`);
     console.log(`[Beverage Complete] Artisanal ${recipe.name} is ready!`);
-    
+
     context.resetSession();
     context.setState(new IdleState());
     return true;
@@ -520,9 +522,15 @@ export class CoffeeMachineContext implements ICoffeeMachineContext {
     this.currentState = state;
   }
 
-  getInventory(): IngredientReservoirManager { return this.inventory; }
-  getActiveRecipe(): CoffeeRecipe | null { return this.activeRecipe; }
-  setActiveRecipe(recipe: CoffeeRecipe | null): void { this.activeRecipe = recipe; }
+  getInventory(): IngredientReservoirManager {
+    return this.inventory;
+  }
+  getActiveRecipe(): CoffeeRecipe | null {
+    return this.activeRecipe;
+  }
+  setActiveRecipe(recipe: CoffeeRecipe | null): void {
+    this.activeRecipe = recipe;
+  }
 
   async executeRinseCycle(): Promise<void> {
     console.log(`[Hardware Sanitization] Flushing steam lines with 95°C water...`);
@@ -533,9 +541,15 @@ export class CoffeeMachineContext implements ICoffeeMachineContext {
   }
 
   // Delegation
-  selectRecipe(recipe: CoffeeRecipe): void { this.currentState.selectRecipe(this, recipe); }
-  async startBrewing(): Promise<boolean> { return this.currentState.startBrewing(this); }
-  async clean(): Promise<void> { return this.currentState.clean(this); }
+  selectRecipe(recipe: CoffeeRecipe): void {
+    this.currentState.selectRecipe(this, recipe);
+  }
+  async startBrewing(): Promise<boolean> {
+    return this.currentState.startBrewing(this);
+  }
+  async clean(): Promise<void> {
+    return this.currentState.clean(this);
+  }
 }
 ```
 
@@ -579,20 +593,21 @@ graph TB
 ### ⚠️ Scalability & Hardware Thermal Bottlenecks
 
 1. **Boiler Thermal Loss Under High-Volume Rush (Airport Peak):**
-   - *Problem:* Machine serves 60 espressos back-to-back. Fresh cold water entering the boiler drops water temperature below $88^\circ\text{C}$, souring espresso extraction.
-   - *Resolution:* **Dual-Boiler Architecture**. Dedicated Espresso Boiler ($93^\circ\text{C}$) and dedicated Steam Boiler ($125^\circ\text{C}$) with predictive feedforward PID heating triggered as soon as the pump starts.
+   - _Problem:_ Machine serves 60 espressos back-to-back. Fresh cold water entering the boiler drops water temperature below $88^\circ\text{C}$, souring espresso extraction.
+   - _Resolution:_ **Dual-Boiler Architecture**. Dedicated Espresso Boiler ($93^\circ\text{C}$) and dedicated Steam Boiler ($125^\circ\text{C}$) with predictive feedforward PID heating triggered as soon as the pump starts.
 2. **Milk Hygiene & Bacterial Growth Risk:**
-   - *Problem:* Residual milk inside the steam wand spoils if unused for 30 minutes.
-   - *Resolution:* Automated **Steam Auto-Purge**. If no milk beverage is ordered within $15\text{ minutes}$, the state machine enters a 3-second steam purge cycle, flushing steam through the wand into a drip tray.
+   - _Problem:_ Residual milk inside the steam wand spoils if unused for 30 minutes.
+   - _Resolution:_ Automated **Steam Auto-Purge**. If no milk beverage is ordered within $15\text{ minutes}$, the state machine enters a 3-second steam purge cycle, flushing steam through the wand into a drip tray.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you prevent grinder motor burn-out if a stone or non-coffee object jams the burrs?</summary>
 
 **Answer:**
+
 1. **Motor Current Transducer Monitoring:** The grinder motor driver continuously measures current consumption ($I$).
 2. **Over-Current Interrupt:** If current exceeds $3.5\text{ Amps}$ (indicating mechanical burr jam), the hardware driver triggers an instant hardware interrupt, halting the motor within $< 10\text{ms}$.
 3. **Automated Reverse & Lockout:** The state machine executes 3 reverse motor pulses ($100\text{ms}$) to dislodge the object. If current remains high, the machine flags `GrinderFault` and transitions to `MaintenanceState`.
@@ -604,6 +619,7 @@ graph TB
 
 **Answer:**
 We implement an **AI-Driven PID Extraction Profiler**:
+
 1. Flow sensors measure flow rate ($\text{ml/sec}$) during extraction.
 2. If extraction time for 30ml exceeds 35 seconds (under-extraction / grind too fine), the system automatically adjusts the electronic grinder stepper motor +0.05mm coarser for the next cup.
 3. If extraction finishes in $< 18$ seconds (channeling / grind too coarse), the stepper motor adjusts -0.05mm finer.

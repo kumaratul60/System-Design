@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Online Stock Exchange
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an ultra-low-latency electronic stock trading exchange (e.g., NASDAQ / LMAX matching core) capable of executing 500,000 orders/second at sub-millisecond $P_{99}$ latency with strict Price-Time priority and deterministic journaling.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an ultra-low-latency electronic stock trading exchange (e.g., NASDAQ / LMAX matching core) capable of executing 500,000 orders/second at sub-millisecond $P_{99}$ latency with strict Price-Time priority and deterministic journaling.
 > **Navigation:** ⬅️ [Back to Financial & Payment Systems Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -51,14 +51,14 @@ Total In-Memory Matching Heap: ~6.4 GB RAM (Fits comfortably in high-speed CPU L
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Ingress Gateway** | C++ / Rust (FIX Protocol Engine) | Zero-copy TCP socket handling using kernel bypass (Solarflare OpenOnload NICs). |
-| **Inter-Process Messaging**| LMAX Disruptor (Lock-free Ring Buffer)| Lock-free ring buffer yielding tens of millions of ops/sec without mutex lock overhead. |
-| **Matching Engine Core** | C++ / Native Rust / Low-GC Node.js | Memory-aligned struct pre-allocation (zero garbage collection pauses). |
-| **Deterministic Journaling**| Chronicle Queue / Raft WAL | Append-only memory-mapped file logging before engine execution for sub-microsecond crash recovery. |
-| **Market Data Broadcast** | UDP Multicast / WebSockets | UDP Multicast for ultra-fast institutional feeds, WebSocket gateways for retail apps. |
-| **Historical Tick Storage** | ClickHouse / TimescaleDB | Columnar time-series database handling billions of daily trade ticks for chart rendering. |
+| Component                    | Technology Choice                      | Architectural Rationale                                                                            |
+| :--------------------------- | :------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| **Ingress Gateway**          | C++ / Rust (FIX Protocol Engine)       | Zero-copy TCP socket handling using kernel bypass (Solarflare OpenOnload NICs).                    |
+| **Inter-Process Messaging**  | LMAX Disruptor (Lock-free Ring Buffer) | Lock-free ring buffer yielding tens of millions of ops/sec without mutex lock overhead.            |
+| **Matching Engine Core**     | C++ / Native Rust / Low-GC Node.js     | Memory-aligned struct pre-allocation (zero garbage collection pauses).                             |
+| **Deterministic Journaling** | Chronicle Queue / Raft WAL             | Append-only memory-mapped file logging before engine execution for sub-microsecond crash recovery. |
+| **Market Data Broadcast**    | UDP Multicast / WebSockets             | UDP Multicast for ultra-fast institutional feeds, WebSocket gateways for retail apps.              |
+| **Historical Tick Storage**  | ClickHouse / TimescaleDB               | Columnar time-series database handling billions of daily trade ticks for chart rendering.          |
 
 ---
 
@@ -152,13 +152,13 @@ sequenceDiagram
     Client->>GW: FIX NewOrderSingle (Symbol: AAPL, Side: BUY, Price: $150.00, Qty: 100)
     GW->>Risk: Validate Margin & Buying Power
     Risk-->>GW: Risk Approved
-    
+
     GW->>Seq: Push to Lock-free Ring Buffer
     Seq->>WAL: Append Raw Order to Chronicle Queue Journal (Microsecond disk sync)
-    
+
     Seq->>Engine: Dispatch Order to Thread Pinned Core (Symbol: AAPL)
     Engine->>Engine: Match Against Ask Tree (FIFO Price-Time Priority)
-    
+
     alt Trade Execution Matched
         Engine-->>Seq: Return Executed Trade Event
         Seq->>Pub: Broadcast UDP Multicast Level 3 Tick (Trade @ $150.00)
@@ -296,7 +296,7 @@ export class OrderNode {
     public readonly type: OrderType,
     public price: number, // Cents
     public quantity: number, // Remaining unfilled quantity
-    public readonly timestamp: number = Date.now()
+    public readonly timestamp: number = Date.now(),
   ) {}
 }
 
@@ -354,7 +354,7 @@ export class LimitOrderBook {
   // Price -> PriceLevel Mapping
   private bids: Map<number, PriceLevel> = new Map(); // Sorted descending
   private asks: Map<number, PriceLevel> = new Map(); // Sorted ascending
-  
+
   // Direct Lookup Map for O(1) Cancellation: OrderId -> OrderNode
   private orderMap: Map<string, OrderNode> = new Map();
 
@@ -552,23 +552,29 @@ export class MatchingEngineFacade {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Eliminating Lock Contention (CPU Pinned Single-Threaded Architecture)
+
 Traditional multi-threaded database models using mutex locks (`pthread_mutex_lock`) collapse under high trading volumes due to thread context switching ($> 10\mu\text{s}$ per lock contention).
+
 - **Solution:** **LMAX Disruptor Pattern**. Pin **one CPU core per ticker symbol**. A single thread processes all orders for `AAPL` sequentially out of a lock-free ring buffer, executing matching logic in $P_{99} < 100\text{ns}$ without any lock overhead.
 
 ### 2. $O(1)$ Order Placement, Execution & Cancellation Data Structures
+
 Searching arrays or naive trees during cancellation causes $O(N)$ slowdowns.
+
 - **Solution:** A composite data structure:
   1. **Map of Price Levels:** Fast lookup of active price points.
   2. **Doubly-Linked List per Price Level:** Maintains exact time priority (FIFO). $O(1)$ node insertion at tail, $O(1)$ removal at head during match execution.
   3. **Direct Order Pointer Map (`Map<OrderId, OrderNode>`):** Enables instant $O(1)$ order node unlinking during cancellations.
 
 ### 3. Ultra-Fast Market Data Dissemination (UDP Multicast vs WebSockets)
+
 Broadcasting millions of price tick updates via TCP creates socket buffer bloat and head-of-line blocking.
+
 - **Solution:** **UDP Multicast Feed Handler**. Institutional market data (Level 1/2/3) is pushed over UDP multicast with delta-compressed binary protocols (SBE - Simple Binary Encoding). Retail consumers receive throttled 100ms snapshot updates via WebSocket Edge Gateways.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. Why do modern stock exchanges (e.g., LMAX, NASDAQ) use a single-threaded matching engine per symbol instead of multi-threading?</summary>
@@ -590,6 +596,7 @@ Before any order touches the in-memory matching engine, a **Single-Threaded Sequ
 <summary>❓ 3. What is the difference between Level 1, Level 2, and Level 3 Market Data feeds?</summary>
 
 **Answer:**
+
 - **Level 1 (L1):** Broadcasts only the Top of Book (Best Bid Price/Qty and Best Ask Price/Qty).
 - **Level 2 (L2):** Broadcasts the top $N$ price levels (typically top 5 or 10 bid/ask depth prices and aggregated volumes).
 - **Level 3 (L3):** Full order book depth broadcasting every individual open order, size, and queue position (used by high-frequency algorithmic traders).

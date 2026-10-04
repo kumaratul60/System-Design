@@ -117,7 +117,7 @@ This guide takes you on a complete journey through React's rendering engine. We 
     - [Real-world Implementations](#real-world-implementations)
       - [1. Subscribing to a Browser API (Network Status)](#1-subscribing-to-a-browser-api-network-status)
       - [2. Subscribing to a Custom External Store (Store Pattern)](#2-subscribing-to-a-custom-external-store-store-pattern)
-  - [8. Tricky React Hook \& State Scenarios (Senior/Staff Level)](#8-tricky-react-hook--state-scenarios-seniorstaff-level)
+  - [8. Tricky React Hook \& State Scenarios (Harness)](#8-tricky-react-hook--state-scenarios-seniorstaff-level)
     - [Q1: Lazy State Initialization (Function vs. Direct Execution)](#q1-lazy-state-initialization-function-vs-direct-execution)
     - [Q2: `useEffect` vs. `useLayoutEffect` vs. `useInsertionEffect`](#q2-useeffect-vs-uselayouteffect-vs-useinsertioneffect)
     - [Q3: Resetting State via the `key` Prop](#q3-resetting-state-via-the-key-prop)
@@ -133,7 +133,7 @@ This guide takes you on a complete journey through React's rendering engine. We 
     - [Q2: Capital Letters in Component Naming](#q2-capital-letters-in-component-naming)
     - [Q3: The Stray "0" Bug](#q3-the-stray-0-bug)
     - [Q4: Tricky Addition — The Fragment Key Trap](#q4-tricky-addition--the-fragment-key-trap)
-  - [11. Senior/Staff Level Deep Dive: Context Performance, Suspense Internals, RSC vs. SSR, \& Dynamic Chunk Loading](#11-seniorstaff-level-deep-dive-context-performance-suspense-internals-rsc-vs-ssr--dynamic-chunk-loading)
+  - [11. Harness Deep Dive: Context Performance, Suspense Internals, RSC vs. SSR, \& Dynamic Chunk Loading](#11-seniorstaff-level-deep-dive-context-performance-suspense-internals-rsc-vs-ssr--dynamic-chunk-loading)
     - [Q1: The Context API Re-render Problem \& Staff-Level Optimization](#q1-the-context-api-re-render-problem--staff-level-optimization)
     - [Q2: Suspense Under the Hood (The Thrown Promise Pattern)](#q2-suspense-under-the-hood-the-thrown-promise-pattern)
     - [Q3: Code Splitting Chunk Failures \& Resilience](#q3-code-splitting-chunk-failures--resilience)
@@ -1553,7 +1553,7 @@ function useStore(selector) {
 
 ---
 
-## 8. Tricky React Hook & State Scenarios (Senior/Staff Level)
+## 8. Tricky React Hook & State Scenarios (Harness)
 
 ### Q1: Lazy State Initialization (Function vs. Direct Execution)
 
@@ -1783,7 +1783,7 @@ In React, every item returned in a loop must have a unique `key` prop so the rec
 
 ---
 
-## 11. Senior/Staff Level Deep Dive: Context Performance, Suspense Internals, RSC vs. SSR, & Dynamic Chunk Loading
+## 11. Harness Deep Dive: Context Performance, Suspense Internals, RSC vs. SSR, & Dynamic Chunk Loading
 
 ### Q1: The Context API Re-render Problem & Staff-Level Optimization
 

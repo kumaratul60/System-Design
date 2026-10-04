@@ -37,7 +37,7 @@ This section covers the essential aspects of collecting, logging, and monitoring
     - [Alert Channels by Severity](#4-alert--notification-channels)
     - [Monitoring the Monitor](#5-monitoring-the-monitor-dead-mans-snitch)
 12. **[On-Call & Alert Fatigue](#-senior--staff-level-on-call--alert-fatigue)**
-13. **[Senior/Staff Level "Grill" Questions](#-seniorstaff-level-grill-questions)**
+13. **[Harness "Grill" Questions](#-seniorstaff-level-grill-questions)**
     - [Logging \& Monitoring Q\&A Guide (17 Core Questions)](./Logging_Monitoring_QA.md)
 
 ---
@@ -421,7 +421,7 @@ Alerts must be routed to a specific "On-Call" engineer.
 
 ---
 
-## 🥊 Senior/Staff Level "Grill" Questions
+## 🥊 Harness "Grill" Questions
 
 - **[Logging & Monitoring Q&A Guide (17 Core Questions)](./Logging_Monitoring_QA.md):** Detailed explanations covering client-side logging details, user tracking challenges, performance measurement, error thresholds, API degradation, issue prioritization, and production debugging.
 

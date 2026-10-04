@@ -401,7 +401,7 @@ In the wake of CPU vulnerabilities like Spectre, browsers introduced headers to 
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What is the `Vary` header and why is it called the "Cache Killer"?
 

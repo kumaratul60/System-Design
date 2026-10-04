@@ -8,7 +8,7 @@ This guide covers specific scenarios and "gotcha" questions that often arise in 
   - [Table of Contents](#table-of-contents)
   - [1. Extracting Utility Functions](#1-extracting-utility-functions)
   - [2. Asynchronous State Updates \& Promises](#2-asynchronous-state-updates--promises)
-  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+  - [Harness "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: What is the "Closure Trap" in React Hooks and how do you avoid it?](#q1-what-is-the-closure-trap-in-react-hooks-and-how-do-you-avoid-it)
     - [Q2: Why is "Prop Drilling" sometimes _better_ than using the Context API?](#q2-why-is-prop-drilling-sometimes-better-than-using-the-context-api)
     - [Q3: Explain the difference between `npm install` and `npm ci`.](#q3-explain-the-difference-between-npm-install-and-npm-ci)
@@ -56,7 +56,7 @@ React state updates are **asynchronous** and **batched**. When dealing with asyn
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What is the "Closure Trap" in React Hooks and how do you avoid it?
 

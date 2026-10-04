@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Concurrent Lock-Free Ring Buffer
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an ultra-low-latency, high-throughput lock-free bounded ring buffer using Atomic Compare-And-Swap (CAS) sequence pointers, power-of-2 bitwise mask indexing, pre-allocated zero-allocation memory cells, and 64-byte cache-line padding based on the LMAX Disruptor pattern.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an ultra-low-latency, high-throughput lock-free bounded ring buffer using Atomic Compare-And-Swap (CAS) sequence pointers, power-of-2 bitwise mask indexing, pre-allocated zero-allocation memory cells, and 64-byte cache-line padding based on the LMAX Disruptor pattern.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Lock-Free Producer Operation:** `publish(data: T): boolean` reserves an atomic ring sequence pointer via CAS without acquiring mutex locks.
 2. **Lock-Free Consumer Operation:** `consume(): T | null` claims published sequences via CAS and processes pre-allocated memory cells.
 3. **Power-of-2 Bounded Buffer:** Capacity MUST be a power of two ($2^N$), enabling single-cycle bitwise AND index masking (`index & (capacity - 1)`).
@@ -16,6 +17,7 @@
 5. **Multi-Producer Multi-Consumer (MPMC) Coordination:** Safe concurrent operations across multiple producer and consumer worker threads.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Ultra-Low Latency:** $P_{99.99} < 100\text{ns}$ per message transaction.
 2. **Extreme Throughput:** $>25,000,000$ messages per second per CPU core.
 3. **False Sharing Elimination:** 64-byte cache line padding between producer sequence, consumer sequence, and ring memory arrays.
@@ -39,11 +41,11 @@ Performance Target:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Atomic State** | `Atomics` / `SharedArrayBuffer` / `AtomicLong` | Provides atomic CAS (`compareExchange`) and low-level memory barrier fences across threads. |
-| **Index Operator** | Bitwise Mask (`sequence & (capacity - 1)`) | Replaces expensive CPU division (`% capacity`, 15-30 clock cycles) with a single-cycle bitwise AND. |
-| **Memory Isolation** | 64-Byte Cache-Line Padding | Prevents MESI cache invalidation ping-pong between CPU L1/L2 caches (False Sharing). |
+| Component            | Technology Choice                              | Architectural Rationale                                                                             |
+| :------------------- | :--------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| **Atomic State**     | `Atomics` / `SharedArrayBuffer` / `AtomicLong` | Provides atomic CAS (`compareExchange`) and low-level memory barrier fences across threads.         |
+| **Index Operator**   | Bitwise Mask (`sequence & (capacity - 1)`)     | Replaces expensive CPU division (`% capacity`, 15-30 clock cycles) with a single-cycle bitwise AND. |
+| **Memory Isolation** | 64-Byte Cache-Line Padding                     | Prevents MESI cache invalidation ping-pong between CPU L1/L2 caches (False Sharing).                |
 
 ---
 
@@ -95,7 +97,7 @@ sequenceDiagram
 
     Producer 1->>Ring: publish(Data_A)
     Producer 2->>Ring: publish(Data_B)
-    
+
     par Concurrent CAS Claims
         Ring->>Ring: CAS(producerSeq, 100 -> 101) [Producer 1 SUCCEEDS]
         Ring->>Ring: CAS(producerSeq, 100 -> 101) [Producer 2 FAILS -> RETRY]
@@ -103,7 +105,7 @@ sequenceDiagram
 
     Producer 1->>Cell: Write Data_A at slot (100 & mask)
     Producer 1->>Cell: Set cell.sequence = 100 (Commit Publish)
-    
+
     Producer 2->>Ring: CAS(producerSeq, 101 -> 102) [Producer 2 SUCCEEDS]
     Producer 2->>Cell: Write Data_B at slot (101 & mask)
     Producer 2->>Cell: Set cell.sequence = 101 (Commit Publish)
@@ -307,7 +309,7 @@ flowchart LR
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: What is False Sharing in multi-threaded concurrent queues, and how do 64-byte paddings prevent it?</strong></summary>
@@ -315,6 +317,7 @@ flowchart LR
 **Answer:**
 CPU L1/L2 caches fetch memory in 64-byte chunks called **Cache Lines**.
 If `producerHead` (8 bytes) and `consumerTail` (8 bytes) reside adjacent in memory within the same 64-byte line:
+
 1. When CPU Core 1 updates `producerHead`, the hardware **invalidates** the entire 64-byte cache line across all other CPU cores (MESI protocol).
 2. When CPU Core 2 attempts to read/write `consumerTail`, it suffers an L1 cache miss and must re-fetch from L3/RAM.
 3. This creates **Cache Line Ping-Pong**, destroying throughput.
@@ -328,12 +331,14 @@ If `producerHead` (8 bytes) and `consumerTail` (8 bytes) reside adjacent in memo
 Standard ring indexing uses modulo arithmetic: `index = sequence % capacity`. Integer division/modulo operations take 15–30 CPU clock cycles.
 When capacity is a power of 2 ($2^N$), $2^N - 1$ produces a bitmask of all 1s in binary (e.g. $1024 - 1 = 1023 = 0x3FF$).
 Evaluating `index = sequence & (capacity - 1)` performs a single bitwise AND executing in **1 CPU clock cycle**, yielding a $20\times$ speedup per message index calculation.
+
 </details>
 
 <details>
 <summary><strong>Q3: How does the LMAX Disruptor pattern differ from java.util.concurrent.ArrayBlockingQueue?</strong></summary>
 
 **Answer:**
+
 - `ArrayBlockingQueue` uses traditional `ReentrantLock` and `Condition` variables (`notFull`, `notEmpty`), forcing threads to undergo kernel context switches and lock contention.
 - `LMAX Disruptor`:
   1. Uses **Lock-Free Atomic CAS** sequence reservation.
@@ -341,4 +346,4 @@ Evaluating `index = sequence & (capacity - 1)` performs a single bitwise AND exe
   3. Uses **Single-Writer Ring Buffer** or Lock-Free CAS barriers.
   4. Eliminates False Sharing via 64-byte cache line padding.
   This allows Disruptor to process $>25M$ msg/sec vs $\sim 1M$ msg/sec for `ArrayBlockingQueue`.
-</details>
+  </details>

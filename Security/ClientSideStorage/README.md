@@ -223,7 +223,7 @@ async function encryptData(text, password) {
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Why is "IndexedDB" safer for massive data than LocalStorage, beyond just size?
 

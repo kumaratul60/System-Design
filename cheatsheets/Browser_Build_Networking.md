@@ -11,7 +11,7 @@ This guide covers the "under the hood" mechanics of how web applications are del
   - [3. Webpack, Chunking, and Optimization](#3-webpack-chunking-and-optimization)
   - [4. Script \& Image Optimization](#4-script--image-optimization)
   - [5. Styling Approaches in React](#5-styling-approaches-in-react)
-  - [Senior/Staff Level "Grill" Questions](#seniorstaff-level-grill-questions)
+  - [Harness "Grill" Questions](#seniorstaff-level-grill-questions)
     - [Q1: Vite vs. Webpack - Why is Vite "Faster" in development but similar in production?](#q1-vite-vs-webpack---why-is-vite-faster-in-development-but-similar-in-production)
     - [Q2: How do you solve the "Waterfall" problem in dynamic imports?](#q2-how-do-you-solve-the-waterfall-problem-in-dynamic-imports)
     - [Q3: What is "Content Hashing" and why is it critical for Long-term Caching?](#q3-what-is-content-hashing-and-why-is-it-critical-for-long-term-caching)
@@ -117,7 +117,7 @@ When you run `npm install --production`, only `dependencies` are installed. This
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Vite vs. Webpack - Why is Vite "Faster" in development but similar in production?
 

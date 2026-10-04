@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Distributed Pub/Sub Messaging System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a high-throughput, low-latency distributed Topic-based Pub/Sub broker engine supporting partition-based message streaming, consumer groups, offset tracking, and guaranteed delivery semantics.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a high-throughput, low-latency distributed Topic-based Pub/Sub broker engine supporting partition-based message streaming, consumer groups, offset tracking, and guaranteed delivery semantics.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -48,13 +48,13 @@ Broker Memory & I/O Sizing:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Broker Kernel / Runtime** | Go / Rust / Java (Netty) | High-performance async I/O engine with direct memory allocation (`ByteBuffer`), avoiding GC pause overhead during heavy packet processing. |
-| **Log Storage Engine** | Append-Only Disk Commit Logs | Sequential disk writes achieve $>100\text{ MB/s}$ throughput per spindle; index files map offsets to physical file byte locations for $O(1)$ disk reads. |
-| **Cluster Coordination** | KRaft / Raft Consensus | Eliminates external Zookeeper dependencies; manages topic metadata, partition leader elections, and consumer group controller state. |
-| **Network Protocol** | Custom Binary Protocol over TCP | Eliminates HTTP/JSON serialization overhead; uses binary frames with length-prefixed headers and CRC32 checksums. |
-| **Offset & Metadata Store** | Dedicated Internal Topic (`__consumer_offsets`) | High-speed, log-compacted key-value store maintaining `(GroupId, Topic, Partition) -> Offset` mappings. |
+| Component                   | Technology Choice                               | Architectural Rationale                                                                                                                                  |
+| :-------------------------- | :---------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Broker Kernel / Runtime** | Go / Rust / Java (Netty)                        | High-performance async I/O engine with direct memory allocation (`ByteBuffer`), avoiding GC pause overhead during heavy packet processing.               |
+| **Log Storage Engine**      | Append-Only Disk Commit Logs                    | Sequential disk writes achieve $>100\text{ MB/s}$ throughput per spindle; index files map offsets to physical file byte locations for $O(1)$ disk reads. |
+| **Cluster Coordination**    | KRaft / Raft Consensus                          | Eliminates external Zookeeper dependencies; manages topic metadata, partition leader elections, and consumer group controller state.                     |
+| **Network Protocol**        | Custom Binary Protocol over TCP                 | Eliminates HTTP/JSON serialization overhead; uses binary frames with length-prefixed headers and CRC32 checksums.                                        |
+| **Offset & Metadata Store** | Dedicated Internal Topic (`__consumer_offsets`) | High-speed, log-compacted key-value store maintaining `(GroupId, Topic, Partition) -> Offset` mappings.                                                  |
 
 ---
 
@@ -476,7 +476,7 @@ This bypasses User Space memory allocation entirely, reducing CPU utilization by
 
 ### 2. Consumer Group Rebalance Protocol (Cooperative Sticky Rebalancing)
 
-- **Eager Rebalance Problem:** Traditional rebalancing revokes *all* partition assignments from all consumers during a member join/leave, causing global processing pauses ("Stop-the-World").
+- **Eager Rebalance Problem:** Traditional rebalancing revokes _all_ partition assignments from all consumers during a member join/leave, causing global processing pauses ("Stop-the-World").
 - **Cooperative Sticky Protocol Solution:**
   1. Members continue consuming from un-impacted partitions during rebalance.
   2. Only partitions requiring migration from an old owner to a new member are reassigned and revoked.
@@ -484,14 +484,15 @@ This bypasses User Space memory allocation entirely, reducing CPU utilization by
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you prevent data loss when a partition leader broker node crashes before followers replicate the log?</summary>
 
 **Answer:**
 We configure producer durability and broker replication parameters:
-1. **Producer Acks = ALL (`acks=-1`):** The broker sends a successful ACK to the producer only after the message is written to the leader log *and* flushed to a minimum quorum of In-Sync Replicas (`min.insync.replicas = 2`).
+
+1. **Producer Acks = ALL (`acks=-1`):** The broker sends a successful ACK to the producer only after the message is written to the leader log _and_ flushed to a minimum quorum of In-Sync Replicas (`min.insync.replicas = 2`).
 2. **ISR Pool Management:** If a follower falls behind the leader timestamp by more than `replica.lag.time.max.ms` (e.g., 30s), it is dropped from the ISR pool to prevent slowing down overall ingestion.
 3. **Unclean Leader Election Disabled:** `unclean.leader.election.enable = false` ensures out-of-sync followers outside the ISR pool can never be elected as leader, prioritizing consistency over availability.
 
@@ -502,6 +503,7 @@ We configure producer durability and broker replication parameters:
 
 **Answer:**
 Key skew causes hot partitions where a single broker's CPU/disk is saturated while others remain idle.
+
 1. **Key Salting:** Append a random bounded integer suffix to the hot key: `key_salted = key + "_" + random(0, 4)`. This spreads messages across 5 distinct partitions.
 2. **Consumer Aggregation:** Subscribing consumers strip the salt suffix (`key_salted.split('_')[0]`) to reconstruct original domain identity during processing.
 3. **Custom Partitioning Strategy:** Override `IPartitionStrategy` to apply round-robin fallback for high-cardinality hot keys.
@@ -512,8 +514,9 @@ Key skew causes hot partitions where a single broker's CPU/disk is saturated whi
 <summary>❓ 3. How do you implement compaction on historical log segments for state store topics?</summary>
 
 **Answer:**
+
 1. **Log Compaction Engine:** For key-value workload topics (e.g., user profile updates), the broker background thread periodically scans inactive log segments.
-2. **Deduplication:** Keeps only the *latest value record* for each distinct message key and discards older offsets with matching keys.
+2. **Deduplication:** Keeps only the _latest value record_ for each distinct message key and discards older offsets with matching keys.
 3. **Tombstones:** When a key deletion occurs, a record with a `null` value (Tombstone) is appended. Compaction retains the tombstone for `delete.retention.ms` to ensure consumers observe the delete event before removing it permanently.
 
 </details>
@@ -522,9 +525,10 @@ Key skew causes hot partitions where a single broker's CPU/disk is saturated whi
 <summary>❓ 4. What is the difference between Push vs Pull consumer models, and why do enterprise messaging systems choose Pull?</summary>
 
 **Answer:**
+
 - **Push Model:** Broker pushes messages to consumers immediately upon arrival.
-  - *Failure Mode:* If production spikes beyond consumer capacity, consumers are overwhelmed, suffering memory exhaustion and crashes.
+  - _Failure Mode:_ If production spikes beyond consumer capacity, consumers are overwhelmed, suffering memory exhaustion and crashes.
 - **Pull Model (Chosen):** Consumers continuously poll the broker for batches up to their current capacity (`max.poll.records`).
-  - *Advantage:* Naturally enforces **Backpressure**. Slow consumers process at their own pace without crashing. Long-polling flags (`long_poll_timeout_ms`) ensure consumers do not waste CPU cycles in tight loops when topics are empty.
+  - _Advantage:_ Naturally enforces **Backpressure**. Slow consumers process at their own pace without crashing. Long-polling flags (`long_poll_timeout_ms`) ensure consumers do not waste CPU cycles in tight loops when topics are empty.
 
 </details>

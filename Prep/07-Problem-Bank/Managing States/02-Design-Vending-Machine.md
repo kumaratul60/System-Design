@@ -61,13 +61,13 @@ Telemetry Data Flow:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Embedded Runtime** | Node.js / TypeScript on Embedded Linux / Raspberry Pi Compute Module 4 | Event-driven non-blocking I/O handles serial GPIO hardware signals (coin validators, motor relays, laser sensors) seamlessly. |
-| **State Controller** | Finite State Machine (State Pattern) | Guarantees strict operational sequence (`Idle` $\to$ `HasMoney` $\to$ `Dispensing` $\to$ `ReturningChange`). Prevents double dispense and unauthorized motor activation. |
-| **Hardware Bus Protocol** | MDB/ICP (Multi-Drop Bus / Internal Communication Protocol) | Standardized vending industry protocol interfacing PC/Raspberry Pi controller with coin mechanisms, bill validators, and cashless card readers. |
-| **Local Cache & Storage** | LevelDB / SQLite | Persists rack configuration, price matrix, cumulative sales audit logs, and coin tube inventory across unexpected power loss. |
-| **Cloud Telemetry** | AWS IoT Core / MQTT over TLS 1.3 | Low-overhead pub/sub transport with persistent keep-alive, ideal for intermittent cellular connectivity. |
+| Component                 | Technology Choice                                                      | Architectural Rationale                                                                                                                                                  |
+| :------------------------ | :--------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Embedded Runtime**      | Node.js / TypeScript on Embedded Linux / Raspberry Pi Compute Module 4 | Event-driven non-blocking I/O handles serial GPIO hardware signals (coin validators, motor relays, laser sensors) seamlessly.                                            |
+| **State Controller**      | Finite State Machine (State Pattern)                                   | Guarantees strict operational sequence (`Idle` $\to$ `HasMoney` $\to$ `Dispensing` $\to$ `ReturningChange`). Prevents double dispense and unauthorized motor activation. |
+| **Hardware Bus Protocol** | MDB/ICP (Multi-Drop Bus / Internal Communication Protocol)             | Standardized vending industry protocol interfacing PC/Raspberry Pi controller with coin mechanisms, bill validators, and cashless card readers.                          |
+| **Local Cache & Storage** | LevelDB / SQLite                                                       | Persists rack configuration, price matrix, cumulative sales audit logs, and coin tube inventory across unexpected power loss.                                            |
+| **Cloud Telemetry**       | AWS IoT Core / MQTT over TLS 1.3                                       | Low-overhead pub/sub transport with persistent keep-alive, ideal for intermittent cellular connectivity.                                                                 |
 
 ---
 
@@ -179,11 +179,11 @@ sequenceDiagram
     Customer->>VM: selectSlot("A1")
     VM->>Slot: checkStockAndPrice("A1")
     Slot-->>VM: Product: "Potato Chips", Price: $1.25, Stock: 5
-    
+
     VM->>VM: Transition to DispensingState
     VM->>Motor: rotateMotor("A1")
     Motor->>Motor: Physical Coil Rotation & Infrared Drop Beam Sensor
-    
+
     alt Product Drop Confirmed
         Motor-->>VM: Optical Sensor Drop Triggered (Success)
         VM->>Slot: decrementStock("A1")
@@ -237,10 +237,10 @@ sequenceDiagram
 // ==========================================
 
 export enum Coin {
-  DIME = 0.10,
+  DIME = 0.1,
   QUARTER = 0.25,
-  HALF_DOLLAR = 0.50,
-  DOLLAR = 1.00,
+  HALF_DOLLAR = 0.5,
+  DOLLAR = 1.0,
 }
 
 export interface Product {
@@ -377,9 +377,9 @@ export class InventoryRack {
     });
     this.slots.set('A2', {
       slotCode: 'A2',
-      product: { id: 'P2', name: 'Chocolate Bar', price: 1.50 },
+      product: { id: 'P2', name: 'Chocolate Bar', price: 1.5 },
       quantity: 0, // Out of stock
-      price: 1.50,
+      price: 1.5,
     });
   }
 
@@ -410,7 +410,9 @@ export class IdleState extends BaseVendingState {
   insertCoin(context: IVendingMachineContext, coin: Coin): void {
     context.getCoinMechanic().addCoin(coin);
     context.addBalance(coin);
-    console.log(`[State Transition] Coin inserted: $${coin.toFixed(2)}. Total: $${context.getInsertedBalance().toFixed(2)}`);
+    console.log(
+      `[State Transition] Coin inserted: $${coin.toFixed(2)}. Total: $${context.getInsertedBalance().toFixed(2)}`,
+    );
     context.setState(new HasMoneyState());
   }
 
@@ -447,7 +449,9 @@ export class HasMoneyState extends BaseVendingState {
 
     const currentBalance = context.getInsertedBalance();
     if (currentBalance < slot.price) {
-      console.log(`[Display] Insufficient funds. Price: $${slot.price.toFixed(2)}, Current: $${currentBalance.toFixed(2)}`);
+      console.log(
+        `[Display] Insufficient funds. Price: $${slot.price.toFixed(2)}, Current: $${currentBalance.toFixed(2)}`,
+      );
       return;
     }
 
@@ -483,7 +487,10 @@ export class DispensingState extends BaseVendingState {
       const changeAmount = context.getInsertedBalance() - slot.price;
       if (changeAmount > 0) {
         const changeDispensed = context.getCoinMechanic().dispenseChange(changeAmount);
-        console.log(`[Coin Hardware] Change dispensed ($${changeAmount.toFixed(2)}):`, Array.from(changeDispensed.entries()));
+        console.log(
+          `[Coin Hardware] Change dispensed ($${changeAmount.toFixed(2)}):`,
+          Array.from(changeDispensed.entries()),
+        );
       }
 
       context.resetSession();
@@ -533,13 +540,27 @@ export class VendingMachineContext implements IVendingMachineContext {
     this.currentState = state;
   }
 
-  getInsertedBalance(): number { return this.insertedBalance; }
-  setInsertedBalance(balance: number): void { this.insertedBalance = balance; }
-  addBalance(amount: number): void { this.insertedBalance += amount; }
-  getInventory(): InventoryRack { return this.inventory; }
-  getCoinMechanic(): CoinMechanic { return this.coinMechanic; }
-  getSelectedSlotCode(): string | null { return this.selectedSlotCode; }
-  setSelectedSlotCode(code: string | null): void { this.selectedSlotCode = code; }
+  getInsertedBalance(): number {
+    return this.insertedBalance;
+  }
+  setInsertedBalance(balance: number): void {
+    this.insertedBalance = balance;
+  }
+  addBalance(amount: number): void {
+    this.insertedBalance += amount;
+  }
+  getInventory(): InventoryRack {
+    return this.inventory;
+  }
+  getCoinMechanic(): CoinMechanic {
+    return this.coinMechanic;
+  }
+  getSelectedSlotCode(): string | null {
+    return this.selectedSlotCode;
+  }
+  setSelectedSlotCode(code: string | null): void {
+    this.selectedSlotCode = code;
+  }
 
   resetSession(): void {
     this.insertedBalance = 0;
@@ -547,10 +568,18 @@ export class VendingMachineContext implements IVendingMachineContext {
   }
 
   // State delegation methods
-  insertCoin(coin: Coin): void { this.currentState.insertCoin(this, coin); }
-  selectSlot(slotCode: string): void { this.currentState.selectSlot(this, slotCode); }
-  async dispense(): Promise<boolean> { return this.currentState.dispense(this); }
-  cancel(): number { return this.currentState.cancel(this); }
+  insertCoin(coin: Coin): void {
+    this.currentState.insertCoin(this, coin);
+  }
+  selectSlot(slotCode: string): void {
+    this.currentState.selectSlot(this, slotCode);
+  }
+  async dispense(): Promise<boolean> {
+    return this.currentState.dispense(this);
+  }
+  cancel(): number {
+    return this.currentState.cancel(this);
+  }
 }
 ```
 
@@ -592,15 +621,15 @@ graph TB
 ### ⚠️ Scalability & Edge Case Bottlenecks
 
 1. **Coin Tube Depletion Strategy (Change Lockout):**
-   - *Problem:* Machine accumulates $10 bills but exhausts all $0.25 coins, blocking transactions requiring change.
-   - *Resolution:* Pre-emptive change calculation verification in `HasMoneyState`. If change cannot be calculated for a product selection, the UI blocks selection and displays `EXACT CHANGE ONLY`.
+   - _Problem:_ Machine accumulates $10 bills but exhausts all $0.25 coins, blocking transactions requiring change.
+   - _Resolution:_ Pre-emptive change calculation verification in `HasMoneyState`. If change cannot be calculated for a product selection, the UI blocks selection and displays `EXACT CHANGE ONLY`.
 2. **Motor Spiral Jam & Optical Sensor Fraud:**
-   - *Problem:* A malicious user attempts to block the optical sensor with paper to get a free refund while product drops.
-   - *Resolution:* Dual optical beam verification + motor current monitoring. If motor current spikes beyond normal rotation torque or sensor is blocked continuously before rotation begins, motor shuts down and machine transitions to `MaintenanceState`.
+   - _Problem:_ A malicious user attempts to block the optical sensor with paper to get a free refund while product drops.
+   - _Resolution:_ Dual optical beam verification + motor current monitoring. If motor current spikes beyond normal rotation torque or sensor is blocked continuously before rotation begins, motor shuts down and machine transitions to `MaintenanceState`.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you handle exact change return when multiple bill/coin combinations satisfy the refund amount?</summary>
@@ -614,6 +643,7 @@ We implement a **Coin Tube Preservation Strategy** using a weighted greedy appro
 <summary>❓ 2. What happens if power drops while the spiral motor is mid-rotation dispensing an item?</summary>
 
 **Answer:**
+
 1. **Journaling & State Persistence:** Every state change and motor activation is logged to local LevelDB before sending the motor high signal.
 2. **Boot Recovery Routine:** On boot, the embedded application checks motor encoder sensors. If motor $A1$ is not in home position ($360^\circ$ rotation complete mark), the machine executes a self-test cycle: completes the rotation, checks the optical drop sensor, adjusts local inventory, and clears transient session memory safely.
 

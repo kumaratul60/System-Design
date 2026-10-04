@@ -40,7 +40,7 @@ mindmap
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What is the "Integration Gap" in Micro-frontends?
 

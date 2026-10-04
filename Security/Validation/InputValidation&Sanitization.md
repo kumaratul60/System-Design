@@ -160,7 +160,7 @@ app.use(helmet()); // Sets CSP, HSTS, X-Frame-Options, etc.
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What is "ReDoS" (Regular Expression Denial of Service) and how do you prevent it?
 

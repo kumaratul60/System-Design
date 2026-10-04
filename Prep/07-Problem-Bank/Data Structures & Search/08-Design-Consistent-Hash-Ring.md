@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Consistent Hash Ring
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an enterprise distributed routing consistent hash ring with virtual nodes (vnodes) and $O(\log(N \times V))$ binary search ring lookups to achieve uniform data distribution across heterogeneous storage nodes while minimizing key re-allocations during node additions and failures.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an enterprise distributed routing consistent hash ring with virtual nodes (vnodes) and $O(\log(N \times V))$ binary search ring lookups to achieve uniform data distribution across heterogeneous storage nodes while minimizing key re-allocations during node additions and failures.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Dynamic Node Management:** `addNode(node: PhysicalNode, vnodeCount?: number): void` and `removeNode(nodeId: string): void` dynamically modify hash ring topology.
 2. **Minimal Key Remapping:** When node topology changes, only $1/N$ keys on average are migrated.
 3. **Key Location Routing:** `getNode(key: string): PhysicalNode` maps an arbitrary string key to its target physical server in $O(\log(N \times V))$ time.
@@ -16,6 +17,7 @@
 5. **Replication Factor Support:** `getNodes(key: string, replicaCount: number): PhysicalNode[]` returns $R$ distinct physical nodes clockwise on the ring for high availability data replication.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Sub-Millisecond Routing Latency:** Key lookup routing $<50\mu\text{s}$ at 1,000,000 QPS.
 2. **Uniform Distribution:** Standard deviation of key load per physical node $<5\%$.
 3. **Scalability:** Handle up to 1,000 physical nodes with 500 virtual nodes per node (500,000 total ring entries).
@@ -41,11 +43,11 @@ Target Throughput: 1,000,000 QPS Key Lookups
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Hash Algorithm** | MurmurHash3 / MD5 (32-bit truncated) | Provides high uniform avalanche distribution, fast hash computation, and minimal collision probability. |
-| **Ring Storage** | Sorted Array (`VirtualNode[]`) | Enables fast $O(\log(N \times V))$ binary search (`ceiling`) with contiguous CPU memory cache prefetching. |
-| **Node Indexing Map** | Hash Map (`Map<string, PhysicalNode>`) | $O(1)$ node lookup for management operations. |
+| Component             | Technology Choice                      | Architectural Rationale                                                                                    |
+| :-------------------- | :------------------------------------- | :--------------------------------------------------------------------------------------------------------- |
+| **Hash Algorithm**    | MurmurHash3 / MD5 (32-bit truncated)   | Provides high uniform avalanche distribution, fast hash computation, and minimal collision probability.    |
+| **Ring Storage**      | Sorted Array (`VirtualNode[]`)         | Enables fast $O(\log(N \times V))$ binary search (`ceiling`) with contiguous CPU memory cache prefetching. |
+| **Node Indexing Map** | Hash Map (`Map<string, PhysicalNode>`) | $O(1)$ node lookup for management operations.                                                              |
 
 ---
 
@@ -173,7 +175,7 @@ export class ConsistentHashRing {
 
   constructor(
     private hashFn: IHashFunction = new MD5HashFunction(),
-    private defaultVnodes: number = 150
+    private defaultVnodes: number = 150,
   ) {}
 
   /**
@@ -236,11 +238,7 @@ export class ConsistentHashRing {
     let currentIndex = startIndex;
     let steps = 0;
 
-    while (
-      results.length < replicaCount &&
-      visitedNodeIds.size < this.nodesMap.size &&
-      steps < this.ring.length
-    ) {
+    while (results.length < replicaCount && visitedNodeIds.size < this.nodesMap.size && steps < this.ring.length) {
       const targetNode = this.ring[currentIndex].physicalNode;
       if (!visitedNodeIds.has(targetNode.id)) {
         visitedNodeIds.add(targetNode.id);
@@ -308,7 +306,7 @@ flowchart TD
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: How does Consistent Hashing minimize key migration compared to standard modulus hashing (hash(key) % N)?</strong></summary>
@@ -316,6 +314,7 @@ flowchart TD
 **Answer:**
 In standard modulus hashing (`hash(key) % N`), changing $N$ to $N+1$ changes the denominator for every calculation, forcing **nearly 100% of all keys** to relocate to different nodes.
 In Consistent Hashing, keys and nodes share the same 32-bit integer ring space. When a new node is added, it takes ownership of only the keys located between its token and its immediate counter-clockwise neighbor. Exactly $1/(N+1)$ of total keys are migrated, leaving the remaining $N/(N+1)$ keys completely untouched.
+
 </details>
 
 <details>
@@ -324,6 +323,7 @@ In Consistent Hashing, keys and nodes share the same 32-bit integer ring space. 
 **Answer:**
 Without virtual nodes ($V=1$), physical nodes produce non-uniform key distribution with huge hotspots (standard deviation up to 100%).
 Virtual nodes ($V > 100$) scatter multiple token entries per server uniformly across the ring:
+
 - $V = 100 \dots 200$ reduces variance to $<5\%$ standard deviation.
 - Heterogeneous capacity can be modeled by assigning higher $V$ (e.g. $V=300$) to beefier servers with more RAM/CPU.
 </details>
@@ -333,6 +333,7 @@ Virtual nodes ($V > 100$) scatter multiple token entries per server uniformly ac
 
 **Answer:**
 Combine Consistent Hashing with **Quorum Consensus ($R + W > N$)**:
+
 1. When routing key writes/reads across $R$ replicas, require write acknowledgement from $W$ nodes and read acknowledgement from $R_d$ nodes.
 2. If $W + R_d > R$, read operations are guaranteed to see the latest written value even during network partitions.
 </details>

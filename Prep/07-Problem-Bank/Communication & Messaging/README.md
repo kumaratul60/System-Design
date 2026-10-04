@@ -1,18 +1,18 @@
 # 💬 Master System Design Problem Bank — Communication & Messaging
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Framework:** Standardized 9-Step Breakdown (Functional Requirements, Scale & Estimates, Tech Stack, Visual UML Diagrams, OOP & SOLID Mapping, Design Patterns, Code Blueprints, Scale Bottlenecks, and Collapsed Grill Q&A).  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Framework:** Standardized 9-Step Breakdown (Functional Requirements, Scale & Estimates, Tech Stack, Visual UML Diagrams, OOP & SOLID Mapping, Design Patterns, Code Blueprints, Scale Bottlenecks, and Collapsed Grill Q&A).
 > **Navigation:** ⬅️ [Back to Master Problem Bank](../README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
 
 ## 🧭 Category Overview: Communication & Messaging (3 Master Problems)
 
-| # | Problem Blueprint | Level | Key System Challenges & Architecture Focus | Master Guide Link |
-| :---: | :--- | :---: | :--- | :---: |
-| 1 | 📖 **Design Notification System** | `Easy` | Multi-Channel Gateway (Email/SMS/Push), Dynamic Template Engine, Provider Fallback Strategy, Quiet Hours & Rate Limiting | [01-Design-Notification-System.md](./01-Design-Notification-System.md) |
-| 2 | 📖 **Design Pub/Sub System** | `Medium` | Distributed Topic Broker, Partition Commit Logs, Consumer Group Rebalancing, Zero-Copy OS I/O, Offset Management | [02-Design-Pub-Sub-System.md](./02-Design-Pub-Sub-System.md) |
-| 3 | 📖 **Design Chat Application** | `Medium` | 10M Concurrent WebSocket Gateways, Delivery Receipt State Machine (Sent/Delivered/Read), Presence Engine, Offline Push Fallback | [03-Design-Chat-Application.md](./03-Design-Chat-Application.md) |
+|  #  | Problem Blueprint                 |  Level   | Key System Challenges & Architecture Focus                                                                                      |                           Master Guide Link                            |
+| :-: | :-------------------------------- | :------: | :------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------: |
+|  1  | 📖 **Design Notification System** |  `Easy`  | Multi-Channel Gateway (Email/SMS/Push), Dynamic Template Engine, Provider Fallback Strategy, Quiet Hours & Rate Limiting        | [01-Design-Notification-System.md](./01-Design-Notification-System.md) |
+|  2  | 📖 **Design Pub/Sub System**      | `Medium` | Distributed Topic Broker, Partition Commit Logs, Consumer Group Rebalancing, Zero-Copy OS I/O, Offset Management                |      [02-Design-Pub-Sub-System.md](./02-Design-Pub-Sub-System.md)      |
+|  3  | 📖 **Design Chat Application**    | `Medium` | 10M Concurrent WebSocket Gateways, Delivery Receipt State Machine (Sent/Delivered/Read), Presence Engine, Offline Push Fallback |    [03-Design-Chat-Application.md](./03-Design-Chat-Application.md)    |
 
 ---
 
@@ -29,7 +29,7 @@ flowchart TD
     Step5 --> Step6[6. Design Patterns Selection]
     Step6 --> Step7[7. Production Code Blueprint: TypeScript]
     Step7 --> Step8[8. High-Level Design & Scale Bottlenecks]
-    Step8 --> Step9[9. Collapsed Senior/Staff Level Grill Q&A]
+    Step8 --> Step9[9. Collapsed Harness Grill Q&A]
 ```
 
 ---

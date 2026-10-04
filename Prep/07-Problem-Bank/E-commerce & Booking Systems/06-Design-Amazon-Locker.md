@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Amazon Locker (Automated Package Pickup System)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a distributed automated locker system managing 50,000 physical locker sites, 1 Million smart compartments, real-time spatial allocation, IoT door actuator control, and offline Bluetooth emergency unlock protocols.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a distributed automated locker system managing 50,000 physical locker sites, 1 Million smart compartments, real-time spatial allocation, IoT door actuator control, and offline Bluetooth emergency unlock protocols.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | ⬅️ [Back to Problem Bank Index](../README.md)
 
 ---
@@ -47,14 +47,14 @@ Storage Calculations (5-Year Projection):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Layer / Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Kiosk Hardware OS** | Embedded Linux / Android Enterprise | Microcontroller interface managing solenoid door locks, barcode scanner, touchscreen, and BLE beacon. |
-| **IoT Connectivity Broker**| AWS IoT Core (MQTT Protocol) | Lightweight bi-directional pub/sub protocol maintaining persistent device connections to 50,000 lockers. |
-| **API & Service Gateway** | Envoy API Gateway | Handles authentication, rate limiting, and REST/gRPC routing between backend services and kiosks. |
-| **Primary Relational DB** | PostgreSQL (Amazon Aurora) | ACID transactions for Locker master records, Compartment dimensions, Package tracking, and Audit logs. |
-| **Fast OTP Cache** | Redis Cluster | Stores encrypted active OTP passcodes mapped to locker compartment IDs with strict 72-hour TTL expiration. |
-| **Event Bus & Messaging** | Apache Kafka | Streams package lifecycle events (Deposited, Retrieved, Expired) to notification and analytics microservices. |
+| Layer / Component           | Technology Choice                   | Architectural Rationale                                                                                       |
+| :-------------------------- | :---------------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| **Kiosk Hardware OS**       | Embedded Linux / Android Enterprise | Microcontroller interface managing solenoid door locks, barcode scanner, touchscreen, and BLE beacon.         |
+| **IoT Connectivity Broker** | AWS IoT Core (MQTT Protocol)        | Lightweight bi-directional pub/sub protocol maintaining persistent device connections to 50,000 lockers.      |
+| **API & Service Gateway**   | Envoy API Gateway                   | Handles authentication, rate limiting, and REST/gRPC routing between backend services and kiosks.             |
+| **Primary Relational DB**   | PostgreSQL (Amazon Aurora)          | ACID transactions for Locker master records, Compartment dimensions, Package tracking, and Audit logs.        |
+| **Fast OTP Cache**          | Redis Cluster                       | Stores encrypted active OTP passcodes mapped to locker compartment IDs with strict 72-hour TTL expiration.    |
+| **Event Bus & Messaging**   | Apache Kafka                        | Streams package lifecycle events (Deposited, Retrieved, Expired) to notification and analytics microservices. |
 
 ---
 
@@ -131,10 +131,10 @@ sequenceDiagram
     LockerSvc->>LockerSvc: Find smallest fitting AVAILABLE compartment (e.g. Door #14)
     LockerSvc->>IoT: Return "UNLOCK_DOOR" { doorNumber: 14 }
     IoT->>Kiosk: Solenoid Relay Signal -> Open Door #14
-    
+
     Courier->>Kiosk: Place package inside & Shut Door #14
     Kiosk->>IoT: Publish MQTT "DOOR_CLOSED" { doorNumber: 14 }
-    
+
     rect rgb(240, 248, 255)
         Note over LockerSvc,Redis: OTP Generation & Notification
         LockerSvc->>LockerSvc: Generate 6-Digit OTP ("849201")
@@ -247,21 +247,30 @@ export interface Dimensions {
 }
 
 export interface SlotFittingStrategy {
-  selectCompartment(packageDimensions: Dimensions, availableSlots: { compartmentId: string; size: SizeCategory; dimensions: Dimensions }[]): string | null;
+  selectCompartment(
+    packageDimensions: Dimensions,
+    availableSlots: { compartmentId: string; size: SizeCategory; dimensions: Dimensions }[],
+  ): string | null;
 }
 
 export class BestFitSlotStrategy implements SlotFittingStrategy {
-  selectCompartment(packageDimensions: Dimensions, availableSlots: { compartmentId: string; size: SizeCategory; dimensions: Dimensions }[]): string | null {
+  selectCompartment(
+    packageDimensions: Dimensions,
+    availableSlots: { compartmentId: string; size: SizeCategory; dimensions: Dimensions }[],
+  ): string | null {
     // Sort available slots by volume ascending to pick smallest fitting slot
-    const suitableSlots = availableSlots.filter(slot =>
-      slot.dimensions.widthCm >= packageDimensions.widthCm &&
-      slot.dimensions.heightCm >= packageDimensions.heightCm &&
-      slot.dimensions.depthCm >= packageDimensions.depthCm
-    ).sort((a, b) => {
-      const volA = a.dimensions.widthCm * a.dimensions.heightCm * a.dimensions.depthCm;
-      const volB = b.dimensions.widthCm * b.dimensions.heightCm * b.dimensions.depthCm;
-      return volA - volB;
-    });
+    const suitableSlots = availableSlots
+      .filter(
+        (slot) =>
+          slot.dimensions.widthCm >= packageDimensions.widthCm &&
+          slot.dimensions.heightCm >= packageDimensions.heightCm &&
+          slot.dimensions.depthCm >= packageDimensions.depthCm,
+      )
+      .sort((a, b) => {
+        const volA = a.dimensions.widthCm * a.dimensions.heightCm * a.dimensions.depthCm;
+        const volB = b.dimensions.widthCm * b.dimensions.heightCm * b.dimensions.depthCm;
+        return volA - volB;
+      });
 
     return suitableSlots.length > 0 ? suitableSlots[0].compartmentId : null;
   }
@@ -290,7 +299,7 @@ export class OTPPickupService {
     packageId: string,
     lockerId: string,
     compartmentId: string,
-    ttlSeconds: number = 259200 // 72 hours
+    ttlSeconds: number = 259200, // 72 hours
   ): Promise<string> {
     const otp = this.generateOTP();
     const otpKey = `otp:${lockerId}:${otp}`;
@@ -308,7 +317,7 @@ export class OTPPickupService {
 
   async verifyAndConsumeOTP(
     lockerId: string,
-    inputOtp: string
+    inputOtp: string,
   ): Promise<{ valid: boolean; compartmentId?: string; packageId?: string }> {
     const otpKey = `otp:${lockerId}:${inputOtp}`;
 
@@ -341,7 +350,7 @@ export class LockerHardwareManager {
   constructor(
     private iotBroker: IoTBroker,
     private otpService: OTPPickupService,
-    private slotStrategy: SlotFittingStrategy
+    private slotStrategy: SlotFittingStrategy,
   ) {}
 
   async handleCustomerPickup(lockerId: string, inputOtp: string): Promise<boolean> {
@@ -368,6 +377,7 @@ export class LockerHardwareManager {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Offline Kiosk Operation (Network Disconnection Fallback)
+
 - **Problem:** If a physical Amazon Locker site loses internet connectivity (cellular/Wi-Fi outage), customers visiting the kiosk cannot verify OTP codes against cloud Redis servers.
 - **Solution:** Implement **BLE Offline Cryptographic Authorization**.
   1. Customer mobile app establishes a local Bluetooth Low Energy (BLE) pairing with the offline locker hardware beacon.
@@ -375,17 +385,19 @@ export class LockerHardwareManager {
   3. The embedded micro-controller verifies the signature locally using Amazon's Public Key burnt into hardware firmware and triggers the door relay directly without internet.
 
 ### 2. Hardware Solenoid Jamming & Fault Handling
+
 - **Problem:** The solenoid relay fires to unlock Door #14, but the door physical spring fails to open or is blocked by an obstruction.
 - **Solution:** Lockers are equipped with optical door position sensors. If `DOOR_OPEN` signal is not detected within 3 seconds of sending `UNLOCK_DOOR`, the kiosk automatically flags Door #14 as `HARDWARE_FAULT`, selects an alternative available compartment, transfers the deposit reservation, and pops Door #15 while alerting field technicians via Kafka event.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you prevent brute-force OTP guessing on physical kiosk touchscreens?</summary>
 
-**Answer:**  
+**Answer:**
+
 1. **Local Rate Limiting:** The kiosk software allows a maximum of 3 incorrect OTP entries per 5 minutes. After 3 failures, the kiosk screen locks input for 10 minutes and triggers a CAPTCHA or mandatory barcode scan.
 2. **Kiosk Sharding:** OTP passcodes are namespaced per physical `lockerId` (`otp:locker_44:849201`). Thus, an OTP is valid ONLY at a specific physical locker location, reducing collision space to zero.
 
@@ -394,7 +406,7 @@ export class LockerHardwareManager {
 <details>
 <summary>❓ What happens if a customer opens the door, takes their package, but leaves the door pushed open?</summary>
 
-**Answer:**  
+**Answer:**
 If the optical sensor detects door remains unlatched for $>60$ seconds post-pickup, the kiosk emits an audible audio chime (`"Please shut door 14"`). If unclosed after 3 minutes, the kiosk publishes an MQTT alert to AWS IoT Core. The backend marks the compartment state as `DOOR_UNLATCHED` and excludes it from future checkout reservation algorithms until closed or verified by a technician.
 
 </details>
@@ -402,7 +414,7 @@ If the optical sensor detects door remains unlatched for $>60$ seconds post-pick
 <details>
 <summary>❓ How do you handle 72-hour package expirations efficiently across 2 million compartments?</summary>
 
-**Answer:**  
+**Answer:**
 We avoid polling database queries (`SELECT * FROM reservations WHERE expires_at < NOW()`). Instead, we leverage **Redis Key Expiration Events (`__keyevent@0__:expired`)**. When an OTP key `otp:locker_44:849201` expires after 72 hours, Redis fires an event to a Kafka consumer group. An `ExpiryWorker` sets the compartment state to `EXPIRED`, generates a return routing label, and appends the item to the delivery driver's next dropoff/pickup manifest.
 
 </details>

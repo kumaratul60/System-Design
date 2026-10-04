@@ -48,7 +48,7 @@ mindmap
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: What are the 3 core "Objects" in Git's internal architecture?
 

@@ -55,12 +55,12 @@ Central Control Latency Budget:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Local Intersection Runtime** | C++ / TypeScript on Ruggedized Industrial Controller | Real-time POSIX OS execution guarantees deterministic state transition timers without garbage collection pauses. |
-| **State Machine Engine** | Hierarchical State Machine (HSM) with Mediator Pattern | Mediates directional signal groups to guarantee atomic transition steps and absolute signal isolation. |
-| **Hardware Interlock** | Solid-State Relay Interlock PCB | Independent physical hardware circuit that cuts power to green lights if conflicting current is detected. |
-| **Communication Protocol** | MQTT over Mesh Wi-Fi / LTE-M | Allows adjacent intersections to exchange green wave corridor signals for synchronized traffic flow. |
+| Component                      | Technology Choice                                      | Architectural Rationale                                                                                          |
+| :----------------------------- | :----------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| **Local Intersection Runtime** | C++ / TypeScript on Ruggedized Industrial Controller   | Real-time POSIX OS execution guarantees deterministic state transition timers without garbage collection pauses. |
+| **State Machine Engine**       | Hierarchical State Machine (HSM) with Mediator Pattern | Mediates directional signal groups to guarantee atomic transition steps and absolute signal isolation.           |
+| **Hardware Interlock**         | Solid-State Relay Interlock PCB                        | Independent physical hardware circuit that cuts power to green lights if conflicting current is detected.        |
+| **Communication Protocol**     | MQTT over Mesh Wi-Fi / LTE-M                           | Allows adjacent intersections to exchange green wave corridor signals for synchronized traffic flow.             |
 
 ---
 
@@ -152,15 +152,15 @@ sequenceDiagram
     Note over Mediator: Normal State: EastWestGreenState (EW: GREEN, NS: RED)
     Ambulance->>RFID: Approach Intersection from North (Direction: NS)
     RFID->>Mediator: triggerEmergency(Direction.NORTH_SOUTH)
-    
+
     Mediator->>Mediator: Transition to EmergencyOverrideState
     Mediator->>EW_Light: setSignal(SignalColor.YELLOW)
     Timer-->>Mediator: Wait 3 Seconds (Safety Yellow)
-    
+
     Mediator->>EW_Light: setSignal(SignalColor.RED)
     Mediator->>NS_Light: setSignal(SignalColor.GREEN)
     Note over Mediator: Emergency VIP Corridor Active (NS: GREEN, EW: RED)
-    
+
     Ambulance->>RFID: Exit Intersection
     RFID->>Mediator: clearEmergency()
     Mediator->>Mediator: Transition to AllRedBufferState -> Normal Cycle
@@ -232,8 +232,12 @@ export class TrafficLightGroup {
     this.direction = direction;
   }
 
-  getDirection(): Direction { return this.direction; }
-  getColor(): SignalColor { return this.currentColor; }
+  getDirection(): Direction {
+    return this.direction;
+  }
+  getColor(): SignalColor {
+    return this.currentColor;
+  }
 
   setSignal(color: SignalColor): void {
     this.currentColor = color;
@@ -294,7 +298,7 @@ export class NorthSouthGreenState extends BaseTrafficState {
     }
 
     this.timer++;
-    
+
     // Dynamic timing calculation (Base 5 ticks + 1 tick per vehicle queued up to 10 max)
     const extraTime = Math.min(mediator.getVehicleCount(Direction.NORTH_SOUTH), 5);
     const targetDuration = 5 + extraTime;
@@ -318,7 +322,8 @@ export class NorthSouthYellowState extends BaseTrafficState {
     }
 
     this.timer++;
-    if (this.timer >= 2) { // 2 second yellow clearance
+    if (this.timer >= 2) {
+      // 2 second yellow clearance
       nsLight.setSignal(SignalColor.RED);
       mediator.setState(new AllRedBufferState(Direction.EAST_WEST));
     }
@@ -389,7 +394,8 @@ export class AllRedBufferState extends BaseTrafficState {
     }
 
     this.timer++;
-    if (this.timer >= 1) { // 1 second all red clearance
+    if (this.timer >= 1) {
+      // 1 second all red clearance
       if (this.nextDirection === Direction.NORTH_SOUTH) {
         mediator.setState(new NorthSouthGreenState());
       } else {
@@ -422,7 +428,8 @@ export class EmergencyOverrideState extends BaseTrafficState {
     }
 
     this.timer++;
-    if (this.timer >= 5) { // 5 second emergency passage window
+    if (this.timer >= 5) {
+      // 5 second emergency passage window
       console.log(`[VIP CORRIDOR ENDED] Resuming normal intersection phase.`);
       mediator.setState(new AllRedBufferState(Direction.NORTH_SOUTH));
     }
@@ -452,11 +459,21 @@ export class IntersectionMediator implements IIntersectionMediator {
     this.currentState = state;
   }
 
-  getNSLight(): TrafficLightGroup { return this.nsLight; }
-  getEWLight(): TrafficLightGroup { return this.ewLight; }
-  getPedestrianButtonLatched(): boolean { return this.pedButtonLatched; }
-  setPedestrianButtonLatched(latched: boolean): void { this.pedButtonLatched = latched; }
-  getVehicleCount(direction: Direction): number { return this.vehicleCounts.get(direction) || 0; }
+  getNSLight(): TrafficLightGroup {
+    return this.nsLight;
+  }
+  getEWLight(): TrafficLightGroup {
+    return this.ewLight;
+  }
+  getPedestrianButtonLatched(): boolean {
+    return this.pedButtonLatched;
+  }
+  setPedestrianButtonLatched(latched: boolean): void {
+    this.pedButtonLatched = latched;
+  }
+  getVehicleCount(direction: Direction): number {
+    return this.vehicleCounts.get(direction) || 0;
+  }
 
   triggerEmergency(direction: Direction): void {
     this.currentState.handleEmergency(this, direction);
@@ -504,17 +521,18 @@ graph TB
 ### ⚠️ Scalability & Hardware Safety Bottlenecks
 
 1. **Software Crash / CPU Hang Safety:**
-   - *Problem:* A software deadlock or unhandled exception leaves N-S signal GREEN permanently while E-W vehicles build up.
-   - *Resolution:* **External Hardware Watchdog**. The TypeScript/C++ loop toggles a physical GPIO pin every $100\text{ms}$. If the watchdog timer does not receive a heartbeat for $1000\text{ms}$, physical relays drop power and force all directions into **Flashing Yellow / Flashing Red hardware mode**.
+   - _Problem:_ A software deadlock or unhandled exception leaves N-S signal GREEN permanently while E-W vehicles build up.
+   - _Resolution:_ **External Hardware Watchdog**. The TypeScript/C++ loop toggles a physical GPIO pin every $100\text{ms}$. If the watchdog timer does not receive a heartbeat for $1000\text{ms}$, physical relays drop power and force all directions into **Flashing Yellow / Flashing Red hardware mode**.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you prevent green light conflicts if two emergency vehicles approach from orthogonal directions simultaneously?</summary>
 
 **Answer:**
+
 1. **FIFO Priority Queueing:** The first transponder signal logged locks its corridor direction. The orthogonal direction emergency vehicle receives a RED signal until the first corridor clears ($5\text{s}$ window).
 2. **All-Red Hold:** If transponders trip at the exact same millisecond, the mediator defaults to an **ALL RED** signal holding both emergency vehicles until speed sensors determine which vehicle reaches the intersection boundary first.
 

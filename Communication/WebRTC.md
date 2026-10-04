@@ -52,7 +52,7 @@ A framework for finding the best way for two peers to connect (Direct IP, mapped
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Why is WebRTC "harder" to scale than WebSockets?
 

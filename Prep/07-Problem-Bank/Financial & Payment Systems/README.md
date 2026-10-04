@@ -1,18 +1,18 @@
 # 💳 Master System Design Problem Bank — Financial & Payment Systems
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Framework:** Standardized 9-Step Breakdown (Functional Requirements, Scale & Estimates, Tech Stack, Visual UML Diagrams, OOP & SOLID Mapping, Design Patterns, Code Blueprints, Scale Bottlenecks, and Collapsed Grill Q&A).  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Framework:** Standardized 9-Step Breakdown (Functional Requirements, Scale & Estimates, Tech Stack, Visual UML Diagrams, OOP & SOLID Mapping, Design Patterns, Code Blueprints, Scale Bottlenecks, and Collapsed Grill Q&A).
 > **Navigation:** ⬅️ [Back to Master Problem Bank](../README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
 
 ## 🧭 Category Overview: Financial & Payment Systems (3 Master Problems)
 
-| # | Problem Blueprint | Level | Key System Challenges & Architecture Focus | Master Guide Link |
-|:---:|:---|:---:|:---|:---:|
-| 1 | 📖 **Design Splitwise** | `Medium` | Minimum Cash Flow Graph Simplification Algorithm ($O(V \log V)$), Equal/Exact/Percentage Split Strategies, Immutable Double-Entry Ledger | [01-Design-Splitwise.md](./01-Design-Splitwise.md) |
-| 2 | 📖 **Design Payment Gateway** | `Medium` | Idempotency Keys ($1\text{ Key} = 1\text{ Charge}$), Multi-PSP Smart Routing, Payment State Machine, Orchestrated Saga Distributed Transactions | [02-Design-Payment-Gateway.md](./02-Design-Payment-Gateway.md) |
-| 3 | 📖 **Design Online Stock Exchange** | `Hard` | Sub-millisecond Limit Order Book Matching Engine ($O(1)$ Bids/Asks Price Level FIFO Queue), Single-Threaded Sequencer, LMAX Disruptor, UDP Multicast | [03-Design-Online-Stock-Exchange.md](./03-Design-Online-Stock-Exchange.md) |
+|  #  | Problem Blueprint                   |  Level   | Key System Challenges & Architecture Focus                                                                                                           |                             Master Guide Link                              |
+| :-: | :---------------------------------- | :------: | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------: |
+|  1  | 📖 **Design Splitwise**             | `Medium` | Minimum Cash Flow Graph Simplification Algorithm ($O(V \log V)$), Equal/Exact/Percentage Split Strategies, Immutable Double-Entry Ledger             |             [01-Design-Splitwise.md](./01-Design-Splitwise.md)             |
+|  2  | 📖 **Design Payment Gateway**       | `Medium` | Idempotency Keys ($1\text{ Key} = 1\text{ Charge}$), Multi-PSP Smart Routing, Payment State Machine, Orchestrated Saga Distributed Transactions      |       [02-Design-Payment-Gateway.md](./02-Design-Payment-Gateway.md)       |
+|  3  | 📖 **Design Online Stock Exchange** |  `Hard`  | Sub-millisecond Limit Order Book Matching Engine ($O(1)$ Bids/Asks Price Level FIFO Queue), Single-Threaded Sequencer, LMAX Disruptor, UDP Multicast | [03-Design-Online-Stock-Exchange.md](./03-Design-Online-Stock-Exchange.md) |
 
 ---
 
@@ -29,7 +29,7 @@ flowchart TD
     Step5 --> Step6[6. Design Patterns Selection]
     Step6 --> Step7[7. Production Code Blueprints: TypeScript]
     Step7 --> Step8[8. High-Level Design & Scale Bottlenecks]
-    Step8 --> Step9[9. Collapsed Senior/Staff Level Grill Q&A]
+    Step8 --> Step9[9. Collapsed Harness Grill Q&A]
 ```
 
 ---

@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design LFU Cache
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an enterprise-grade, high-throughput Least Frequently Used (LFU) Cache in memory supporting $O(1)$ operations for access (`get`) and insertion (`put`), utilizing a frequency-to-DoublyLinkedList map and a dynamic minimum frequency pointer for LRU tie-breaking and sub-millisecond evictions.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an enterprise-grade, high-throughput Least Frequently Used (LFU) Cache in memory supporting $O(1)$ operations for access (`get`) and insertion (`put`), utilizing a frequency-to-DoublyLinkedList map and a dynamic minimum frequency pointer for LRU tie-breaking and sub-millisecond evictions.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **$O(1)$ Time Complexity:** Both `get(key)` and `put(key, value)` operations MUST execute in strict $O(1)$ average time complexity.
 2. **LFU Eviction Policy:** When the cache reaches maximum capacity, the item with the absolute lowest access frequency MUST be evicted.
 3. **LRU Tie-Breaking:** If multiple items share the same lowest access frequency, the Least Recently Used (LRU) item among them MUST be evicted.
@@ -16,6 +17,7 @@
 5. **Key Removal & Access:** Support manual `remove(key)` and metadata inspection (`size()`, `getMinFrequency()`).
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Ultra-Low Latency:** $P_{99} < 1\text{ms}$ response latency for all operations at 500,000 QPS.
 2. **Memory Efficiency:** Minimal memory footprint per node (no unbounded metadata overhead per node).
 3. **Thread Safety & Scalability:** Concurrency-safe design supporting fine-grained locking or read-write locks for striped caching.
@@ -44,12 +46,12 @@ Target Operations: 500,000 QPS Peak (Read 80%, Write 20%)
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Node Lookup Table** | Hash Map (`Map<K, Node<K,V>>`) | Provides $O(1)$ direct key-to-node memory reference lookup. |
+| Component                  | Technology Choice                               | Architectural Rationale                                                                  |
+| :------------------------- | :---------------------------------------------- | :--------------------------------------------------------------------------------------- |
+| **Node Lookup Table**      | Hash Map (`Map<K, Node<K,V>>`)                  | Provides $O(1)$ direct key-to-node memory reference lookup.                              |
 | **Frequency Bucket Table** | Frequency Map (`Map<number, DoublyLinkedList>`) | Maps frequency integer $F$ to a dedicated Doubly LinkedList of nodes with frequency $F$. |
-| **Tie-Breaking Eviction** | Doubly LinkedList (LRU per bucket) | Tail node of `FrequencyMap[minFreq]` is evicted in $O(1)$ time. |
-| **Frequency Tracker** | Primitive Integer (`minFreq`) | Tracks current minimum frequency across the cache in $O(1)$ without scanning. |
+| **Tie-Breaking Eviction**  | Doubly LinkedList (LRU per bucket)              | Tail node of `FrequencyMap[minFreq]` is evicted in $O(1)$ time.                          |
+| **Frequency Tracker**      | Primitive Integer (`minFreq`)                   | Tracks current minimum frequency across the cache in $O(1)$ without scanning.            |
 
 ---
 
@@ -158,7 +160,7 @@ export class LFUNode<K, V> {
 
   constructor(
     public key: K,
-    public value: V
+    public value: V,
   ) {}
 }
 
@@ -348,18 +350,20 @@ flowchart TD
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: Why does LFU require both a key map AND a frequency map of Doubly LinkedLists to guarantee O(1) performance?</strong></summary>
 
 **Answer:**
 A plain Min-Heap for frequencies provides $O(\log N)$ update and eviction. A single LinkedList requires $O(N)$ scanning. By maintaining:
+
 1. `keyMap`: $O(1)$ key to `LFUNode` lookup.
 2. `freqMap`: $O(1)$ access to a `DoublyLinkedList` representing all nodes with frequency $F$.
 3. `minFreq`: $O(1)$ reference to the lowest non-empty frequency list.
 
 When a key is accessed, we remove its node from `freqMap[F]` in $O(1)$ via prev/next pointers and prepend to `freqMap[F+1]` in $O(1)$. Eviction removes `freqMap[minFreq].tail` in $O(1)$.
+
 </details>
 
 <details>
@@ -368,6 +372,7 @@ When a key is accessed, we remove its node from `freqMap[F]` in $O(1)$ via prev/
 **Answer:**
 Early burst requests can inflate a key's frequency to 10,000. When its popularity drops, it remains immune to eviction over newly inserted keys with frequency 1.
 **Mitigations:**
+
 - **Dynamic Aging (Decay Factor):** Periodically (e.g., every $T$ seconds or $M$ operations), iterate active nodes or apply decay upon access ($F = \lfloor F \times e^{-\lambda \Delta t} \rfloor$).
 - **Frequency Capping:** Cap max frequency at a bound (e.g., 255) so legacy items easily drop down to eviction threshold.
 - **TinyLFU Architecture:** Use a Count-Min Sketch for probabilistic frequency estimation instead of explicit counters per node.
@@ -377,6 +382,7 @@ Early burst requests can inflate a key's frequency to 10,000. When its popularit
 <summary><strong>Q3: How do you achieve concurrent multi-threaded safety without bottlenecking throughput?</strong></summary>
 
 **Answer:**
+
 1. **Lock Striping / Sharding:** Partition keys across $N$ cache segments (e.g., 16 or 64 lock segments), reducing lock collision probability to $1/N$.
 2. **Read-Write Locking:** Allow concurrent `get` reads provided frequency promotion is deferred to an asynchronous ring-buffer mutation queue.
 3. **Lock-Free Buckets:** Use lock-free concurrent hash maps for key lookups and CAS atomic operations on per-frequency atomic pointers.

@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Car Rental System (Hertz / Enterprise / Turo)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a global vehicle fleet reservation and rental lifecycle platform managing 500,000 vehicles, 10,000 branch locations, sub-50ms availability searches, date-range lock isolation, and damage deposit settlements.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a global vehicle fleet reservation and rental lifecycle platform managing 500,000 vehicles, 10,000 branch locations, sub-50ms availability searches, date-range lock isolation, and damage deposit settlements.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | ⬅️ [Back to Problem Bank Index](../README.md)
 
 ---
@@ -46,14 +46,14 @@ Storage & Data Calculations (5-Year Projection):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Layer / Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Branch & Web Apps** | Next.js 14 + React Native | Responsive web app for consumer bookings; tablet-optimized Native app for branch vehicle inspection check-in. |
-| **API Gateway** | Envoy API Gateway | Handles JWT authentication, TLS termination, rate limiting, and branch desk request routing. |
-| **Primary Relational DB** | PostgreSQL (Amazon Aurora) | Native support for range data types (`tstzrange`) and GiST indexes to guarantee zero date-range overlap. |
-| **Availability Cache** | Redis Cluster | Bitmaps / Date Hash sets for fast pre-filtering of available vehicle categories per location. |
-| **Media Storage** | AWS S3 + CloudFront CDN | Distributed object store for high-resolution vehicle damage inspection photos. |
-| **Event Bus & Stream** | Apache Kafka | Decouples reservation events, late return warnings, maintenance alerts, and billing settlement. |
+| Layer / Component         | Technology Choice          | Architectural Rationale                                                                                       |
+| :------------------------ | :------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| **Branch & Web Apps**     | Next.js 14 + React Native  | Responsive web app for consumer bookings; tablet-optimized Native app for branch vehicle inspection check-in. |
+| **API Gateway**           | Envoy API Gateway          | Handles JWT authentication, TLS termination, rate limiting, and branch desk request routing.                  |
+| **Primary Relational DB** | PostgreSQL (Amazon Aurora) | Native support for range data types (`tstzrange`) and GiST indexes to guarantee zero date-range overlap.      |
+| **Availability Cache**    | Redis Cluster              | Bitmaps / Date Hash sets for fast pre-filtering of available vehicle categories per location.                 |
+| **Media Storage**         | AWS S3 + CloudFront CDN    | Distributed object store for high-resolution vehicle damage inspection photos.                                |
+| **Event Bus & Stream**    | Apache Kafka               | Decouples reservation events, late return warnings, maintenance alerts, and billing settlement.               |
 
 ---
 
@@ -126,7 +126,7 @@ sequenceDiagram
 
     Customer->>Gateway: POST /api/v1/reservations { category, pickupBranch, startDate, endDate }
     Gateway->>ResSvc: createReservation(payload)
-    
+
     rect rgb(240, 248, 255)
         Note over ResSvc,DB: SQL Date-Range Overlap Lock Execution
         ResSvc->>DB: INSERT INTO reservations VALUES (...) WITH EXCLUDE USING gist (vin WITH =, tstzrange(start, end) WITH &&)
@@ -246,21 +246,11 @@ export enum VehicleCategory {
 }
 
 export interface RentalPricingStrategy {
-  calculateRentalFee(
-    baseDailyRate: number,
-    startDate: Date,
-    endDate: Date,
-    insuranceTierRate: number
-  ): number;
+  calculateRentalFee(baseDailyRate: number, startDate: Date, endDate: Date, insuranceTierRate: number): number;
 }
 
 export class StandardRentalPricingStrategy implements RentalPricingStrategy {
-  calculateRentalFee(
-    baseDailyRate: number,
-    startDate: Date,
-    endDate: Date,
-    insuranceTierRate: number
-  ): number {
+  calculateRentalFee(baseDailyRate: number, startDate: Date, endDate: Date, insuranceTierRate: number): number {
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
     const rentalDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1);
 
@@ -287,7 +277,7 @@ export interface DatabaseClient {
 export class ReservationService {
   constructor(
     private db: DatabaseClient,
-    private pricingStrategy: RentalPricingStrategy
+    private pricingStrategy: RentalPricingStrategy,
   ) {}
 
   /**
@@ -301,14 +291,9 @@ export class ReservationService {
     startDate: Date,
     endDate: Date,
     baseDailyRate: number,
-    insuranceRate: number
+    insuranceRate: number,
   ): Promise<{ success: boolean; reservationId?: string; totalAmount?: number; error?: string }> {
-    const totalAmount = this.pricingStrategy.calculateRentalFee(
-      baseDailyRate,
-      startDate,
-      endDate,
-      insuranceRate
-    );
+    const totalAmount = this.pricingStrategy.calculateRentalFee(baseDailyRate, startDate, endDate, insuranceRate);
 
     const reservationId = `res_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
@@ -354,11 +339,13 @@ export class ReservationService {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Eliminating Double-Bookings using PostgreSQL GiST Indexes
+
 - **Problem:** Conventional `SELECT * FROM reservations WHERE vin = X AND start <= newEnd AND end >= newStart` queries suffer from race conditions under high concurrent booking volume.
 - **Solution:** Configure PostgreSQL table with an explicit Exclusion Constraint using GiST index:
+
   ```sql
   CREATE EXTENSION IF NOT EXISTS btree_gist;
-  
+
   CREATE TABLE reservations (
     id VARCHAR(64) PRIMARY KEY,
     vin VARCHAR(32) NOT NULL,
@@ -366,9 +353,11 @@ export class ReservationService {
     EXCLUDE USING gist (vin WITH =, booking_period WITH &&)
   );
   ```
+
   The database engine natively enforces zero date-range overlaps (`&&` operator) at the storage level with $O(\log N)$ performance.
 
 ### 2. Managing Late Returns & Cascading Reservation Collisions
+
 - **Problem:** Customer A is scheduled to return a car at 10 AM, but delays return until 4 PM. Customer B is scheduled to pick up the same car at 11 AM.
 - **Solution:** Implement **Buffer Windows & Auto-Reassignment Engine**.
   1. The system adds a mandatory 3-hour cleanup/turnaround buffer to all booking periods (`tstzrange(start, end + INTERVAL '3 hours')`).
@@ -376,12 +365,12 @@ export class ReservationService {
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you handle unrecorded cosmetic damage disputes between consecutive renters?</summary>
 
-**Answer:**  
+**Answer:**
 We mandate high-resolution 6-point photo uploads via the branch mobile app during both Pickup Check-in and Return Check-out. Photos are stamped with cryptographic EXIF metadata (GPS coordinates, time, employee ID) and stored in AWS S3. If damage is reported post-return, an automated image diff tool compares check-in vs check-out photos. The renter is only held liable if damage is verifiably absent in the check-in photo set.
 
 </details>
@@ -389,7 +378,7 @@ We mandate high-resolution 6-point photo uploads via the branch mobile app durin
 <details>
 <summary>❓ How do you structure vehicle inventory search across 500,000 cars for arbitrary date ranges?</summary>
 
-**Answer:**  
+**Answer:**
 Searching availability per vehicle VIN across dates is pre-filtered at the Category & Branch level. We maintain a Redis Bitset for each `branchId:category:date`. Each vehicle VIN corresponds to a bit offset. If a vehicle is reserved on Date D, its bit is set to `1`. An availability search for a 3-day range executes a fast bitwise `BITOP OR` across the 3 date bitsets in Redis in $<2\text{ms}$.
 
 </details>
@@ -397,7 +386,7 @@ Searching availability per vehicle VIN across dates is pre-filtered at the Categ
 <details>
 <summary>❓ Why pre-authorize security deposits instead of executing a direct charge and refund later?</summary>
 
-**Answer:**  
+**Answer:**
 Direct charges incur two sets of non-refundable credit card processing fees (interchange fees on charge + refund) and subject the customer to 3-5 business day bank refund delays. Pre-authorization holds validate credit availability without capturing funds. Upon return, the exact final rental fee is captured against the hold, releasing remaining credit line instantly with zero excess interchange fee overhead.
 
 </details>

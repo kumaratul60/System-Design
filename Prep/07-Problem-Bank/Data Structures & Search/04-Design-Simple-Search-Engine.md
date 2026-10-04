@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Simple Search Engine
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a text search indexing engine using Inverted Indexes, Document Tokenization, and TF-IDF (Term Frequency-Inverse Document Frequency) relevance scoring.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a text search indexing engine using Inverted Indexes, Document Tokenization, and TF-IDF (Term Frequency-Inverse Document Frequency) relevance scoring.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,12 +9,14 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Document Indexing:** Parse raw text documents into tokens, filter stop-words, apply stemming, and build an Inverted Index.
 2. **Full-Text Keyword Search:** Support single-term and multi-term keyword search queries.
 3. **TF-IDF Relevance Scoring:** Rank matched documents using Term Frequency-Inverse Document Frequency (TF-IDF) scoring algorithm.
 4. **Boolean Queries:** Support boolean search queries (`AND`, `OR`, `NOT`).
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Fast Search Retrieval:** Query response times in $P_{99} < 50\text{ms}$ across millions of indexed documents.
 2. **Incremental Indexing:** Support adding new documents to the index concurrently without rebuilding the global index.
 
@@ -43,11 +45,11 @@ Scale Footprint:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Inverted Index** | HashMap + Posting List | `Map<Term, List<Posting>>` for instant $O(1)$ term lookup. |
-| **Tokenizer & Stemmer** | Porter Stemmer Algorithm | Normalizes words (e.g., "running", "ran" -> "run"). |
-| **Scoring Engine** | TF-IDF / BM25 Strategy | Standard mathematical relevance ranking. |
+| Component               | Technology Choice        | Architectural Rationale                                    |
+| :---------------------- | :----------------------- | :--------------------------------------------------------- |
+| **Inverted Index**      | HashMap + Posting List   | `Map<Term, List<Posting>>` for instant $O(1)$ term lookup. |
+| **Tokenizer & Stemmer** | Porter Stemmer Algorithm | Normalizes words (e.g., "running", "ran" -> "run").        |
+| **Scoring Engine**      | TF-IDF / BM25 Strategy   | Standard mathematical relevance ranking.                   |
 
 ---
 
@@ -109,14 +111,14 @@ classDiagram
 export class Posting {
   constructor(
     public readonly docId: string,
-    public termFrequency: number
+    public termFrequency: number,
   ) {}
 }
 
 export class SearchResult {
   constructor(
     public readonly docId: string,
-    public readonly score: number
+    public readonly score: number,
   ) {}
 }
 
@@ -164,7 +166,7 @@ export class SimpleSearchEngine {
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
       .split(/\s+/)
-      .filter(word => word.length > 0 && !this.stopWords.has(word));
+      .filter((word) => word.length > 0 && !this.stopWords.has(word));
   }
 
   public indexDocument(docId: string, title: string, body: string): void {
@@ -214,12 +216,13 @@ export class SimpleSearchEngine {
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: What is the difference between Document Partitioning vs Term Partitioning in a distributed Search Engine (e.g. Elasticsearch)?</strong></summary>
 
-**Answer:** 
-* **Document Partitioning (Local Index):** Each shard holds an inverted index for a subset of documents. Queries must be broadcasted to **ALL shards** (Scatter-Gather), but document indexing is isolated to a single shard.
-* **Term Partitioning (Global Index):** Each shard holds the full posting list for a subset of terms (e.g., terms `A-F` on Shard 1). Queries only hit shards corresponding to terms, but inserting a single document requires contacting multiple shards. Enterprise engines (Lucene/Elasticsearch) default to **Document Partitioning**.
+**Answer:**
+
+- **Document Partitioning (Local Index):** Each shard holds an inverted index for a subset of documents. Queries must be broadcasted to **ALL shards** (Scatter-Gather), but document indexing is isolated to a single shard.
+- **Term Partitioning (Global Index):** Each shard holds the full posting list for a subset of terms (e.g., terms `A-F` on Shard 1). Queries only hit shards corresponding to terms, but inserting a single document requires contacting multiple shards. Enterprise engines (Lucene/Elasticsearch) default to **Document Partitioning**.
 </details>

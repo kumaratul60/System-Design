@@ -26,7 +26,7 @@
 
 ### ⚡ Non-Functional Requirements (NFR)
 
-1. **Safety & Atomicity:** 
+1. **Safety & Atomicity:**
    - $100\%$ transaction atomicity (ACID). If cash dispensing hardware jams or fails midway, debit operation must be rolled back immediately via Core Banking ISO 8583 reverse transaction protocol.
 2. **Security & Compliance:**
    - End-to-end PCI-DSS and HSM (Hardware Security Module) encryption for PIN blocks (ANSI X9.8 format). PIN must never exist in plaintext in application memory.
@@ -61,14 +61,14 @@ Hardware Capacity & Cash Dispenser Specs:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Runtime Environment** | Node.js / TypeScript (Electron / Embedded Linux runtime) | Asynchronous event-driven architecture handles hardware peripheral I/O (card reader, PIN pad, cash dispenser) without blocking the UI thread. |
-| **State Machine Engine** | Finite State Machine (FSM) via State Pattern | Prevents invalid operational transitions (e.g. dispensing cash before PIN verification or card insertion). Ensures hardware safety. |
-| **Banking Protocol** | ISO 8583 / AS 2805 over TLS | Standard financial transaction messaging protocol for communication between ATM Switch / Core Banking System (CBS) and Hardware Security Module (HSM). |
-| **Local Audit Database** | Embedded SQLite / LevelDB with AES-256 | Stores encrypted local transaction logs, journal records, and hardware fault logs for physical auditability and offline reconciliation. |
-| **Hardware Interfacing** | XFS (Extensions for Financial Services) / J/XFS API | Standardized middleware layer enabling C++/TypeScript integration with hardware sensors, card motorized readers, and bill dispensers. |
-| **Telemetry & Alerts** | MQTT / gRPC | Lightweight pub/sub protocol transmitting real-time cash levels, paper status, and tamper sensor alerts to the central ATM Operations Center. |
+| Component                | Technology Choice                                        | Architectural Rationale                                                                                                                                |
+| :----------------------- | :------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Runtime Environment**  | Node.js / TypeScript (Electron / Embedded Linux runtime) | Asynchronous event-driven architecture handles hardware peripheral I/O (card reader, PIN pad, cash dispenser) without blocking the UI thread.          |
+| **State Machine Engine** | Finite State Machine (FSM) via State Pattern             | Prevents invalid operational transitions (e.g. dispensing cash before PIN verification or card insertion). Ensures hardware safety.                    |
+| **Banking Protocol**     | ISO 8583 / AS 2805 over TLS                              | Standard financial transaction messaging protocol for communication between ATM Switch / Core Banking System (CBS) and Hardware Security Module (HSM). |
+| **Local Audit Database** | Embedded SQLite / LevelDB with AES-256                   | Stores encrypted local transaction logs, journal records, and hardware fault logs for physical auditability and offline reconciliation.                |
+| **Hardware Interfacing** | XFS (Extensions for Financial Services) / J/XFS API      | Standardized middleware layer enabling C++/TypeScript integration with hardware sensors, card motorized readers, and bill dispensers.                  |
+| **Telemetry & Alerts**   | MQTT / gRPC                                              | Lightweight pub/sub protocol transmitting real-time cash levels, paper status, and tamper sensor alerts to the central ATM Operations Center.          |
 
 ---
 
@@ -190,10 +190,10 @@ sequenceDiagram
     Dispenser-->>ATM: true (Available: 1x$100, 2x$20)
     ATM->>CBS: ISO 8583 Msg 0200 (Financial Transaction Request: Debit $140)
     CBS-->>ATM: ISO 8583 Msg 0210 (Approve Auth Code: "AUTH7891")
-    
+
     ATM->>ATM: Transition to DispensingCashState
     ATM->>Dispenser: dispenseCash(1x$100, 2x$20)
-    
+
     alt Dispense Successful Sensor Verification
         Dispenser-->>ATM: Success Signal (Bills Present at Shutter)
         ATM->>Printer: printReceipt(TxnSummary)
@@ -405,7 +405,7 @@ export class CashDispenser {
 
   dispense(amount: number): Map<BillDenomination, number> {
     const billBreakdown = this.strategy.calculate(amount, this.cassettes);
-    
+
     // Deduct physical count
     for (const [denom, count] of billBreakdown.entries()) {
       const current = this.cassettes.get(denom) || 0;
@@ -422,7 +422,11 @@ export class CashDispenser {
 
 export interface IBankingServiceAdapter {
   verifyPin(cardNumber: string, pin: string): Promise<boolean>;
-  authorizeWithdrawal(cardNumber: string, account: AccountType, amount: number): Promise<{ success: boolean; txnId: string; balance: number }>;
+  authorizeWithdrawal(
+    cardNumber: string,
+    account: AccountType,
+    amount: number,
+  ): Promise<{ success: boolean; txnId: string; balance: number }>;
   rollbackTransaction(txnId: string): Promise<boolean>;
 }
 
@@ -533,7 +537,7 @@ export class DispensingCashState extends BaseATMState {
     try {
       dispensedNotes = dispenser.dispense(amount);
       console.log(`[Hardware Dispenser] Dispensed notes:`, Array.from(dispensedNotes.entries()));
-      
+
       // Auto eject card & finalize
       context.setState(new IdleState());
       context.resetSession();
@@ -583,14 +587,30 @@ export class ATMStateMachine implements IATMStateMachine {
     this.currentState = state;
   }
 
-  getCard(): Card | null { return this.currentCard; }
-  setCard(card: Card | null): void { this.currentCard = card; }
-  getPinBlock(): string | null { return this.pinBlock; }
-  setPinBlock(pin: string | null): void { this.pinBlock = pin; }
-  getSelectedAccount(): AccountType | null { return this.selectedAccount; }
-  setSelectedAccount(account: AccountType | null): void { this.selectedAccount = account; }
-  getCashDispenser(): CashDispenser { return this.cashDispenser; }
-  getBankingAdapter(): IBankingServiceAdapter { return this.bankAdapter; }
+  getCard(): Card | null {
+    return this.currentCard;
+  }
+  setCard(card: Card | null): void {
+    this.currentCard = card;
+  }
+  getPinBlock(): string | null {
+    return this.pinBlock;
+  }
+  setPinBlock(pin: string | null): void {
+    this.pinBlock = pin;
+  }
+  getSelectedAccount(): AccountType | null {
+    return this.selectedAccount;
+  }
+  setSelectedAccount(account: AccountType | null): void {
+    this.selectedAccount = account;
+  }
+  getCashDispenser(): CashDispenser {
+    return this.cashDispenser;
+  }
+  getBankingAdapter(): IBankingServiceAdapter {
+    return this.bankAdapter;
+  }
 
   resetSession(): void {
     this.currentCard = null;
@@ -600,12 +620,24 @@ export class ATMStateMachine implements IATMStateMachine {
   }
 
   // Delegation methods
-  insertCard(card: Card): void { this.currentState.insertCard(this, card); }
-  ejectCard(): void { this.currentState.ejectCard(this); }
-  async enterPin(pin: string): Promise<boolean> { return this.currentState.enterPin(this, pin); }
-  selectAccount(account: AccountType): void { this.currentState.selectAccount(this, account); }
-  async withdraw(amount: number): Promise<TransactionResult> { return this.currentState.withdrawCash(this, amount); }
-  cancel(): void { this.currentState.cancelTransaction(this); }
+  insertCard(card: Card): void {
+    this.currentState.insertCard(this, card);
+  }
+  ejectCard(): void {
+    this.currentState.ejectCard(this);
+  }
+  async enterPin(pin: string): Promise<boolean> {
+    return this.currentState.enterPin(this, pin);
+  }
+  selectAccount(account: AccountType): void {
+    this.currentState.selectAccount(this, account);
+  }
+  async withdraw(amount: number): Promise<TransactionResult> {
+    return this.currentState.withdrawCash(this, amount);
+  }
+  cancel(): void {
+    this.currentState.cancelTransaction(this);
+  }
 }
 ```
 
@@ -639,7 +671,7 @@ graph TB
     FSM --> Reader
     FSM --> Dispenser
     FSM --> HSM_Local
-    
+
     HSM_Local -- ISO 8583 / TLS --> GW
     GW --> HSM_Host
     GW --> Redis
@@ -651,21 +683,21 @@ graph TB
 ### ⚠️ Scalability & Hardware Bottlenecks Deep Dive
 
 1. **Physical Jam During Cash Dispensation (Double-Debit Risk):**
-   - *Problem:* Core Banking debits $200 from customer account, but the ATM dispenser motor jams on note 3.
-   - *Resolution:* Hardware optical sensors verify bills passing through the shutter. If sensor fails within $5000\text{ms}$, the local controller emits an ISO 8583 `Msg 0420` (Financial Reversal) with exact Auth Code. The transaction is reversed atomically, and un-dispensed notes are pushed into the internal locked **Divert Cassette**.
+   - _Problem:_ Core Banking debits $200 from customer account, but the ATM dispenser motor jams on note 3.
+   - _Resolution:_ Hardware optical sensors verify bills passing through the shutter. If sensor fails within $5000\text{ms}$, the local controller emits an ISO 8583 `Msg 0420` (Financial Reversal) with exact Auth Code. The transaction is reversed atomically, and un-dispensed notes are pushed into the internal locked **Divert Cassette**.
 2. **Network Disconnection During Active Session:**
-   - *Problem:* ATM loses cellular/WAN link after card insertion and PIN entry.
-   - *Resolution:* Session watchdog timer (30s). If TCP heartbeat fails, the ATM state machine automatically executes `cancelTransaction()`, ejects the motorized card, and transitions to `OfflineState` (only allowing balance inquiry or queued emergency withdrawals with strict local hardware limits).
+   - _Problem:_ ATM loses cellular/WAN link after card insertion and PIN entry.
+   - _Resolution:_ Session watchdog timer (30s). If TCP heartbeat fails, the ATM state machine automatically executes `cancelTransaction()`, ejects the motorized card, and transitions to `OfflineState` (only allowing balance inquiry or queued emergency withdrawals with strict local hardware limits).
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you handle exact bill denomination when cassettes have unequal bill counts (e.g. 0x $100, 2x $50, 10x $20)?</summary>
 
 **Answer:**
-A simple greedy algorithm fails when larger bills are depleted or when a combination requires non-greedy branching (e.g., dispensing $60 when $50 notes are available but no $10 note exists, requiring 3x $20). 
+A simple greedy algorithm fails when larger bills are depleted or when a combination requires non-greedy branching (e.g., dispensing $60 when $50 notes are available but no $10 note exists, requiring 3x $20).
 We implement a **Dynamic Programming / Unbounded Knapsack variant Strategy** (`ExactChangeDispenseStrategy`). If greedy calculation leaves a non-zero remainder, the strategy backtracks using dynamic programming to find valid bill combinations. If no combination matches, `canDispense()` returns `false`, prompting the UI to ask the user if they accept alternative available amounts.
 
 </details>
@@ -675,6 +707,7 @@ We implement a **Dynamic Programming / Unbounded Knapsack variant Strategy** (`E
 
 **Answer:**
 State isolation at the individual ATM is insufficient for multi-terminal account balance race conditions.
+
 1. **Core Banking Pessimistic Lock:** During ISO 8583 `Msg 0200` authorization, the Core Banking System acquires a database row lock (`SELECT FOR UPDATE`) on `accounts WHERE account_id = X`.
 2. **Distributed Transaction ID & Idempotency Key:** Every transaction generates a unique GUID combining `ATM_ID + TIMESTAMP + SEQUENCE_NO`. The switch deduplicates requests within a 60-second sliding window in Redis.
 
@@ -685,6 +718,7 @@ State isolation at the individual ATM is insufficient for multi-terminal account
 
 **Answer:**
 The ATM PIN Pad is an EPP (Encrypting PIN Pad) containing a tamper-responsive physical secure cryptographic module. When the customer enters their PIN:
+
 1. The EPP immediately encrypts the raw PIN with a Master/Session key or DUKPT (Derived Unique Key Per Transaction) inside hardware memory.
 2. The raw PIN never enters the host ATM PC operating system or application RAM.
 3. The host application only handles the encrypted **ANSI X9.8 PIN Block**, which can only be decrypted inside the Bank's Host HSM.

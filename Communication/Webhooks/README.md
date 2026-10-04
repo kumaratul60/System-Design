@@ -141,7 +141,7 @@ Network issues can cause duplicate webhooks. Consumers should:
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: How do you handle "Message Ordering" in Webhooks when retries are involved?
 

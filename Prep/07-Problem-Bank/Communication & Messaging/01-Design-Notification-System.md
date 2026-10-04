@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Notification System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a multi-channel notification engine serving 100M daily notifications across Email, SMS, Mobile Push, and In-App channels with rate-limiting, deduplication, and high-availability provider fallback.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a multi-channel notification engine serving 100M daily notifications across Email, SMS, Mobile Push, and In-App channels with rate-limiting, deduplication, and high-availability provider fallback.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -56,14 +56,14 @@ Queue Memory & Worker Sizing:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **API Gateway & Ingestion** | Node.js / Express (TypeScript) | Non-blocking I/O ideal for handling high concurrency ingestion API calls ($5,000\text{ QPS}$) with sub-20ms latency. |
-| **Rate Limiter & Deduplication** | Redis Cluster | Atomic operations (`EVAL` Lua scripts) for Sliding Window rate limiting and `SETNX` with TTL for idempotency deduplication. |
-| **Message Broker & Queues** | Apache Kafka / RabbitMQ | Multi-topic priority queues (`notifications.high`, `notifications.medium`, `notifications.low`) providing decoupled ingestion, backpressure management, and replayability. |
-| **Primary Database** | PostgreSQL (Partitioned by Month) | ACID compliance for template management, user notification settings, and delivery status logs. |
-| **Template Engine** | Handlebars.js / Liquid | Lightweight string interpolation and layout compilation with caching compiled templates in memory. |
-| **3rd-Party Provider Gateways** | Twilio, AWS SES, FCM, APNS | Multi-vendor integration using Strategy Pattern adapters with automated Circuit Breaker failover. |
+| Component                        | Technology Choice                 | Architectural Rationale                                                                                                                                                    |
+| :------------------------------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **API Gateway & Ingestion**      | Node.js / Express (TypeScript)    | Non-blocking I/O ideal for handling high concurrency ingestion API calls ($5,000\text{ QPS}$) with sub-20ms latency.                                                       |
+| **Rate Limiter & Deduplication** | Redis Cluster                     | Atomic operations (`EVAL` Lua scripts) for Sliding Window rate limiting and `SETNX` with TTL for idempotency deduplication.                                                |
+| **Message Broker & Queues**      | Apache Kafka / RabbitMQ           | Multi-topic priority queues (`notifications.high`, `notifications.medium`, `notifications.low`) providing decoupled ingestion, backpressure management, and replayability. |
+| **Primary Database**             | PostgreSQL (Partitioned by Month) | ACID compliance for template management, user notification settings, and delivery status logs.                                                                             |
+| **Template Engine**              | Handlebars.js / Liquid            | Lightweight string interpolation and layout compilation with caching compiled templates in memory.                                                                         |
+| **3rd-Party Provider Gateways**  | Twilio, AWS SES, FCM, APNS        | Multi-vendor integration using Strategy Pattern adapters with automated Circuit Breaker failover.                                                                          |
 
 ---
 
@@ -304,9 +304,9 @@ export enum Channel {
 }
 
 export enum Priority {
-  HIGH = 'HIGH',       // OTP, Security Alerts
-  MEDIUM = 'MEDIUM',   // Order Updates, Invoices
-  LOW = 'LOW',         // Promotional / Marketing
+  HIGH = 'HIGH', // OTP, Security Alerts
+  MEDIUM = 'MEDIUM', // Order Updates, Invoices
+  LOW = 'LOW', // Promotional / Marketing
 }
 
 export enum DeliveryStatus {
@@ -569,7 +569,7 @@ Provider State Transition:
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you guarantee exact-once delivery across distributed workers when third-party provider APIs do not support idempotency keys natively?</summary>
@@ -578,6 +578,7 @@ Provider State Transition:
 True end-to-end "exactly-once" delivery over external network boundaries is mathematically impossible due to the Two Generals' Problem (e.g., provider receives packet, sends SMS, but network drops response ACK).
 
 We achieve **At-Least-Once Delivery with Deduplication Guards**:
+
 1. **Upstream Ingestion:** Redis `SETNX` with idempotency keys prevents duplicate API submissions.
 2. **Worker Execution:** Database row locks (`SELECT FOR UPDATE` on `notification_id`) or Redis distributed locks ensure only one worker processes a notification item.
 3. **Outbound Provider:** We generate deterministic vendor correlation IDs (`client_reference_id = sha256(notification_id + timestamp)`) and supply them to providers supporting reference tracking (e.g., Twilio / AWS SES). If a timeout occurs, workers query provider status using the reference ID before retrying.
@@ -589,6 +590,7 @@ We achieve **At-Least-Once Delivery with Deduplication Guards**:
 
 **Answer:**
 We enforce strict physical and logical Queue Segregation:
+
 1. **Isolated Broker Topics:** Notifications are routed into separate Kafka topics based on priority (`notifications.otp`, `notifications.transactional`, `notifications.marketing`).
 2. **Dedicated Worker Fleets:** Separate worker pools process separate queues. The OTP worker fleet is autoscale-provisioned to guarantee headroom ($P_{99} < 500\text{ms}$). Marketing workers process background queues at a controlled rate without consuming OTP pool compute resources.
 3. **Strict Priority Preemption:** In shared queue models, consumer threads fetch items using a weighted priority queue algorithm (e.g., 70% thread pool capacity allocated to OTP, 20% to Transactional, 10% to Marketing).
@@ -599,6 +601,7 @@ We enforce strict physical and logical Queue Segregation:
 <summary>❓ 3. How do you handle quiet hours for users distributed across multiple time zones?</summary>
 
 **Answer:**
+
 1. **User Timezone Storage:** The `UserPreference` store records the user's explicit timezone (e.g., `America/New_York` or `Asia/Kolkata`).
 2. **Dynamic UTC Evaluation:** When a worker pops a low-priority notification, it resolves current local time for the recipient:
    $$\text{LocalTime} = \text{UTC\_Now} + \text{TimezoneOffset}(\text{UserTimezone})$$
@@ -611,6 +614,7 @@ We enforce strict physical and logical Queue Segregation:
 
 **Answer:**
 We employ a **Fail-Open Strategy with Database Backup Guard**:
+
 1. If Redis calls time out ($>20\text{ms}$ limit), the API Gateway logs a warning metric and allows the request through (failing open to avoid dropping legitimate alerts).
 2. The downstream database PostgreSQL table contains a unique constraint on `(recipient_id, template_id, idempotency_key, created_date)`.
 3. If duplicate requests slip past the degraded Redis layer, the database unique key collision raises a SQL `23505` constraint violation, causing the secondary worker thread to safely ignore the duplicate write.

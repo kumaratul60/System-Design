@@ -99,7 +99,7 @@ A mandatory requirement for security transparency, especially under **US Executi
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Is "Compliance" the same as "Security"?
 

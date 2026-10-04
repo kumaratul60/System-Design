@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Version Control System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Production-grade Distributed Version Control System (VCS / Git Core Engine) with Content-Addressable Storage (CAS), DAG history graph, Myers diffing, and 3-way merge conflict resolution.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Production-grade Distributed Version Control System (VCS / Git Core Engine) with Content-Addressable Storage (CAS), DAG history graph, Myers diffing, and 3-way merge conflict resolution.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -33,7 +33,7 @@ Repository Scale & Content-Addressable Space:
 - Target Repo Capacity: 500,000 files across 50,000 commits
 - Cryptographic Space: SHA-256 (2^256 unique hashes) -> Zero probability of hash collision
 - Content Deduplication Rate: Typical enterprise repos exhibit ~60-80% file content duplication across commits/branches
-- Object Store Footprint: 
+- Object Store Footprint:
   - 50,000 commits * 10 changed files / commit = 500,000 raw objects
   - Average Blob size: 10 KB -> Raw store size = 5 GB
   - Delta Packfile Compression (zlib): Reduces 5 GB object store to ~600 MB on disk
@@ -43,12 +43,12 @@ Repository Scale & Content-Addressable Space:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Storage Architecture** | Content-Addressable Storage (CAS) | Keying objects by cryptographic hash guarantees data integrity and automatic deduplication. |
-| **Commit Graph Data Model** | Directed Acyclic Graph (DAG) | Enables lightweight branching, fast ancestor traversal, and graph-based 3-way LCA merge lookups. |
-| **Diffing Engine** | Myers Diff Algorithm | Standard $O(ND)$ greedy algorithm producing minimal edit scripts (insertions/deletions). |
-| **Reference Manager** | Atomic File Locks / Symrefs | Safe mutation of branch tips and `HEAD` pointers during concurrent checkouts or pushes. |
+| Component                   | Technology Choice                 | Architectural Rationale                                                                          |
+| :-------------------------- | :-------------------------------- | :----------------------------------------------------------------------------------------------- |
+| **Storage Architecture**    | Content-Addressable Storage (CAS) | Keying objects by cryptographic hash guarantees data integrity and automatic deduplication.      |
+| **Commit Graph Data Model** | Directed Acyclic Graph (DAG)      | Enables lightweight branching, fast ancestor traversal, and graph-based 3-way LCA merge lookups. |
+| **Diffing Engine**          | Myers Diff Algorithm              | Standard $O(ND)$ greedy algorithm producing minimal edit scripts (insertions/deletions).         |
+| **Reference Manager**       | Atomic File Locks / Symrefs       | Safe mutation of branch tips and `HEAD` pointers during concurrent checkouts or pushes.          |
 
 ---
 
@@ -280,7 +280,7 @@ export class TreeObject extends GitObject {
   }
 
   public serialize(): string {
-    return this.entries.map(e => `${e.mode} ${e.type} ${e.hash}\t${e.name}`).join('\n');
+    return this.entries.map((e) => `${e.mode} ${e.type} ${e.hash}\t${e.name}`).join('\n');
   }
 
   public getEntries(): TreeEntry[] {
@@ -295,7 +295,7 @@ export class CommitObject extends GitObject {
     private parentHashes: string[],
     private author: string,
     private message: string,
-    private timestamp: number = Date.now()
+    private timestamp: number = Date.now(),
   ) {
     super();
   }
@@ -307,7 +307,7 @@ export class CommitObject extends GitObject {
   public serialize(): string {
     return [
       `tree ${this.treeHash}`,
-      ...this.parentHashes.map(p => `parent ${p}`),
+      ...this.parentHashes.map((p) => `parent ${p}`),
       `author ${this.author} ${this.timestamp}`,
       ``,
       this.message,
@@ -417,8 +417,8 @@ export class VCSRepositoryEngine {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 - **Finding Lowest Common Ancestor (LCA) in Complex DAGs:**
-  - *Challenge:* Criss-cross merges can result in multiple common ancestors.
-  - *Solution:* Run Breadth-First Search (BFS) starting from commit A and commit B to collect ancestor sets. Find the common ancestor with the maximum graph depth (LCA).
+  - _Challenge:_ Criss-cross merges can result in multiple common ancestors.
+  - _Solution:_ Run Breadth-First Search (BFS) starting from commit A and commit B to collect ancestor sets. Find the common ancestor with the maximum graph depth (LCA).
 - **Packfile Delta Compression (`git gc`):**
   - Storing thousands of individual loose files causes file descriptor exhaustion. Periodically combine objects into a single `.pack` file, compressing historical file versions using byte-level diff deltas relative to the latest version.
 - **Handling Large Binary Files (Git LFS):**
@@ -426,12 +426,12 @@ export class VCSRepositoryEngine {
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How does Content-Addressable Storage guarantee automatic file deduplication?</summary>
 
-**Answer:**  
+**Answer:**
 Because an object's identifier is computed strictly as `SHA256(content)`, two identical files created by different developers in different directories will compute to the exact same hash string. The CAS `put()` method detects that the key already exists in the store and skips re-writing the payload byte array.
 
 </details>
@@ -439,17 +439,18 @@ Because an object's identifier is computed strictly as `SHA256(content)`, two id
 <details>
 <summary>❓ How does a 3-Way Merge algorithm work when merging two branch tips?</summary>
 
-**Answer:**  
-1. Find the **Lowest Common Ancestor (LCA)** commit of Branch A and Branch B (the base snapshot).  
-2. Perform line-by-line diffs: `Diff(Base -> Branch A)` and `Diff(Base -> Branch B)`.  
-3. If a line is modified *only* in Branch A, accept Branch A's change. If modified *only* in Branch B, accept Branch B's change. If modified differently in *both* branches at the same offset, raise a **Merge Conflict**.
+**Answer:**
+
+1. Find the **Lowest Common Ancestor (LCA)** commit of Branch A and Branch B (the base snapshot).
+2. Perform line-by-line diffs: `Diff(Base -> Branch A)` and `Diff(Base -> Branch B)`.
+3. If a line is modified _only_ in Branch A, accept Branch A's change. If modified _only_ in Branch B, accept Branch B's change. If modified differently in _both_ branches at the same offset, raise a **Merge Conflict**.
 
 </details>
 
 <details>
 <summary>❓ What is the difference between `git rebase` and `git merge` at the DAG graph level?</summary>
 
-**Answer:**  
-`git merge` creates a new **Merge Commit** with *two parent commit pointers*, preserving the original non-linear branch history. `git rebase` rewrites history by replaying commits from the feature branch one-by-one on top of the target branch tip, generating brand-new commit hashes and creating a linear graph sequence.
+**Answer:**
+`git merge` creates a new **Merge Commit** with _two parent commit pointers_, preserving the original non-linear branch history. `git rebase` rewrites history by replaying commits from the feature branch one-by-one on top of the target branch tip, generating brand-new commit hashes and creating a linear graph sequence.
 
 </details>

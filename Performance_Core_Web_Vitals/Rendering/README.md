@@ -158,7 +158,7 @@ sequenceDiagram
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q0: What is "Hydration" and why is it a performance bottleneck in SSR?
 

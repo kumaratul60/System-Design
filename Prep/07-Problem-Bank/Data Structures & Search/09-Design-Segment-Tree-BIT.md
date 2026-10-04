@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Segment Tree & Fenwick Tree (BIT)
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building high-throughput range query aggregation engines using Segment Trees (with Lazy Propagation) and Fenwick Trees (Binary Indexed Trees) for $O(\log N)$ point updates, range updates, and range aggregate queries (Sum, Min, Max) over dynamic telemetry streams.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building high-throughput range query aggregation engines using Segment Trees (with Lazy Propagation) and Fenwick Trees (Binary Indexed Trees) for $O(\log N)$ point updates, range updates, and range aggregate queries (Sum, Min, Max) over dynamic telemetry streams.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,12 +9,14 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Point Operations:** `updatePoint(index, val)` updates a single telemetry metric index in $O(\log N)$ time.
 2. **Range Aggregate Queries:** `queryRange(left, right)` calculates range aggregates (Sum, Min, Max) over interval $[L, R]$ in $O(\log N)$ time.
 3. **Range Updates (Segment Tree Lazy Propagation):** `updateRange(left, right, val)` increments all elements in range $[L, R]$ in $O(\log N)$ time using deferred lazy propagation flags.
 4. **Binary Indexed Tree (BIT / Fenwick):** Provide low-memory $O(N)$ space alternative for cumulative frequency and range sum queries using bitwise lowbit logic (`i & (-i)`).
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Ultra-Low Latency:** Range queries $<1\text{ms}$ over $10,000,000$ metric data points.
 2. **Space Efficiency:** Fenwick Tree uses exact $N+1$ array space; Segment Tree uses bounded $4N$ array space.
 3. **High Concurrency:** Support read-heavy telemetry analytics at 500,000 QPS.
@@ -39,12 +41,12 @@ Target QPS: 500,000 QPS (70% Range Queries, 30% Range Updates)
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Feature | Segment Tree (with Lazy Propagation) | Fenwick Tree (Binary Indexed Tree) | Architectural Choice |
-|:---|:---|:---|:---|
-| **Space Complexity** | $O(4N)$ space | $O(N)$ space | Fenwick tree when memory is constrained. |
-| **Point Update** | $O(\log N)$ | $O(\log N)$ | Both highly efficient. |
-| **Range Query** | $O(\log N)$ (Sum, Min, Max, GCD) | $O(\log N)$ (Sum / Invertible operations only) | Segment Tree required for Non-Invertible ops (Min/Max). |
-| **Range Update** | $O(\log N)$ via Lazy Propagation | $O(\log N)$ via Difference Array trick | Segment tree handles non-invertible range updates seamlessly. |
+| Feature              | Segment Tree (with Lazy Propagation) | Fenwick Tree (Binary Indexed Tree)             | Architectural Choice                                          |
+| :------------------- | :----------------------------------- | :--------------------------------------------- | :------------------------------------------------------------ |
+| **Space Complexity** | $O(4N)$ space                        | $O(N)$ space                                   | Fenwick tree when memory is constrained.                      |
+| **Point Update**     | $O(\log N)$                          | $O(\log N)$                                    | Both highly efficient.                                        |
+| **Range Query**      | $O(\log N)$ (Sum, Min, Max, GCD)     | $O(\log N)$ (Sum / Invertible operations only) | Segment Tree required for Non-Invertible ops (Min/Max).       |
+| **Range Update**     | $O(\log N)$ via Lazy Propagation     | $O(\log N)$ via Difference Array trick         | Segment tree handles non-invertible range updates seamlessly. |
 
 ---
 
@@ -194,13 +196,7 @@ export class SegmentTree implements IRangeQueryEngine {
     this.updatePointInternal(0, 0, this.n - 1, index, val);
   }
 
-  private updatePointInternal(
-    node: number,
-    start: number,
-    end: number,
-    idx: number,
-    val: number
-  ): void {
+  private updatePointInternal(node: number, start: number, end: number, idx: number, val: number): void {
     if (start === end) {
       this.tree[node] = val;
       return;
@@ -220,14 +216,7 @@ export class SegmentTree implements IRangeQueryEngine {
     this.updateRangeInternal(0, 0, this.n - 1, left, right, val);
   }
 
-  private updateRangeInternal(
-    node: number,
-    start: number,
-    end: number,
-    L: number,
-    R: number,
-    val: number
-  ): void {
+  private updateRangeInternal(node: number, start: number, end: number, L: number, R: number, val: number): void {
     if (L <= start && end <= R) {
       this.tree[node] += val * (end - start + 1);
       this.lazy[node] += val;
@@ -249,13 +238,7 @@ export class SegmentTree implements IRangeQueryEngine {
     return this.queryRangeInternal(0, 0, this.n - 1, left, right);
   }
 
-  private queryRangeInternal(
-    node: number,
-    start: number,
-    end: number,
-    L: number,
-    R: number
-  ): number {
+  private queryRangeInternal(node: number, start: number, end: number, L: number, R: number): number {
     if (R < start || end < L) return 0; // Disjoint
     if (L <= start && end <= R) return this.tree[node]; // Completely inside
 
@@ -327,7 +310,7 @@ flowchart LR
     TelemetryStream[Telemetry Metric Ingestion] --> ShardRouter[Metric Key Router]
     ShardRouter --> SegTreeShard1[Segment Tree Shard 0]
     ShardRouter --> SegTreeShard2[Segment Tree Shard 1]
-    
+
     SegTreeShard1 --> AnalyticsEngine[Real-Time Analytics Dashboard]
     SegTreeShard2 --> AnalyticsEngine
 ```
@@ -337,13 +320,14 @@ flowchart LR
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: How does `i & (-i)` work in Fenwick Tree navigation?</strong></summary>
 
 **Answer:**
 `i & (-i)` performs a bitwise AND between integer $i$ and its two's complement $-i$. This isolates the **lowest set bit** in binary representation:
+
 - For $i = 12$ (`01100`), `lowbit(12)` yields $4$ (`00100`).
 - In `updatePoint`: Adding `lowbit(i)` moves to the parent node responsible for covering index $i$.
 - In `prefixSum`: Subtracting `lowbit(i)` strips the last binary range, jumping to the previous non-overlapping sub-range sum in $O(\log N)$ steps.
@@ -355,6 +339,7 @@ flowchart LR
 **Answer:**
 Without lazy propagation, updating range $[L, R]$ requires modifying every leaf node in that range ($O(N \log N)$ complexity).
 **Lazy Propagation Mechanism:**
+
 1. When a node's interval $[start, end]$ falls completely inside $[L, R]$, apply the update value to that node directly and record the value in a `lazy[node]` tag array.
 2. **Defer Child Updates:** Do NOT recurse to child nodes. Return immediately in $O(1)$!
 3. **Push Down on Demand:** During subsequent queries or updates visiting that node, check `lazy[node]`. If non-zero, push the lazy tag down to direct children before processing.
@@ -366,11 +351,13 @@ This guarantees $O(\log N)$ range update complexity.
 
 **Answer:**
 Choose **Fenwick Tree** when:
+
 1. Operations are **cumulative and invertible** (e.g. Range Sum, Count Frequency).
 2. Memory constraints are extreme (Fenwick requires $1N$ space vs $4N$ for Segment Tree).
 3. Implementation simplicity and zero allocation are required.
 
 Choose **Segment Tree** when:
+
 1. Operations are **non-invertible** (Range Minimum, Range Maximum, Range GCD).
 2. Complex range updates with lazy propagation are required.
 </details>

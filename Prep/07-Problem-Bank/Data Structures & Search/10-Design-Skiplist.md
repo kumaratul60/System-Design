@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Probabilistic Skiplist
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an enterprise-grade probabilistic multi-level SkipList in memory, providing expected $O(\log N)$ search, insertion, deletion, and continuous range scanning capabilities, serving as the core data structure behind LevelDB/RocksDB MemTables and Redis Sorted Sets (ZSET).  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an enterprise-grade probabilistic multi-level SkipList in memory, providing expected $O(\log N)$ search, insertion, deletion, and continuous range scanning capabilities, serving as the core data structure behind LevelDB/RocksDB MemTables and Redis Sorted Sets (ZSET).
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **$O(\log N)$ Search:** `search(key: K): V | null` retrieves key value in expected $O(\log N)$ average time.
 2. **$O(\log N)$ Insertion:** `insert(key: K, value: V): void` inserts or updates nodes, generating dynamic level promotion using coin-flip probability $p=0.5$ up to `maxLevel`.
 3. **$O(\log N)$ Deletion:** `delete(key: K): boolean` rewires forward pointer arrays across all active levels.
@@ -16,6 +17,7 @@
 5. **Level Statistics:** Expose stats regarding node count, height distribution, and total forward pointer links.
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Low Memory Overhead:** Average forward pointers per node $= 1 / (1-p) = 2.0$.
 2. **Lock-Free Readiness:** Superior lock-free concurrency characteristics compared to Red-Black / AVL trees due to isolated pointer adjustments.
 3. **Ultra-Low Latency:** Sub-millisecond operational latency ($P_{99} < 1\text{ms}$) across 5,000,000 active nodes.
@@ -47,11 +49,11 @@ Total System Memory: 5,000,000 * 112B = ~560 MB RAM
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
+| Component              | Technology Choice                  | Architectural Rationale                                                                             |
+| :--------------------- | :--------------------------------- | :-------------------------------------------------------------------------------------------------- |
 | **SkipList Hierarchy** | Multi-level Forward Pointer Arrays | Allows skipping large node sub-sequences at upper levels before fine-tuning search at lower levels. |
-| **Level Promotion** | Geometric Distribution (`p=0.5`) | Guarantees balanced $O(\log N)$ depth probabilistically without complex tree rotations. |
-| **Level 0 Baseline** | Doubly/Singly Linked List | Enables contiguous sequential range scans without depth-first tree traversals. |
+| **Level Promotion**    | Geometric Distribution (`p=0.5`)   | Guarantees balanced $O(\log N)$ depth probabilistically without complex tree rotations.             |
+| **Level 0 Baseline**   | Doubly/Singly Linked List          | Enables contiguous sequential range scans without depth-first tree traversals.                      |
 
 ---
 
@@ -97,7 +99,7 @@ sequenceDiagram
     Client->>List: insert(key=17, value="Data")
     List->>List: update[] array initialized (size = maxLevel)
     List->>Head: Start search at top level (currentMaxLevel)
-    
+
     loop Top-down Level Traversal
         Head->>Nodes: Move right while forward[lvl].key < 17
         Nodes-->>List: Record predecessor in update[lvl]
@@ -106,12 +108,12 @@ sequenceDiagram
 
     List->>List: Generate randomLevel() -> e.g. 3
     List->>List: Instantiate SkipNode(17, "Data", level=3)
-    
+
     loop Level 0 to randomLevel - 1
         List->>Nodes: Wire newNode.forward[i] = update[i].forward[i]
         List->>Nodes: Wire update[i].forward[i] = newNode
     end
-    
+
     List-->>Client: Insert complete
 ```
 
@@ -142,7 +144,7 @@ export class SkipNode<K, V> {
   constructor(
     public key: K,
     public value: V,
-    level: number
+    level: number,
   ) {
     // Array of forward pointers indexed by level [0..level-1]
     this.forward = new Array<SkipNode<K, V> | null>(level).fill(null);
@@ -163,7 +165,7 @@ export class SkipList<K, V> {
 
   constructor(
     private readonly maxLevel: number = 32,
-    private readonly p: number = 0.5
+    private readonly p: number = 0.5,
   ) {
     if (maxLevel <= 0 || p <= 0 || p >= 1) {
       throw new Error('Invalid SkipList configuration parameters.');
@@ -271,10 +273,7 @@ export class SkipList<K, V> {
     }
 
     // Lower currentMaxLevel if top levels are empty
-    while (
-      this.currentMaxLevel > 1 &&
-      this.head.forward[this.currentMaxLevel - 1] === null
-    ) {
+    while (this.currentMaxLevel > 1 && this.head.forward[this.currentMaxLevel - 1] === null) {
       this.currentMaxLevel--;
     }
 
@@ -323,7 +322,7 @@ export class SkipList<K, V> {
 flowchart TD
     ClientWrite[Write Transaction] --> MemTable[In-Memory SkipList MemTable]
     MemTable --> WAL[Write-Ahead Log disk]
-    
+
     MemTable -- Capacity Exceeded --> FlushTask[Background Flush Worker]
     FlushTask --> SSTable[SSTable File Level 0]
 ```
@@ -333,12 +332,13 @@ flowchart TD
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: Why do LevelDB, RocksDB, and Redis use SkipLists instead of Red-Black Trees for ordered data?</strong></summary>
 
 **Answer:**
+
 1. **Lock-Free Concurrency:** Mutating a SkipList requires changing only local forward pointers (`update[i].forward[i]`). This can be done lock-free using atomic Compare-And-Swap (CAS). Red-Black trees require complex rotations affecting parents, siblings, and children up to the tree root, requiring global locking.
 2. **Range Queries:** Range scanning in SkipList is simple sequential iteration along the Level 0 linked list ($O(K)$ time). In Red-Black trees, range traversal requires $O(K \log N)$ tree search calls or parent pointer traversals.
 3. **Simplicity:** SkipList code is significantly shorter and less bug-prone than rotational BST rebalancing code.
@@ -348,17 +348,19 @@ flowchart TD
 <summary><strong>Q2: How do you choose probability parameter $p$ and maximum height $L_{max}$?</strong></summary>
 
 **Answer:**
+
 - **Max Height $L_{max}$:** Set $L_{max} = \log_{1/p}(N_{max})$. For $N = 2^{32} \approx 4\text{ Billion}$, $L_{max} = 32$ with $p=0.5$.
 - **Probability $p$:**
   - $p = 0.5$: Faster search ($2$ comparisons per level on average), average $2.0$ pointers per node.
   - $p = 0.25$: Reduced pointer memory overhead (average $1.33$ pointers per node), with slightly more search comparisons ($1/p = 4$).
-</details>
+  </details>
 
 <details>
 <summary><strong>Q3: How does lock-free insertion work in a concurrent multi-threaded SkipList?</strong></summary>
 
 **Answer:**
 Lock-free SkipLists use **Marked Atomic References**:
+
 1. Insert node at Level 0 first using a CAS pointer swap (`CAS(pred.forward[0], oldNext, newNode)`).
 2. Wire upper levels from Level 1 up to `rLevel` via CAS.
 3. If another thread modifies `pred.forward[lvl]` mid-flight, retry the predecessor search for that level and CAS again.

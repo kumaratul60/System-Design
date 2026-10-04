@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Distributed Key-Value Store
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** High-throughput, highly available, partition-tolerant distributed key-value storage engine (DynamoDB / Apache Cassandra style) capable of handling billions of keys, sub-10ms latencies, tunable quorum consistency ($R+W > N$), vector clock conflict resolution, consistent hash rings with virtual nodes, and gossip-based cluster coordination.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** High-throughput, highly available, partition-tolerant distributed key-value storage engine (DynamoDB / Apache Cassandra style) capable of handling billions of keys, sub-10ms latencies, tunable quorum consistency ($R+W > N$), vector clock conflict resolution, consistent hash rings with virtual nodes, and gossip-based cluster coordination.
 > **Navigation:** ⬅️ [Back to Developer Tools & Infrastructure Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -60,13 +60,13 @@ Memory Estimates per Node (RAM Allocation):
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
+| Component                        | Technology Choice                                  | Architectural Rationale                                                                                                                                                        |
+| :------------------------------- | :------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Data Partitioning & Topology** | Consistent Hash Ring with Virtual Nodes (`vnodes`) | Murmur3 32-bit hashing distributes key space evenly across $2^{32}-1$ tokens. Virtual nodes prevent load hotspotting and enforce uniform redistribution when nodes join/leave. |
-| **Node Storage Engine** | Log-Structured Merge-Tree (LSM-Tree) | Transforms random disk writes into sequential append-only operations (WAL + MemTable flush to SSTable), delivering ultra-fast $O(1)$ writes ($< 5\text{ms}$). |
-| **Read Acceleration** | Bloom Filters & Sparse Indexes | Enables $O(1)$ check to confirm whether a key exists in an SSTable file on disk before performing disk I/O, reducing read latency to $< 10\text{ms}$. |
-| **Cluster Coordination** | Peer-to-Peer Gossip Protocol | Epidemic push-pull protocol eliminates master node bottlenecks, guaranteeing $O(\log N)$ cluster state convergence and automatic failure detection. |
-| **Conflict Resolution** | Vector Clocks (`Map<NodeID, Counter>`) | Tracks causal causality relationships between concurrent writes without reliance on synchronized physical hardware clocks (NTP drift invariant). |
+| **Node Storage Engine**          | Log-Structured Merge-Tree (LSM-Tree)               | Transforms random disk writes into sequential append-only operations (WAL + MemTable flush to SSTable), delivering ultra-fast $O(1)$ writes ($< 5\text{ms}$).                  |
+| **Read Acceleration**            | Bloom Filters & Sparse Indexes                     | Enables $O(1)$ check to confirm whether a key exists in an SSTable file on disk before performing disk I/O, reducing read latency to $< 10\text{ms}$.                          |
+| **Cluster Coordination**         | Peer-to-Peer Gossip Protocol                       | Epidemic push-pull protocol eliminates master node bottlenecks, guaranteeing $O(\log N)$ cluster state convergence and automatic failure detection.                            |
+| **Conflict Resolution**          | Vector Clocks (`Map<NodeID, Counter>`)             | Tracks causal causality relationships between concurrent writes without reliance on synchronized physical hardware clocks (NTP drift invariant).                               |
 
 ---
 
@@ -162,7 +162,7 @@ sequenceDiagram
     Coord->>Ring: getPreferenceList("user_12", N=3)
     Ring-->>Coord: Returns [Node 1, Node 2, Node 3]
     Coord->>Coord: Increments VectorClock for "user_12"
-    
+
     par Parallel Writes
         Coord->>N1: executeLocalWrite(key, "v2", clock)
         Coord->>N2: executeLocalWrite(key, "v2", clock)
@@ -206,7 +206,7 @@ graph TB
 
     subgraph Cluster Layer - Peer-to-Peer Topology
         Coordinator[Coordinator Node]
-        
+
         subgraph Hash Ring Virtual Node Partitioning
             NodeA[Physical Node A vnode_1..256]
             NodeB[Physical Node B vnode_1..256]
@@ -232,7 +232,7 @@ graph TB
     Coordinator -->|Ring Lookup| NodeA
     Coordinator -->|Replicate Write| NodeB
     Coordinator -->|Replicate Write| NodeC
-    
+
     NodeA <-->|Heartbeats & Ring State| Gossip
     NodeB <-->|Heartbeats & Ring State| Gossip
     Gossip --> PhiDetector
@@ -286,9 +286,9 @@ import * as crypto from 'crypto';
 
 export enum ClockRelationship {
   EQUAL = 'EQUAL',
-  ANCESTOR = 'ANCESTOR',   // Current is strictly before Other
+  ANCESTOR = 'ANCESTOR', // Current is strictly before Other
   DESCENDANT = 'DESCENDANT', // Current is strictly after Other
-  CONCURRENT = 'CONCURRENT' // Concurrent writes (Conflict)
+  CONCURRENT = 'CONCURRENT', // Concurrent writes (Conflict)
 }
 
 export class VectorClock {
@@ -384,7 +384,7 @@ export class ConsistentHashRing {
   }
 
   public removeNode(nodeId: string): void {
-    this.sortedTokens = this.sortedTokens.filter(token => {
+    this.sortedTokens = this.sortedTokens.filter((token) => {
       const vnode = this.ring.get(token);
       if (vnode && vnode.nodeId === nodeId) {
         this.ring.delete(token);
@@ -486,7 +486,7 @@ export class KeyValueNode {
 export class QuorumCoordinator {
   constructor(
     private ring: ConsistentHashRing,
-    private defaultN: number = 3
+    private defaultN: number = 3,
   ) {}
 
   public put(key: string, value: string, W: number = 2): boolean {
@@ -495,9 +495,7 @@ export class QuorumCoordinator {
 
     // 1. Fetch current vector clock (Read phase for clock synthesis)
     const existingRecord = this.getLatestRecord(key, preferenceList);
-    let newClock = existingRecord
-      ? existingRecord.vectorClock
-      : new VectorClock();
+    let newClock = existingRecord ? existingRecord.vectorClock : new VectorClock();
 
     // Increment clock using coordinator node ID
     newClock = newClock.increment(preferenceList[0].nodeId);
@@ -540,7 +538,7 @@ export class QuorumCoordinator {
     }
 
     // 3. Reconcile versions and detect stale replicas
-    const latest = this.reconcileVersions(readResponses.map(r => r.record!));
+    const latest = this.reconcileVersions(readResponses.map((r) => r.record!));
     if (!latest) return null;
 
     // 4. Trigger Async Read Repair for stale nodes
@@ -578,7 +576,7 @@ export class QuorumCoordinator {
   private triggerReadRepair(
     key: string,
     latestRecord: RecordVersion,
-    responses: { node: KeyValueNode; record: RecordVersion | null }[]
+    responses: { node: KeyValueNode; record: RecordVersion | null }[],
   ): void {
     for (const resp of responses) {
       if (!resp.record || resp.record.vectorClock.compareTo(latestRecord.vectorClock) === ClockRelationship.ANCESTOR) {
@@ -596,12 +594,12 @@ export class QuorumCoordinator {
 // ==========================================
 
 function runDistributedKVStoreDemo() {
-  console.log("=== Initializing Distributed Key-Value Cluster ===");
+  console.log('=== Initializing Distributed Key-Value Cluster ===');
   const ring = new ConsistentHashRing(3); // 3 vnodes per physical node
 
-  const nodeA = new KeyValueNode("Node-A");
-  const nodeB = new KeyValueNode("Node-B");
-  const nodeC = new KeyValueNode("Node-C");
+  const nodeA = new KeyValueNode('Node-A');
+  const nodeB = new KeyValueNode('Node-B');
+  const nodeC = new KeyValueNode('Node-C');
 
   ring.addNode(nodeA);
   ring.addNode(nodeB);
@@ -609,28 +607,28 @@ function runDistributedKVStoreDemo() {
 
   const coordinator = new QuorumCoordinator(ring, 3);
 
-  console.log("\n--- Executing Quorum Write (N=3, W=2) ---");
-  const writeSuccess = coordinator.put("user_session_99", "AUTH_TOKEN_ABC123", 2);
+  console.log('\n--- Executing Quorum Write (N=3, W=2) ---');
+  const writeSuccess = coordinator.put('user_session_99', 'AUTH_TOKEN_ABC123', 2);
   console.log(`Write Success (W=2): ${writeSuccess}`);
 
-  console.log("\n--- Executing Quorum Read (N=3, R=2) ---");
-  const val = coordinator.get("user_session_99", 2);
+  console.log('\n--- Executing Quorum Read (N=3, R=2) ---');
+  const val = coordinator.get('user_session_99', 2);
   console.log(`Read Result (R=2): ${val}`);
 
-  console.log("\n--- Simulating Replica Drift & Read Repair ---");
+  console.log('\n--- Simulating Replica Drift & Read Repair ---');
   // Inject stale version into Node-C manually
-  nodeC.executeLocalWrite("user_session_99", {
-    value: "STALE_TOKEN_OLD",
-    vectorClock: new VectorClock(new Map([["Node-A", 0]])),
+  nodeC.executeLocalWrite('user_session_99', {
+    value: 'STALE_TOKEN_OLD',
+    vectorClock: new VectorClock(new Map([['Node-A', 0]])),
     timestamp: Date.now() - 10000,
   });
 
-  console.log("Reading value again (triggers Read Repair on Node-C)...");
-  const valAfterDrift = coordinator.get("user_session_99", 2);
+  console.log('Reading value again (triggers Read Repair on Node-C)...');
+  const valAfterDrift = coordinator.get('user_session_99', 2);
   console.log(`Read Result during drift: ${valAfterDrift}`);
 
   setTimeout(() => {
-    console.log(`Node-C value after Read Repair: ${nodeC.executeLocalRead("user_session_99")?.value}`);
+    console.log(`Node-C value after Read Repair: ${nodeC.executeLocalRead('user_session_99')?.value}`);
   }, 50);
 }
 
@@ -642,21 +640,27 @@ runDistributedKVStoreDemo();
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Quorum Consistency Equation ($R + W > N$)
+
 To guarantee strict read-your-writes consistency under network partitioning, the cluster enforces the **Pigeonhole Principle**:
 $$\text{Read Quorum }(R) + \text{Write Quorum }(W) > \text{Replication Factor }(N)$$
+
 - **Strong Consistency Configuration ($N=3, R=2, W=2$):** $2 + 2 = 4 > 3$. At least one node in the read quorum is guaranteed to overlap with the write quorum, assuring freshest value returns.
 - **Fast Read Workloads ($N=3, R=1, W=3$):** Instant sub-millisecond reads from any single replica, but writes require unanimous acknowledgement across all 3 nodes.
 - **Fast Write Workloads ($N=3, R=3, W=1$):** Instant writes acknowledging a single local node, but reads require collecting responses from all 3 replicas to resolve conflict.
 
 ### 2. Hinted Handoff Architecture (Transient Failure Toleration)
+
 When physical Node $B$ is temporarily unreachable due to network blips:
+
 1. The Coordinator routes the write to a healthy neighbor Node $C$.
 2. Node $C$ stores the update in a dedicated **Hint Bucket** containing: `(TargetNodeId: B, OriginalKey, Value, VectorClock, TTL)`.
 3. Node $C$'s background Gossip worker polls for Node $B$'s recovery.
 4. Upon receiving a positive heartbeat from Node $B$, Node $C$ streams the buffered hints to Node $B$ and deletes the hints upon ACK.
 
 ### 3. Anti-Entropy with Merkle Trees (Background Synchronization)
+
 For long-term out-of-sync nodes (e.g. node down for days exceeding Hint TTL):
+
 - Each node constructs a **Hierarchical Merkle Tree** (Hash Tree) for key ranges owned by its token slots.
 - Parents in the Merkle tree are hashes of their children.
 - During background anti-entropy checks, nodes exchange only the root hashes of their Merkle trees:
@@ -665,24 +669,26 @@ For long-term out-of-sync nodes (e.g. node down for days exceeding Hint TTL):
 
 ---
 
-## 9. 🧠 Collapsed Senior/Staff Level Grill Q&A
+## 9. 🧠 Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you prevent Vector Clock size explosion ("Clock Drift") when nodes join and leave?</summary>
 
-**Answer:**  
+**Answer:**
 As system nodes dynamically join, leave, or restart over years, Vector Clocks accumulate stale `Map<NodeID, Counter>` entries. To prevent clock sizes from ballooning:
+
 1. Implement **Vector Clock Trimming (Threshold GC)**: Set a maximum clock size limit (e.g., $K=10$ entries) alongside timestamp metadata `(NodeID, Counter, Timestamp)`.
 2. When clock length exceeds $K$, purge the oldest timestamp entry.
-3. *Architectural Trade-off:* Purging clock entries can convert ancestor relationships into false concurrent updates, forcing fallback to Last-Write-Wins (LWW) timestamp reconciliation.
+3. _Architectural Trade-off:_ Purging clock entries can convert ancestor relationships into false concurrent updates, forcing fallback to Last-Write-Wins (LWW) timestamp reconciliation.
 
 </details>
 
 <details>
 <summary>❓ Why use Virtual Nodes (`vnodes`) instead of standard physical node tokens on the Consistent Hash Ring?</summary>
 
-**Answer:**  
+**Answer:**
 Standard consistent hashing maps each physical server to a single token on the ring. This creates two fatal production vulnerabilities:
+
 1. **Non-Uniform Data Distribution:** Hashing servers directly results in uneven token gaps, leading to severe load imbalance (hotspots).
 2. **Cascading Failures:** When Node $B$ dies, 100% of its key space transfers to its immediate physical successor Node $C$. Node $C$ becomes overwhelmed by double traffic and dies, triggering a domino collapse.
 
@@ -693,8 +699,9 @@ Standard consistent hashing maps each physical server to a single token on the r
 <details>
 <summary>❓ How does LSM-Tree compaction balance Write Amplification, Read Amplification, and Space Amplification?</summary>
 
-**Answer:**  
+**Answer:**
 LSM-Tree compaction merges smaller SSTables into larger sorted disk files to eliminate duplicate keys and deleted tombstones:
+
 - **Size-Tiered Compaction Strategy (STCS):** Flushes SSTables of similar sizes into larger tiers. Optimized for **Write-Heavy workloads** (Low Write Amplification), but high Read Amplification (must check many SSTables per read) and high Space Amplification (requires 50% free disk space for compaction).
 - **Leveled Compaction Strategy (LCS):** Divides disk storage into fixed levels ($L_1, L_2, \dots$) where each level is $10\times$ larger than the previous, with strictly non-overlapping key ranges per level. Optimized for **Read-Heavy workloads** (Low Read Amplification, low space overhead), at the cost of higher Write Amplification during level merges.
 
@@ -703,13 +710,14 @@ LSM-Tree compaction merges smaller SSTables into larger sorted disk files to eli
 <details>
 <summary>❓ How does the Phi Accrual Failure Detector improve upon traditional fixed heartbeat timeouts in Gossip protocols?</summary>
 
-**Answer:**  
+**Answer:**
 Traditional binary failure detectors declare a node dead if no heartbeat arrives within a fixed threshold (e.g., 5 seconds). In fluctuating cross-datacenter networks, fixed timeouts cause false-positive node evictions during transient network congestion.
 
-**Phi Accrual Failure Detector ($\Phi$):**  
+**Phi Accrual Failure Detector ($\Phi$):**
 Instead of binary `ALIVE` or `DEAD`, it calculates a continuous probabilistic scale value $\Phi$:
 $$\Phi = -\log_{10}\left(P_{\text{later}}(t - t_{\text{last}})\right)$$
 where $P_{\text{later}}(t)$ is the probability that a heartbeat arrives $t$ time units after the previous one, assuming an sliding window normal distribution. Application components set custom sensitivity thresholds:
+
 - $\Phi \ge 8$: Trigger background ping re-tries.
 - $\Phi \ge 10$: Mark node as `SUSPECT` and route reads to backup replicas.
 - $\Phi \ge 12$: Mark node as `DEAD` and initiate Hinted Handoff.
@@ -719,10 +727,11 @@ where $P_{\text{later}}(t)$ is the probability that a heartbeat arrives $t$ time
 <details>
 <summary>❓ How do write operations handle deleted keys without causing zombie data during anti-entropy sync?</summary>
 
-**Answer:**  
+**Answer:**
 In distributed key-value stores, executing an immediate physical delete (`DELETE FROM memtable WHERE key=K`) causes deleted data to reappear ("zombie keys") when an out-of-sync replica re-populates the key during Read Repair or Anti-Entropy sync.
 
-**Tombstone Resolution:**  
+**Tombstone Resolution:**
+
 1. When `delete(key)` is invoked, the storage engine writes a special marker called a **Tombstone** containing a deletion timestamp.
 2. The Tombstone is replicated across nodes like a normal write update.
 3. During LSM compaction, Tombstones override older record versions.

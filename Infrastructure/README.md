@@ -96,7 +96,7 @@ Modern CDNs (Cloudflare, Akamai) allow you to run code at the edge.
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Why does a "Service Mesh" introduce latency, and how do we justify it?
 

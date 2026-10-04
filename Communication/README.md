@@ -136,7 +136,7 @@ Choosing a communication strategy is about managing **State**, **Latency**, and 
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q0: Why is WebRTC the only choice for ultra-low latency, and what is the trade-off?
 

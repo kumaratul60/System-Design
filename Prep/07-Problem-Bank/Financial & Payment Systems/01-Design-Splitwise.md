@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Splitwise
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Multi-tenant expense-sharing platform serving 10M DAU, handling complex group ledgers, split strategies, multi-currency conversions, and optimal minimum cash flow debt simplification.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Multi-tenant expense-sharing platform serving 10M DAU, handling complex group ledgers, split strategies, multi-currency conversions, and optimal minimum cash flow debt simplification.
 > **Navigation:** ⬅️ [Back to Financial & Payment Systems Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -56,14 +56,14 @@ Total Storage Required (5 Years): ~15.5 TB (Sharded PostgreSQL cluster / Cockroa
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Frontend Framework** | Next.js 14 (App Router) + React | SSR/ISR for quick dashboard load, React Query for optimistic balance updates. |
-| **API Gateway** | Kong / Envoy | JWT validation, rate limiting, and idempotency key forwarding. |
-| **Primary Database** | PostgreSQL (Relational) | Strong ACID transactions, multi-table JOINs for group balances, pessimistic locking support (`SELECT FOR UPDATE`). |
-| **Caching Layer** | Redis Cluster | Caching pre-computed net group balances and user session tokens ($P_{99} < 10\text{ms}$). |
-| **Graph / Async Worker** | Node.js / Go Background Workers | Offloading $O(V \log V)$ Minimum Cash Flow debt simplification logic out of the main HTTP request/response cycle. |
-| **Event Bus / Message Queue**| Apache Kafka / RabbitMQ | Decoupled notifications, audit log streams, and async graph re-computation triggers. |
+| Component                     | Technology Choice               | Architectural Rationale                                                                                            |
+| :---------------------------- | :------------------------------ | :----------------------------------------------------------------------------------------------------------------- |
+| **Frontend Framework**        | Next.js 14 (App Router) + React | SSR/ISR for quick dashboard load, React Query for optimistic balance updates.                                      |
+| **API Gateway**               | Kong / Envoy                    | JWT validation, rate limiting, and idempotency key forwarding.                                                     |
+| **Primary Database**          | PostgreSQL (Relational)         | Strong ACID transactions, multi-table JOINs for group balances, pessimistic locking support (`SELECT FOR UPDATE`). |
+| **Caching Layer**             | Redis Cluster                   | Caching pre-computed net group balances and user session tokens ($P_{99} < 10\text{ms}$).                          |
+| **Graph / Async Worker**      | Node.js / Go Background Workers | Offloading $O(V \log V)$ Minimum Cash Flow debt simplification logic out of the main HTTP request/response cycle.  |
+| **Event Bus / Message Queue** | Apache Kafka / RabbitMQ         | Decoupled notifications, audit log streams, and async graph re-computation triggers.                               |
 
 ---
 
@@ -177,17 +177,17 @@ sequenceDiagram
     Client->>API: POST /api/v1/expenses { groupId, amount, paidBy, splitType, splits }
     API->>Strategy: validateAndCalculate(splitType, splits, amount)
     Strategy-->>API: Validated Splits Array (Amounts rounded to 2 decimals)
-    
+
     API->>DB: BEGIN TRANSACTION
     API->>DB: INSERT INTO expenses (...)
     API->>DB: INSERT INTO expense_splits (...)
     API->>DB: UPDATE/INSERT ledger_balances (Append compensating entries)
     API->>DB: COMMIT TRANSACTION
-    
+
     API->>Redis: Invalidate Cache group:balances:{groupId}
     API->>MQ: Publish EVENT "EXPENSE_ADDED" { groupId, expenseId }
     API-->>Client: HTTP 201 Created { expenseId, netBalances }
-    
+
     MQ->>Worker: Consume "EXPENSE_ADDED"
     Worker->>DB: Fetch Net Group Balances Graph
     Worker->>Worker: Run Min-Cash-Flow Greedy Algorithm O(V log V)
@@ -302,8 +302,8 @@ export interface ExpenseRequest {
 
 export interface DebtEdge {
   fromUser: string; // Debtor
-  toUser: string;   // Creditor
-  amount: number;   // Stored in cents
+  toUser: string; // Creditor
+  amount: number; // Stored in cents
 }
 
 // ============================================================================
@@ -410,7 +410,8 @@ export class MinCashFlowOptimizer {
     creditors.sort((a, b) => b.balance - a.balance);
 
     const result: DebtEdge[] = [];
-    let i = 0, j = 0;
+    let i = 0,
+      j = 0;
 
     while (i < debtors.length && j < creditors.length) {
       const debtor = debtors[i];
@@ -442,7 +443,7 @@ export class ExpenseService {
   constructor(
     private dbClient: any,
     private redisClient: any,
-    private eventBus: any
+    private eventBus: any,
   ) {}
 
   public async createExpense(req: ExpenseRequest): Promise<ExpenseRequest> {
@@ -457,22 +458,23 @@ export class ExpenseService {
       await tx.query(
         `INSERT INTO expenses (id, group_id, description, total_amount, paid_by_user_id, split_type)
          VALUES ($1, $2, $3, $4, $5, $6)`,
-        [req.id, req.groupId, req.description, req.totalAmount, req.paidByUserId, req.splitType]
+        [req.id, req.groupId, req.description, req.totalAmount, req.paidByUserId, req.splitType],
       );
 
       // Record Splits & Ledger Entries
       for (const split of computedSplits) {
-        await tx.query(
-          `INSERT INTO expense_splits (expense_id, user_id, amount) VALUES ($1, $2, $3)`,
-          [req.id, split.userId, split.amount]
-        );
+        await tx.query(`INSERT INTO expense_splits (expense_id, user_id, amount) VALUES ($1, $2, $3)`, [
+          req.id,
+          split.userId,
+          split.amount,
+        ]);
 
         // Payer gets credited, participants get debited
         if (split.userId !== req.paidByUserId) {
           await tx.query(
             `INSERT INTO ledger_entries (group_id, expense_id, debtor_id, creditor_id, amount)
              VALUES ($1, $2, $3, $4, $5)`,
-            [req.groupId, req.id, split.userId, req.paidByUserId, split.amount]
+            [req.groupId, req.id, split.userId, req.paidByUserId, split.amount],
           );
         }
       }
@@ -492,20 +494,26 @@ export class ExpenseService {
 ## 8. 🔀 High-Level Design (HLD) & Scale Bottlenecks
 
 ### 1. Precision & Integer Cent Storage
+
 Floating-point arithmetic in JavaScript/Python (`0.1 + 0.2 = 0.30000000000000004`) causes severe balance drift over millions of transactions.
+
 - **Solution:** All monetary amounts are stored strictly as **integers representing the lowest currency unit (cents/paise)**. Remainder cents in equal or percentage splits are deterministically allocated to the first $N$ participants.
 
 ### 2. Double-Entry Bookkeeping Ledger
+
 Mutating net balances directly via `UPDATE user_balances SET balance = balance + X` leads to deadlocks under high concurrency and leaves zero audit trail.
+
 - **Solution:** Append-only ledger model (`ledger_entries` table). Net balance is a derived view computed via `SUM(amount)` grouped by user, backed by a Redis cached snapshot.
 
 ### 3. Asynchronous Debt Simplification
+
 Executing the Minimum Cash Flow algorithm ($O(V \log V)$) synchronously inside the `POST /expense` handler blocks HTTP threads for large groups.
+
 - **Solution:** Calculate raw pairwise debts synchronously. Trigger an asynchronous Kafka event to recompute simplified group graph debts into Redis for UI consumption.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ 1. How do you resolve floating-point rounding errors when splitting $100 among 3 users ($33.33 x 3 = $99.99)?</summary>

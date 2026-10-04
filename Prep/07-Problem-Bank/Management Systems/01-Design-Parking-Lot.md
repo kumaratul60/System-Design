@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Multi-Level Parking Lot System
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Designing a highly available, extensible, concurrent multi-level parking lot management system supporting real-time spot allocation, dynamic pricing, barrier control, and automated exit ticketing.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Designing a highly available, extensible, concurrent multi-level parking lot management system supporting real-time spot allocation, dynamic pricing, barrier control, and automated exit ticketing.
 > **Navigation:** ⬅️ [Back to Category Index](./README.md) | 📅 [8-Week Roadmap](../../ROADMAP.md)
 
 ---
@@ -10,10 +10,10 @@
 
 ### 📋 Functional Requirements (FR)
 
-1. **Multi-Level Infrastructure:** Support multiple parking levels ($L_1, L_2, \dots, L_n$), each containing distinct entry/exit gates, display boards, and designated parking spots categorized by size: *Motorcycle*, *Compact*, *Large (Bus/Truck)*, and *EV Charging Spots*.
+1. **Multi-Level Infrastructure:** Support multiple parking levels ($L_1, L_2, \dots, L_n$), each containing distinct entry/exit gates, display boards, and designated parking spots categorized by size: _Motorcycle_, _Compact_, _Large (Bus/Truck)_, and _EV Charging Spots_.
 2. **Automated Ticket Issuance:** Upon arrival at an entry gate, the system reads vehicle details (license plate, type), allocates an optimal available spot, issues a timestamped `ParkingTicket` with barcode/RFID, and opens the entry barrier.
-3. **Spot Allocation Strategy:** Intelligently allocate parking spots based on configured strategies (e.g., *Nearest to Entry Gate*, *Lowest Level First*, or *Vehicle Size Optimization*).
-4. **Checkout & Fee Calculation:** Upon exit, scan the ticket at an exit terminal, compute the total elapsed duration, apply vehicle/spot-specific pricing rules, process payment, update spot status to *Available*, and raise the exit barrier.
+3. **Spot Allocation Strategy:** Intelligently allocate parking spots based on configured strategies (e.g., _Nearest to Entry Gate_, _Lowest Level First_, or _Vehicle Size Optimization_).
+4. **Checkout & Fee Calculation:** Upon exit, scan the ticket at an exit terminal, compute the total elapsed duration, apply vehicle/spot-specific pricing rules, process payment, update spot status to _Available_, and raise the exit barrier.
 5. **Real-Time Display Boards:** Dynamically reflect spot availability count per vehicle type per floor on entry gates and level signage.
 6. **Concurrent Safety:** Prevent overbooking or double-allocation of a single spot when multiple entry gates operate simultaneously.
 
@@ -53,14 +53,14 @@ Storage & Memory Estimates:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-| :--- | :--- | :--- |
-| **Core Service / LLD** | TypeScript / Node.js (or Java/Go) | Strongly typed domain model, asynchronous I/O handling gate hardware requests efficiently. |
-| **API Layer** | gRPC / REST API over HTTP/2 | Sub-10ms binary serialization for hardware controllers (barrier gates, ALPR cameras). |
-| **Primary Store** | PostgreSQL | Relational schema with ACID guarantees for historical tickets, transactions, and audit logs. |
-| **In-Memory Cache / Lock** | Redis Cluster | Atomic `Lua` scripts or `SETNX` distributed locks for zero-race spot reservation and live counters. |
-| **Message Broker** | Apache Kafka / RabbitMQ | Pub/Sub event distribution for updating level display boards and sending telemetry data to analytics. |
-| **Hardware Layer (Edge)** | ALPR Camera + IoT Microcontroller | Automatic License Plate Recognition (ALPR) for camera-driven frictionless gate entry. |
+| Component                  | Technology Choice                 | Architectural Rationale                                                                               |
+| :------------------------- | :-------------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **Core Service / LLD**     | TypeScript / Node.js (or Java/Go) | Strongly typed domain model, asynchronous I/O handling gate hardware requests efficiently.            |
+| **API Layer**              | gRPC / REST API over HTTP/2       | Sub-10ms binary serialization for hardware controllers (barrier gates, ALPR cameras).                 |
+| **Primary Store**          | PostgreSQL                        | Relational schema with ACID guarantees for historical tickets, transactions, and audit logs.          |
+| **In-Memory Cache / Lock** | Redis Cluster                     | Atomic `Lua` scripts or `SETNX` distributed locks for zero-race spot reservation and live counters.   |
+| **Message Broker**         | Apache Kafka / RabbitMQ           | Pub/Sub event distribution for updating level display boards and sending telemetry data to analytics. |
+| **Hardware Layer (Edge)**  | ALPR Camera + IoT Microcontroller | Automatic License Plate Recognition (ALPR) for camera-driven frictionless gate entry.                 |
 
 ---
 
@@ -196,8 +196,8 @@ sequenceDiagram
   - `IPricingStrategy` handles fee calculation rules exclusively.
   - `DisplayBoard` handles visual presentation of availability metrics.
 - **Open/Closed Principle (OCP):**
-  - New vehicle types (e.g., *ElectricBus*) or spot types can be introduced without modifying `ParkingLotManager`.
-  - New pricing algorithms (e.g., *Flat Weekend Rate*, *EV Charge Time Added*) implement `IPricingStrategy` without altering checkout flows.
+  - New vehicle types (e.g., _ElectricBus_) or spot types can be introduced without modifying `ParkingLotManager`.
+  - New pricing algorithms (e.g., _Flat Weekend Rate_, _EV Charge Time Added_) implement `IPricingStrategy` without altering checkout flows.
 - **Liskov Substitution Principle (LSP):**
   - Subclasses of `ParkingSpot` (e.g., `EVSpot`, `LargeSpot`) conform strictly to `ParkingSpot` invariants and can be evaluated interchangeably by allocation algorithms.
 - **Interface Segregation Principle (ISP):**
@@ -209,12 +209,12 @@ sequenceDiagram
 
 ## 6. 🎨 Design Patterns Selection
 
-| Pattern Name | Application in Parking Lot System | Architectural Benefit |
-| :--- | :--- | :--- |
-| **Singleton Pattern** | `ParkingLotManager` | Ensures a single centralized control point managing physical inventory state across levels. |
-| **Factory Method Pattern** | `VehicleFactory`, `SpotFactory` | Instantiates appropriate domain objects dynamically based on ALPR camera sensor payload. |
-| **Strategy Pattern** | `IParkingStrategy`, `IPricingStrategy` | Swappable spot allocation strategies (Nearest, Lowest Level) and fee rules (Hourly, Dynamic). |
-| **Observer Pattern** | `DisplayBoard`, `AuditLogger` | Event-driven updates trigger display board count re-rendering whenever spots are assigned or vacated. |
+| Pattern Name               | Application in Parking Lot System      | Architectural Benefit                                                                                 |
+| :------------------------- | :------------------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **Singleton Pattern**      | `ParkingLotManager`                    | Ensures a single centralized control point managing physical inventory state across levels.           |
+| **Factory Method Pattern** | `VehicleFactory`, `SpotFactory`        | Instantiates appropriate domain objects dynamically based on ALPR camera sensor payload.              |
+| **Strategy Pattern**       | `IParkingStrategy`, `IPricingStrategy` | Swappable spot allocation strategies (Nearest, Lowest Level) and fee rules (Hourly, Dynamic).         |
+| **Observer Pattern**       | `DisplayBoard`, `AuditLogger`          | Event-driven updates trigger display board count re-rendering whenever spots are assigned or vacated. |
 
 ---
 
@@ -248,7 +248,7 @@ export enum TicketStatus {
 export abstract class Vehicle {
   constructor(
     public readonly licensePlate: string,
-    public readonly type: VehicleType
+    public readonly type: VehicleType,
   ) {}
 }
 
@@ -286,7 +286,7 @@ export abstract class ParkingSpot {
   constructor(
     public readonly spotId: string,
     public readonly levelNumber: number,
-    public readonly spotType: ParkingSpotType
+    public readonly spotType: ParkingSpotType,
   ) {}
 
   public isAvailable(): boolean {
@@ -485,7 +485,9 @@ export class ParkingLotManager {
     const ticket = new ParkingTicket(ticketId, vehicle, spot);
     this.activeTickets.set(ticketId, ticket);
 
-    console.log(`[ENTRY GATE] Issued Ticket ${ticketId} to Vehicle ${vehicle.licensePlate} at Spot ${spot.spotId} (L${spot.levelNumber})`);
+    console.log(
+      `[ENTRY GATE] Issued Ticket ${ticketId} to Vehicle ${vehicle.licensePlate} at Spot ${spot.spotId} (L${spot.levelNumber})`,
+    );
     return ticket;
   }
 
@@ -500,7 +502,9 @@ export class ParkingLotManager {
     ticket.spot.vacate();
     this.activeTickets.delete(ticketId);
 
-    console.log(`[EXIT GATE] Ticket ${ticketId} Processed. Duration: Paid $${fee}. Spot ${ticket.spot.spotId} is now VACANT.`);
+    console.log(
+      `[EXIT GATE] Ticket ${ticketId} Processed. Duration: Paid $${fee}. Spot ${ticket.spot.spotId} is now VACANT.`,
+    );
     return fee;
   }
 }
@@ -569,21 +573,22 @@ graph TB
 ### ⚡ Critical Scale Bottlenecks & Architectural Fixes
 
 1. **Race Conditions on Concurrent Gate Entries (Thundering Herd):**
-   - *Problem:* 10 entry gates simultaneously attempt to claim the last available spot on Level 1.
-   - *Solution:* Execute atomic spot reservations using Redis `Lua` scripts with compare-and-set operations, or utilize PostgreSQL pessimistic row locking (`SELECT * FROM spots WHERE status = 'FREE' FOR UPDATE SKIP LOCKED LIMIT 1`).
+   - _Problem:_ 10 entry gates simultaneously attempt to claim the last available spot on Level 1.
+   - _Solution:_ Execute atomic spot reservations using Redis `Lua` scripts with compare-and-set operations, or utilize PostgreSQL pessimistic row locking (`SELECT * FROM spots WHERE status = 'FREE' FOR UPDATE SKIP LOCKED LIMIT 1`).
 2. **Offline Resilience (Internet Outage):**
-   - *Problem:* Cloud backend connectivity drops while vehicles line up at entry gates.
-   - *Solution:* Deploy Edge Nodes inside each parking building containing a synchronized Redis cache. Entry gates generate cryptographically signed barcode tickets containing `(VehicleID, SpotID, Timestamp, Signature)` valid locally without central server confirmation.
+   - _Problem:_ Cloud backend connectivity drops while vehicles line up at entry gates.
+   - _Solution:_ Deploy Edge Nodes inside each parking building containing a synchronized Redis cache. Entry gates generate cryptographically signed barcode tickets containing `(VehicleID, SpotID, Timestamp, Signature)` valid locally without central server confirmation.
 
 ---
 
-## ❓ 9. Collapsed Senior/Staff Level Grill Q&A
+## ❓ 9. Collapsed Harness Grill Q&A
 
 <details>
 <summary>❓ How do you prevent double-booking of a single parking spot when 50 gates check in simultaneously?</summary>
 
 **Answer:**
 We prevent double-booking using a two-tiered isolation model:
+
 1. **In-Memory Atomicity (Primary):** Spot states are mirrored in a Redis Cluster. Spot allocation runs inside a Redis `Lua` script executing `SPOP` or searching a bitset atomically. Since Redis single-threads command execution per shard, race conditions are eliminated at the memory layer.
 2. **Database Fallback Constraint (Secondary):** In PostgreSQL, the `parking_spots` table contains a conditional unique index: `CREATE UNIQUE INDEX idx_single_occupancy ON parking_spots (spot_id) WHERE is_occupied = TRUE;`. If two concurrent transactions bypass cache, one will fail with a unique index violation and automatically retry.
 
@@ -594,9 +599,13 @@ We prevent double-booking using a two-tiered isolation model:
 
 **Answer:**
 We leverage the **Strategy Pattern** paired with real-time occupancy metrics:
+
 ```typescript
 export class DynamicSurgePricingStrategy implements IPricingStrategy {
-  constructor(private baseStrategy: IPricingStrategy, private occupancyRatio: number) {}
+  constructor(
+    private baseStrategy: IPricingStrategy,
+    private occupancyRatio: number,
+  ) {}
 
   public calculateFee(ticket: ParkingTicket): number {
     const baseFee = this.baseStrategy.calculateFee(ticket);
@@ -606,6 +615,7 @@ export class DynamicSurgePricingStrategy implements IPricingStrategy {
   }
 }
 ```
+
 Occupancy statistics are updated asynchronously via Kafka stream aggregations every 30 seconds.
 
 </details>

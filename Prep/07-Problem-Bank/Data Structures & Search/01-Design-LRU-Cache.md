@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design LRU Cache
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building a high-throughput, thread-safe in-memory Least Recently Used (LRU) Cache supporting $O(1)$ get/put operations, TTL expiration, and eviction policies.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building a high-throughput, thread-safe in-memory Least Recently Used (LRU) Cache supporting $O(1)$ get/put operations, TTL expiration, and eviction policies.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,12 +9,14 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **$O(1)$ Operations:** Support $O(1)$ time complexity for `get(key)` and `put(key, value)`.
 2. **LRU Eviction Policy:** Automatically evict the Least Recently Used item when cache capacity is exceeded.
 3. **Node Promotion:** Accessing (`get`) or updating (`put`) an existing key promotes the entry to the Most Recently Used (MRU) position.
 4. **Time To Live (TTL):** Optional key-level expiration (passive + active eviction).
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **High Throughput:** Handle $>500,000$ operations per second with sub-millisecond latency ($P_{99} < 1\text{ms}$).
 2. **Thread Safety:** Concurrent read/write safety using fine-grained locks or Read-Write Reentrant locks.
 
@@ -33,10 +35,10 @@ Target QPS: 500,000 QPS Peak
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Lookup Store** | HashMap / Map | $O(1)$ direct reference lookup from key to Node. |
-| **Recency Queue** | Doubly Linked List | $O(1)$ removal and head insertion without shifting memory. |
+| Component             | Technology Choice                 | Architectural Rationale                                    |
+| :-------------------- | :-------------------------------- | :--------------------------------------------------------- |
+| **Lookup Store**      | HashMap / Map                     | $O(1)$ direct reference lookup from key to Node.           |
+| **Recency Queue**     | Doubly Linked List                | $O(1)$ removal and head insertion without shifting memory. |
 | **Concurrency Guard** | ReadWriteLock / ConcurrentHashMap | Prevents race conditions during concurrent node mutations. |
 
 ---
@@ -124,7 +126,7 @@ export class CacheNode<K, V> {
 
   constructor(
     public key: K,
-    public value: V
+    public value: V,
   ) {}
 }
 
@@ -135,7 +137,7 @@ export class LRUCache<K, V> {
 
   constructor(public readonly capacity: number) {
     if (capacity <= 0) throw new Error('Capacity must be greater than zero');
-    
+
     // Sentinel Dummy Head and Tail nodes
     this.head = new CacheNode<any, any>(null, null);
     this.tail = new CacheNode<any, any>(null, null);
@@ -207,10 +209,11 @@ export class LRUCache<K, V> {
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: Why do we use dummy Head and Tail sentinel nodes in the Doubly LinkedList?</strong></summary>
 
 **Answer:** Dummy sentinel nodes eliminate edge-case null checks during insertion and deletion (e.g. inserting into an empty list, or removing the last remaining node). This simplifies pointer operations into clean $O(1)$ assignments without branching logic.
+
 </details>

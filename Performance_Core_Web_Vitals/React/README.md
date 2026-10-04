@@ -78,7 +78,7 @@ Similar to debouncing, but handled by React's scheduler. It defers re-rendering 
 
 ---
 
-## Senior/Staff Level "Grill" Questions
+## Harness "Grill" Questions
 
 ### Q1: Why is "Over-memoization" a potential performance anti-pattern?
 

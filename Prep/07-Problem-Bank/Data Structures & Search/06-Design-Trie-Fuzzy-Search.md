@@ -1,7 +1,7 @@
 # 🛠️ Enterprise System Design Blueprint: Design Trie with Wildcard & Levenshtein Fuzzy Search
 
-> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers  
-> **Product Perspective:** Building an enterprise high-performance prefix search engine supporting exact matches, single-character wildcard matching (`.`), and fuzzy matching within a maximum Levenshtein edit distance using DFS state pruning over a Trie structure.  
+> **Target Role:** Principal / Staff Architect / Senior LLD & HLD Engineers
+> **Product Perspective:** Building an enterprise high-performance prefix search engine supporting exact matches, single-character wildcard matching (`.`), and fuzzy matching within a maximum Levenshtein edit distance using DFS state pruning over a Trie structure.
 > **Navigation:** ⬅️ [Back to Data Structures & Search Index](./README.md) | 📅 [Problem Bank Index](../README.md)
 
 ---
@@ -9,6 +9,7 @@
 ## 1. 🎯 Requirements & Product Scope
 
 ### 📋 Functional Requirements (FR)
+
 1. **Dictionary Insertion:** `insert(word: string, payload?: T)` adds words into the search structure in $O(L)$ time ($L = \text{word length}$).
 2. **Exact Search:** `searchExact(word: string): boolean` returns true if exact word exists.
 3. **Prefix Search:** `startsWith(prefix: string): string[]` returns all words beginning with prefix.
@@ -16,6 +17,7 @@
 5. **Fuzzy Match (Levenshtein Distance):** `searchFuzzy(term: string, maxEditDistance: number): MatchResult[]` returns all words within `maxEditDistance` (supporting insertions, deletions, substitutions).
 
 ### ⚡ Non-Functional Requirements (NFR)
+
 1. **Ultra-Low Latency:** Exact match $<1\text{ms}$, Fuzzy match $<15\text{ms}$ over 500,000 dictionary words.
 2. **Branch Pruning Efficiency:** Fuzzy search must prune Trie traversal branches as soon as the calculated minimum edit distance row exceeds `maxEditDistance`.
 3. **Memory Footprint:** Optimize pointer overhead per node using dynamically allocated child maps.
@@ -43,10 +45,10 @@ Query Throughput:
 
 ## 3. 🛠️ Tech Stack & Architectural Justifications
 
-| Component | Technology Choice | Architectural Rationale |
-|:---|:---|:---|
-| **Prefix Tree Storage** | Dynamic Trie (`TrieNode`) | $O(L)$ time complexity for insertions and prefix lookups. |
-| **Child Node Indexing** | `Map<char, TrieNode>` / Array | Fast key lookup; handles variable character sets efficiently without static 26-element array bloat. |
+| Component               | Technology Choice                  | Architectural Rationale                                                                                                         |
+| :---------------------- | :--------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| **Prefix Tree Storage** | Dynamic Trie (`TrieNode`)          | $O(L)$ time complexity for insertions and prefix lookups.                                                                       |
+| **Child Node Indexing** | `Map<char, TrieNode>` / Array      | Fast key lookup; handles variable character sets efficiently without static 26-element array bloat.                             |
 | **Fuzzy Matching Algo** | Recursive Trie DFS + DP Row Vector | Computes Levenshtein matrix on the fly line-by-line during DFS, pruning subtrees immediately when `min(row) > maxEditDistance`. |
 
 ---
@@ -187,12 +189,7 @@ export class FuzzyTrie {
     return results;
   }
 
-  private dfsWildcard(
-    node: TrieNode,
-    pattern: string,
-    index: number,
-    results: string[]
-  ): void {
+  private dfsWildcard(node: TrieNode, pattern: string, index: number, results: string[]): void {
     if (index === pattern.length) {
       if (node.isEndOfWord && node.word) {
         results.push(node.word);
@@ -237,7 +234,7 @@ export class FuzzyTrie {
     target: string,
     prevRow: number[],
     maxDistance: number,
-    results: MatchResult[]
+    results: MatchResult[],
   ): void {
     const currentRow: number[] = [prevRow[0] + 1];
 
@@ -288,7 +285,7 @@ flowchart LR
 
 ---
 
-## 9. 🎙️ Senior/Staff Level Grill Q&A
+## 9. 🎙️ Harness Grill Q&A
 
 <details>
 <summary><strong>Q1: How does line-by-line Levenshtein DP calculation over a Trie achieve massive speedups over checking dictionary words individually?</strong></summary>
@@ -296,6 +293,7 @@ flowchart LR
 **Answer:**
 Checking $N$ dictionary words individually against a target requires computing $N$ full Levenshtein tables ($O(N \times L^2)$).
 With Trie-based DFS:
+
 1. **Shared Computation:** Words with common prefixes (e.g. `cat`, `cater`, `cats`, `category`) evaluate prefix `cat` DP values **once**.
 2. **Early Branch Pruning:** If at depth 3 the minimum element of `currentRow` exceeds `maxEditDistance`, the entire subtree containing millions of descendant words is skipped immediately in $O(1)$.
 </details>
@@ -305,12 +303,14 @@ With Trie-based DFS:
 
 **Answer:**
 A fixed 26-element array (`TrieNode[26]`) consumes 26 pointers (208 bytes) per node regardless of how many children exist. For sparse nodes averaging 2-3 children, 90% of memory is wasted. A dynamic `Map<string, TrieNode>` allocates pointers only for existing characters, cutting memory footprint by up to 75% for enterprise scale dictionaries.
+
 </details>
 
 <details>
 <summary><strong>Q3: How do you handle multi-word phrase matching and unicode tokenization?</strong></summary>
 
 **Answer:**
+
 1. **Normalization:** Convert input strings via Unicode Normalization Form C (NFC) and lowercasing.
 2. **Word Boundary Tokenization:** Split phrases into distinct tokens and query the Trie per token, combining results via inverted index posting lists.
 </details>
