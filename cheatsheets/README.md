@@ -10,6 +10,7 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 
 - 🗄️ **[Database Decisions & Architectures](dbdecision.md)**: A structured framework for choosing databases, selection matrix, case studies, and interview design flows.
 - 🛡️ **[Rate Limiting & Deadlocks Master Cheatsheet](RateLimiting_and_Deadlocks.md)**: Distributed rate limiting algorithms, Redis Lua scripts, horizontal vs vertical scaling, fail-open/closed fallback strategies, Coffman conditions, ABBA mutex code fix, and deadlock prevention.
+- ⚖️ **[Load Balancing Algorithms & Architectures](Load_Balancing_Algorithms.md)**: Frontend client-side balancing, Web Worker thread pools, GeoDNS & BGP Anycast, L4 vs L7, HTTP/2 & gRPC single-connection trap, Round Robin, Least Connections, Consistent Hashing (V-Nodes), Power of Two Choices (P2C), and Maglev.
 - 🌳 **[Document Object Model (DOM)](DOM.md)**: Live vs Static collections, Shadow DOM, Event delegation, element metrics, and optimization paths.
 - 🧪 **[Periodic Table of HTML Elements](https://blog.alena.rocks/en/artifacts/html-elements/)**: Interactive periodic table covering all 115 HTML Living Standard elements categorized across 11 spec sections with void elements and MDN documentation links.
 - 🎨 **[CSS Object Model (CSSOM)](cssom.md)**: Critical Rendering Path, inline vs computed styles, CSS variables, performance optimizations, and Font metrics (Ascenders / Descenders).
