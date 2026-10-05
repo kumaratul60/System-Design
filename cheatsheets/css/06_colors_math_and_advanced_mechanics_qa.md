@@ -162,3 +162,31 @@ To position and animate an element along the outer perimeter border edge of a co
 >    - [ ] 100vw measures the document width, which grows with content _(Incorrect: `100vw` measures viewport, not document)_
 >    - [ ] 100vw rounds up to the nearest whole pixel _(Incorrect: subpixel rounding is not the primary cause)_
 > 3. **The Fix**: Use `width: 100%` instead of `100vw`, or add `scrollbar-gutter: stable` to `html`, or use modern inline viewport units `100vi`.
+
+### Q6: What is the 3-question evaluation framework for safely adopting modern CSS features?
+
+> **Answer**: When evaluating whether to adopt emerging or modern CSS specifications, use this architectural decision triad:
+>
+> 1. **Is it a progressive enhancement?**
+>    - _Rationale_: If a feature fails to load or execute in older browsers, does it break the fundamental layout or user functionality? Something like `interpolate-size: allow-keywords` is a great example of a time to say **yes**. Does it really matter if an accordion or dropdown doesn’t transition smoothly to and from a height of `auto`? As long as it opens and closes, user access is completely preserved.
+>    - _Reference_: [Video on `interpolate-size` by Kevin Powell](https://www.youtube.com/watch?v=WhS4xRSIjws).
+> 2. **Can I provide a simple fallback?**
+>    - _Rationale_: Can legacy browsers simply leverage standard CSS cascade behavior to consume an earlier declaration? For example, declaring `oklch()` won’t work in some older browsers. However, declaring `hsl()` or `hex` first, and the `oklch()` version second, provides an automatic zero-cost fallback. Build tools like [PostCSS Preset Env](https://preset-env.cssdb.org/) automate this fallback generation.
+> 3. **Am I okay with a slightly different approach using Feature Queries (`@supports`)?**
+>    - _Rationale_: If the cutting-edge feature involves layout-shifting structures (like CSS Masonry / `grid-lanes`, currently supported experimentally in Safari), wrapping it inside `@supports (grid-template-rows: masonry)` enables providing a solid CSS Grid or Flexbox fallback version for all other engines.
+
+### Q7: You're fading cards in with a scroll-driven animation, but they fade back out every time you scroll past. You want each card to animate in once and stay. Which of these can help make it possible?
+
+- [ ] `animation-direction: normal`
+- [x] **`animation-fill-mode: forwards`** _(Correct)_
+- [ ] `animation-iteration-count: 1`
+- [ ] `animation-play-state: paused`
+
+> **Answer**: **`animation-fill-mode: forwards`** (or `both`).
+>
+> 1. **The Cause**: By default, CSS scroll-driven animations (`animation-timeline: view()`) scrub progress bidirectionally along with scroll position. When an entrance animation is scoped to entry (e.g. `animation-range: entry`), once the card scrolls past that threshold, the animation is no longer active in range. Without a fill mode directive, the element resets or fades back out.
+> 2. **The Fix**: `animation-fill-mode: forwards` (or `both`) instructs the browser to retain the styles applied by the final keyframe (`100%` / `opacity: 1`) after the animation range ends.
+> 3. **Options Breakdown**:
+>    - `animation-direction: normal`: Controls keyframe order (from 0% to 100%), but still scrubs and resets outside the range.
+>    - `animation-iteration-count: 1`: In scroll-driven timelines, the animation is mapped across scroll distance, not discrete time iterations.
+>    - `animation-play-state: paused`: Pauses the animation at its current state; it doesn't animate upon entry and persist afterwards.

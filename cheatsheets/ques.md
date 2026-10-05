@@ -27,6 +27,13 @@ This is a comprehensive collection of interview questions, ranging from core fun
   - **Answer**: `100vw` includes the width of the vertical scrollbar track (~15-17px on Windows/Linux), whereas the document layout (`100%`) excludes it. Because `100vw > 100%`, it overflows horizontally. Fix with `width: 100%` or `scrollbar-gutter: stable`.
 - **Q:** Why does `width: 100%` with `margin: 1rem` overflow even when `box-sizing: border-box` is set?
   - **Answer**: `box-sizing: border-box` only contains padding and border within the declared width; margins remain outside the border box ($100\% + 2\text{rem}$). Fix with `width: auto`.
+- **Q:** You're fading cards in with a scroll-driven animation, but they fade back out every time you scroll past. You want each card to animate in once and stay. Which property makes it possible?
+  - **Answer**: `animation-fill-mode: forwards` (or `both`). By default, scroll-driven animations (`animation-timeline: view()`) scrub with scroll progress. Once you scroll past the entry range (`animation-range: entry`), without `forwards`, the animation resets and reverts to its default styles or fades out. `animation-fill-mode: forwards` locks the final keyframe (`opacity: 1`) in place.
+- **Q:** What is the 3-question evaluation framework for adopting new CSS features safely in production?
+  - **Answer**:
+    1. _Is it a progressive enhancement?_ E.g., `interpolate-size: allow-keywords` allows animating to `height: auto`. If unsupported, the element still opens/closes instantly without breaking usability.
+    2. _Can I provide a simple cascading fallback?_ E.g., declaring `hsl()` or `hex` first before `oklch()` (or via PostCSS Preset Env) lets older browsers safely use the earlier valid rule.
+    3. _Am I okay with an alternative approach via Feature Queries?_ E.g., CSS Masonry / `grid-lanes` wrapped in `@supports (grid-template-rows: masonry)` with a standard Grid/Flexbox fallback for other browsers.
 
 ---
 

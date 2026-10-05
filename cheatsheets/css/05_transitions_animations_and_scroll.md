@@ -21,10 +21,12 @@
   - [7.2 Scroll-Driven Animations (Progress Scrubbing)](#72-scroll-driven-animations-progress-scrubbing)
     - [1. Document Reading Progress Bar (`scroll()`)](#1-document-reading-progress-bar-scroll)
     - [2. Viewport Scroll-Linked Parallax / Scale (`view()`)](#2-viewport-scroll-linked-parallax--scale-view)
+    - [3. Fading Cards In Once and Staying (`animation-fill-mode: forwards`)](#3-fading-cards-in-once-and-staying-animation-fill-mode-forwards)
   - [7.3 Scroll-Triggered Animations (Time-Based Playback)](#73-scroll-triggered-animations-time-based-playback)
     - [Required Properties \& Syntax:](#required-properties--syntax)
     - [⚠️ Scope \& Shorthand Gotchas:](#️-scope--shorthand-gotchas)
 - [8. `@starting-style` \& Discrete Transitions (`display: none` → `block`)](#8-starting-style--discrete-transitions-display-none--block)
+  - [8.1 Progressive Enhancement: `interpolate-size: allow-keywords` (Transitioning `height: auto`)](#81-progressive-enhancement-interpolate-size-allow-keywords-transitioning-height-auto)
 - [9. CSS Scroll Properties \& Overflow Architecture](#9-css-scroll-properties--overflow-architecture)
   - [`overflow` Values: When \& Which to Use](#overflow-values-when--which-to-use)
   - [`overflow: hidden` vs. `overflow: clip`](#overflow-hidden-vs-overflow-clip)
@@ -266,6 +268,46 @@ Uses `animation-timeline: scroll()` or `view()` to bind timeline percentage dire
 }
 ```
 
+#### 3. Fading Cards In Once and Staying (`animation-fill-mode: forwards`)
+
+**The Challenge / Interview Scenario:**
+
+> _You're fading cards in with a scroll-driven animation, but they fade back out every time you scroll past. You want each card to animate in once and stay. Which property makes it possible?_
+>
+> - `animation-direction: normal`
+> - **`animation-fill-mode: forwards` (or `both`)** ✅ _(Correct)_
+> - `animation-iteration-count: 1`
+> - `animation-play-state: paused`
+
+**The Architectural Cause & Fix:**
+By default, scroll-driven animations (`animation-timeline: view()`) scrub progress bidirectionally with the scroll offset. When an animation is scoped to entry (`animation-range: entry`), once the card scrolls past that active range, the animation is no longer active and without a fill mode directive, the element resets to its default styles or fades back out.
+
+- **`animation-fill-mode: forwards`** tells the browser to **persist the styles of the final keyframe (`100%` / `opacity: 1`)** after the element exits the timeline range.
+
+```css
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-card {
+  /* 1. Declare forwards so 100% styles persist after passing entry */
+  animation: fadeInCard linear forwards;
+
+  /* 2. Bind to viewport scroll timeline */
+  animation-timeline: view();
+
+  /* 3. Scope animation strictly to entering the viewport */
+  animation-range: entry 0% cover 30%;
+}
+```
+
 ---
 
 ### 7.3 Scroll-Triggered Animations (Time-Based Playback)
@@ -343,6 +385,30 @@ dialog[open] {
     opacity: 0;
     transform: scale(0.9) translateY(20px);
   }
+}
+```
+
+### 8.1 Progressive Enhancement: `interpolate-size: allow-keywords` (Transitioning `height: auto`)
+
+Traditionally in CSS, transitioning to or from intrinsic keyword dimensions (`height: auto`, `width: max-content`) was impossible without JavaScript calculating `scrollHeight`. Modern CSS solves this with `interpolate-size: allow-keywords`:
+
+- **Progressive Enhancement Mindset**: Does it break functionality if older browsers don't animate to `height: auto`? No. As long as accordions and details menus open and close, user experience is intact. Modern browsers get a smooth transition, older browsers open instantly.
+- **Reference**: [Kevin Powell Video: Animate height: auto with interpolate-size and calc-size()](https://www.youtube.com/watch?v=WhS4xRSIjws)
+
+```css
+:root {
+  /* Enable smooth transitions between numeric lengths and keywords (auto, fit-content) */
+  interpolate-size: allow-keywords;
+}
+
+.accordion-content {
+  height: 0;
+  overflow: clip;
+  transition: height 0.35s ease;
+}
+
+.accordion.is-open .accordion-content {
+  height: auto; /* Animates smoothly in modern browsers, opens instantly in unsupported browsers */
 }
 ```
 

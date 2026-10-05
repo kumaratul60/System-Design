@@ -23,7 +23,7 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - 🏗️ **[Architecture & Performance](architecture.md)**: State ownership, concurrency patterns, virtualization, traps, and staff-level design questions.
 - 🌐 **[Browser Object Model (BOM)](BOM.md)**: Window execution, location controls, screen boundaries, and cross-tab communication.
 - 🧹 **[Clean Code Guidelines](cleancode.md)**: SOLID principles, code smells, UI separation of concerns, and clean async state management.
-- 🎨 **[CSS Master Hub & Modular Architecture](css/index.md)**: Master index of modular CSS sheets:
+- 🎨 **[CSS Hub & Modular Architecture](css/index.md)**: Master index of modular CSS sheets:
   - 📐 [01. CSS Units & Values](css/01_css_units_and_values.md) — Relative (`rem`, `em`, `ch`, `lh`), Viewport (`dvh`, `svh`), Container (`cqi`), Absolute (`px`, `pt`, `fr`).
   - 📱 [02. Responsive Design & Media Queries](css/02_responsive_design_and_media_queries.md) — Media types, Range comparison syntax, 5-device Breakpoint Matrix, Mobile-First, Fluid `clamp()`.
   - 🏗️ [03. Layout Engines, Grid, Subgrid & Box Model](css/03_layout_engines_grid_subgrid_and_box_model.md) — Flex (1D) vs Grid (2D), CSS Positioning Matrix, Stacking Contexts & `isolation: isolate`, `box-sizing` paradox, Subgrid, `aspect-ratio`.
@@ -31,6 +31,9 @@ For in-depth references, code blocks, and architectural choices, visit the categ
   - ⚡ [05. Transitions, Animations & Scroll Effects](css/05_transitions_animations_and_scroll.md) — Compositor performance, `@keyframes`, Scroll-Driven Animations, `overflow: clip`, Mac vs Windows layout shift & `scrollbar-gutter: stable`.
   - 🎨 [06. Colors, Math & Advanced Mechanics Q&A](css/06_colors_math_and_advanced_mechanics_qa.md) — `oklch()`, `color-mix()`, `sign()`, Motion Path (`offset-path: border-box`), Layout interview Q&A.
   - 📈 [07. Evolution of CSS](css/07_evolution_of_css.md) — Paradigm evolution from table layouts to Sass, BEM, CSS-in-JS, Tailwind, and Modern Native specs.
+  - 🧩 [08. Layout & Box Model Mechanics Q&A](css/08_qa_layout_and_box_model_mechanics.md) — Grid RAM clamp, `100%` + margin overflow paradox, vertical % margin width dependency, Subgrid, `100vw` desktop scrollbar bug.
+  - 📐 [09. Units, Viewports & Container Queries Q&A](css/09_qa_units_viewports_and_container_queries.md) — Container query fallback (`svi`/`svw`), `cqi` vs `cqw`, container pitfalls, `sign()` conditional radius, DPR, `100dvh` vs `100svh`, `rem` vs `em`.
+  - 🚀 [10. Modern Features, Animations & Fallbacks Q&A](css/10_qa_modern_features_animations_and_fallbacks.md) — `offset-path: border-box`, `sibling-index()`, `:user-invalid`, `oklch()`, modern CSS feature adoption framework, scroll-driven entry persistence (`forwards`).
 - ♿ **[Web Accessibility (a11y) & WCAG Architectural Guide](WCAG_Accessibility.md)**: WCAG 2.1/2.2 compliance, POUR principles, ARIA rules, accessible design patterns, focus management, SPA route announcer, and Staff/Architect interview grill.
 - ⚙️ **[ESLint Master Configuration & Architecture Cheatsheet](eslint.md)**: Enterprise ESLint setup, Strict a11y, TypeScript type-checked rules, React Compiler, Storybook CSF3, i18n FormatJS, security, testing queries, and Flat/Legacy config templates.
 - 🛡️ **[Security Architecture Interview Grill](Security_Architect.md)**: SDE-1 to Staff/Architect security concepts, OAuth2/OIDC, CSRF/XSS, CSP, IDOR, Zero Trust, and secure system design.
