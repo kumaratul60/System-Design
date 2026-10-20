@@ -12,6 +12,7 @@
 - [4. Modern CSS Colors: Space-Separated Syntax, `oklch()`, & `color-mix()`](#4-modern-css-colors-space-separated-syntax-oklch--color-mix)
 - [5. Modern CSS Feature Adoption & Fallback Strategy Framework](#5-modern-css-feature-adoption--fallback-strategy-framework)
 - [6. Scroll-Driven Animations: Animate In Once & Stay (`animation-fill-mode: forwards`)](#6-scroll-driven-animations-animate-in-once--stay-animation-fill-mode-forwards)
+- [7. Optical Leading Trimming: `text-box-trim` & `text-box-edge`](#7-optical-leading-trimming-text-box-trim--text-box-edge)
 
 ---
 
@@ -19,7 +20,7 @@
 
 ### The Problem
 
-You have a decorative element inside a `.card` (`position: relative`). You want it to sit precisely on the card's outer border line so it can move anywhere around the perimeter. Which CSS property achieves this?
+A decorative badge or indicator inside a relative container (`.card`) needs to sit precisely along the container's outer border stroke so that it can trace and travel along the perimeter. Which CSS property achieves this?
 
 ---
 
@@ -255,7 +256,7 @@ When evaluating whether to adopt emerging or modern CSS specifications, use this
 
 ### The Problem
 
-**Q: You're fading cards in with a scroll-driven animation, but they fade back out every time you scroll past. You want each card to animate in once and stay. Which of these can help make it possible?**
+**Q: In scroll-driven animations, elements fade in during viewport entry but fade back out or reset whenever the user scrolls past. How can elements animate in once and persist their final computed keyframe styles?**
 
 - [ ] `animation-direction: normal`
 - [x] **`animation-fill-mode: forwards`** _(Correct)_
@@ -322,3 +323,93 @@ When implementing scroll-driven entrance animations using CSS Scroll-Driven Anim
 ### Key Engineering Takeaway
 
 > CSS scroll-driven animations link keyframe progress directly to scroll offsets. When cards fade in on scroll and must remain visible after scrolling past, apply `animation-fill-mode: forwards` (or `both`) paired with `animation-range: entry`. This ensures that once the element completes its entrance range, the final keyframe styles (`opacity: 1`) are locked and persisted.
+
+---
+
+## 7. Optical Leading Trimming: `text-box-trim` & `text-box-edge`
+
+### The Problem
+
+When applying `text-box-trim: trim-both` to a button or heading element to eliminate unwanted font half-leading space, the rendered visual spacing remains completely unchanged in supporting browsers. What property is missing?
+
+---
+
+### 1. WHAT: The Two-Part Text Box Trimming Model
+
+The missing property is **`text-box-edge: cap alphabetic`** (or shorthand `text-box: trim-both cap alphabetic;`).
+
+In the CSS Inline Layout Module Level 3 specification:
+
+- **`text-box-trim`** dictates **whether** leading is trimmed (`none`, `trim-start`, `trim-end`, or `trim-both`).
+- **`text-box-edge`** dictates **where** the trim boundaries are anchored using font typographic metrics (e.g., `cap`, `ex`, `text`, `alphabetic`).
+
+Without specifying `text-box-edge`, the browser has no target metric lines to trim against, rendering `text-box-trim` ineffective.
+
+---
+
+### 2. WHY: The Half-Leading Problem & Metric Boundaries
+
+Every font family embeds built-in vertical whitespace:
+
+- **Ascender leading**: Space above capital letters (`cap-height`) reserved for accents or ascenders (`d`, `h`, `k`).
+- **Descender leading**: Space below the baseline reserved for letters with tails (`g`, `p`, `y`, `q`).
+
+```text
+┌─────────────────────────────────┐ ◄─── Line-box top
+│      [ Half-leading space ]     │
+├─────────────────────────────────┤ ◄─── Cap-height (Trim Edge Start: 'cap')
+│      C A P I T A L S            │
+├─────────────────────────────────┤ ◄─── Baseline   (Trim Edge End:   'alphabetic')
+│      [ Descender / leading ]    │
+└─────────────────────────────────┘ ◄─── Line-box bottom
+```
+
+When you define `padding: 16px 24px` on a button, the visual spacing is asymmetrical because the font's internal half-leading adds hidden vertical padding.
+
+#### Property Breakdown
+
+| Option                              | Valid?         | Reason                                                                                     |
+| :---------------------------------- | :------------- | :----------------------------------------------------------------------------------------- |
+| **`text-box-edge: cap alphabetic`** | **✅ Correct** | Sets the over-edge to the font's `cap-height` and under-edge to the `alphabetic` baseline. |
+| `vertical-trim: top bottom`         | ❌ No          | Outdated early working draft syntax (renamed to `text-box-trim`).                          |
+| `line-height-trim: on`              | ❌ No          | Non-standard / fictitious property.                                                        |
+| `text-box-sizing: clip`             | ❌ No          | Non-existent property in CSS Inline specifications.                                        |
+
+---
+
+### 3. HOW: Production Code Implementation
+
+```css
+/* ❌ Broken: Missing text-box-edge */
+.btn-broken {
+  padding: 12px 24px;
+  text-box-trim: trim-both;
+}
+
+/* ✅ Working: Explicit edge definition */
+.btn-fixed {
+  padding: 12px 24px;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
+
+/* ✅ Modern Shorthand */
+.btn-shorthand {
+  padding: 12px 24px;
+  text-box: trim-both cap alphabetic;
+}
+
+/* Progressive enhancement with @supports */
+@supports (text-box-trim: trim-both) {
+  .btn {
+    text-box-trim: trim-both;
+    text-box-edge: cap alphabetic;
+  }
+}
+```
+
+---
+
+### Key Engineering Takeaway
+
+> `text-box-trim: trim-both` strips extra vertical whitespace (half-leading) from text nodes to achieve optical centering and pixel-perfect design alignment. However, it **strictly requires** `text-box-edge: cap alphabetic` (or the `text-box` shorthand) to instruct the layout engine which font metrics mark the clipping boundaries.

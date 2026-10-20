@@ -18,7 +18,7 @@
 
 ### The Problem
 
-Your auto-grid uses `grid-template-columns: repeat(auto-fit, minmax(450px, 1fr))`. On a narrow mobile screen (e.g., viewport width = $360\text{px}$), the grid overflows horizontally and introduces an unwanted horizontal scrollbar. What do you change `minmax()` to?
+An auto-wrapping grid uses `grid-template-columns: repeat(auto-fit, minmax(450px, 1fr))`. On a narrow mobile screen (e.g., viewport width = $360\text{px}$), the grid overflows horizontally and triggers an unwanted horizontal scrollbar. How should `minmax()` be modified to prevent overflow on small viewports?
 
 ---
 
@@ -83,7 +83,7 @@ In `repeat(auto-fit, minmax(450px, 1fr))`:
 
 ### The Problem
 
-A block element has `width: 100%`, `padding: 1rem`, and `margin: 1rem`. It overflows its parent container horizontally. You add `box-sizing: border-box`, but it **still overflows**. Why?
+A block element declared with `width: 100%`, `padding: 1rem`, and `margin: 1rem` overflows its parent container horizontally. Adding `box-sizing: border-box` **fails to resolve the overflow**. Why?
 
 ---
 

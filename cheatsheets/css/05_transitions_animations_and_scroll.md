@@ -272,7 +272,7 @@ Uses `animation-timeline: scroll()` or `view()` to bind timeline percentage dire
 
 **The Challenge / Interview Scenario:**
 
-> _You're fading cards in with a scroll-driven animation, but they fade back out every time you scroll past. You want each card to animate in once and stay. Which property makes it possible?_
+> _In scroll-driven animations, elements fade in during viewport entry but fade back out or reset whenever the user scrolls past. How can elements animate in once and persist their final computed keyframe styles?_
 >
 > - `animation-direction: normal`
 > - **`animation-fill-mode: forwards` (or `both`)** ✅ _(Correct)_

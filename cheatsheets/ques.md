@@ -27,8 +27,12 @@ This is a comprehensive collection of interview questions, ranging from core fun
   - **Answer**: `100vw` includes the width of the vertical scrollbar track (~15-17px on Windows/Linux), whereas the document layout (`100%`) excludes it. Because `100vw > 100%`, it overflows horizontally. Fix with `width: 100%` or `scrollbar-gutter: stable`.
 - **Q:** Why does `width: 100%` with `margin: 1rem` overflow even when `box-sizing: border-box` is set?
   - **Answer**: `box-sizing: border-box` only contains padding and border within the declared width; margins remain outside the border box ($100\% + 2\text{rem}$). Fix with `width: auto`.
-- **Q:** You're fading cards in with a scroll-driven animation, but they fade back out every time you scroll past. You want each card to animate in once and stay. Which property makes it possible?
+- **Q:** In scroll-driven animations, elements fade in during scroll entry but revert or fade back out when scrolling past. How can elements animate in once and persist their final state?
   - **Answer**: `animation-fill-mode: forwards` (or `both`). By default, scroll-driven animations (`animation-timeline: view()`) scrub with scroll progress. Once you scroll past the entry range (`animation-range: entry`), without `forwards`, the animation resets and reverts to its default styles or fades out. `animation-fill-mode: forwards` locks the final keyframe (`opacity: 1`) in place.
+- **Q:** When applying `text-box-trim: trim-both` to remove excess vertical leading from a button, the visual spacing remains unchanged. What property is missing and why?
+  - **Answer**: `text-box-edge: cap alphabetic`. `text-box-trim` specifies _that_ leading should be trimmed, but it requires `text-box-edge` to define _which font metric edges_ (e.g. cap-height to baseline) to trim to. Without it, the browser cannot compute the trim amount. (Shorthand: `text-box: trim-both cap alphabetic;`).
+- **Q:** Why does fluid typography using `clamp()` with `cqi` units continue to scale against the browser viewport rather than its parent wrapper?
+  - **Answer**: `cqi` resolves against the small viewport (`1svi` / `1svw`) when no ancestor element has declared `container-type: inline-size` (or `normal`/`size`). Container query units do not fail silently or throw errors; per the CSS Containment spec, they fall back to viewport units.
 - **Q:** What is the 3-question evaluation framework for adopting new CSS features safely in production?
   - **Answer**:
     1. _Is it a progressive enhancement?_ E.g., `interpolate-size: allow-keywords` allows animating to `height: auto`. If unsupported, the element still opens/closes instantly without breaking usability.

@@ -2679,7 +2679,7 @@ For sharp borders or icons, 1 CSS pixel on a high-DPI screen is actually rendere
 
 ## The Problem
 
-A block element has `width: 100%`, `padding: 1rem`, and `margin: 1rem`. It overflows its parent container horizontally. You add `box-sizing: border-box`, but it **still overflows**. Why?
+A block element declared with `width: 100%`, `padding: 1rem`, and `margin: 1rem` overflows its parent container horizontally. Adding `box-sizing: border-box` **fails to resolve the overflow**. Why?
 
 ---
 
@@ -2761,7 +2761,7 @@ $$\text{Content Width} = \text{Parent Width} - (\text{margins} + \text{borders} 
 
 ## The Problem
 
-You have a decorative pin/badge element inside a `.card` (`position: relative`). You want it to sit precisely on the card's outer border line so it can move anywhere around the 4 edges of the perimeter. Which CSS property achieves this?
+A decorative pin/badge element inside a relative container (`.card`) needs to sit precisely along the container's outer border stroke so that it can trace and travel along the perimeter edges. Which CSS property achieves this?
 
 ---
 
@@ -2897,7 +2897,7 @@ Before CSS `aspect-ratio`, developers used this exact quirk to enforce video/car
 
 ## The Problem
 
-You have a 3-column CSS Grid displaying product cards. Each card contains a title, a variable-length description, and a footer button. Because descriptions have different lengths, the buttons in adjacent cards do not align vertically across the row.
+A 3-column CSS Grid displays product cards, where each card contains a title, a variable-length description, and an action button. Because description texts vary in length, footer buttons across adjacent cards fail to align on a shared baseline. How can vertical alignment be synchronized across cards without hardcoding heights?
 
 ---
 

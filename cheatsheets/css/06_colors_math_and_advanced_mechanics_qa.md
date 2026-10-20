@@ -175,7 +175,7 @@ To position and animate an element along the outer perimeter border edge of a co
 > 3. **Am I okay with a slightly different approach using Feature Queries (`@supports`)?**
 >    - _Rationale_: If the cutting-edge feature involves layout-shifting structures (like CSS Masonry / `grid-lanes`, currently supported experimentally in Safari), wrapping it inside `@supports (grid-template-rows: masonry)` enables providing a solid CSS Grid or Flexbox fallback version for all other engines.
 
-### Q7: You're fading cards in with a scroll-driven animation, but they fade back out every time you scroll past. You want each card to animate in once and stay. Which of these can help make it possible?
+### Q7: In scroll-driven animations, elements fade in during viewport entry but fade back out or reset whenever the user scrolls past. How can elements animate in once and persist their final computed keyframe styles?
 
 - [ ] `animation-direction: normal`
 - [x] **`animation-fill-mode: forwards`** _(Correct)_
