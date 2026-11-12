@@ -478,8 +478,23 @@ Modern CSS provides three distinct levels of context switching without JavaScrip
 
 ---
 
+### Question 4
+
+**Q**: In a responsive component using `clamp()` for fluid typography, replacing viewport units (`vi`) with container units (`cqi`) still results in text scaling against the browser window rather than its component wrapper. Why?
+
+- A) `cqi` isn’t supported inside `clamp()`
+- B) `cqi` only works inside an `@container` block
+- C) `cqi` resolves against the viewport when no ancestor is a container
+- D) You need `container-type: size`, not `inline-size`
+
+> **Correct Answer**: **C) `cqi` resolves against the viewport when no ancestor is a container**
+> _Explanation_: Under W3C CSS Containment Level 3, container query units (`cqi`, `cqw`, etc.) silently fall back to Small Viewport units (`1cqi` $\to$ `1svi` / `1svw`) when no ancestor has declared `container-type`. Declare `container-type: inline-size` on the wrapper to bind `cqi` to the container width.
+
+---
+
 ## Mental Evolution
 
+```ts
 No Styling
 ↓
 CSS
@@ -507,3 +522,5 @@ shadcn/ui
 Design Systems
 ↓
 Modern Native CSS
+
+```

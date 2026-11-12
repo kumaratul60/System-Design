@@ -21,7 +21,12 @@
 
 ### The Problem
 
-If no ancestor element declares `container-type`, but an element uses `cqi` units, what does it measure?
+- **Scenario**: When converting viewport inline units (`vi`) to container query inline units (`cqi`) in fluid typography `clamp()`, text continues to scale against the browser window rather than its component wrapper.
+- **Question**: Why does `cqi` continue resolving against the browser viewport?
+  - [ ] `cqi` isn’t supported inside `clamp()`
+  - [ ] `cqi` only works inside an `@container` block
+  - [x] **`cqi` resolves against the viewport when no ancestor is a container** _(Correct)_
+  - [ ] `container-type: size` is required instead of `inline-size`
 
 ---
 
@@ -44,9 +49,12 @@ According to **W3C CSS Containment Level 3**:
 | **`@container (min-width: 400px) { ... }`** | **Fails / Evaluates to `false`**. Styles inside the block are ignored. |
 | **`font-size: 5cqi;` or `width: 50cqi;`**   | **Executes anyway!** Falls back to 5% / 50% of the browser's viewport. |
 
-#### Practical Danger:
+#### Options Evaluation:
 
-If a developer forgets `container-type: inline-size` on a wrapper, a component placed in a narrow `250px` sidebar will calculate `cqi` based on a full `1920px` screen viewport, causing text to blow up and overflow the sidebar.
+- ❌ `cqi isn’t supported inside clamp()` — `cqi` is a standard length unit and is fully supported in all math functions (`clamp()`, `calc()`, `min()`, `max()`).
+- ❌ `cqi only works inside an @container block` — Container query units can be used anywhere in stylesheets without an `@container` at-rule.
+- ✅ **`cqi resolves against the viewport when no ancestor is a container`** — Without an ancestor declaring `container-type: inline-size` (or `normal`/`size`), `cqi` defaults to Small Viewport Inline size (`svi` / `svw`), causing fluid type to continue scaling with the browser window.
+- ❌ `You need container-type: size, not inline-size` — `inline-size` is preferred for horizontal typography scaling. `size` requires containment on both axes, which can induce cyclic reflow loops with wrapping text.
 
 ---
 

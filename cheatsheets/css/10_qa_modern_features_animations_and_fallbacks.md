@@ -175,9 +175,26 @@ background: color-mix(in oklch, var(--primary) 20%, white);
 
 ---
 
+### 4. Color-Space Preserving Opacity: `alpha()`
+
+**Q: `--brand` is set to an `oklch()` color. Which color space does `alpha(from var(--brand) / 50%)` resolve in?**
+
+- [ ] Always sRGB, since that’s what the web defaults to
+- [ ] HSL, because `alpha()` is built on `hsl()`
+- [x] **The same space as `--brand`, so oklch** _(Correct)_
+- [ ] You have to add an `in` keyword, or the declaration is invalid
+
+#### Why It Resolves in OKLCH:
+
+1. **Preservation of Origin Space**: The CSS Color Module Level 5 `alpha()` function (`alpha(from <color> / <alpha-value>)`) is format-agnostic. It modifies **only** the transparency channel while preserving the original color’s coordinates and gamut intact.
+2. **No Color Conversion / Clamping**: Unlike Relative Color Syntax functions that name a specific space (such as `rgb(from var(--brand) r g b / 0.5)` which forces conversion and clipping to sRGB), `alpha()` outputs the result directly in the origin color's space (`oklch`).
+3. **No `in` Keyword**: The `in <color-space>` parameter is required for `color-mix()` because interpolating between two colors requires a defined mixing space. In `alpha()`, there is only a single origin color, so no color interpolation occurs.
+
+---
+
 ### Key Engineering Takeaway
 
-> `oklch()` ensures perceptually uniform palettes that maintain WCAG accessibility compliance across theme swaps, while `color-mix()` replaces Sass color functions with native browser calculations.
+> `oklch()` ensures perceptually uniform palettes that maintain WCAG accessibility compliance across theme swaps, while `color-mix()` replaces Sass color functions. For opacity adjustments, `alpha(from <color> / <alpha>)` preserves the exact origin color space (e.g., OKLCH wide-gamut) without forcibly downsampling to sRGB.
 
 ---
 
@@ -330,7 +347,13 @@ When implementing scroll-driven entrance animations using CSS Scroll-Driven Anim
 
 ### The Problem
 
-When applying `text-box-trim: trim-both` to a button or heading element to eliminate unwanted font half-leading space, the rendered visual spacing remains completely unchanged in supporting browsers. What property is missing?
+- **Diagnostic Question (Debugging Scenario)**: _When applying `text-box-trim: trim-both` to remove excess vertical leading from a button, the visual spacing remains unchanged. What property is missing and why?_
+- **Architectural Question (Root Cause)**: _Why does `text-box-trim: trim-both` produce no visual change without `text-box-edge`?_
+- **Options**:
+  - [ ] `line-height-trim: on`
+  - [x] **`text-box-edge: cap alphabetic`** _(Correct)_
+  - [ ] `text-box-sizing: clip`
+  - [ ] `vertical-trim: top bottom`
 
 ---
 

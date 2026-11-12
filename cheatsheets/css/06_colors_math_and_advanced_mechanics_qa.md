@@ -135,58 +135,144 @@ To position and animate an element along the outer perimeter border edge of a co
 
 ## 4. First-Principles Layout Mechanics Master Q&A
 
+### 📑 Questions Quick Index
+
+- [Q1: Width 100% with Margins Overflow Paradox](#q1-why-does-width-100-with-margin-1rem-overflow-even-with-box-sizing-border-box)
+- [Q2: Why Vertical Percentage Margins/Paddings Resolve Against Width](#q2-why-do-vertical-margins-margin-top-50-calculate-relative-to-parent-width-instead-of-height)
+- [Q3: Container Query Units Fallback without Container](#q3-what-happens-if-an-element-uses-font-size-5cqi-but-no-ancestor-has-container-type)
+- [Q4: CSS Subgrid vs Standard Grid Formatting Contexts](#q4-how-does-css-subgrid-differ-from-standard-css-grid)
+- [Q5: The 100vw Desktop Horizontal Scrollbar Bug](#q5-an-element-is-set-to-width-100vw-and-its-causing-a-horizontal-scrollbar-on-desktop-why)
+- [Q6: 3-Question Decision Framework for Adopting Modern CSS Features](#q6-what-is-the-3-question-evaluation-framework-for-safely-adopting-modern-css-features)
+- [Q7: Scroll-Driven Entrance Animations: Animate In Once & Stay](#q7-in-scroll-driven-animations-how-can-elements-animate-in-once-and-persist-their-final-styles)
+- [Q8: Optical Leading Trimming (`text-box-trim` & `text-box-edge`)](#q8-optical-leading-trimming-text-box-trim--text-box-edge)
+- [Q9: Color Space Preservation in `alpha()`](#q9-which-color-space-does-alphafrom-var--brand--50-resolve-in-when---brand-is-oklch)
+
+---
+
 ### Q1: Why does `width: 100%` with `margin: 1rem` overflow even with `box-sizing: border-box`?
 
-> **Answer**: `box-sizing: border-box` includes padding and borders inside the declared width, but margins are placed outside the border box. Therefore, `width: 100%` + `1rem` margins occupies `100% + 2rem`, overflowing the parent. Use `width: auto` to allow the browser to subtract margins automatically.
+- **Scenario**: A block element has `width: 100%`, `padding: 1rem`, and `margin: 1rem`. Even with `box-sizing: border-box`, it horizontally overflows its parent.
+- **Answer**: `box-sizing: border-box` includes padding and borders inside the declared width, but **margins always sit outside the border box**.
+- **The Math**: Horizontal footprint = $1\text{rem} + 100\% + 1\text{rem} = 100\% + 2\text{rem}$, exceeding parent width by $2\text{rem}$.
+- **Fix**: Remove `width: 100%` and use `width: auto`, allowing the browser to automatically subtract margins from available width.
+
+---
 
 ### Q2: Why do vertical margins (`margin-top: 50%`) calculate relative to parent WIDTH instead of Height?
 
-> **Answer**: To prevent infinite recursive layout loops. If top padding depended on parent height, expanding the padding would increase child height, which would increase parent height, triggering a recursive recalculation. Resolving all margins against width ensures single-pass calculation.
+- **Scenario**: A child element declares `margin-top: 50%` or `padding-top: 50%`. The browser computes this value from the parent's width.
+- **Answer**: **To prevent infinite recursive layout loops (cyclic reflow)**.
+- **Why**: If vertical padding depended on parent height: child padding increases $\to$ child height expands $\to$ parent `auto` height expands $\to$ padding recalculates larger $\to$ browser crashes. Resolving all margins against width enables a single, non-recursive layout pass.
+- **Modern Fix**: Replace legacy padding-top aspect ratio hacks with native `aspect-ratio: 16 / 9`.
+
+---
 
 ### Q3: What happens if an element uses `font-size: 5cqi` but NO ancestor has `container-type`?
 
-> **Answer**: According to CSS Containment Level 3, it silently falls back to the Small Viewport (`5svi` / `5svw`). While `@container` conditional blocks fail to match without a container, container query units execute by measuring the screen viewport.
+- **Scenario**: A component declares fluid typography using `clamp(1rem, 5cqi, 2.5rem)`, but text continues scaling with the browser window instead of its parent wrapper.
+- **Question**: Why does `cqi` continue scaling with the viewport?
+  - [ ] `cqi` isn’t supported inside `clamp()`
+  - [ ] `cqi` only works inside an `@container` block
+  - [x] **`cqi` resolves against the viewport when no ancestor is a container** _(Correct)_
+  - [ ] `container-type: size` is required instead of `inline-size`
+- **Answer**: Per W3C CSS Containment Level 3, container query units never fail or evaluate to `0`. Without a container ancestor, they **silently fall back to Small Viewport units** (`5cqi` $\to$ `5svi` / `5svw`).
+- **Fix**: Declare `container-type: inline-size` on the parent wrapper:
+  ```css
+  .card-wrapper {
+    container-type: inline-size;
+  }
+  .card-title {
+    font-size: clamp(1rem, 5cqi, 2.5rem);
+  }
+  ```
+
+---
 
 ### Q4: How does CSS Subgrid differ from standard CSS Grid?
 
-> **Answer**: Standard CSS Grid creates isolated formatting contexts inside children, preventing elements (like card buttons) from aligning across variable-height siblings. CSS `subgrid` lets nested components adopt parent track sizing (`grid-template-rows: subgrid`), ensuring baseline alignment across rows without hardcoded heights.
+- **Scenario**: In a 3-column card grid with titles, dynamic descriptions, and buttons, buttons fail to align across sibling cards.
+- **Answer**: Standard CSS Grid isolates child formatting contexts. **CSS Subgrid (`grid-template-rows: subgrid`)** allows child cards to span rows of the parent grid and adopt parent track sizing.
+- **Why**: Each card's description row matches the tallest sibling description in that row, automatically baseline-aligning the buttons below.
+
+---
 
 ### Q5: An element is set to `width: 100vw` and it’s causing a horizontal scrollbar on desktop. Why?
 
-> **Answer**: **`100vw` includes the width of the page’s vertical scrollbar** (~15–17px on Windows/Linux).
->
-> 1. **The Cause**: The viewport width (`100vw`) measures from the left edge of the browser window to the right edge, spanning across any vertical scrollbar. However, the available document layout width (`100%`) is calculated **excluding** the vertical scrollbar. As a result, `100vw` is wider than the document root by exactly the scrollbar's width, forcing an unwanted horizontal scrollbar.
-> 2. **Options Evaluation**:
->    - [x] **100vw includes the width of the page’s scrollbar** _(Correct)_
->    - [ ] 100vw is relative to the nearest positioned ancestor, not the viewport _(Incorrect: `100vw` is always viewport-relative)_
->    - [ ] 100vw measures the document width, which grows with content _(Incorrect: `100vw` measures viewport, not document)_
->    - [ ] 100vw rounds up to the nearest whole pixel _(Incorrect: subpixel rounding is not the primary cause)_
-> 3. **The Fix**: Use `width: 100%` instead of `100vw`, or add `scrollbar-gutter: stable` to `html`, or use modern inline viewport units `100vi`.
+- **Scenario**: A full-width section with `width: 100vw` causes a horizontal scrollbar on Windows/Linux desktop browsers.
+- **Options**:
+  - [x] **`100vw` includes the width of the page’s vertical scrollbar** _(Correct)_
+  - [ ] `100vw` is relative to the nearest positioned ancestor, not the viewport
+  - [ ] `100vw` measures the document width, which grows with content
+  - [ ] `100vw` rounds up to the nearest whole pixel
+- **Answer**: `100vw` measures edge-to-edge viewport window width including the persistent scrollbar track (~15–17px). The document layout width (`100%`) excludes it. Because $100\text{vw} > 100\%$, the page overflows horizontally by 17px.
+- **Fix**: Use `width: 100%`, modern inline units `100vi`, or add `scrollbar-gutter: stable` to `html`.
+
+---
 
 ### Q6: What is the 3-question evaluation framework for safely adopting modern CSS features?
 
-> **Answer**: When evaluating whether to adopt emerging or modern CSS specifications, use this architectural decision triad:
->
-> 1. **Is it a progressive enhancement?**
->    - _Rationale_: If a feature fails to load or execute in older browsers, does it break the fundamental layout or user functionality? Something like `interpolate-size: allow-keywords` is a great example of a time to say **yes**. Does it really matter if an accordion or dropdown doesn’t transition smoothly to and from a height of `auto`? As long as it opens and closes, user access is completely preserved.
->    - _Reference_: [Video on `interpolate-size` by Kevin Powell](https://www.youtube.com/watch?v=WhS4xRSIjws).
-> 2. **Can I provide a simple fallback?**
->    - _Rationale_: Can legacy browsers simply leverage standard CSS cascade behavior to consume an earlier declaration? For example, declaring `oklch()` won’t work in some older browsers. However, declaring `hsl()` or `hex` first, and the `oklch()` version second, provides an automatic zero-cost fallback. Build tools like [PostCSS Preset Env](https://preset-env.cssdb.org/) automate this fallback generation.
-> 3. **Am I okay with a slightly different approach using Feature Queries (`@supports`)?**
->    - _Rationale_: If the cutting-edge feature involves layout-shifting structures (like CSS Masonry / `grid-lanes`, currently supported experimentally in Safari), wrapping it inside `@supports (grid-template-rows: masonry)` enables providing a solid CSS Grid or Flexbox fallback version for all other engines.
+- **The Decision Triad**:
+  1. **Is it a progressive enhancement?**
+     _Test_: If unsupported, does core user access remain intact?
+     _Example_: `interpolate-size: allow-keywords` (animating to/from `height: auto`). Older browsers open/close instantly without layout breakage.
+  2. **Can I provide a simple cascading fallback?**
+     _Test_: Can legacy engines consume an earlier declared rule?
+     _Example_: Declare `hsl()` or `hex` before `oklch()`. Older engines ignore unknown `oklch()` and use the fallback.
+  3. **Am I okay with an alternative approach via Feature Queries (`@supports`)?**
+     _Test_: Does the layout need an isolated fallback block?
+     _Example_: Wrap CSS Masonry in `@supports (grid-template-rows: masonry)` with a standard Grid fallback.
 
-### Q7: In scroll-driven animations, elements fade in during viewport entry but fade back out or reset whenever the user scrolls past. How can elements animate in once and persist their final computed keyframe styles?
+---
 
-- [ ] `animation-direction: normal`
-- [x] **`animation-fill-mode: forwards`** _(Correct)_
-- [ ] `animation-iteration-count: 1`
-- [ ] `animation-play-state: paused`
+### Q7: In scroll-driven animations, how can elements animate in once and persist their final styles?
 
-> **Answer**: **`animation-fill-mode: forwards`** (or `both`).
->
-> 1. **The Cause**: By default, CSS scroll-driven animations (`animation-timeline: view()`) scrub progress bidirectionally along with scroll position. When an entrance animation is scoped to entry (e.g. `animation-range: entry`), once the card scrolls past that threshold, the animation is no longer active in range. Without a fill mode directive, the element resets or fades back out.
-> 2. **The Fix**: `animation-fill-mode: forwards` (or `both`) instructs the browser to retain the styles applied by the final keyframe (`100%` / `opacity: 1`) after the animation range ends.
-> 3. **Options Breakdown**:
->    - `animation-direction: normal`: Controls keyframe order (from 0% to 100%), but still scrubs and resets outside the range.
->    - `animation-iteration-count: 1`: In scroll-driven timelines, the animation is mapped across scroll distance, not discrete time iterations.
->    - `animation-play-state: paused`: Pauses the animation at its current state; it doesn't animate upon entry and persist afterwards.
+- **Scenario**: Cards fade in during viewport entry with `animation-timeline: view()`, but fade back out or reset when scrolling past.
+- **Options**:
+  - [ ] `animation-direction: normal`
+  - [x] **`animation-fill-mode: forwards`** _(Correct)_
+  - [ ] `animation-iteration-count: 1`
+  - [ ] `animation-play-state: paused`
+- **Answer**: **`animation-fill-mode: forwards`** (or `both`).
+- **Why**: Scroll timelines scrub keyframe progress bidirectionally. Once scrolled beyond the `animation-range: entry`, the timeline becomes inactive and resets. `animation-fill-mode: forwards` instructs the compositor to hold the computed styles of the final keyframe (`opacity: 1`) indefinitely.
+
+---
+
+### Q8: Optical Leading Trimming (`text-box-trim` & `text-box-edge`)
+
+- **Diagnostic Question (Quiz / Debugging)**: _When applying `text-box-trim: trim-both` to remove excess vertical leading from a button, the visual spacing remains unchanged. What property is missing?_
+- **Architectural Question (Root Cause)**: _Why does `text-box-trim: trim-both` produce no visual change without `text-box-edge`?_
+- **Options**:
+  - [ ] `line-height-trim: on`
+  - [x] **`text-box-edge: cap alphabetic`** _(Correct)_
+  - [ ] `text-box-sizing: clip`
+  - [ ] `vertical-trim: top bottom`
+- **Answer**: **`text-box-edge: cap alphabetic`** (or shorthand `text-box: trim-both cap alphabetic;`).
+- **Why Both Are Required**: Text box trimming is a two-part system:
+  1. `text-box-trim` specifies **whether** leading is trimmed (`trim-start`, `trim-end`, `trim-both`).
+  2. `text-box-edge` specifies **which font metrics** (`cap` height to `alphabetic` baseline) serve as the trim boundaries.
+     Without `text-box-edge`, the layout engine has no boundary references to calculate trim dimensions, rendering `text-box-trim` completely ineffective.
+- **Production Code**:
+  ```css
+  /* Longhand */
+  .btn {
+    text-box-trim: trim-both;
+    text-box-edge: cap alphabetic;
+  }
+  /* Shorthand */
+  .btn {
+    text-box: trim-both cap alphabetic;
+  }
+  ```
+
+---
+
+### Q9: Which color space does `alpha(from var(--brand) / 50%)` resolve in when `--brand` is `oklch`?
+
+- **Scenario**: `--brand` is declared as an `oklch()` color token.
+- **Options**:
+  - [ ] Always sRGB, since that’s what the web defaults to
+  - [ ] HSL, because `alpha()` is built on `hsl()`
+  - [x] **The same space as `--brand`, so oklch** _(Correct)_
+  - [ ] You have to add an `in` keyword, or the declaration is invalid
+- **Answer**: **The same space as `--brand`, so OKLCH**.
+- **Why**: The CSS Color Module Level 5 `alpha()` function is format-agnostic. It adjusts only the opacity channel while preserving the original color's coordinates and wide-gamut profile (unlike `rgb(from ...)` which forces sRGB conversion, or `color-mix()` which requires an explicit `in <color-space>` mixing parameter).
