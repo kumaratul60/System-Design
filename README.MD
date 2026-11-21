@@ -134,7 +134,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── Mocking_Strategy.md      # Test doubles, mockClear/Reset/Restore, mock drift
 │   ├── Assertions_Expect_API.md # Jest/Vitest expect, matchers, soft assertions, poll
 │   └── Testing_QA.md            # 29+ Staff/Senior Interview Questions & Live Coding Suites
-├── LLD/                         # Low-Level Design & Object-Oriented Design
+├── DesignProblems/              # Frontend Machine Coding & LLD Studio (React + TS + Problems Hub)
 └── Web/                         # Fundamentals & Web Infrastructure
     ├── Headers.md               # Deep dive into HTTP Headers
     ├── Scalability.md           # Horizontal vs Vertical scaling
@@ -227,10 +227,12 @@ Exhaustive documentation on the building blocks of the web:
 - **Infrastructure:** Scalability patterns and terminal mastery.
 - **Workflow:** Git internals and tech acronyms for industry-standard communication.
 
-### 10. [Low-Level Design (LLD) & Object-Oriented Design](./LLD/LLD.md)
+### 10. [Frontend Design Problems, HLD & LLD Studio](./DesignProblems/README.md)
 
-A comprehensive guide to writing clean, modular, extensible, and high-performance software. Covers the progression from Beginner OOP fundamentals to Staff-level lock-free design:
+A comprehensive laboratory and studio combining High-Level Architecture ([HLD.md](./DesignProblems/HLD.md)) and Low-Level Design principles ([LLD.md](./DesignProblems/LLD.md)) with interactive, runnable React & TypeScript machine coding problem implementations:
 
+- **Interactive Problem Studio:** Multi-problem runner with a pluggable architecture (`src/problems/_template`) to scaffold and implement any machine coding problem in minutes.
+- **Production Infinite Scroll:** Dual-implementation comparing `IntersectionObserver` sentinel observation vs. window scroll calculations with overfetch guards and deduplication.
 - **Core Elements:** Distinguishing Elements, Components, Documents, and Composition mechanisms.
 - **SOLID & GoF Design Patterns:** Creational, Structural, and Behavioral patterns with real-world scenarios.
 - **Advanced Concurrency & DDD:** Thread-safe architectures, object pooling, and domain boundary isolation.

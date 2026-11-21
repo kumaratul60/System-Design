@@ -1,5 +1,7 @@
 # Low-Level Design (LLD) & Object-Oriented Design (OOD) Laboratory
 
+> 🌐 **Macro Architecture Companion:** For Edge CDN caching, Micro-Frontends, WebSockets/SSE protocols, BFF security boundaries, and Core Web Vitals, see **[High-Level Design (HLD)](HLD.md)**.
+
 Low-Level Design (LLD) is the process of translating high-level system requirements into clean, modular, extensible, and performant code. While High-Level Design (HLD) focuses on services, databases, and network boundaries, LLD focuses on classes, interfaces, object interaction, concurrency primitives, and design patterns.
 
 ---

@@ -18,7 +18,8 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - ⚙️ **[WebAssembly (WASM) & Web SDK](webassembly-web-sdk.md)**: WASM compilation, Memory Grow trapping, Workers integration, multithreading isolation, public SDK design, loading snippet queues, and storage partitioning.
 - ⚛️ **[React Core & Component State Patterns](ReactInternals/index.md)**: React Hooks, rendering lifecycle, and the loading/success/error/empty 4-state component pattern.
 - 🔀 **[React Router](ReactInternals/index.md)**: Navigation, search params, loaders/actions, and safe usage of `useMatch`.
-- 💾 **[State Management](state-management.md)**: Redux Toolkit (RTK), RTK Query, Listener middleware, and Redux-Saga generators.
+- 💾 **[State Management](state-management.md)**: 5 State Buckets, Execution Lifecycles & Pipelines (`useState`, `useReducer`, RTK Thunk, Redux-Saga, Zustand, MobX, XState v5/v6 Actor Model) with Mermaid sequence diagrams, complete API references, and "Which & When to Use" decision tree matrix.
+- ⚡ **[Advanced State Architecture & Production Patterns](state-management-advanced.md)**: Atomic state & Signals (Jotai, Solid), Form state engineering (React Hook Form + Zod, 60fps input lag fix), Optimistic UI updates with rollback, Offline Outbox pattern, Cross-Tab synchronization (`BroadcastChannel`), SSR hydration safety (`useSyncExternalStore`), and top 5 performance traps.
 - 📘 **[TypeScript & Typings](typescript.md)**: Types vs Interfaces, enum alternatives, utility types, and React prop/event integration.
 - 🏗️ **[Architecture & Performance](architecture.md)**: State ownership, concurrency patterns, virtualization, traps, and staff-level design questions.
 - 🌐 **[Browser Object Model (BOM)](BOM.md)**: Window execution, location controls, screen boundaries, and cross-tab communication.

@@ -2,7 +2,7 @@
 
 > **🎯 Target Audience:** Senior / Staff / Principal Engineers
 > **Focus:** Multithreading, Async Event Loops, Lock Primitives, Lock-Free Concurrency, and Thread-Safe Machine Coding.
-> **Existing Repo Tags:** 🔗 [See existing LLD Advanced Concurrency](file:///Users/atulkumarawasthi/projects/SystemDesign/LLD/LLD.md#advanced-concurrency--thread-safety)
+> **Existing Repo Tags:** 🔗 [See existing LLD Advanced Concurrency](file:///Users/atulkumarawasthi/projects/SystemDesign/DesignProblems/LLD.md#advanced-concurrency--thread-safety)
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **🎯 Target Audience:** Senior / Staff / Principal Engineers
 > **Focus:** Creational, Structural, and Behavioral patterns that yield the highest return on investment in Frontend & Full-Stack System Architecture.
-> **Existing Repo Tags:** 🔗 [See existing Design Patterns Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Questions/Detailed/Design_Patterns.md) | 🔗 [See LLD Core Showcase](file:///Users/atulkumarawasthi/projects/SystemDesign/LLD/LLD.md) | 🔗 [Design Patterns GitHub Repo](https://github.com/kumaratul60/design-patterns)
+> **Existing Repo Tags:** 🔗 [See existing Design Patterns Guide](file:///Users/atulkumarawasthi/projects/SystemDesign/Questions/Detailed/Design_Patterns.md) | 🔗 [See LLD Core Showcase](file:///Users/atulkumarawasthi/projects/SystemDesign/DesignProblems/LLD.md) | 🔗 [Design Patterns GitHub Repo](https://github.com/kumaratul60/design-patterns)
 
 ---
 

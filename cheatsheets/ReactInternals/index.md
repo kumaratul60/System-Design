@@ -854,4 +854,4 @@ type FiberNode = {
 | **Part 1 - Core Engine & Architecture**   | [React_Deep_Dive_Internals.md](./React_Deep_Dive_Internals.md)     |
 | **Part 2 - Advanced Concurrency & Hooks** | [React_Deep_Dive_Advanced.md](./React_Deep_Dive_Advanced.md)       |
 | **Part 3 - Grill Q&A & Timing**           | [React_Deep_Dive_Cheat_Sheet.md](./React_Deep_Dive_Cheat_Sheet.md) |
-| **LLD Roadmap**                           | [../../../LLD/LLD.md](../../../LLD/LLD.md)                         |
+| **LLD Roadmap**                           | [../../../DesignProblems/LLD.md](../../../DesignProblems/LLD.md)                   |

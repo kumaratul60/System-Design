@@ -2,7 +2,7 @@
 
 > **Target Roles:** Staff Engineer / Principal Engineer / Systems Architect  
 > **Structure:** 80% Frontend Depth | 20% Backend Awareness | 55 Master Blueprints | LLD + HLD + Networks + Systems  
-> **Interactive Web App:** [`LLD/`](file:///Users/atulkumarawasthi/projects/SystemDesign/LLD/src/data/problemsData.js) (Interactive React Playground & Visual Simulator)
+> **Interactive Web App:** [`DesignProblems/`](file:///Users/atulkumarawasthi/projects/SystemDesign/DesignProblems/README.md) (Interactive React & TypeScript Machine Coding Studio & LLD Lab)
 
 ---
 
