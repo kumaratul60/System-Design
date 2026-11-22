@@ -94,6 +94,12 @@ root.style.setProperty('--primary-color', '#4f46e5');
 
 ### Q1: What is the difference between Reflow (Layout) and Repaint?
 
+```ts
+Reflow: Changing width, height, or margin.
+
+Repaint: Changing color, background-color, or box-shadow without changing geometry
+```
+
 - **Reflow (Layout):** The browser calculates the geometry (size, position) of elements on the page. It is triggered by geometric modifications:
   ```javascript
   element.style.width = '300px';
