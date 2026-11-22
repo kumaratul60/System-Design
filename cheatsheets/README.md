@@ -129,6 +129,7 @@ Use this high-level list to find the correct primitive for your specific problem
 - [`window.postMessage`](BOM.md#11-cross-origin-window-messaging-postmessage) — Secure cross-origin communication with origin validation.
 - [`history.pushState`](BOM.md#21-state-pushes-and-browser-back-navigation) — Navigate SPA routes programmatically without document reloads.
 - [Scroll Coordinates & Infinite Scroll](BOM.md#64-scroll--viewport-formulas) — Screen measurements using `scrollY`, `innerHeight`, and `scrollHeight`.
+- [**IntersectionObserver & Scroll Architecture**](IntersectionObserver_and_Scroll.md) — Production deep dive: `IntersectionObserver` vs `window.scrollY`, `threshold`, `rootMargin`, the Sentinel Pattern, and Layout Thrashing prevention.
 - [Shadow DOM Style Scoping](DOM.md#shadow-dom) — Create styling boundaries isolated from parent stylesheets.
 - [High-Level Web Rendering Flowchart](web.md#1-web-touchpoints-flow) — 17-step chronological connection and layout flow from URL to pixels.
 

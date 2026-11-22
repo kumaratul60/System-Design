@@ -99,10 +99,18 @@ pnpm install
 # 2. Run local development server
 pnpm dev
 
-# 3. Run test runner
-pnpm test
+# 3. Code Quality & Verification Suite
+pnpm typecheck       # Strict TypeScript check (tsc --noEmit)
+pnpm lint            # ESLint check with React Hooks rules
+pnpm lint:fix        # Auto-fix linting issues
+pnpm format:check    # Check code style with Prettier
+pnpm format          # Format entire project with Prettier
+pnpm test            # Run problem logic constraint tests
 
-# 4. Type check and build for production
+# 4. Comprehensive All-In-One Gate Check
+pnpm check:all       # Runs typecheck + lint + format:check + test
+
+# 5. Production build
 pnpm build
 ```
 
@@ -228,8 +236,10 @@ pnpm install
 
 ## 📖 Deep Dives & Theoretical Foundations
 
+- 🏛️ **[Architecture Decision Records (ADRs)](adr/README.md)**: Formal system design decisions following the `{00x}-{date}-{slug}.md` standard, including [ADR-001: Hotstar Clickstream Aggregator](adr/001-2026-11-22-clickstream-aggregator.md).
 - 🌐 **[High-Level Design (HLD) & Frontend System Architecture](HLD.md)**: Master guide on the RADIO framework, Micro-Frontends (Module Federation), Edge CDN caching, BFF architecture, WebSocket/SSE protocols, CWV budgets, and local-first CRDT sync.
 - 📐 **[Low-Level Design (LLD) & Design Patterns](LLD.md)**: Master guide on Component Composition, Config-Driven UI (CDUI/SDUI), Observer, Factory, and Strategy patterns.
+- 👁️ **[IntersectionObserver & Scroll Architecture](../cheatsheets/IntersectionObserver_and_Scroll.md)**: Production guide on `IntersectionObserver` vs `window.scrollY`, `threshold`, `rootMargin`, Sentinel Pattern, and Layout Thrashing.
 - 💾 **[State Management Master Cheat Sheet](../cheatsheets/state-management.md)**: The 5-question interrogation framework, RTK, Zustand, MobX, and XState.
 - ⚡ **[Advanced State Patterns](../cheatsheets/state-management-advanced.md)**: Atomic signals, 60fps form state, optimistic UI updates, and cross-tab sync.
 - 📦 **[Package Managers & Monorepos Master Cheat Sheet](../cheatsheets/package-managers.md)**: `pnpm` vs `yarn` vs `npm` hierarchy, Content-Addressable Storage (CAS), Phantom Dependencies, Corepack, pnpm workspaces, and Turborepo vs Nx.

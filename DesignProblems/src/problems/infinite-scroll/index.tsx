@@ -4,7 +4,9 @@ import { AppWindowScroll } from './AppWindowScroll';
 import './index.css';
 
 export const InfiniteScrollProblem: React.FC = () => {
-  const [activeApproach, setActiveApproach] = useState<'intersection' | 'windowScroll'>('intersection');
+  const [activeApproach, setActiveApproach] = useState<'intersection' | 'windowScroll'>(
+    'intersection'
+  );
 
   return (
     <div className="problem-container">

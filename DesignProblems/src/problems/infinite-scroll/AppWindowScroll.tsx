@@ -235,9 +235,7 @@ export const AppWindowScroll: React.FC = () => {
               )}
               <img
                 src={
-                  productItem.thumbnail ||
-                  productItem.images?.[0] ||
-                  UI_CONFIG.FALLBACK_IMAGE_URL
+                  productItem.thumbnail || productItem.images?.[0] || UI_CONFIG.FALLBACK_IMAGE_URL
                 }
                 alt={productItem.title}
                 className="product-image"
@@ -280,9 +278,14 @@ export const AppWindowScroll: React.FC = () => {
 
               {/* Extra Product Attributes */}
               {(productItem.availabilityStatus || productItem.shippingInformation) && (
-                <div className="product-meta-row" style={{ marginTop: '4px', fontSize: '0.78rem', color: '#656d76' }}>
+                <div
+                  className="product-meta-row"
+                  style={{ marginTop: '4px', fontSize: '0.78rem', color: '#656d76' }}
+                >
                   {productItem.availabilityStatus && <span>{productItem.availabilityStatus}</span>}
-                  {productItem.shippingInformation && <span>• {productItem.shippingInformation}</span>}
+                  {productItem.shippingInformation && (
+                    <span>• {productItem.shippingInformation}</span>
+                  )}
                 </div>
               )}
 
@@ -313,9 +316,7 @@ export const AppWindowScroll: React.FC = () => {
 
       {/* End of Catalog Message */}
       {!hasMoreProducts && (
-        <div className="end-message">
-          {UI_TEXT.ALL_PRODUCTS_LOADED_LABEL(apiState.data.length)}
-        </div>
+        <div className="end-message">{UI_TEXT.ALL_PRODUCTS_LOADED_LABEL(apiState.data.length)}</div>
       )}
     </div>
   );

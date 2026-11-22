@@ -17,7 +17,9 @@ export const TemplateProblem: React.FC = () => {
       </header>
 
       <div className="template-content">
-        <p>Status: <strong>{state.status}</strong></p>
+        <p>
+          Status: <strong>{state.status}</strong>
+        </p>
         <p>Start your implementation here following the problem's README.md plan.</p>
       </div>
     </div>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { PROBLEMS_REGISTRY } from './problems';
 
+const FallbackComponent: React.FC = () => null;
+
 export const App: React.FC = () => {
   const [selectedProblemId, setSelectedProblemId] = useState<string>(
     PROBLEMS_REGISTRY[0]?.id || 'infinite-scroll'
@@ -9,7 +11,7 @@ export const App: React.FC = () => {
   const activeProblem =
     PROBLEMS_REGISTRY.find((p) => p.id === selectedProblemId) || PROBLEMS_REGISTRY[0];
 
-  const ActiveComponent = activeProblem ? activeProblem.component : () => null;
+  const ActiveComponent = activeProblem?.component ?? FallbackComponent;
 
   return (
     <div className="lld-studio-root">

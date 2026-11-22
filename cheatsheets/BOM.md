@@ -355,6 +355,13 @@ window.addEventListener('scroll', () => {
 });
 ```
 
+> [!IMPORTANT]
+> **Performance Warning**: Attaching synchronous listeners to `window.addEventListener('scroll')` executes on the main thread and can cause severe **Layout Thrashing** and dropped frames at 60Hz.
+>
+> **Modern Industry Standard**: Use **`IntersectionObserver` with a Sentinel DOM Element** (`threshold: 0`, `rootMargin: '150px'`), which computes intersections off-main-thread with zero scroll jank.
+>
+> 📖 See the dedicated master guide: **[IntersectionObserver & Scroll Architecture](IntersectionObserver_and_Scroll.md)**.
+
 #### Scroll Percentage Formula
 
 ```javascript

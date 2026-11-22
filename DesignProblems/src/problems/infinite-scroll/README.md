@@ -142,22 +142,24 @@ Previous iterations used multiple `Set` references (`fetchedSkipsRef`, `seenProd
 
 ### 1. Install Dependencies
 ```bash
-npm install
+pnpm install
 ```
 
 ### 2. Run the Development Server
 ```bash
-npm run dev
+pnpm dev
 ```
 Open `http://localhost:5173` in your browser. Use the top toolbar to switch between **Approach 1 (IntersectionObserver)** and **Approach 2 (Window Scroll)**.
 
-### 3. Run Automated Tests
+### 3. Run Quality Verification & Tests
 ```bash
-npm test
+pnpm test          # Run constraint logic tests
+pnpm check:all     # Run typecheck + lint + format:check + test
+pnpm build         # Strict TypeScript check & Vite production build
 ```
 
-### 4. Build for Production
-```bash
-npm run build
-```
-Runs strict TypeScript compilation (`tsc`) and Vite bundling.
+---
+
+## 📖 Related Cheatsheets & Theoretical References
+- 👁️ **[IntersectionObserver & Scroll Architecture](../../../../cheatsheets/IntersectionObserver_and_Scroll.md)**: Deep dive into off-main-thread compositor observations, threshold mechanics, and layout thrashing.
+- 📐 **[Low-Level Design (LLD) & Design Patterns](../../LLD.md)**: Component composition, observer patterns, and memory lifecycle management.

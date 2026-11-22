@@ -20,7 +20,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [7. Performance Optimization](#7-performance-optimization)
     - [8. Interview \& Concept Deep Dives](#8-interview--concept-deep-dives)
     - [9. Web Fundamentals](#9-web-fundamentals)
-    - [10. Low-Level Design (LLD) \& Object-Oriented Design](#10-low-level-design-lld--object-oriented-design)
+    - [10. Frontend Design Problems, HLD \& LLD Studio](#10-frontend-design-problems-hld--lld-studio)
     - [11. Web Accessibility (a11y) \& WCAG Architecture](#11-web-accessibility-a11y--wcag-architecture)
     - [12. ESLint \& Automated Quality Suite](#12-eslint--automated-quality-suite)
     - [13. Categorized Cheatsheets \& Master Reference](#13-categorized-cheatsheets--master-reference)
@@ -231,8 +231,17 @@ Exhaustive documentation on the building blocks of the web:
 
 A comprehensive laboratory and studio combining High-Level Architecture ([HLD.md](./DesignProblems/HLD.md)) and Low-Level Design principles ([LLD.md](./DesignProblems/LLD.md)) with interactive, runnable React & TypeScript machine coding problem implementations:
 
+```bash
+cd DesignProblems
+pnpm install       # Install dependencies (CAS hard links, 3x faster)
+pnpm dev           # Start interactive studio on http://localhost:5173
+pnpm check:all     # All-in-one verification (typecheck + lint + format + test)
+pnpm build         # Production TypeScript compilation & Vite build
+```
+
 - **Interactive Problem Studio:** Multi-problem runner with a pluggable architecture (`src/problems/_template`) to scaffold and implement any machine coding problem in minutes.
 - **Production Infinite Scroll:** Dual-implementation comparing `IntersectionObserver` sentinel observation vs. window scroll calculations with overfetch guards and deduplication.
+- **Architecture Decision Records (ADRs):** Formal system design proposals in [`adr/`](./DesignProblems/adr/README.md) including Hotstar Clickstream Aggregator.
 - **Core Elements:** Distinguishing Elements, Components, Documents, and Composition mechanisms.
 - **SOLID & GoF Design Patterns:** Creational, Structural, and Behavioral patterns with real-world scenarios.
 - **Advanced Concurrency & DDD:** Thread-safe architectures, object pooling, and domain boundary isolation.

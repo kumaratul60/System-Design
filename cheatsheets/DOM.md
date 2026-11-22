@@ -149,6 +149,9 @@ console.log('Center Point:', centerX, centerY);
 > [!WARNING]
 > Accessing `getBoundingClientRect()` forces the browser to calculate layout synchronously if style modifications are pending. Avoid calling it in rapid loops to prevent **Layout Thrashing**.
 
+> [!TIP]
+> **Deep Dive Reference**: For asynchronous, off-main-thread viewport observation without layout thrashing, use `IntersectionObserver` with the Sentinel pattern instead of scroll listeners. See the complete architectural guide in [IntersectionObserver & Scroll Architecture](IntersectionObserver_and_Scroll.md).
+
 ---
 
 ## 4. The Shadow DOM & Web Components
