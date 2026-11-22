@@ -53,18 +53,18 @@ In each case, the expectation is identical: you must be able to **defend every d
 
 ## ⚖️ HLD vs LLD — Not a Spectrum, a Different Lens
 
-| Dimension / Area | 🌐 High-Level Design (HLD) | 🏗️ Low-Level Design (LLD) |
-| :--- | :--- | :--- |
-| **Scope** | **System** & Network Boundaries | **Code** & Module Internals |
-| **Level** | **Macro** (Services, Databases, Queues) | **Micro** (Classes, Methods, Interfaces) |
-| **Output** | **Architecture Diagrams**, Protocols, Specs | **Classes, APIs**, UML, State Machines |
-| **Concern** | **Scalability**, Availability ($99.999\%$), SLAs | **Maintainability**, Extensibility, SOLID |
-| **Example** | **Redis Cluster**, Sharded Postgres, Kafka | `class Cache<K,V>`, `interface Strategy` |
-| **Decisions** | Which database? Which queue? Which CDN? | Which class owns what data? Which pattern? |
-| **Failure Focus** | Network partitions (CAP), Thundering herd | Null pointers, Race conditions, Deadlocks |
-| **Key Metrics** | QPS (Queries/Sec), $P_{99}$ Latency, RAM (TB) | Cyclomatic complexity, Test coverage |
-| **Target Audience**| Architects, PMs, Security & SRE Leads | Developers implementing the code |
-| **Interview Test** | *"Can you design a 10M QPS distributed cache?"* | *"Can you implement an O(1) LRU Cache?"* |
+| Dimension / Area           | 🌐 High-Level Design (HLD)                                                       | 🏗️ Low-Level Design (LLD)                                            |
+| :------------------------- | :------------------------------------------------------------------------------- | :------------------------------------------------------------------- |
+| **Scope**                  | **System** & Network Boundaries                                                  | **Code** & Module Internals                                          |
+| **Level**                  | **Macro** (Services, Databases, Queues)                                          | **Micro** (Classes, Methods, Interfaces)                             |
+| **Output**                 | **Architecture Diagrams**, Protocols, Specs                                      | **Classes, APIs**, UML, State Machines                               |
+| **Concern**                | **Scalability**, Availability ($99.999\%$), SLAs                                 | **Maintainability**, Extensibility, SOLID                            |
+| **Example**                | **Redis Cluster**, Sharded Postgres, Kafka                                       | `class Cache<K,V>`, `interface Strategy`                             |
+| **Decisions**              | Which database? Which queue? Which CDN?                                          | Which class owns what data? Which pattern?                           |
+| **Failure Focus**          | Network partitions (CAP), Thundering herd                                        | Null pointers, Race conditions, Deadlocks                            |
+| **Key Metrics**            | QPS (Queries/Sec), $P_{99}$ Latency, RAM (TB)                                    | Cyclomatic complexity, Test coverage                                 |
+| **Target Audience**        | Architects, PMs, Security & SRE Leads                                            | Developers implementing the code                                     |
+| **Interview Test**         | _"Can you design a 10M QPS distributed cache?"_                                  | _"Can you implement an O(1) LRU Cache?"_                             |
 | **Primary question**       | _What components exist and how do they talk?_                                    | _How does this component actually work internally?_                  |
 | **Primary artifact**       | Architecture diagram, data flow, API contract                                    | Class diagram, sequence diagram, pseudocode, DB schema               |
 | **Key decisions**          | Tech stack choices, communication patterns, storage engines                      | Data structures, algorithm choice, class hierarchies                 |
@@ -352,19 +352,19 @@ flowchart TD
 
 ## 📁 Files in This Section
 
-| File                                                         | Topic                                                      | Complexity |
-| ------------------------------------------------------------ | ---------------------------------------------------------- | ---------- |
-| [01-Architecture-Patterns.md](./01-Architecture-Patterns.md) | Monolith, Microservices, EDA, BFF, Clean Architecture, DDD | ⭐⭐⭐⭐⭐ |
-| [02-Distributed-Systems.md](./02-Distributed-Systems.md)     | CAP, BASE/ACID, Consistent Hashing, Saga, CRDT, Raft       | ⭐⭐⭐⭐⭐ |
-| [03-Caching-Strategies.md](./03-Caching-Strategies.md)       | Cache-aside, write-through, eviction, CDN, Redis patterns  | ⭐⭐⭐⭐   |
-| [04-Message-Queues.md](./04-Message-Queues.md)               | Kafka, RabbitMQ, delivery guarantees, consumer groups      | ⭐⭐⭐⭐   |
-| [05-Databases-Deep-Dive.md](./05-Databases-Deep-Dive.md)     | SQL vs NoSQL, indexing, replication, sharding strategies   | ⭐⭐⭐⭐⭐ |
-| [06-API-Design.md](./06-API-Design.md)                       | REST, GraphQL, gRPC, WebSocket, rate limiting              | ⭐⭐⭐⭐   |
-| [07-CDN-and-Networking.md](./07-CDN-and-Networking.md)       | CDN, DNS, load balancing, TCP/UDP, HTTP/2 vs HTTP/3        | ⭐⭐⭐     |
-| [08-Auth-and-Security.md](./08-Auth-and-Security.md)         | JWT, OAuth 2.0, OIDC, RBAC, API security                   | ⭐⭐⭐⭐   |
-| [09-Observability.md](./09-Observability.md)                 | Metrics, traces, logs, alerting, SLOs/SLAs                 | ⭐⭐⭐⭐   |
-| [10-Frontend-Architecture.md](./10-Frontend-Architecture.md) | Micro-frontends, SSR/CSR/ISR, PWA, performance             | ⭐⭐⭐⭐⭐ |
-| [11-Classic-Problems.md](./11-Classic-Problems.md)           | URL shortener, rate limiter, notifications, feed, chat     | ⭐⭐⭐⭐⭐ |
+| File / Master Reference                                                                                               | Topic                                                      | Complexity |
+| --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- |
+| [01-Architecture-Patterns.md](./01-Architecture-Patterns.md)                                                          | Monolith, Microservices, EDA, BFF, Clean Architecture, DDD | ⭐⭐⭐⭐⭐ |
+| [02-Distributed-Systems.md](./02-Distributed-Systems.md)                                                              | CAP, BASE/ACID, Consistent Hashing, Saga, CRDT, Raft       | ⭐⭐⭐⭐⭐ |
+| [Caching Strategies & Patterns](../../Database&Caching/README.md)                                                     | Cache-aside, write-through, eviction, CDN, Redis patterns  | ⭐⭐⭐⭐   |
+| [Message Queues & Pub-Sub Architecture](../07-Problem-Bank/Communication%20&%20Messaging/02-Design-Pub-Sub-System.md) | Kafka, RabbitMQ, delivery guarantees, consumer groups      | ⭐⭐⭐⭐   |
+| [Databases & Indexing Deep Dive](../../cheatsheets/dbdecision.md)                                                     | SQL vs NoSQL, indexing, replication, sharding strategies   | ⭐⭐⭐⭐⭐ |
+| [API Design & Headers Architecture](../../Networking/README.md)                                                       | REST, GraphQL, gRPC, WebSocket, rate limiting              | ⭐⭐⭐⭐   |
+| [CDN & Web Networking Protocols](../05-Networks-Web/01-DNS-to-HTTP.md)                                                | CDN, DNS, load balancing, TCP/UDP, HTTP/2 vs HTTP/3        | ⭐⭐⭐     |
+| [Auth & Security Architecture](../../Security/README.md)                                                              | JWT, OAuth 2.0, OIDC, RBAC, API security                   | ⭐⭐⭐⭐   |
+| [Observability & Distributed Tracing](../../Logging-Monitoring/README.md)                                             | Metrics, traces, logs, alerting, SLOs/SLAs                 | ⭐⭐⭐⭐   |
+| [Frontend System Architecture](../03-Frontend-SD/README.md)                                                           | Micro-frontends, SSR/CSR/ISR, PWA, performance             | ⭐⭐⭐⭐⭐ |
+| [11-Classic-Problems.md](./11-Classic-Problems.md)                                                                    | URL shortener, rate limiter, notifications, feed, chat     | ⭐⭐⭐⭐⭐ |
 
 ---
 

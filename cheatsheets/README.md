@@ -14,7 +14,8 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - ⚖️ **[Load Balancing Algorithms & Architectures](Load_Balancing_Algorithms.md)**: Frontend client-side balancing, Web Worker thread pools, GeoDNS & BGP Anycast, L4 vs L7, HTTP/2 & gRPC single-connection trap, Round Robin, Least Connections, Consistent Hashing (V-Nodes), Power of Two Choices (P2C), and Maglev.
 - 🌳 **[Document Object Model (DOM)](DOM.md)**: Live vs Static collections, Shadow DOM, Event delegation, element metrics, and optimization paths.
 - 🧪 **[Periodic Table of HTML Elements](https://blog.alena.rocks/en/artifacts/html-elements/)**: Interactive periodic table covering all 115 HTML Living Standard elements categorized across 11 spec sections with void elements and MDN documentation links.
-- 🎨 **[CSS Object Model (CSSOM)](cssom.md)**: Critical Rendering Path, inline vs computed styles, CSS variables, performance optimizations, and Font metrics (Ascenders / Descenders).
+- 🎨 **[CSS Object Model (CSSOM)](CSSOM.md)**: Critical Rendering Path, inline vs computed styles, CSS variables, performance optimizations, and Font metrics (Ascenders / Descenders).
+- 📐 **[CSS Units & Sizing Master Guide](cssUnits.md)**: Exhaustive breakdown of absolute (`px`, `pt`), relative (`rem`, `em`, `ch`, `lh`), viewport (`vw`, `vh`, `dvh`, `svh`), and container query units (`cqi`, `cqw`).
 - 🌐🔗 **[How the Web Works: High-Level](web.md)**: Visual 17-step web touchpoints flow, browser pre-checks, and Critical Rendering Path (CRP) maps.
 - ⚙️ **[WebAssembly (WASM) & Web SDK](webassembly-web-sdk.md)**: WASM compilation, Memory Grow trapping, Workers integration, multithreading isolation, public SDK design, loading snippet queues, and storage partitioning.
 - ⚛️ **[React Core & Component State Patterns](ReactInternals/index.md)**: React Hooks, rendering lifecycle, and the loading/success/error/empty 4-state component pattern.
@@ -49,6 +50,21 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - 💳 **[Payment Architecture Part 1: Hardware, Terminal & Network Switching](Payment_Card_ATM_Voucher_Part1_Hardware_and_Switching.md)**: Physical interfaces (Magstripe Track 1/2, EMV Chip, NFC Tap, Tokenization/DPAN), ISO 8583 / ISO 20022 messaging, Dual-Message vs Single-Message clearing, ATM cash withdrawal & reversal mechanics, and Closed-Loop vs Open-Loop gift card architectures with comprehensive Mermaid diagrams.
 - 💳 **[Payment Architecture Part 2: Software, Subscriptions & Operations](Payment_Card_ATM_Voucher_Part2_Software_and_Operations.md)**: PAN & BIN anatomy, 4 distinct CVV flavors (CVV1, CVV2, iCVV, dCVV), Frontend Hosted Fields & client Luhn Mod-10, Backend idempotency & signed webhooks, 3DS2 frictionless/challenge flows, chargeback disputes, offline in-flight Store-and-Forward (SAF), and Auto-Debit Subscriptions (CIT vs. MIT, Visa VAU/Mastercard ABU).
 - 📡 **[HTTP Headers & Status Codes Master Cheatsheet](Headers.md)**: The 12 headers worth knowing (`Authorization`, `Content-Type`, `Accept`, `Cache-Control`, `ETag`, `If-None-Match`, `Location`, `Retry-After`, `Idempotency-Key`, `traceparent`, `Set-Cookie`, `Content-Encoding`), the Fab 5 security/caching headers (`Vary`, `HSTS`, `CSP`, `Origin`/CORS, `Upgrade`), and complete 1xx–5xx status code decision trees.
+- 🚀 **[System Scalability & Performance Blueprint](Scalability.md)**: Throughput vs Latency golden signals, horizontal vs vertical scaling, read/write database scaling, SLA/SLO/SLI nines, rate limiting algorithms, and consistent hashing rings.
+- 🏢 **[Frontend Architecture & Scaling](Architecture_Scaling.md)**: Technical and organizational scaling, rendering strategies (CSR, SSR, SSG, ISR), `"use client"` nuances, state density, and scalable testing.
+- 🧩 **[Micro-Frontends Architecture](MicroFrontends.md)**: Module Federation, runtime vs build-time integration, cross-MFE state sharing, CSS isolation, and independent deployment versioning.
+- 🎨 **[Design Patterns (GoF)](Design_Patterns.md)**: Creational (Factory, Singleton, Builder), Structural (Adapter, Decorator, Facade), and Behavioral (Observer, Strategy, Command, State) patterns with TypeScript code implementations.
+- 💻 **[Machine Coding Preparation Guide](machine_code.md)**: 90-minute live coding execution blueprint, structural separation of concerns, state management scaffolds, and edge-case handling.
+- 🖥️ **[Browser, Build & Networking](Browser_Build_Networking.md)**: Module bundlers (Vite, Webpack, Rollup), tree-shaking, code-splitting, critical rendering path, and HTTP/2 multiplexing.
+- 📊 **[Console Master Cheatsheet](Console_Master_Cheatsheet.md)**: Advanced Chrome DevTools console APIs (`console.table`, `console.time`, `console.group`, `console.profile`), heap snapshot triggers, and telemetry debugging.
+- 🌿 **[Git Internals & Architecture](Git.md)**: Directed Acyclic Graph (DAG), blob/tree/commit objects, fast-forward vs three-way merges, interactive rebase, and conflict resolution mechanics.
+- 🔍 **[Git Pre-Read Analysis](Git%20Pre-Read%20Analysis.md)**: Commit history heuristics, identifying architectural churn hotspots, and tracking code stability.
+- 🎯 **[Senior & Staff Interviewer Reference](Interviewer_Reference.md)**: Comprehensive evaluation rubrics, candidate signal detection (Junior vs Senior vs Staff), and grading frameworks across security, state, and scaling.
+- ❓ **[System Design & Architecture Questions Bank](ques.md)**: High-frequency system design interview scenarios, trade-off breakdowns, and failure mode grill questions.
+- ⚡ **[Evolution of React](evolutionReact.md)**: Historical architectural progression from Create-Class and Class Components to React Hooks, Concurrent Fiber, Selective Hydration, and React Server Components (RSC).
+- ⌨️ **[Terminal & CLI Mastery Cheatsheet](terminal.md)**: Unix shell productivity, process inspection (`lsof`, `kill`, `ps`), piping, curl diagnostics, and workflow shortcuts.
+- 📖 **[Tech Acronyms Dictionary](tech-acronyms.md)**: Comprehensive industry dictionary covering networking, security, distributed systems, and frontend terminology.
+- 💡 **[Miscellaneous System Design & Frontend Edge Cases](Misc.md)**: Edge cases, memory retention patterns, browser sandbox boundaries, and rare interview scenarios.
 - 🏛️ **[Core Engineering Pillars & Senior Developer Competency Guide](Core_Engineering_Pillars.md)**: The 12 fundamental engineering pillars (Heap vs Stack, Closures, V8 Garbage Collection, Event Loop, HTTP/3 & Networking, NDJSON streaming, Zod runtime API validation, Core Web Vitals, a11y, i18n, Security, and Resilient Error Handling).
 
 ---
@@ -59,69 +75,69 @@ Use this high-level list to find the correct primitive for your specific problem
 
 ### Remember and share data
 
-- [`useState`](ReactInternals/index.md#usestate) — Remember a value owned by one component.
-- [`useReducer`](ReactInternals/index.md#usereducer) — Centralize several related state updates.
-- [`useLinkedState`](ReactInternals/index.md#uselinkedstate-custom-hook-pattern) _(Custom)_ — Keep local editable state in sync with a changing external value.
-- [`createContext`](ReactInternals/index.md#createcontext) — Create information a subtree can provide.
-- [`use` / `useContext`](ReactInternals/index.md#usecontext) — Read context; `use` also reads Promises.
-- [`useSyncExternalStore`](ReactInternals/index.md#usesyncexternalstore) — Subscribe to a store managed outside React.
+- [`useState`](ReactInternals/index.md#state--data) — Remember a value owned by one component.
+- [`useReducer`](ReactInternals/index.md#state--data) — Centralize several related state updates.
+- [`useLinkedState`](ReactInternals/index.md#state--data) _(Custom)_ — Keep local editable state in sync with a changing external value.
+- [`createContext`](ReactInternals/index.md#state--data) — Create information a subtree can provide.
+- [`use` / `useContext`](ReactInternals/index.md#state--data) — Read context; `use` also reads Promises.
+- [`useSyncExternalStore`](ReactInternals/index.md#state--data) — Subscribe to a store managed outside React.
 
 ### Connect to the browser
 
-- [`useRef`](ReactInternals/index.md#useref) — Keep a DOM node or mutable value without rendering.
-- [`useEffect`](ReactInternals/index.md#useeffect) — Synchronize with an external system after paint.
-- [`useLayoutEffect`](ReactInternals/index.md#uselayouteffect) — Measure or adjust layout before paint.
-- [`useInsertionEffect`](ReactInternals/index.md#useinsertioneffect) — Insert styles before layout effects; mainly for libraries.
-- [`useEffectEvent`](ReactInternals/index.md#useeffectevent) — Call the latest logic from an effect without reacting to it.
-- [`useId`](ReactInternals/index.md#useid) — Create an accessible ID stable across server and client.
-- [`useImperativeHandle`](ReactInternals/index.md#useimperativehandle) — Customize the value exposed through a ref.
+- [`useRef`](ReactInternals/index.md#dom--effects) — Keep a DOM node or mutable value without rendering.
+- [`useEffect`](ReactInternals/index.md#dom--effects) — Synchronize with an external system after paint.
+- [`useLayoutEffect`](ReactInternals/index.md#dom--effects) — Measure or adjust layout before paint.
+- [`useInsertionEffect`](ReactInternals/index.md#dom--effects) — Insert styles before layout effects; mainly for libraries.
+- [`useEffectEvent`](ReactInternals/index.md#dom--effects) — Call the latest logic from an effect without reacting to it.
+- [`useId`](ReactInternals/index.md#dom--effects) — Create an accessible ID stable across server and client.
+- [`useImperativeHandle`](ReactInternals/index.md#dom--effects) — Customize the value exposed through a ref.
 
 ### Load and reveal UI
 
-- [Hydrate / `hydrateRoot`](ReactInternals/index.md#hydration--hydrateroot) — Keep server HTML dormant and load its behavior on demand.
-- [`Suspense`](ReactInternals/index.md#suspense) — Show a fallback while descendants wait.
-- [`ErrorBoundary`](ReactInternals/index.md#error-boundary) — Replace a failed subtree with an error fallback.
-- [`lazy`](ReactInternals/index.md#lazy) — Load a component's code on demand.
-- [`startTransition`](ReactInternals/index.md#starttransition--usetransition) — Mark an update as non-urgent.
-- [`useTransition`](ReactInternals/index.md#starttransition--usetransition) — Start a transition and read its pending state.
-- [`useDeferredValue`](ReactInternals/index.md#usedeferredvalue) — Let a slow child temporarily use an older value.
-- [`Activity`](ReactInternals/index.md#activity) — Hide or prerender a subtree while suppressing its effects.
+- [Hydrate / `hydrateRoot`](ReactInternals/index.md#loading--concurrency) — Keep server HTML dormant and load its behavior on demand.
+- [`Suspense`](ReactInternals/index.md#loading--concurrency) — Show a fallback while descendants wait.
+- [`ErrorBoundary`](ReactInternals/index.md#loading--concurrency) — Replace a failed subtree with an error fallback.
+- [`lazy`](ReactInternals/index.md#loading--concurrency) — Load a component's code on demand.
+- [`startTransition`](ReactInternals/index.md#loading--concurrency) — Mark an update as non-urgent.
+- [`useTransition`](ReactInternals/index.md#loading--concurrency) — Start a transition and read its pending state.
+- [`useDeferredValue`](ReactInternals/index.md#loading--concurrency) — Let a slow child temporarily use an older value.
+- [`Activity`](ReactInternals/index.md#loading--concurrency) — Hide or prerender a subtree while suppressing its effects.
 
 ### Handle actions and forms
 
-- [`useActionState`](ReactInternals/index.md#useactionstate) — Track an action's result and pending state.
-- [`useFormStatus`](ReactInternals/index.md#useformstatus) — Read the nearest parent form's active action.
-- [`useOptimistic`](ReactInternals/index.md#useoptimistic) — Show an expected result before an action finishes.
-- [`requestFormReset`](ReactInternals/index.md#requestformreset) — Request an uncontrolled-form reset from an action or transition.
+- [`useActionState`](ReactInternals/index.md#forms--actions-react-19) — Track an action's result and pending state.
+- [`useFormStatus`](ReactInternals/index.md#forms--actions-react-19) — Read the nearest parent form's active action.
+- [`useOptimistic`](ReactInternals/index.md#forms--actions-react-19) — Show an expected result before an action finishes.
+- [`requestFormReset`](ReactInternals/index.md#forms--actions-react-19) — Request an uncontrolled-form reset from an action or transition.
 
 ### Compose and optimize
 
-- [`Fragment`](ReactInternals/index.md#fragment) — Group siblings without an extra DOM element.
-- [`memo`](ReactInternals/index.md#memo) — Skip a component render when its props are unchanged.
-- [`useMemo`](ReactInternals/index.md#usememo) — Reuse an expensive calculated value.
-- [`useCallback`](ReactInternals/index.md#usecallback) — Reuse a function identity when a consumer needs it.
-- [`createPortal`](ReactInternals/index.md#createportal) — Render into another DOM container.
-- [View Transition APIs](ReactInternals/index.md#view-transitions) — Coordinate browser View Transitions.
+- [`Fragment`](ReactInternals/index.md#optimization-apis) — Group siblings without an extra DOM element.
+- [`memo`](ReactInternals/index.md#optimization-apis) — Skip a component render when its props are unchanged.
+- [`useMemo`](ReactInternals/index.md#optimization-apis) — Reuse an expensive calculated value.
+- [`useCallback`](ReactInternals/index.md#optimization-apis) — Reuse a function identity when a consumer needs it.
+- [`createPortal`](ReactInternals/index.md#optimization-apis) — Render into another DOM container.
+- [View Transition APIs](ReactInternals/index.md#optimization-apis) — Coordinate browser View Transitions.
 
 ### Roots, resources, and library tools
 
-- [`createRoot` / `hydrateRoot`](ReactInternals/index.md#createroot) — Start a client tree or adopt server HTML.
-- [Resource Hints](ReactInternals/index.md#resource-hints) (`preload`, `preinit`, `preconnect`, `prefetchDNS`) — Tell the browser about resources early.
-- [`createElement` / `cloneElement`](ReactInternals/index.md#library-apis) — Create or adapt element descriptors.
-- [`isValidElement` / `Children`](ReactInternals/index.md#library-apis) — Inspect component children in library code.
-- [`flushSync` / `act`](ReactInternals/index.md#library-apis) — Integrate synchronous DOM work or test updates.
-- [`useDebugValue`](ReactInternals/index.md#library-apis) — Compatibility hook; development tool labeling.
-- [`setSsrSuspenseTimeout`](ReactInternals/index.md#library-apis) — Configure the server's global deadline for unresolved async data.
-- [`version`](ReactInternals/index.md#library-apis) — Read the installed React version.
+- [`createRoot` / `hydrateRoot`](ReactInternals/index.md#resource--root-apis) — Start a client tree or adopt server HTML.
+- [Resource Hints](ReactInternals/index.md#resource--root-apis) (`preload`, `preinit`, `preconnect`, `prefetchDNS`) — Tell the browser about resources early.
+- [`createElement` / `cloneElement`](ReactInternals/index.md#resource--root-apis) — Create or adapt element descriptors.
+- [`isValidElement` / `Children`](ReactInternals/index.md#resource--root-apis) — Inspect component children in library code.
+- [`flushSync` / `act`](ReactInternals/index.md#resource--root-apis) — Integrate synchronous DOM work or test updates.
+- [`useDebugValue`](ReactInternals/index.md#resource--root-apis) — Compatibility hook; development tool labeling.
+- [`setSsrSuspenseTimeout`](ReactInternals/index.md#resource--root-apis) — Configure the server's global deadline for unresolved async data.
+- [`version`](ReactInternals/index.md#resource--root-apis) — Read the installed React version.
 
 ---
 
 ### Databases, Systems & Sharding
 
-- [CAP Theorem](dbdecision.md#4-database-scaling-the-bottleneck) — Consistency, Availability, Partition tolerance tradeoffs.
-- [Database Selection Matrix](dbdecision.md#database-selector-matrix) — Choose between Relational, Key-Value, Document, Wide-Column, Graph, and Time-Series.
-- [Multi-Database Case Studies](dbdecision.md#3-multi-database-production-case-studies) — Real-world database layouts of Uber, Instagram, WhatsApp, and YouTube.
-- [Functional vs Non-Functional Requirements](dbdecision.md#1-requirements-engineering-functional-vs-non-functional-requirements) — Distinguish FRs vs NFRs with e-commerce mental models.
+- [CAP Theorem](Scalability.md#4-database-scaling-the-bottleneck) — Consistency, Availability, Partition tolerance tradeoffs.
+- [Database Selection Matrix](dbdecision.md#3-database-selection-matrix) — Choose between Relational, Key-Value, Document, Wide-Column, Graph, and Time-Series.
+- [Multi-Database Case Studies](dbdecision.md#5-case-studies-multi-database-architectures) — Real-world database layouts of Uber, Instagram, WhatsApp, and YouTube.
+- [Functional vs Non-Functional Requirements](dbdecision.md#1-requirements-engineering-functional-fr-vs-non-functional-nfr) — Distinguish FRs vs NFRs with e-commerce mental models.
 - [**API Pagination Architecture**](pagination.md) — Master guide on Offset vs Keyset vs Cursor, SQL deep paging traps, compound Base64 tokens, and GraphQL Relay specs.
 
 ---
@@ -134,35 +150,69 @@ Use this high-level list to find the correct primitive for your specific problem
 - [`history.pushState`](BOM.md#21-state-pushes-and-browser-back-navigation) — Navigate SPA routes programmatically without document reloads.
 - [Scroll Coordinates & Infinite Scroll](BOM.md#64-scroll--viewport-formulas) — Screen measurements using `scrollY`, `innerHeight`, and `scrollHeight`.
 - [**IntersectionObserver & Scroll Architecture**](IntersectionObserver_and_Scroll.md) — Production deep dive: `IntersectionObserver` vs `window.scrollY`, `threshold`, `rootMargin`, the Sentinel Pattern, and Layout Thrashing prevention.
-- [Shadow DOM Style Scoping](DOM.md#shadow-dom) — Create styling boundaries isolated from parent stylesheets.
+- [Shadow DOM Style Scoping](DOM.md#4-the-shadow-dom--web-components) — Create styling boundaries isolated from parent stylesheets.
 - [High-Level Web Rendering Flowchart](web.md#1-web-touchpoints-flow) — 17-step chronological connection and layout flow from URL to pixels.
 
 ---
 
 ### CSSOM & Layout Configurations
 
-- [Computed vs Inline Styles](cssom.md#2-inline-vs-computed-styles) — Prevent performance regressions caused by forcing layouts recalculation.
-- [Font Ascent & Descent Metrics](cssom.md#font-metrics-ascenders-vs-descenders) — Control baseline layouts using `ascent-override`, `descent-override`, and `line-gap-override`.
-- [Cumulative Layout Shift (CLS)](cssom.md#3-preventing-layout-shifts-cls-optimization) — Secure web vitals using aspect ratios and dynamic image reservations.
+- [Computed vs Inline Styles](CSSOM.md#3-reading-styles-inline-vs-computed-styles) — Prevent performance regressions caused by forcing layouts recalculation.
+- [Font Ascent & Descent Metrics](CSSOM.md#7-deep-dive-font-metrics--alignment-ascenders--descenders) — Control baseline layouts using `ascent-override`, `descent-override`, and `line-gap-override`.
+- [Cumulative Layout Shift (CLS)](CSSOM.md#6-css-performance--loading-optimization) — Secure web vitals using aspect ratios and dynamic image reservations.
 - [Cascade Layers (`@layer`)](evolutionCSS.md#era-6-modern-native-css-spec-advancements) — Control cascade overrides without raising class specificity.
 
 ---
 
 ### WebAssembly & Offloading
 
-- [Memory Grow Trapping](webassembly-web-sdk.md#1-wasm-linear-memory-grow-traps) — Handle JS view detachment after `memory.grow()` calls.
-- [Cross-Origin Isolation Headers](webassembly-web-sdk.md#2-multithreading-security-sharedarraybuffer--coopcoep) — Secure `SharedArrayBuffer` using COOP/COEP headers.
-- [Asynchronous Queue Loader](webassembly-web-sdk.md#4-client-side-asynchronous-snippet-queue-loader) — Buffer commands inside arrays before scripts finish loading.
-- [Storage Partitioning](webassembly-web-sdk.md#5-storage-partitioning-browser-privacy-sandboxing) — Handle partitioned `localStorage` inside third-party iframe boundaries.
+- [Memory Grow Trapping](webassembly-web-sdk.md#23-the-memory-grow-trap-typed-array-invalidation) — Handle JS view detachment after `memory.grow()` calls.
+- [Cross-Origin Isolation Headers](webassembly-web-sdk.md#52-threads--cross-origin-isolation-coopcoep) — Secure `SharedArrayBuffer` using COOP/COEP headers.
+- [Asynchronous Queue Loader](webassembly-web-sdk.md#82-the-snippet-loader-pattern-asynchronous-queueing) — Buffer commands inside arrays before scripts finish loading.
+- [Storage Partitioning](webassembly-web-sdk.md#192-storage-partitioning--third-party-restrictions) — Handle partitioned `localStorage` inside third-party iframe boundaries.
 
 ---
 
 ### Web Accessibility (a11y) & WCAG Architectural Patterns
 
-- [5 Golden Rules of ARIA](WCAG_Accessibility.md#-the-5-golden-rules-of-aria) — Native HTML vs ARIA polyfills and when not to use ARIA.
+- [5 Golden Rules of ARIA](WCAG_Accessibility.md#the-5-golden-rules-of-aria) — Native HTML vs ARIA polyfills and when not to use ARIA.
 - [`tabIndex` Master Guide (`0`, `-1`, `<0`, `>0`)](WCAG_Accessibility.md#3-the-tabindex-master-guide-0--1-0-0) — Browser navigation behavior, programmatic focus, and why positive values are an anti-pattern.
 - [`inert` vs `aria-hidden` vs `display:none` vs `.sr-only`](WCAG_Accessibility.md#2-hiding-elements-inert-vs-aria-hidden-vs-displaynone-vs-sr-only) — Trade-offs and accessibility tree visibility.
 - [Roving `tabIndex` vs `aria-activedescendant`](WCAG_Accessibility.md#4-focus-management-roving-tabindex-vs-aria-activedescendant) — Focus management strategies for composite widgets.
 - [Modal Focus Trapping & Restoration](WCAG_Accessibility.md#pattern-1-modal-dialogs--focus-trapping-native-dialog-vs-custom-portal) — Native `<dialog>` top layer vs portal focus traps.
 - [SPA Route Announcer](WCAG_Accessibility.md#pattern-3-single-page-application-spa-route-transitions--focus-reset) — Dynamic client-side routing focus reset and screen reader announcements.
-- [A11y CI/CD Pipeline & Automated Governance](WCAG_Accessibility.md#-accessibility-testing--governance-pipeline) — Shift-left testing with `axe-core`, Playwright, and ESLint.
+- [A11y CI/CD Pipeline & Automated Governance](WCAG_Accessibility.md#accessibility-testing--governance-pipeline) — Shift-left testing with `axe-core`, Playwright, and ESLint.
+
+---
+
+### Backend & System Design Fundamentals
+
+- [Process vs. Thread](Backend_System_Design_Fundamentals.md#process-vs-thread) — Memory isolation (virtual address space vs. shared heap), context switching overhead, and IPC.
+- [Thread Pool Architecture & Goetz Formula](Backend_System_Design_Fundamentals.md#thread-pool-architecture) — Formula $N_{\text{threads}} = N_{\text{CPU}} \times U_{\text{CPU}} \times (1 + \frac{W}{C})$, task queue buffering, and caller-runs backpressure.
+- [Simplex vs. Half-Duplex vs. Full-Duplex](Backend_System_Design_Fundamentals.md#communication-channels-simplex-vs-half-duplex-vs-full-duplex) — Unidirectional (telemetry) vs. alternating (HTTP/1.1) vs. simultaneous bidirectional (WebSockets / HTTP/2 multiplexing).
+- [Database Indexing (B+ Tree vs Hash vs LSM)](Backend_System_Design_Fundamentals.md#database-indexing) — $O(\log N)$ range scans vs. $O(1)$ point lookups vs. write-optimized append logs.
+- [ACID Transactions & Isolation Levels](Backend_System_Design_Fundamentals.md#acid-transactions-in-depth) — WAL atomicity, durability fsync, and 4 isolation levels mapped against Dirty, Non-Repeatable, and Phantom reads.
+- [Optimistic vs. Pessimistic Locking](Backend_System_Design_Fundamentals.md#optimistic-vs-pessimistic-locking) — Version CAS checks vs. `SELECT FOR UPDATE` row locks with sequence flows.
+- [Race Conditions & Check-Then-Act](Backend_System_Design_Fundamentals.md#race-conditions) — Concurrent state corruption and atomic database update patterns.
+- [Exponential Backoff with Full Jitter](Backend_System_Design_Fundamentals.md#retry-with-exponential-backoff--jitter) — Mitigating thundering herds with mathematically de-synchronized retries.
+- [Circuit Breaker State Machine](Backend_System_Design_Fundamentals.md#circuit-breaker) — Closed $\to$ Open $\to$ Half-Open transitions preventing cascading failure.
+- [The Three Pillars of Observability](Backend_System_Design_Fundamentals.md#observability-the-three-pillars) — Metrics (what broke), Traces (where it broke), and Structured Logs (why it broke).
+
+---
+
+### HTTP Headers & Status Codes Quick Lookup
+
+- [The 12 Headers Worth Knowing](Headers.md#the-12-headers-worth-knowing-fast-recall) — Fast recall matrix for `Authorization`, `Content-Type`, `Accept`, `Cache-Control`, `ETag`, `If-None-Match`, `Location`, `Retry-After`, `Idempotency-Key`, `traceparent`, `Set-Cookie`, `Content-Encoding`.
+- [The Fab 5 Security/Caching Headers](Headers.md#critical-complementary-headers-the-5-you-must-also-know) — `Vary`, `Strict-Transport-Security` (HSTS), `Content-Security-Policy` (CSP), `Origin`/CORS, and `Upgrade` (WebSockets).
+- [Idempotency-Key Deep Dive](Headers.md#1-idempotency-key-safe-mutation-retries) — Safe retries for mutating operations (Stripe/IETF standard).
+- [W3C `traceparent` Anatomy](Headers.md#2-traceparent-w3c-distributed-tracing) — `version-traceId-parentId-traceFlags` for OpenTelemetry cross-service tracing.
+- [Status Code Decision Logic](Headers.md#status-code-decision-logic) — When to return `201 Created` vs `204 No Content`, `401 Unauthorized` vs `403 Forbidden`, `400 Bad Request` vs `422 Unprocessable Entity`, `502 Bad Gateway` vs `504 Gateway Timeout`.
+
+---
+
+### Package Managers, Monorepos & Tooling
+
+- [pnpm vs yarn vs npm Architecture](package-managers.md#10-master-comparison-matrix-including-bun) — Content-Addressable Storage (CAS), hard links, symlinks, and phantom dependency elimination.
+- [Phantom Dependencies Explored](package-managers.md#the-phantom-dependency-trap-hoisting-bug) — Why flat `node_modules` causes invisible runtime crashes in production.
+- [Monorepo Workspaces & `workspace:*`](package-managers.md#pnpm-workspaces-pnpm-workspaceyaml) — Linking internal packages without local symlink rot.
+- [Turborepo vs Nx Build Orchestrators](package-managers.md#turborepo-vs-nx-comparison) — Computation Caching, Distributed Task Execution (DTE), Project Graph analysis, and Remote Cache pipelines.

@@ -287,4 +287,4 @@ The principal-level answer: **use module federation or fine-grained code splitti
 
 ---
 
-_Start with [`01-HTTP-Deep-Dive.md`](./01-HTTP-Deep-Dive.md) and work through the files in order — each builds on the previous._
+_Start with [`01-DNS-to-HTTP.md`](./01-DNS-to-HTTP.md) and work through the files in order — each builds on the previous._

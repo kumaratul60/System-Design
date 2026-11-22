@@ -8,7 +8,7 @@ A persistent, full-duplex communication protocol over a single TCP connection fo
 
 - **Full-Duplex vs. Half-Duplex:**
   - **Full-Duplex:** Both sides send/receive simultaneously (WebSocket).
-  - **Half-Duplex:** One side at a time (e.g., HTTP request/response or Walkie-Talkie).
+  - **Half-Duplex:** One side at a time (e.g., HTTP request/response or Walkie-Talkie). _(See [Simplex vs. Half vs. Full Duplex in Backend Fundamentals](../../cheatsheets/Backend_System_Design_Fundamentals.md#communication-channels-simplex-vs-half-duplex-vs-full-duplex))._
 - **TCP Connection:**
   - connection oriented
   - Reliable, ordered, error-checked byte stream.
@@ -23,7 +23,7 @@ A persistent, full-duplex communication protocol over a single TCP connection fo
 - **ws:// vs wss://:** `ws` is plaintext; `wss` is TLS encrypted. **Always use wss:// in production.**
 - **HTTP Upgrade (101):**
   - Starts as HTTP: `Upgrade: websocket` + `Connection: Upgrade`.
-  - Server replies `101 Switching Protocols` → the socket becomes WebSocket.
+  - Server replies `101 Switching Protocols` → the socket becomes WebSocket. _(See [HTTP Upgrade Headers](../../cheatsheets/Headers.md#101-switching-protocols))._
 - **Framing:**
   - Large messages split into chunks (frames).
   - Includes opcodes (text/binary), masking (client→server), and control frames (ping/pong).

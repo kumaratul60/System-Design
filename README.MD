@@ -19,14 +19,14 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
     - [6. Security Engineering](#6-security-engineering)
     - [7. Performance Optimization](#7-performance-optimization)
     - [8. Interview \& Concept Deep Dives](#8-interview--concept-deep-dives)
-    - [9. Web Fundamentals](#9-web-fundamentals)
+    - [9. Web Fundamentals \& Backend Fundamentals](#9-web-fundamentals--backend-fundamentals)
     - [10. Frontend Design Problems, HLD \& LLD Studio](#10-frontend-design-problems-hld--lld-studio)
     - [11. Web Accessibility (a11y) \& WCAG Architecture](#11-web-accessibility-a11y--wcag-architecture)
     - [12. ESLint \& Automated Quality Suite](#12-eslint--automated-quality-suite)
     - [13. Categorized Cheatsheets \& Master Reference](#13-categorized-cheatsheets--master-reference)
     - [14. Testing \& Quality Engineering Architecture](#14-testing--quality-engineering-architecture)
   - [🛠️ Quick Start \& Local Development](#️-quick-start--local-development)
-    - [Development scripts:](#development-scripts)
+    - [Development Scripts (`DesignProblems/`):](#development-scripts-designproblems)
   - [🤝 Contributing](#-contributing)
   - [🔗 Useful Resources](#-useful-resources)
 
@@ -92,15 +92,22 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── WCAG_Accessibility.md    # 770+ Line WCAG 2.1/2.2 Spec & Staff Architect Interview Grill
 │   └── demos/                   # 9 Standalone Interactive HTML Testbeds with Real-Time HUDs
 ├── cheatsheets/                 # Quick-Reference Cheatsheets & System Architecture
-│   ├── eslint/                  # 10 Modular ESLint & Quality Gate Guides
-│   │   ├── 01-a11y-strict.md    # jsx-a11y/strict WCAG rule mapping & AI pitfalls
-│   │   ├── 02-typescript-typechecked.md # Type-aware linting & zero-unsafe rules
-│   │   ├── 04-storybook-a11y-automation.md # Axe Test-Runner automated CI pipeline
-│   │   └── 09-production-configs.md # Copy-paste Flat (v9+) & Legacy configs
-│   ├── eslint.md                # Consolidated Single-File ESLint Master Reference
+│   ├── README.md                # Master Categorized Index of all 47 Cheat Sheets
+│   ├── Backend_System_Design_Fundamentals.md # Core Backend, OS primitives, ACID & concurrency
+│   ├── Headers.md               # 12 Headers Worth Knowing, HTTP Status Codes & caching
+│   ├── Scalability.md           # Golden Signals, LB, Caching & Consistent Hashing
 │   ├── dbdecision.md            # Database decision framework & PACELC matrix
+│   ├── RateLimiting_and_Deadlocks.md # Distributed rate limiting, Redis Lua & deadlock prevention
+│   ├── Load_Balancing_Algorithms.md # L4/L7, Consistent Hashing, P2C & Maglev
+│   ├── pagination.md            # Offset vs Keyset/Cursor pagination architecture
+│   ├── package-managers.md      # pnpm vs yarn vs npm, CAS & monorepos (Turborepo vs Nx)
+│   ├── state-management.md      # State buckets, execution lifecycles & decision tree
+│   ├── state-management-advanced.md # Signals, Form state, Optimistic UI & cross-tab sync
 │   ├── typescript.md            # TypeScript types vs interfaces & utility types
-│   └── Performance_Optimization.md # Core Web Vitals & bundle optimization
+│   ├── Architecture_Scaling.md  # Frontend scaling, rendering (CSR/SSR/SSG/ISR) & MFEs
+│   ├── Core_Engineering_Pillars.md # 12 Fundamental engineering pillars for senior developers
+│   ├── eslint/                  # 10 Modular ESLint & Quality Gate Guides
+│   └── eslint.md                # Consolidated Single-File ESLint Master Reference
 ├── Testing/                     # Testing & Quality Engineering Architecture
 │   ├── README.md                # Master Hub, 16-Dimension Taxonomy Matrix & Quality Gates
 │   ├── Unit_Testing.md          # Pure functions, fake timers, renderHook, AAA pattern
@@ -121,14 +128,7 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   └── Testing_QA.md            # 29+ Staff/Senior Interview Questions & Live Coding Suites
 ├── DesignProblems/              # Frontend Machine Coding & LLD Studio (React + TS + Problems Hub)
 └── Web/                         # Fundamentals & Web Infrastructure
-    ├── Headers.md               # Deep dive into HTTP Headers
-    ├── Scalability.md           # Horizontal vs Vertical scaling
-    ├── Git.md                   # Version control & Git internals
-    ├── Git Pre-Read Analysis.md # Deep analysis of Git workflows
-    ├── MicroFrontends.md        # Micro Frontend design and loading patterns
-    ├── terminal.md              # Terminal & CLI productivity
-    ├── tech-acronyms.md         # Comprehensive tech glossary
-    └── web.md                   # Core web concepts and protocols
+    └── web.md                   # 17-step web touchpoints flow, browser pre-checks & CRP
 ```
 
 ---
@@ -204,13 +204,13 @@ A curated collection of system design questions, architecture scaling strategies
 - **[Machine Coding Preparation](./cheatsheets/machine_code.md)**: Guidelines, patterns, and templates for machine coding round success.
 - **[Interviewer Reference Guide](./cheatsheets/Interviewer_Reference.md)**: High-level reference sheets and conceptual checks.
 
-### 9. [Web Fundamentals](./Web/web.md)
+### 9. [Web Fundamentals](./Web/web.md) & [Backend Fundamentals](./cheatsheets/Backend_System_Design_Fundamentals.md)
 
-Exhaustive documentation on the building blocks of the web:
+Exhaustive documentation on the building blocks of the web and backend systems:
 
-- **Protocols & Headers:** HTTP internals and header management.
-- **Infrastructure:** Scalability patterns and terminal mastery.
-- **Workflow:** Git internals and tech acronyms for industry-standard communication.
+- **Protocols & Headers:** [HTTP Headers & Status Codes](./cheatsheets/Headers.md) and [Web Protocols & CRP Flow](./Web/web.md).
+- **Backend Architecture:** [Backend & System Design Fundamentals](./cheatsheets/Backend_System_Design_Fundamentals.md) and [Scalability Blueprint](./cheatsheets/Scalability.md).
+- **Developer Workflows:** [Git Internals](./cheatsheets/Git.md), [Terminal Mastery](./cheatsheets/terminal.md), and [Tech Acronyms](./cheatsheets/tech-acronyms.md).
 
 ### 10. [Frontend Design Problems, HLD & LLD Studio](./DesignProblems/README.md)
 
@@ -287,31 +287,34 @@ An end-to-end guide to modern software quality engineering, frontend testing, te
 
 ## 🛠️ Quick Start & Local Development
 
-This repository contains both theoretical documentation and an interactive, real-time **State Management & LLD Showcase Application** under the `LLD` directory.
+This repository contains both theoretical documentation and an interactive, real-time **Frontend Machine Coding & LLD Studio** under the `DesignProblems/` directory.
 
 To run the interactive laboratory and feature showcase locally:
 
-1. **Prerequisites:** Make sure you have [Node.js](https://nodejs.org/) (v18+) and `npm` installed.
-2. **Navigate to the LLD project folder:**
+1. **Prerequisites:** Make sure you have [Node.js](https://nodejs.org/) (v18+) and [pnpm](https://pnpm.io/) (`corepack enable pnpm` or `npm install -g pnpm`) installed.
+2. **Navigate to the DesignProblems project folder:**
    ```bash
-   cd LLD
+   cd DesignProblems
    ```
 3. **Install dependencies:**
    ```bash
-   npm install
+   pnpm install
    ```
 4. **Start the local development server:**
    ```bash
-   npm run dev
+   pnpm dev
    ```
-5. **Open your browser:** Visit `http://localhost:5173` (or the port specified in your terminal, e.g. `http://localhost:5174`) to interact with the showcase!
+5. **Open your browser:** Visit `http://localhost:5173` to interact with the problem implementations!
 
-### Development scripts:
+### Development Scripts (`DesignProblems/`):
 
-- `npm run dev` - Start local development server (Vite-powered showcase app).
-- `npm run lint` - Run ESLint checks across the codebase.
-- `npm run typecheck` - Run TypeScript compiler checks.
-- `npm run build` - Compile production-ready bundles for all apps and packages in the monorepo workspace.
+- `pnpm dev` - Start local development server (Vite-powered showcase app on `http://localhost:5173`).
+- `pnpm lint` - Run ESLint checks across the codebase (`pnpm lint:fix` to auto-fix).
+- `pnpm typecheck` - Run TypeScript compiler checks (`tsc --noEmit`).
+- `pnpm format:check` - Check code formatting with Prettier (`pnpm format` to auto-format).
+- `pnpm test` - Run automated unit and logic test suites (`node test-logic.mjs`).
+- `pnpm check:all` - All-in-one quality verification pipeline (`typecheck` + `lint` + `format:check` + `test`).
+- `pnpm build` - Compile production-ready TypeScript bundles with Vite.
 
 ---
 

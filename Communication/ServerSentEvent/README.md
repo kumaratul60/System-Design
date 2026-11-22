@@ -28,9 +28,9 @@ Server-Sent Events also use HTTP. But unlike Long Polling, the connection stays 
 1.  **Long-Lived Connection:** The initial connection remains open indefinitely.
 2.  **Unidirectional Communication:** Data flows only from Server to Client.
 3.  **Single Standard HTTP Connection:** Runs over standard HTTP (port 80/443).
-4.  **Connection: keep-alive:** Relies on the HTTP connection staying open.
+4.  **Connection: keep-alive & text/event-stream:** Relies on persistent HTTP headers. _(See [Headers Master Cheatsheet](../../cheatsheets/Headers.md) and [Backend Fundamentals](../../cheatsheets/Backend_System_Design_Fundamentals.md#server-sent-events-sse))._
 5.  **Text-Based Stream:** Data is sent as plain text (UTF-8). Not suited for raw binary.
-6.  **Automatic Reconnection:** Browser attempts to reconnect if the connection drops.
+6.  **Automatic Reconnection:** Browser attempts to reconnect (`Last-Event-ID`) if the connection drops.
 
 ---
 

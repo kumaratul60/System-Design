@@ -1,5 +1,7 @@
 # Comprehensive Security Headers Guide
 
+> 📖 **General Reference:** For the complete HTTP header taxonomy (Request/Response headers, Caching, Spectre isolation, and status codes), see the **[HTTP Headers Master Cheatsheet](../../cheatsheets/Headers.md)**.
+
 This lab demonstrates how to implement and understand essential HTTP security headers in an Express.js environment.
 
 ---
