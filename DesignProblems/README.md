@@ -240,6 +240,7 @@ pnpm install
 - 🌐 **[High-Level Design (HLD) & Frontend System Architecture](HLD.md)**: Master guide on the RADIO framework, Micro-Frontends (Module Federation), Edge CDN caching, BFF architecture, WebSocket/SSE protocols, CWV budgets, and local-first CRDT sync.
 - 📐 **[Low-Level Design (LLD) & Design Patterns](LLD.md)**: Master guide on Component Composition, Config-Driven UI (CDUI/SDUI), Observer, Factory, and Strategy patterns.
 - 👁️ **[IntersectionObserver & Scroll Architecture](../cheatsheets/IntersectionObserver_and_Scroll.md)**: Production guide on `IntersectionObserver` vs `window.scrollY`, `threshold`, `rootMargin`, Sentinel Pattern, and Layout Thrashing.
+- 📄 **[API Pagination Architecture (Offset vs. Keyset vs. Cursor)](../cheatsheets/pagination.md)**: Master guide on Offset vs Keyset vs Cursor, SQL deep paging traps, compound Base64 tokens, and GraphQL Relay specs.
 - 💾 **[State Management Master Cheat Sheet](../cheatsheets/state-management.md)**: The 5-question interrogation framework, RTK, Zustand, MobX, and XState.
 - ⚡ **[Advanced State Patterns](../cheatsheets/state-management-advanced.md)**: Atomic signals, 60fps form state, optimistic UI updates, and cross-tab sync.
 - 📦 **[Package Managers & Monorepos Master Cheat Sheet](../cheatsheets/package-managers.md)**: `pnpm` vs `yarn` vs `npm` hierarchy, Content-Addressable Storage (CAS), Phantom Dependencies, Corepack, pnpm workspaces, and Turborepo vs Nx.

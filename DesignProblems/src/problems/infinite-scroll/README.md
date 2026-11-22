@@ -161,5 +161,6 @@ pnpm build         # Strict TypeScript check & Vite production build
 ---
 
 ## 📖 Related Cheatsheets & Theoretical References
+- 📄 **[API Pagination Architecture (Offset vs. Keyset vs. Cursor)](../../../../cheatsheets/pagination.md)**: Deep dive on Offset vs. Keyset vs. Cursor, SQL deep paging traps, compound Base64 tokens, and Relay connection specs.
 - 👁️ **[IntersectionObserver & Scroll Architecture](../../../../cheatsheets/IntersectionObserver_and_Scroll.md)**: Deep dive into off-main-thread compositor observations, threshold mechanics, and layout thrashing.
-- 📐 **[Low-Level Design (LLD) & Design Patterns](../../LLD.md)**: Component composition, observer patterns, and memory lifecycle management.
+- 📐 **[Low-Level Design (LLD) & Design Patterns](../../../LLD.md)**: Component composition, observer patterns, and memory lifecycle management.

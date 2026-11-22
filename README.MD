@@ -76,27 +76,12 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── SSRF&JI.md               # SSRF, Injection & XXE
 │   ├── Compliance&Regulations.md # GDPR, HIPAA, SOC 2
 │   └── Security_QA.md           # 33 Core Security Q&A Guide
-├── Performance/                 # Web Performance Optimization
+├── Performance_Core_Web_Vitals/ # Web Performance & Core Web Vitals Optimization
 │   ├── Metrics/                 # Web Vitals (LCP, FID/INP, CLS) & measurement
 │   ├── Assets/                  # Image & font optimization
 │   ├── Network/                 # Network optimization, HTTP/3, compression
 │   ├── React/                   # React rendering lifecycle & memoization hooks
 │   └── Rendering/               # SSR, CSR, SSG & ISR patterns
-├── Questions/                   # Interview Prep & Deep Dives
-│   ├── Detailed/                # Scaling, Performance, Design Patterns, React
-│   │   ├── Architecture_Scaling.md
-│   │   ├── Browser_Build_Networking.md
-│   │   ├── Design_Patterns.md
-│   │   ├── Misc.md
-│   │   ├── Performance_Optimization.md
-│   │   ├── ReactInternals/          # React rendering lifecycle & engine deep dives
-│   │   │   ├── index.md
-│   │   │   ├── React_Deep_Dive_Advanced.md
-│   │   │   ├── React_Deep_Dive_Cheat_Sheet.md
-│   │   │   └── React_Deep_Dive_Internals.md
-│   │   └── Security_Architect.md
-│   ├── machine_code.md          # Machine coding round preparation
-│   └── Interviewer_Reference.md # Key concepts for interviews
 ├── Accessibility/               # Web Accessibility (a11y) & WCAG Architecture
 │   ├── README.md                # 10 Pillars Taxonomy Mindmap & Microsoft Inclusive Matrix
 │   ├── KeyboardAccessibility.md # Master Keyboard Navigation, Roving tabindex & Focus Traps
@@ -195,7 +180,7 @@ Comprehensive coverage of web and architectural security:
 - **Compliance:** Practical insights into GDPR, SOC 2, and HIPAA.
 - **Interview Q&A:** [33 Core Security Q&A Guide](./Security/Security_QA.md) covering web-security vulnerabilities, headers, and compliance.
 
-### 7. [Performance Optimization](./Performance/README.md)
+### 7. [Performance Optimization](./Performance_Core_Web_Vitals/README.md)
 
 A deep dive into the 8 pillars of web performance:
 
@@ -203,21 +188,21 @@ A deep dive into the 8 pillars of web performance:
 - **Optimization:** Network, Asset, Build, and Framework-specific (React) techniques.
 - **Patterns:** SSR, CSR, SSG, and ISR trade-offs.
 
-### 8. [Interview & Concept Deep Dives](./Questions/ques.md)
+### 8. [Interview & Concept Deep Dives](./cheatsheets/ques.md)
 
 A curated collection of system design questions, architecture scaling strategies, and performance optimization techniques for senior engineering roles. Directly jump to detailed topics:
 
-- **[React Deep Dive: Layout Phase & General Internals](./Questions/Detailed/ReactInternals/index.md)**: Nuances on Ref accuracy, reference equality, and lifecycle leaks.
-- **[React Deep Dive: Core Engine & Architecture (Part 1)](./Questions/Detailed/ReactInternals/React_Deep_Dive_Internals.md)**: useRef stable instance storage, Virtual DOM reconciliation (Myers vs Zhang-Shasha algorithms), recursive Stack vs Concurrent Fiber, rendering pipeline (Render/Commit/Paint), state management quirks, `useSyncExternalStore` subscription tearing, and tricky hooks.
-- **[React Deep Dive: Advanced Concurrency & Hooks (Part 2)](./Questions/Detailed/ReactInternals/React_Deep_Dive_Advanced.md)**: Deep hook mechanics (circular update queue, eager bailouts, WorkTags), transition interruption, 32-bit bitmask Lanes priorities, bubbled-up `childLanes`, React 19 compiler integration, Actions and `useOptimistic` engine, selective hydration, and system telemetry auditing.
-- **[React Deep Dive: Grill Questions & Timing Cheat Sheet (Part 3)](./Questions/Detailed/ReactInternals/React_Deep_Dive_Cheat_Sheet.md)**: 14 Consolidated Senior/Staff level "Grill" questions, Internals quick-reference flags matrix, timing API differences, Event Loop execution stages, and high-performance Double-rAF animation synchronization pattern.
-- **[Security Architecture](./Questions/Detailed/Security_Architect.md)**: Zero Trust, OAuth2/OIDC, XSS/CSRF mitigations, SSRF, SQLi, and compliance (GDPR, SOC 2, HIPAA).
-- **[Architecture & Scaling](./Questions/Detailed/Architecture_Scaling.md)**: Scaling patterns, database sharding, CAP/PACELC theorems, and distributed caching.
-- **[Performance Optimization](./Questions/Detailed/Performance_Optimization.md)**: Core Web Vitals diagnostic breakdown, image/font optimizations, and rendering patterns.
-- **[Design Patterns](./Questions/Detailed/Design_Patterns.md)**: Gang of Four design patterns, structural layouts, and object-oriented architectures.
-- **[Browser, Build & Networking](./Questions/Detailed/Browser_Build_Networking.md)**: Module compilation, bundlers, tree-shaking, HTTP headers, and browser render pipelines.
-- **[Machine Coding Preparation](./Questions/machine_code.md)**: Guidelines, patterns, and templates for machine coding round success.
-- **[Interviewer Reference Guide](./Questions/Interviewer_Reference.md)**: High-level reference sheets and conceptual checks.
+- **[React Deep Dive: Layout Phase & General Internals](./cheatsheets/ReactInternals/index.md)**: Nuances on Ref accuracy, reference equality, and lifecycle leaks.
+- **[React Deep Dive: Core Engine & Architecture (Part 1)](./cheatsheets/ReactInternals/React_Deep_Dive_Internals.md)**: useRef stable instance storage, Virtual DOM reconciliation (Myers vs Zhang-Shasha algorithms), recursive Stack vs Concurrent Fiber, rendering pipeline (Render/Commit/Paint), state management quirks, `useSyncExternalStore` subscription tearing, and tricky hooks.
+- **[React Deep Dive: Advanced Concurrency & Hooks (Part 2)](./cheatsheets/ReactInternals/React_Deep_Dive_Advanced.md)**: Deep hook mechanics (circular update queue, eager bailouts, WorkTags), transition interruption, 32-bit bitmask Lanes priorities, bubbled-up `childLanes`, React 19 compiler integration, Actions and `useOptimistic` engine, selective hydration, and system telemetry auditing.
+- **[React Deep Dive: Grill Questions & Timing Cheat Sheet (Part 3)](./cheatsheets/ReactInternals/React_Deep_Dive_Cheat_Sheet.md)**: 14 Consolidated Senior/Staff level "Grill" questions, Internals quick-reference flags matrix, timing API differences, Event Loop execution stages, and high-performance Double-rAF animation synchronization pattern.
+- **[Security Architecture](./cheatsheets/Security_Architect.md)**: Zero Trust, OAuth2/OIDC, XSS/CSRF mitigations, SSRF, SQLi, and compliance (GDPR, SOC 2, HIPAA).
+- **[Architecture & Scaling](./cheatsheets/Architecture_Scaling.md)**: Scaling patterns, database sharding, CAP/PACELC theorems, and distributed caching.
+- **[Performance Optimization](./cheatsheets/Performance_Optimization.md)**: Core Web Vitals diagnostic breakdown, image/font optimizations, and rendering patterns.
+- **[Design Patterns](./cheatsheets/Design_Patterns.md)**: Gang of Four design patterns, structural layouts, and object-oriented architectures.
+- **[Browser, Build & Networking](./cheatsheets/Browser_Build_Networking.md)**: Module compilation, bundlers, tree-shaking, HTTP headers, and browser render pipelines.
+- **[Machine Coding Preparation](./cheatsheets/machine_code.md)**: Guidelines, patterns, and templates for machine coding round success.
+- **[Interviewer Reference Guide](./cheatsheets/Interviewer_Reference.md)**: High-level reference sheets and conceptual checks.
 
 ### 9. [Web Fundamentals](./Web/web.md)
 

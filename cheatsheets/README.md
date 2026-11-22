@@ -21,6 +21,7 @@ For in-depth references, code blocks, and architectural choices, visit the categ
 - 💾 **[State Management](state-management.md)**: 5 State Buckets, Execution Lifecycles & Pipelines (`useState`, `useReducer`, RTK Thunk, Redux-Saga, Zustand, MobX, XState v5/v6 Actor Model) with Mermaid sequence diagrams, complete API references, and "Which & When to Use" decision tree matrix.
 - ⚡ **[Advanced State Architecture & Production Patterns](state-management-advanced.md)**: Atomic state & Signals (Jotai, Solid), Form state engineering (React Hook Form + Zod, 60fps input lag fix), Optimistic UI updates with rollback, Offline Outbox pattern, Cross-Tab synchronization (`BroadcastChannel`), SSR hydration safety (`useSyncExternalStore`), and top 5 performance traps.
 - 📦 **[Package Managers, Monorepos & Workspace Architecture](package-managers.md)**: `pnpm` vs `yarn` vs `npm` hierarchy, Content-Addressable Storage (CAS), Phantom Dependencies, Corepack zero-install toolchains, pnpm workspaces (`workspace:*`), and Monorepo build orchestrators (**Turborepo vs Nx**).
+- 📄 **[API Pagination Architecture (Offset vs. Keyset vs. Cursor)](pagination.md)**: Complete guide covering Limit/Offset vs. Keyset/Cursor, $O(N)$ deep paging trap, $O(1)$ index seeks, compound Base64 tokens, GraphQL Relay spec, and 60 FPS infinite scroll client caching.
 - 📘 **[TypeScript & Typings](typescript.md)**: Types vs Interfaces, enum alternatives, utility types, and React prop/event integration.
 - 🏗️ **[Architecture & Performance](architecture.md)**: State ownership, concurrency patterns, virtualization, traps, and staff-level design questions.
 - 🌐 **[Browser Object Model (BOM)](BOM.md)**: Window execution, location controls, screen boundaries, and cross-tab communication.
@@ -119,6 +120,7 @@ Use this high-level list to find the correct primitive for your specific problem
 - [Database Selection Matrix](dbdecision.md#database-selector-matrix) — Choose between Relational, Key-Value, Document, Wide-Column, Graph, and Time-Series.
 - [Multi-Database Case Studies](dbdecision.md#3-multi-database-production-case-studies) — Real-world database layouts of Uber, Instagram, WhatsApp, and YouTube.
 - [Functional vs Non-Functional Requirements](dbdecision.md#1-requirements-engineering-functional-vs-non-functional-requirements) — Distinguish FRs vs NFRs with e-commerce mental models.
+- [**API Pagination Architecture**](pagination.md) — Master guide on Offset vs Keyset vs Cursor, SQL deep paging traps, compound Base64 tokens, and GraphQL Relay specs.
 
 ---
 
