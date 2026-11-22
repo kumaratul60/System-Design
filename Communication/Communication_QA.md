@@ -120,6 +120,7 @@ This Q&A document provides a structured, tiered review of web communication prot
 - **Role of the "Upgrade" Header:**
   - The `Upgrade: websocket` header (accompanied by `Connection: Upgrade`) tells intermediaries (proxies, reverse-proxies, load balancers) and the destination server that the client wants to switch protocols.
   - The client also sends a `Sec-WebSocket-Key` header, which the server signs and returns as `Sec-WebSocket-Accept` in its response, verifying that the server actively supports WebSockets and isn't just treating it as a standard HTTP connection.
+  - _(See [HTTP Headers Master Cheatsheet](../cheatsheets/Headers.md) for full header mechanics & status codes)._
 
 ---
 

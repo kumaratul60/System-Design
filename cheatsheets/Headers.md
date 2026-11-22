@@ -1,17 +1,59 @@
 # HTTP Headers and Status Codes
 
+> 💡 **Core Mental Model:**
+> **Status codes tell us _what_ to handle, while headers tell us _how_ to handle it.**
+
 A comprehensive guide to HTTP headers and status codes: from beginner basics to advanced techniques, including how they work, use cases, and real-world examples.
 
 ## Table of Contents
 
+- [The 12 Headers Worth Knowing (Fast Recall)](#the-12-headers-worth-knowing-fast-recall)
+- [Critical Complementary Headers (The 5 You Must Also Know)](#critical-complementary-headers-the-5-you-must-also-know)
 - [Introduction to HTTP Headers](#introduction-to-http-headers)
 - [Beginner Level: Understanding Headers](#beginner-level-understanding-headers)
 - [Intermediate Level: Common Headers and Their Use Cases](#intermediate-level-common-headers-and-their-use-cases)
 - [Advanced Level: Optimization, Compression, and Security](#advanced-level-optimization-compression-and-security)
+- [Distributed Systems, Resilience & Routing Headers](#distributed-systems-resilience--routing-headers)
 - [Quick Comparison: Request vs. Response Headers](#quick-comparison-request-vs-response-headers)
 - [Key Distinctions](#key-distinctions)
 - [HTTP Status Codes](#http-status-codes)
 - [Summary: Headers and Status Codes Quick Reference](#summary-headers-and-status-codes-quick-reference)
+
+---
+
+## ⚡ The 12 Headers Worth Knowing (Fast Recall)
+
+> 💡 **Core Mental Model:**
+> **Status codes tell us _what_ to handle, while headers tell us _how_ to handle it.**
+
+|  #  | Header             | Direction | Short & Crisp Essence                                 | System Design Context                                                                             | Production Example                                                     |
+| :-: | :----------------- | :-------: | :---------------------------------------------------- | :------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------- |
+|  1  | `Authorization`    |  Request  | **Who's calling.** Usually a bearer token.            | API Authentication, Gateway JWT validation, OAuth 2.0 / OIDC flows.                               | `Authorization: Bearer eyJhbGci...`                                    |
+|  2  | `Content-Type`     |   Both    | **What format the body is in.**                       | Payload serialization & deserialization (`application/json`, `multipart/form-data`).              | `Content-Type: application/json; charset=utf-8`                        |
+|  3  | `Accept`           |  Request  | **What format the client wants back.**                | Content negotiation for APIs (JSON vs. XML vs. CSV vs. Avro/Protobuf).                            | `Accept: application/json, text/plain;q=0.9`                           |
+|  4  | `Cache-Control`    |   Both    | **Who can cache the response, and for how long.**     | CDN edge & browser caching policy (`max-age`, `s-maxage`, `no-cache`, `immutable`).               | `Cache-Control: public, max-age=31536000, immutable`                   |
+|  5  | `ETag`             | Response  | **A version tag for the response.**                   | Resource fingerprint/hash to validate freshness and prevent mid-air collisions.                   | `ETag: W/"686897696a7c76"`                                             |
+|  6  | `If-None-Match`    |  Request  | **"Only send it if it changed." Pairs with ETag.**    | Conditional request validation; saves bandwidth by returning `304 Not Modified` (0B payload).     | `If-None-Match: W/"686897696a7c76"`                                    |
+|  7  | `Location`         | Response  | **Where a new resource lives, or where to redirect.** | Returned on `201 Created` with resource URL, or with `301`/`302`/`307`/`308` redirect targets.    | `Location: /api/v1/orders/ord_987123`                                  |
+|  8  | `Retry-After`      | Response  | **How long to wait before trying again.**             | Prevents thundering herds; paired with `429 Too Many Requests` or `503 Service Unavailable`.      | `Retry-After: 120` _(seconds or HTTP date)_                            |
+|  9  | `Idempotency-Key`  |  Request  | **Lets a retried POST run only once.**                | Distributed systems safety; prevents duplicate credit card charges or order creations.            | `Idempotency-Key: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d`                |
+| 10  | `traceparent`      |   Both    | **Ties one request together across services.**        | W3C Distributed Tracing standard (`version-traceId-parentId-traceFlags`) across microservices.    | `traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01` |
+| 11  | `Set-Cookie`       | Response  | **Stores state in the browser.**                      | Session management; secured with `HttpOnly` (anti-XSS), `Secure` (HTTPS), `SameSite` (anti-CSRF). | `Set-Cookie: sid=abc123; Secure; HttpOnly; SameSite=Lax`               |
+| 12  | `Content-Encoding` | Response  | **Whether the body is compressed.**                   | Wire transfer size optimization (`br` Brotli, `gzip`, `zstd`) matched to `Accept-Encoding`.       | `Content-Encoding: br`                                                 |
+
+---
+
+### 🛡️ Critical Complementary Headers (The 5 You Must Also Know)
+
+While the 12 above cover core state, caching, identity, and transport, these 5 headers complete the senior/staff architect picture:
+
+|  #  | Header                                   | Direction | Short & Crisp Essence                                                                      | Why It Matters                                                                                                    | Production Example                                                                       |
+| :-: | :--------------------------------------- | :-------: | :----------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------- |
+| 13  | `Vary`                                   | Response  | **"Don't serve this cache blindly."** Tells caches which request headers alter the output. | Prevents CDNs from serving Gzipped bytes to a client lacking decompression, or mobile HTML to desktop.            | `Vary: Accept-Encoding, User-Agent`                                                      |
+| 14  | `Strict-Transport-Security` (HSTS)       | Response  | **"Never talk to me over unencrypted HTTP."** Forces HTTPS browser-side.                   | Prevents SSL-stripping MITM attacks; eliminates the initial 301 redirect round-trip via browser preload lists.    | `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`                |
+| 15  | `Content-Security-Policy` (CSP)          | Response  | **"Only execute code from these trusted origins."**                                        | Primary defense against Cross-Site Scripting (XSS), malicious inline scripts, and unauthorized data exfiltration. | `Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com` |
+| 16  | `Origin` & `Access-Control-Allow-Origin` |   Bidir   | **"Can this frontend domain talk to this API backend?"**                                   | Governs Cross-Origin Resource Sharing (CORS) preflights (`OPTIONS`) and browser security boundaries.              | `Access-Control-Allow-Origin: https://app.example.com`                                   |
+| 17  | `Upgrade` & `Connection`                 |   Both    | **"Switch this HTTP connection to a new protocol."**                                       | The protocol transition mechanism powering the initial WebSocket handshake over standard ports (80/443).          | `Connection: Upgrade`<br>`Upgrade: websocket`                                            |
 
 ---
 
@@ -401,6 +443,60 @@ In the wake of CPU vulnerabilities like Spectre, browsers introduced headers to 
 
 ---
 
+## 🌐 Distributed Systems, Resilience & Routing Headers
+
+Modern microservices, payment gateways, and high-scale distributed architectures rely on specialized headers to ensure correctness, observability, and flow control.
+
+### 1. `Idempotency-Key` (Safe Mutation Retries)
+
+- **Direction:** Request (Client → Server / Gateway)
+- **Problem Solved:** When a client sends a mutating `POST` request (e.g., charge credit card, submit order) and experiences a network timeout or TCP disconnect, the client cannot know if the server processed the payment. Retrying blindly risks double-charging the customer.
+- **Mechanism:**
+  1. Client generates a unique UUIDv4 token before sending the request: `Idempotency-Key: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d`.
+  2. Server/Gateway checks a distributed cache (e.g., Redis with TTL of 24h):
+     - **Key not found:** Atomically acquire lock, execute transaction, save response status code and body in cache.
+     - **Key in progress:** Return `409 Conflict` or queue until initial request finishes.
+     - **Key completed:** Immediately replay the cached response body and status code without re-executing business logic.
+- **Standardization:** IETF Draft (`draft-ietf-httpapi-idempotency-key-header`), pioneered into production by Stripe and AWS.
+
+### 2. `traceparent` (W3C Distributed Tracing)
+
+- **Direction:** Bidirectional (Propagated across all microservice hops)
+- **Problem Solved:** When a single user click triggers a cascade across 15 microservices, asynchronous message queues, and databases, diagnosing where latency spiked or errors occurred requires correlated logging across service boundaries.
+- **Specification:** W3C Trace Context standard.
+- **Anatomy:**
+  ```text
+  traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+               │  │                                │                │
+               │  └── 16-byte Trace ID (32 hex)    └── 8-byte       └── 1-byte Flags
+               │      (Uniform across entire flow)     Parent/Span      (01 = Recorded/Sampled)
+               └── 1-byte Version (00)                 ID (Unique
+                                                       per hop)
+  ```
+- **Why It Matters:** Replaces fragmented proprietary headers (`X-B3-TraceId`, `X-Request-Id`, `X-Amzn-Trace-Id`) with an industry-wide open standard supported by OpenTelemetry, Jaeger, Datadog, and AWS X-Ray.
+
+### 3. `Retry-After` (Backoff & Load Shedding)
+
+- **Direction:** Response (Server → Client)
+- **Problem Solved:** When a service is overloaded (`503 Service Unavailable`) or a client hits rate limits (`429 Too Many Requests`), aggressive client retries cause a **thundering herd** that knocks down recovering services.
+- **Values:**
+  - **Delta-seconds:** `Retry-After: 120` (Wait 120 seconds before retrying).
+  - **HTTP Date:** `Retry-After: Fri, 31 Dec 2026 23:59:59 GMT`.
+- **System Design Best Practice:** Client SDKs must parse `Retry-After` and combine it with **Exponential Backoff and Full Jitter** to de-synchronize retry waves.
+
+### 4. `Location` (Resource Pointer & Redirection)
+
+- **Direction:** Response (Server → Client)
+- **Use Cases:**
+  - **`201 Created`:** In RESTful APIs, indicates the exact canonical URI of the newly provisioned resource:
+    ```http
+    HTTP/1.1 201 Created
+    Location: /api/v1/orders/ord_987123
+    ```
+  - **`3xx Redirections`:** Directs the user-agent where to fetch the target document (`301 Moved Permanently`, `307 Temporary Redirect`, `308 Permanent Redirect`).
+
+---
+
 ## Harness "Grill" Questions
 
 ### Q1: What is the `Vary` header and why is it called the "Cache Killer"?
@@ -431,6 +527,21 @@ In the wake of CPU vulnerabilities like Spectre, browsers introduced headers to 
 > - **The Attack:** An attacker uploads a malicious script disguised as an image (`avatar.jpg`). If the browser "sniffs" the file and sees it's actually JS, it might execute it.
 > - **The Defense:** `nosniff` forces the browser to strictly follow the `Content-Type` header sent by the server. If the server says it's an image, the browser treats it as an image, period.
 
+### Q5: How does `Idempotency-Key` protect distributed systems during transient network partitions?
+
+> **Answer:** In a distributed network, network failures are bidirectional. If a client sends a `POST /charges` and the connection drops after the server processes the charge, the client experiences a timeout error.
+>
+> - **Without Idempotency:** The client auto-retries the `POST`, and the server processes a second payment, double-charging the customer.
+> - **With `Idempotency-Key`:** The client attaches a deterministic UUID (`Idempotency-Key: <uuid>`). The server checks a high-speed distributed cache (Redis) with atomic locking (`SET key value NX EX 86400`). If the key exists with a completed payload, the server skips processing and directly streams back the exact cached response.
+
+### Q6: What is the format of W3C `traceparent` and why did it replace proprietary tracing headers?
+
+> **Answer:** Before W3C Trace Context, different APM tools used incompatible headers (`X-B3-TraceId` from Zipkin, `X-Request-Id` from Envoy, `trace-id` from Jaeger). When requests crossed company or cloud boundaries, distributed traces shattered.
+>
+> - **The Standard:** `traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01`
+> - **Structure:** `version (2 hex)` - `trace-id (32 hex / 16 bytes)` - `parent-id/span-id (16 hex / 8 bytes)` - `trace-flags (2 hex / 8-bit bitmap, e.g., 01 for sampled)`.
+> - **Benefit:** Standardized context propagation across multi-vendor service meshes (OpenTelemetry, Datadog, Dynatrace, AWS X-Ray) without translation layers.
+
 ---
 
 ## Request headers express intent and capability, response headers express facts and policy.
@@ -439,17 +550,19 @@ In the wake of CPU vulnerabilities like Spectre, browsers introduced headers to 
 
 ### Request Headers (Client → Server)
 
-| Header              | Think of it as...     | Purpose                                    |
-| :------------------ | :-------------------- | :----------------------------------------- |
-| **Host**            | "Where am I going?"   | Routing to the correct domain or CDN.      |
-| **Origin**          | "Where did I start?"  | Security and CORS (Domain only).           |
-| **Referer**         | "Which page sent me?" | Analytics and Tracking (Full URL).         |
-| **User-Agent**      | "Who/What am I?"      | Browser, OS, and Bot detection.            |
-| **Authorization**   | "Here is my ID."      | Passing JWTs or API keys.                  |
-| **Cookie**          | "Remember me?"        | Sending saved session data back to server. |
-| **Accept**          | "What format I want?" | Content negotiation (e.g., JSON).          |
-| **Accept-Encoding** | "How compressed?"     | Supported compression algorithms.          |
-| **If-None-Match**   | "Has it changed?"     | Conditional requests for caching.          |
+| Header              | Think of it as...     | Purpose                                     |
+| :------------------ | :-------------------- | :------------------------------------------ |
+| **Host**            | "Where am I going?"   | Routing to the correct domain or CDN.       |
+| **Origin**          | "Where did I start?"  | Security and CORS (Domain only).            |
+| **Referer**         | "Which page sent me?" | Analytics and Tracking (Full URL).          |
+| **User-Agent**      | "Who/What am I?"      | Browser, OS, and Bot detection.             |
+| **Authorization**   | "Here is my ID."      | Passing JWTs or API keys.                   |
+| **Cookie**          | "Remember me?"        | Sending saved session data back to server.  |
+| **Accept**          | "What format I want?" | Content negotiation (e.g., JSON).           |
+| **Accept-Encoding** | "How compressed?"     | Supported compression algorithms.           |
+| **If-None-Match**   | "Has it changed?"     | Conditional requests for caching.           |
+| **Idempotency-Key** | "Don't run twice."    | Safe mutation retries for POST operations.  |
+| **traceparent**     | "Follow this trace."  | W3C distributed tracing context across hops |
 
 ### Response Headers (Server → Client)
 
@@ -460,6 +573,8 @@ In the wake of CPU vulnerabilities like Spectre, browsers introduced headers to 
 | **Content-Encoding**          | "How packed?"          | Compression applied to response.           |
 | **Cache-Control**             | "Save this for later." | Managing browser caching policies.         |
 | **ETag**                      | "File fingerprint."    | Version tracking for optimized caching.    |
+| **Location**                  | "Go here next."        | Newly created resource URI or redirect.    |
+| **Retry-After**               | "Wait before retry."   | Rate limit backoff (paired with 429/503).  |
 | **Last-Modified**             | "When did it change?"  | Timestamp for conditional requests.        |
 | **Expires**                   | "Hard expiry time."    | Absolute cache expiration.                 |
 | **Strict-Transport-Security** | "Force HTTPS."         | Enforces secure connections.               |

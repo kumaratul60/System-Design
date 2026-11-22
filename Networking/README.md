@@ -39,6 +39,7 @@ mindmap
 ### 1. [REST API](./RestAPI/)
 
 The traditional resource-based approach using standard HTTP methods. Ideal for public APIs and simple CRUD operations.
+_(For an exhaustive breakdown of request/response headers, caching, and status codes, see the [HTTP Headers Master Cheatsheet](../cheatsheets/Headers.md))._
 
 ### 2. [GraphQL](./Graphql/)
 

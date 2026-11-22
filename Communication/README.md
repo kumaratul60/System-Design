@@ -35,6 +35,8 @@ mindmap
 
 ## 🚀 The Decision Tree: Which One to Use?
 
+> 📖 **Deep Dive Reference:** For a comprehensive reference on HTTP headers governing caching, idempotency, tracing, compression, and authentication (`Authorization`, `Idempotency-Key`, `traceparent`, `Retry-After`, `Upgrade`, `Cache-Control`), see the **[HTTP Headers Master Cheatsheet](../cheatsheets/Headers.md)**.
+
 Use this quick guide to determine the best strategy for your requirements:
 
 1.  **Do you need Server-to-Server notifications?**
