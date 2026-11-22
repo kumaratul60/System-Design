@@ -1,5 +1,7 @@
 # 🚀 The Complete System Performance & Scalability Blueprint
 
+> 📖 **Foundations Reference:** For low-level OS compute primitives (Processes, Threads, Thread Pools), Duplex networking modes, ACID & Isolation levels, and Optimistic vs. Pessimistic locking, see the **[Backend & System Design Fundamentals](Backend_System_Design_Fundamentals.md)**.
+
 ## 1. Core Fundamentals
 
 - **Load:** The demand placed on the system (Req/sec, Active Users, Data size).

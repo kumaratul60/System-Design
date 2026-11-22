@@ -8,6 +8,7 @@
 
 For in-depth references, code blocks, and architectural choices, visit the categorized sheets:
 
+- 🧱 **[Backend & System Design Fundamentals](Backend_System_Design_Fundamentals.md)**: Master reference covering what each concept solves, why it's needed, and when to use it across Database & Consistency (Indexing, ACID, Isolation levels, Optimistic/Pessimistic locking, Race conditions), Scalability (LB, Rate limiting, Caching, Scaling paths), Async Reliability (Message queues, Idempotency, Fault tolerance, Backoff & jitter, Circuit breakers, Observability), OS Primitives (Process vs Thread, Thread pools), and API Communication (Simplex/Half/Full-Duplex, Pagination, REST, WebSockets, SSE, CDN).
 - 🗄️ **[Database Decisions & Architectures](dbdecision.md)**: A structured framework for choosing databases, selection matrix, case studies, and interview design flows.
 - 🛡️ **[Rate Limiting & Deadlocks Master Cheatsheet](RateLimiting_and_Deadlocks.md)**: Distributed rate limiting algorithms, Redis Lua scripts, horizontal vs vertical scaling, fail-open/closed fallback strategies, Coffman conditions, ABBA mutex code fix, and deadlock prevention.
 - ⚖️ **[Load Balancing Algorithms & Architectures](Load_Balancing_Algorithms.md)**: Frontend client-side balancing, Web Worker thread pools, GeoDNS & BGP Anycast, L4 vs L7, HTTP/2 & gRPC single-connection trap, Round Robin, Least Connections, Consistent Hashing (V-Nodes), Power of Two Choices (P2C), and Maglev.
