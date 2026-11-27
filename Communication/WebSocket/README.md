@@ -2,6 +2,8 @@
 
 A persistent, full-duplex communication protocol over a single TCP connection for real-time, bi-directional messaging.
 
+> ⚡ **Master Cheatsheet Reference:** For a comprehensive comparison with all 8 other real-time protocols (SSE, Long Polling, WebTransport, etc.), production-grade TypeScript client wrappers, and live scorecard system design, see the **[Real-Time BE-to-FE Master Cheatsheet](../RealTime_BE_to_FE_Master_Cheatsheet.md)**.
+
 ---
 
 ## 1. Core Building Blocks

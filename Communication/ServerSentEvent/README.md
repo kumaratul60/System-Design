@@ -1,5 +1,7 @@
 # Server-Sent Events (SSE)
 
+> ⚡ **Master Cheatsheet Reference:** For a full comparative breakdown between SSE, WebSockets, Long Polling, and WebTransport, see the **[Real-Time BE-to-FE Master Cheatsheet](../RealTime_BE_to_FE_Master_Cheatsheet.md)**.
+
 Server-Sent Events (SSE) is a standard designed to allow a web server to push real-time updates to a web browser over a standard HTTP connection.
 The most important thing to understand about SSE is that it only flows from server to client. The client cannot send messages back over the same connection. If it needs to send something, it makes a separate HTTP request.
 Server-Sent Events also use HTTP. But unlike Long Polling, the connection stays open after an update is sent.

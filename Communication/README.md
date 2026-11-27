@@ -11,23 +11,23 @@ mindmap
   root((Communication Patterns))
     Pull Patterns
       Short Polling
-      Long Polling (Hanging Request)
+      ["Long Polling (Hanging Request)"]
     Push Patterns
-      Webhooks (Server-to-Server)
-      SSE (Unidirectional)
-      WebSockets (Bi-directional)
+      ["Webhooks (Server-to-Server)"]
+      ["SSE (Unidirectional)"]
+      ["WebSockets (Bi-directional)"]
     Protocols
       HTTP/1.1
-      HTTP/2 (Multiplexing)
-      HTTP/3 (QUIC)
-      WSS (Secure WebSockets)
+      ["HTTP/2 (Multiplexing)"]
+      ["HTTP/3 (QUIC)"]
+      ["WSS (Secure WebSockets)"]
     Reliability
       Retries & Backoff
       Idempotency
-      Acknowledgements (ACKs)
+      ["Acknowledgements (ACKs)"]
     Scalability
       Sticky Sessions
-      Pub/Sub Backplane (Redis)
+      ["Pub/Sub Backplane (Redis)"]
       Connection Managers
 ```
 
@@ -36,6 +36,11 @@ mindmap
 ## 🚀 The Decision Tree: Which One to Use?
 
 > 📖 **Deep Dive Reference:** For a comprehensive reference on HTTP headers governing caching, idempotency, tracing, compression, and authentication (`Authorization`, `Idempotency-Key`, `traceparent`, `Retry-After`, `Upgrade`, `Cache-Control`), see the **[HTTP Headers Master Cheatsheet](../cheatsheets/Headers.md)**.
+> ⚡ **Real-Time BE-to-FE Master Guides:**
+>
+> - 📘 **[Real-Time Protocols Cheatsheet](./RealTime_Protocols_Cheatsheet.md)** — All 9 protocols, 11-dimension comparison matrix, when WebSockets excel vs anti-patterns, and the decision flowchart.
+> - 🛠️ **[Real-Time Engineering & Scorecard System Design](./RealTime_Scorecard_And_WebSocket_Implementation.md)** — Production TypeScript WebSocket wrapper, visibility poller, and end-to-end 5M CCU dynamic scorecard architecture.
+> - ⚡ **[Real-Time Master Hub](./RealTime_BE_to_FE_Master_Cheatsheet.md)** — Unified index and quick navigation.
 
 Use this quick guide to determine the best strategy for your requirements:
 

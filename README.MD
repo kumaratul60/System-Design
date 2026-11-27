@@ -57,7 +57,10 @@ A comprehensive repository for exploring, implementing, and documenting core Sys
 │   ├── ServerSentEvent/         # Unidirectional streaming (SSE)
 │   ├── WebSocket/               # Full-duplex bidirectional streams
 │   ├── WebRTC.md                # Peer-to-peer real-time connection
-│   └── Communication_QA.md      # 15 Core Communication Q&A Guide
+│   ├── Communication_QA.md      # 15 Core Communication Q&A Guide
+│   ├── RealTime_BE_to_FE_Master_Cheatsheet.md # Master Hub for Real-Time BE-to-FE
+│   ├── RealTime_Protocols_Cheatsheet.md       # 9 Protocols & Matrix Comparison
+│   └── RealTime_Scorecard_And_WebSocket_Implementation.md # 5M CCU Scorecard & Code
 ├── Networking/                  # API Architectural Styles
 │   ├── RestAPI/                 # Standard REST implementation
 │   ├── Graphql/                 # Schema-driven query language
